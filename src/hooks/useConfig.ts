@@ -1,0 +1,176 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Config } from "@/types/enxoval";
+import { useToast } from "@/hooks/use-toast";
+import { supabaseQuery } from "@/lib/supabase-helpers";
+
+export const useConfig = () => {
+  const [config, setConfig] = useState<Config | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+
+  const loadConfig = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: configData, error: configError } = await supabaseQuery
+        .from("config")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (configError && configError.code !== "PGRST116") {
+        throw configError;
+      }
+
+      if (!configData) {
+        // Criar config padrão
+        // @ts-ignore
+        const { data: newConfig, error: insertError } = await supabaseQuery
+          .from("config")
+          // @ts-ignore
+          .insert(
+            {
+            // @ts-ignore
+            user_id: user.id,
+            // @ts-ignore
+            orcamento_total: 5000,
+            // @ts-ignore
+            dias_alerta_troca: 7,
+          })
+          .select()
+          .single();
+
+        if (insertError) throw insertError;
+
+        // Inserir limites RN padrão com os novos campos
+        // @ts-ignore
+        const defaultLimits = [
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Bodies (curta+longa)", limite: 6, quando_aumentar: "+2 se clima frio", observacoes: "Priorize tamanho P no restante do enxoval." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Mijões/Calças", limite: 4, quando_aumentar: "+2 se clima frio", observacoes: "Elástico suave; prefira com pé reversível." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Macacões", limite: 3, quando_aumentar: "+1 se clima frio", observacoes: "Abertura frontal facilita trocas." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Meias", limite: 6, quando_aumentar: "+2 no frio", observacoes: 'Dispensa "sapato RN".' },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Gorro", limite: 1, quando_aumentar: "1 se frio", observacoes: "Use só em ambientes frios." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Luvas", limite: 0, quando_aumentar: "1 par se quiser", observacoes: "Melhor manter unhas aparadas (mais confortável)." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Casaquinho/Coletes", limite: 1, quando_aumentar: "1 no frio", observacoes: "Evite peças volumosas." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Saída de maternidade", limite: 1, quando_aumentar: "—", observacoes: "Opte por conjunto reutilizável." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Bodies RN manga curta", limite: 3, quando_aumentar: "+1 no calor", observacoes: "Pode combinar com manga longa para 6 no total." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Bodies RN manga longa", limite: 3, quando_aumentar: "+1 no frio", observacoes: "—" },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Shorts/culotes leves", limite: 2, quando_aumentar: "+2 no calor", observacoes: "Só se for verão intenso." },
+          // @ts-ignore
+          { config_id: newConfig?.id, item: "Sapatos RN", limite: 0, quando_aumentar: "—", observacoes: "Dispensável; use meias." },
+        ];
+
+        // @ts-ignore
+        await supabaseQuery.from("limites_rn").insert(defaultLimits);
+
+        const { data: limits } = await supabaseQuery
+          .from("limites_rn")
+          .select("*")
+          // @ts-ignore
+          .eq("config_id", newConfig?.id);
+
+        setConfig({
+          // @ts-ignore
+          id: newConfig?.id,
+          // @ts-ignore
+          orcamento_total: newConfig?.orcamento_total,
+          // @ts-ignore
+          dias_alerta_troca: newConfig?.dias_alerta_troca,
+          limites_rn: limits || [],
+        });
+      } else {
+        const { data: limits } = await supabaseQuery
+          .from("limites_rn")
+          .select("*")
+          // @ts-ignore
+          .eq("config_id", configData.id);
+
+        setConfig({
+          // @ts-ignore
+          id: configData.id,
+          // @ts-ignore
+          orcamento_total: configData.orcamento_total,
+          // @ts-ignore
+          dias_alerta_troca: configData.dias_alerta_troca,
+          limites_rn: limits || [],
+        });
+      }
+    } catch (error: any) {
+      console.error("Erro ao carregar configurações:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar as configurações.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateConfig = async (updates: Partial<Config>) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !config?.id) return;
+
+      const { error } = await supabaseQuery
+        .from("config")
+        // @ts-ignore
+        .update({
+          orcamento_total: updates.orcamento_total,
+          dias_alerta_troca: updates.dias_alerta_troca,
+        })
+        .eq("id", config.id);
+
+      if (error) throw error;
+
+      if (updates.limites_rn) {
+        // Atualizar limites
+        await supabaseQuery.from("limites_rn").delete().eq("config_id", config.id);
+        
+        const limitsToInsert = updates.limites_rn.map((limit) => ({
+          config_id: config.id,
+          item: limit.item,
+          limite: limit.limite,
+          quando_aumentar: limit.quando_aumentar,
+          observacoes: limit.observacoes,
+        }));
+
+        // @ts-ignore
+        await supabaseQuery.from("limites_rn").insert(limitsToInsert);
+      }
+
+      await loadConfig();
+      
+      toast({
+        title: "Sucesso",
+        description: "Configurações atualizadas com sucesso!",
+      });
+    } catch (error: any) {
+      console.error("Erro ao atualizar configurações:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível atualizar as configurações.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    loadConfig();
+  }, []);
+
+  return { config, loading, updateConfig, reloadConfig: loadConfig };
+};
