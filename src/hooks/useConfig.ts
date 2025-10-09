@@ -14,7 +14,7 @@ export const useConfig = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: configData, error: configError } = await supabaseQuery
+      const { data: configData, error: configError } = await supabase
         .from("config")
         .select("*")
         .eq("user_id", user.id)
@@ -26,17 +26,11 @@ export const useConfig = () => {
 
       if (!configData) {
         // Criar config padrão
-        // @ts-ignore
-        const { data: newConfig, error: insertError } = await supabaseQuery
+        const { data: newConfig, error: insertError } = await supabase
           .from("config")
-          // @ts-ignore
-          .insert(
-            {
-            // @ts-ignore
+          .insert({
             user_id: user.id,
-            // @ts-ignore
             orcamento_total: 5000,
-            // @ts-ignore
             dias_alerta_troca: 7,
           })
           .select()
@@ -45,67 +39,57 @@ export const useConfig = () => {
         if (insertError) throw insertError;
 
         // Inserir limites RN padrão com os novos campos
-        // @ts-ignore
         const defaultLimits = [
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Bodies (curta+longa)", limite: 6, quando_aumentar: "+2 se clima frio", observacoes: "Priorize tamanho P no restante do enxoval." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Mijões/Calças", limite: 4, quando_aumentar: "+2 se clima frio", observacoes: "Elástico suave; prefira com pé reversível." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Macacões", limite: 3, quando_aumentar: "+1 se clima frio", observacoes: "Abertura frontal facilita trocas." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Meias", limite: 6, quando_aumentar: "+2 no frio", observacoes: 'Dispensa "sapato RN".' },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Gorro", limite: 1, quando_aumentar: "1 se frio", observacoes: "Use só em ambientes frios." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Luvas", limite: 0, quando_aumentar: "1 par se quiser", observacoes: "Melhor manter unhas aparadas (mais confortável)." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Casaquinho/Coletes", limite: 1, quando_aumentar: "1 no frio", observacoes: "Evite peças volumosas." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Saída de maternidade", limite: 1, quando_aumentar: "—", observacoes: "Opte por conjunto reutilizável." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Bodies RN manga curta", limite: 3, quando_aumentar: "+1 no calor", observacoes: "Pode combinar com manga longa para 6 no total." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Bodies RN manga longa", limite: 3, quando_aumentar: "+1 no frio", observacoes: "—" },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Shorts/culotes leves", limite: 2, quando_aumentar: "+2 no calor", observacoes: "Só se for verão intenso." },
-          // @ts-ignore
           { config_id: newConfig?.id, item: "Sapatos RN", limite: 0, quando_aumentar: "—", observacoes: "Dispensável; use meias." },
         ];
 
-        // @ts-ignore
-        await supabaseQuery.from("limites_rn").insert(defaultLimits);
+        await supabase.from("limites_rn").insert(defaultLimits);
 
-        const { data: limits } = await supabaseQuery
+        const { data: limits } = await supabase
           .from("limites_rn")
           .select("*")
-          // @ts-ignore
           .eq("config_id", newConfig?.id);
 
         setConfig({
-          // @ts-ignore
           id: newConfig?.id,
-          // @ts-ignore
           orcamento_total: newConfig?.orcamento_total,
-          // @ts-ignore
           dias_alerta_troca: newConfig?.dias_alerta_troca,
-          limites_rn: limits || [],
+          limites_rn: (limits || []).map(l => ({
+            id: l.id,
+            item: l.item,
+            limite: l.limite,
+            quando_aumentar: l.quando_aumentar,
+            observacoes: l.observacoes,
+          })),
         });
       } else {
-        const { data: limits } = await supabaseQuery
+        const { data: limits } = await supabase
           .from("limites_rn")
           .select("*")
-          // @ts-ignore
           .eq("config_id", configData.id);
 
         setConfig({
-          // @ts-ignore
           id: configData.id,
-          // @ts-ignore
           orcamento_total: configData.orcamento_total,
-          // @ts-ignore
           dias_alerta_troca: configData.dias_alerta_troca,
-          limites_rn: limits || [],
+          limites_rn: (limits || []).map(l => ({
+            id: l.id,
+            item: l.item,
+            limite: l.limite,
+            quando_aumentar: l.quando_aumentar,
+            observacoes: l.observacoes,
+          })),
         });
       }
     } catch (error: any) {
@@ -125,9 +109,8 @@ export const useConfig = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !config?.id) return;
 
-      const { error } = await supabaseQuery
+      const { error } = await supabase
         .from("config")
-        // @ts-ignore
         .update({
           orcamento_total: updates.orcamento_total,
           dias_alerta_troca: updates.dias_alerta_troca,
@@ -138,7 +121,7 @@ export const useConfig = () => {
 
       if (updates.limites_rn) {
         // Atualizar limites
-        await supabaseQuery.from("limites_rn").delete().eq("config_id", config.id);
+        await supabase.from("limites_rn").delete().eq("config_id", config.id);
         
         const limitsToInsert = updates.limites_rn.map((limit) => ({
           config_id: config.id,
@@ -148,8 +131,7 @@ export const useConfig = () => {
           observacoes: limit.observacoes,
         }));
 
-        // @ts-ignore
-        await supabaseQuery.from("limites_rn").insert(limitsToInsert);
+        await supabase.from("limites_rn").insert(limitsToInsert);
       }
 
       await loadConfig();

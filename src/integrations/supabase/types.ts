@@ -14,16 +14,301 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      config: {
+        Row: {
+          created_at: string
+          dias_alerta_troca: number | null
+          id: string
+          orcamento_total: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dias_alerta_troca?: number | null
+          id?: string
+          orcamento_total?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dias_alerta_troca?: number | null
+          id?: string
+          orcamento_total?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      itens_enxoval: {
+        Row: {
+          categoria: string
+          created_at: string
+          data: string | null
+          data_limite_troca: string | null
+          desconto: number | null
+          frete: number | null
+          id: string
+          item: string
+          link: string | null
+          loja: string | null
+          necessidade: string
+          obs: string | null
+          origem: string | null
+          preco_planejado: number | null
+          preco_referencia: number | null
+          preco_unit_pago: number | null
+          prioridade: string
+          qtd_comprada: number | null
+          qtd_planejada: number | null
+          status: string
+          tamanho: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          categoria: string
+          created_at?: string
+          data?: string | null
+          data_limite_troca?: string | null
+          desconto?: number | null
+          frete?: number | null
+          id?: string
+          item: string
+          link?: string | null
+          loja?: string | null
+          necessidade: string
+          obs?: string | null
+          origem?: string | null
+          preco_planejado?: number | null
+          preco_referencia?: number | null
+          preco_unit_pago?: number | null
+          prioridade: string
+          qtd_comprada?: number | null
+          qtd_planejada?: number | null
+          status?: string
+          tamanho?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          data?: string | null
+          data_limite_troca?: string | null
+          desconto?: number | null
+          frete?: number | null
+          id?: string
+          item?: string
+          link?: string | null
+          loja?: string | null
+          necessidade?: string
+          obs?: string | null
+          origem?: string | null
+          preco_planejado?: number | null
+          preco_referencia?: number | null
+          preco_unit_pago?: number | null
+          prioridade?: string
+          qtd_comprada?: number | null
+          qtd_planejada?: number | null
+          status?: string
+          tamanho?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      limites_rn: {
+        Row: {
+          config_id: string
+          created_at: string
+          id: string
+          item: string
+          limite: number
+          observacoes: string | null
+          quando_aumentar: string | null
+        }
+        Insert: {
+          config_id: string
+          created_at?: string
+          id?: string
+          item: string
+          limite: number
+          observacoes?: string | null
+          quando_aumentar?: string | null
+        }
+        Update: {
+          config_id?: string
+          created_at?: string
+          id?: string
+          item?: string
+          limite?: number
+          observacoes?: string | null
+          quando_aumentar?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "limites_rn_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "config"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          is_global: boolean | null
+          message: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          is_global?: boolean | null
+          message: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_global?: boolean | null
+          message?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          cidade: string | null
+          created_at: string
+          data_inicio_planejamento: string | null
+          data_prevista_parto: string | null
+          email: string
+          estado: string | null
+          foto_perfil_url: string | null
+          id: string
+          idade: number | null
+          idades_filhos: number[] | null
+          meses_gestacao: number | null
+          perfil_completo: boolean | null
+          possui_filhos: boolean | null
+          sexo: string | null
+          updated_at: string
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string
+          data_inicio_planejamento?: string | null
+          data_prevista_parto?: string | null
+          email: string
+          estado?: string | null
+          foto_perfil_url?: string | null
+          id: string
+          idade?: number | null
+          idades_filhos?: number[] | null
+          meses_gestacao?: number | null
+          perfil_completo?: boolean | null
+          possui_filhos?: boolean | null
+          sexo?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string
+          data_inicio_planejamento?: string | null
+          data_prevista_parto?: string | null
+          email?: string
+          estado?: string | null
+          foto_perfil_url?: string | null
+          id?: string
+          idade?: number | null
+          idades_filhos?: number[] | null
+          meses_gestacao?: number | null
+          perfil_completo?: boolean | null
+          possui_filhos?: boolean | null
+          sexo?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          notification_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          notification_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          notification_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_notifications_notification_id_fkey"
+            columns: ["notification_id"]
+            isOneToOne: false
+            referencedRelation: "notifications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +435,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const

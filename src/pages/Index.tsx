@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,13 +11,17 @@ import { EnxovalTable } from "@/components/EnxovalTable";
 import { DashboardTab } from "@/components/DashboardTab";
 import { RNGuideTable } from "@/components/RNGuideTable";
 import { Auth } from "@/components/Auth";
+import { NotificationBell } from "@/components/NotificationBell";
 import { EnxovalItem } from "@/types/enxoval";
-import { Baby, LogOut, Save } from "lucide-react";
+import { Baby, LogOut, Save, Shield } from "lucide-react";
 import { useConfig } from "@/hooks/useConfig";
 import { useEnxovalItems } from "@/hooks/useEnxovalItems";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from "@/hooks/useProfile";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<EnxovalItem | null>(null);
@@ -27,6 +32,8 @@ const Index = () => {
   const [tempDiasAlerta, setTempDiasAlerta] = useState<number>(7);
   
   const { toast } = useToast();
+  const { profile, loading: profileLoading } = useProfile();
+  const { isAdmin } = useUserRole();
 
   const { config, loading: configLoading, updateConfig } = useConfig();
   const { items, loading: itemsLoading, addItem, updateItem, deleteItem } = useEnxovalItems(config);
@@ -53,6 +60,13 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Redirect to profile completion if needed
+  useEffect(() => {
+    if (session && profile && !profile.perfil_completo && !profileLoading) {
+      navigate("/complete-profile");
+    }
+  }, [session, profile, profileLoading, navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -91,7 +105,7 @@ const Index = () => {
     }
   };
 
-  if (loading || configLoading) {
+  if (loading || configLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -121,10 +135,19 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Organize suas compras com economia e praticidade</p>
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              {isAdmin && (
+                <Button variant="outline" size="sm" onClick={() => navigate("/admin")} className="gap-2">
+                  <Shield className="h-4 w-4" />
+                  Admin
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="gap-2">
+                <LogOut className="h-4 w-4" />
+                Sair
+              </Button>
+            </div>
           </div>
         </div>
       </header>
