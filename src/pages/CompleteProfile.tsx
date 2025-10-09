@@ -9,8 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Baby, Upload } from "lucide-react";
+import { Baby, Upload, Info } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const ESTADOS = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
@@ -74,22 +75,41 @@ export default function CompleteProfile() {
     }
   };
 
+  const handleSkip = async () => {
+    const { error } = await updateProfile({ perfil_completo: true });
+
+    if (error) {
+      toast({
+        title: "Erro",
+        description: error,
+        variant: "destructive",
+      });
+    } else {
+      navigate("/");
+    }
+  };
+
   const handleSubmit = async () => {
     const updates: any = {
-      idade: parseInt(formData.idade as string),
-      sexo: formData.sexo,
-      cidade: formData.cidade,
-      estado: formData.estado,
-      meses_gestacao: parseInt(formData.meses_gestacao as string),
-      data_prevista_parto: formData.data_prevista_parto,
-      data_inicio_planejamento: formData.data_inicio_planejamento,
-      possui_filhos: formData.possui_filhos,
-      idades_filhos: formData.possui_filhos 
-        ? formData.idades_filhos.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n))
-        : [],
-      foto_perfil_url: formData.foto_perfil_url,
       perfil_completo: true,
     };
+
+    // Adiciona apenas campos preenchidos
+    if (formData.idade) updates.idade = parseInt(formData.idade as string);
+    if (formData.sexo) updates.sexo = formData.sexo;
+    if (formData.cidade) updates.cidade = formData.cidade;
+    if (formData.estado) updates.estado = formData.estado;
+    if (formData.meses_gestacao) updates.meses_gestacao = parseInt(formData.meses_gestacao as string);
+    if (formData.data_prevista_parto) updates.data_prevista_parto = formData.data_prevista_parto;
+    if (formData.data_inicio_planejamento) updates.data_inicio_planejamento = formData.data_inicio_planejamento;
+    if (formData.foto_perfil_url) updates.foto_perfil_url = formData.foto_perfil_url;
+    
+    updates.possui_filhos = formData.possui_filhos;
+    if (formData.possui_filhos && formData.idades_filhos) {
+      updates.idades_filhos = formData.idades_filhos.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+    } else {
+      updates.idades_filhos = [];
+    }
 
     const { error } = await updateProfile(updates);
 
@@ -126,6 +146,14 @@ export default function CompleteProfile() {
             </div>
           </div>
           <Progress value={progress} className="w-full" />
+          
+          <Alert className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
+            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <AlertDescription className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>Dica:</strong> Completar seu perfil nos ajuda a oferecer recomendações personalizadas de produtos e serviços, 
+              além de melhorar sua experiência com a integração da nossa plataforma. Todos os campos são opcionais!
+            </AlertDescription>
+          </Alert>
         </CardHeader>
         <CardContent className="space-y-6">
           {step === 1 && (
@@ -133,17 +161,17 @@ export default function CompleteProfile() {
               <h3 className="font-semibold text-lg">Informações Pessoais</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="idade">Idade *</Label>
+                  <Label htmlFor="idade">Idade (sugerido)</Label>
                   <Input
                     id="idade"
                     type="number"
                     value={formData.idade}
                     onChange={(e) => setFormData({ ...formData, idade: e.target.value })}
-                    required
+                    placeholder="Ex: 28"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="sexo">Sexo *</Label>
+                  <Label htmlFor="sexo">Sexo (sugerido)</Label>
                   <Select value={formData.sexo} onValueChange={(value) => setFormData({ ...formData, sexo: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione..." />
@@ -156,16 +184,16 @@ export default function CompleteProfile() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="cidade">Cidade *</Label>
+                  <Label htmlFor="cidade">Cidade (sugerido)</Label>
                   <Input
                     id="cidade"
                     value={formData.cidade}
                     onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
-                    required
+                    placeholder="Ex: São Paulo"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="estado">Estado *</Label>
+                  <Label htmlFor="estado">Estado (sugerido)</Label>
                   <Select value={formData.estado} onValueChange={(value) => setFormData({ ...formData, estado: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione..." />
@@ -178,9 +206,14 @@ export default function CompleteProfile() {
                   </Select>
                 </div>
               </div>
-              <Button onClick={() => setStep(2)} className="w-full">
-                Próximo
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleSkip} className="flex-1">
+                  Pular
+                </Button>
+                <Button onClick={() => setStep(2)} className="flex-1">
+                  Próximo
+                </Button>
+              </div>
             </div>
           )}
 
@@ -189,7 +222,7 @@ export default function CompleteProfile() {
               <h3 className="font-semibold text-lg">Informações da Gestação</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="meses_gestacao">Meses de Gestação *</Label>
+                  <Label htmlFor="meses_gestacao">Meses de Gestação (sugerido)</Label>
                   <Input
                     id="meses_gestacao"
                     type="number"
@@ -197,33 +230,34 @@ export default function CompleteProfile() {
                     max="40"
                     value={formData.meses_gestacao}
                     onChange={(e) => setFormData({ ...formData, meses_gestacao: e.target.value })}
-                    required
+                    placeholder="Ex: 6"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="data_prevista_parto">Data Prevista do Parto *</Label>
+                  <Label htmlFor="data_prevista_parto">Data Prevista do Parto (sugerido)</Label>
                   <Input
                     id="data_prevista_parto"
                     type="date"
                     value={formData.data_prevista_parto}
                     onChange={(e) => setFormData({ ...formData, data_prevista_parto: e.target.value })}
-                    required
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="data_inicio_planejamento">Data de Início do Planejamento *</Label>
+                  <Label htmlFor="data_inicio_planejamento">Data de Início do Planejamento (sugerido)</Label>
                   <Input
                     id="data_inicio_planejamento"
                     type="date"
                     value={formData.data_inicio_planejamento}
                     onChange={(e) => setFormData({ ...formData, data_inicio_planejamento: e.target.value })}
-                    required
                   />
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setStep(1)} className="flex-1">
+                <Button variant="outline" onClick={() => setStep(1)}>
                   Voltar
+                </Button>
+                <Button variant="outline" onClick={handleSkip} className="flex-1">
+                  Pular
                 </Button>
                 <Button onClick={() => setStep(3)} className="flex-1">
                   Próximo
@@ -257,8 +291,11 @@ export default function CompleteProfile() {
                 )}
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setStep(2)} className="flex-1">
+                <Button variant="outline" onClick={() => setStep(2)}>
                   Voltar
+                </Button>
+                <Button variant="outline" onClick={handleSkip} className="flex-1">
+                  Pular
                 </Button>
                 <Button onClick={() => setStep(4)} className="flex-1">
                   Próximo
@@ -299,8 +336,11 @@ export default function CompleteProfile() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setStep(3)} className="flex-1">
+                <Button variant="outline" onClick={() => setStep(3)}>
                   Voltar
+                </Button>
+                <Button variant="outline" onClick={handleSkip} className="flex-1">
+                  Pular
                 </Button>
                 <Button onClick={handleSubmit} className="flex-1">
                   Concluir
