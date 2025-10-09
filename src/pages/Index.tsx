@@ -13,7 +13,7 @@ import { RNGuideTable } from "@/components/RNGuideTable";
 import { Auth } from "@/components/Auth";
 import { NotificationBell } from "@/components/NotificationBell";
 import { EnxovalItem } from "@/types/enxoval";
-import { Baby, LogOut, Save, Shield } from "lucide-react";
+import { Baby, LogOut, Save, Shield, User } from "lucide-react";
 import { useConfig } from "@/hooks/useConfig";
 import { useEnxovalItems } from "@/hooks/useEnxovalItems";
 import { useToast } from "@/hooks/use-toast";
@@ -137,6 +137,10 @@ const Index = () => {
             </div>
             <div className="flex items-center gap-2">
               <NotificationBell />
+              <Button variant="outline" size="sm" onClick={() => navigate("/profile")} className="gap-2">
+                <User className="h-4 w-4" />
+                Meu Cadastro
+              </Button>
               {isAdmin && (
                 <Button variant="outline" size="sm" onClick={() => navigate("/admin")} className="gap-2">
                   <Shield className="h-4 w-4" />
