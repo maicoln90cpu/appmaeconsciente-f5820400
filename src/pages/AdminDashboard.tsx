@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,11 +53,14 @@ const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accen
 export default function AdminDashboard() {
   const { isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState({ title: "", message: "" });
   const [sending, setSending] = useState(false);
+  
+  const activeTab = searchParams.get("tab") || "charts";
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
@@ -261,7 +264,7 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <Tabs defaultValue="charts" className="space-y-4">
+        <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
           <TabsList className="grid grid-cols-7 w-full">
             <TabsTrigger value="charts">Gráficos</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>

@@ -13,7 +13,20 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Users, BookOpen, HeadphonesIcon, Settings, LogOut, Shield } from "lucide-react";
+import { 
+  Users, 
+  BookOpen, 
+  HeadphonesIcon, 
+  Settings, 
+  LogOut, 
+  Shield, 
+  LayoutDashboard,
+  UserCog,
+  Package,
+  MessageSquare,
+  Ticket,
+  Bell
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface MainLayoutProps {
@@ -72,6 +85,56 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="flex items-center gap-4">
             <NotificationBell />
 
+            {isAdmin && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="gap-2">
+                    <Shield className="h-4 w-4" />
+                    <span className="hidden sm:inline">Painel ADM</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Administração</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  
+                  <DropdownMenuItem onClick={() => navigate("/admin")}>
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={() => navigate("/admin?tab=users")}>
+                    <UserCog className="mr-2 h-4 w-4" />
+                    Gerenciar Usuários
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={() => navigate("/admin?tab=products")}>
+                    <Package className="mr-2 h-4 w-4" />
+                    Gerenciar Produtos
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={() => navigate("/admin?tab=posts")}>
+                    <MessageSquare className="mr-2 h-4 w-4" />
+                    Moderar Posts
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={() => navigate("/admin?tab=tickets")}>
+                    <Ticket className="mr-2 h-4 w-4" />
+                    Gerenciar Tickets
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuItem onClick={() => navigate("/admin?tab=notifications")}>
+                    <Bell className="mr-2 h-4 w-4" />
+                    Enviar Notificações
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem onClick={() => navigate("/admin?tab=hotmart")}>
+                    <Package className="mr-2 h-4 w-4" />
+                    Integração Hotmart
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">
@@ -90,12 +153,6 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                   <Settings className="mr-2 h-4 w-4" />
                   Configurações
                 </DropdownMenuItem>
-                {isAdmin && (
-                  <DropdownMenuItem onClick={() => navigate("/admin")}>
-                    <Shield className="mr-2 h-4 w-4" />
-                    Admin
-                  </DropdownMenuItem>
-                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
