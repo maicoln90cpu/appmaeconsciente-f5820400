@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           dias_alerta_troca: number | null
           id: string
+          mensagem_motivacao: string | null
           orcamento_total: number | null
           updated_at: string
           user_id: string
@@ -27,6 +28,7 @@ export type Database = {
           created_at?: string
           dias_alerta_troca?: number | null
           id?: string
+          mensagem_motivacao?: string | null
           orcamento_total?: number | null
           updated_at?: string
           user_id: string
@@ -35,6 +37,7 @@ export type Database = {
           created_at?: string
           dias_alerta_troca?: number | null
           id?: string
+          mensagem_motivacao?: string | null
           orcamento_total?: number | null
           updated_at?: string
           user_id?: string
@@ -44,10 +47,13 @@ export type Database = {
       itens_enxoval: {
         Row: {
           categoria: string
+          classificacao: string | null
           created_at: string
           data: string | null
           data_limite_troca: string | null
           desconto: number | null
+          emocao: string | null
+          etapa_maes: string | null
           frete: number | null
           id: string
           item: string
@@ -69,10 +75,13 @@ export type Database = {
         }
         Insert: {
           categoria: string
+          classificacao?: string | null
           created_at?: string
           data?: string | null
           data_limite_troca?: string | null
           desconto?: number | null
+          emocao?: string | null
+          etapa_maes?: string | null
           frete?: number | null
           id?: string
           item: string
@@ -94,10 +103,13 @@ export type Database = {
         }
         Update: {
           categoria?: string
+          classificacao?: string | null
           created_at?: string
           data?: string | null
           data_limite_troca?: string | null
           desconto?: number | null
+          emocao?: string | null
+          etapa_maes?: string | null
           frete?: number | null
           id?: string
           item?: string

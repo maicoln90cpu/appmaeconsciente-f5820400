@@ -70,6 +70,9 @@ export const useEnxovalItems = (config: Config | null) => {
       excessoRN,
       superfluoComprado,
       alertaTroca,
+      etapaMaes: dbItem.etapa_maes,
+      classificacao: dbItem.classificacao,
+      emocao: dbItem.emocao,
     };
   };
 
@@ -136,6 +139,9 @@ export const useEnxovalItems = (config: Config | null) => {
         origem: item.origin || null,
         data_limite_troca: item.dataLimiteTroca || null,
         obs: item.notes || null,
+        etapa_maes: item.etapaMaes || null,
+        classificacao: item.classificacao || null,
+        emocao: item.emocao || null,
       });
 
       if (error) throw error;
@@ -185,6 +191,9 @@ export const useEnxovalItems = (config: Config | null) => {
           origem: item.origin || null,
           data_limite_troca: item.dataLimiteTroca || null,
           obs: item.notes || null,
+          etapa_maes: item.etapaMaes || null,
+          classificacao: item.classificacao || null,
+          emocao: item.emocao || null,
         })
         .eq("id", item.id);
 

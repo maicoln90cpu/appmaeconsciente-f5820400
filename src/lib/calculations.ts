@@ -36,6 +36,12 @@ export const calculateTotals = (items: EnxovalItem[], budget?: number) => {
   const orcamentoRestante = budget ? budget - totalPaid : 0;
   const ticketMedio = itemsBought > 0 ? totalPaid / itemsBought : 0;
   
+  // Calcular itens supérfluos evitados
+  const superfluosEvitados = items.filter(item => item.classificacao === "Supérfluo").length;
+  const economiaPotencialSuperfluos = items
+    .filter(item => item.classificacao === "Supérfluo")
+    .reduce((sum, item) => sum + (item.precoReferencia * item.plannedQty), 0);
+  
   return {
     totalPlanned,
     totalPaid,
@@ -46,7 +52,9 @@ export const calculateTotals = (items: EnxovalItem[], budget?: number) => {
     totalItems,
     progress,
     orcamentoRestante,
-    ticketMedio
+    ticketMedio,
+    superfluosEvitados,
+    economiaPotencialSuperfluos
   };
 };
 

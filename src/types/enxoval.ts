@@ -16,6 +16,12 @@ export type Size = "RN" | "P" | "M" | "G" | "Opcional";
 
 export type Origin = "Novo" | "Usado" | "Brechó";
 
+export type EtapaMaes = "Mapear" | "Avaliar" | "Enxugar" | "Sustentar";
+
+export type Classificacao = "Essencial" | "Pode Esperar" | "Supérfluo";
+
+export type Emocao = "😌 útil" | "💸 impulso" | "🧡 amor";
+
 export interface EnxovalItem {
   id: string;
   date?: string;
@@ -44,6 +50,9 @@ export interface EnxovalItem {
   excessoRN?: boolean;
   superfluoComprado?: boolean;
   alertaTroca?: boolean;
+  etapaMaes?: EtapaMaes;
+  classificacao?: Classificacao;
+  emocao?: Emocao;
 }
 
 export interface Budget {
@@ -64,4 +73,5 @@ export interface Config {
   orcamento_total: number;
   dias_alerta_troca: number;
   limites_rn: RNLimit[];
+  mensagem_motivacao?: string;
 }

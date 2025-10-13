@@ -30,6 +30,7 @@ const Index = () => {
   // State local para configurações
   const [tempOrcamento, setTempOrcamento] = useState<number>(5000);
   const [tempDiasAlerta, setTempDiasAlerta] = useState<number>(7);
+  const [tempMensagemMotivacao, setTempMensagemMotivacao] = useState<string>("");
   
   const { toast } = useToast();
   const { profile, loading: profileLoading } = useProfile();
@@ -43,6 +44,7 @@ const Index = () => {
     if (config) {
       setTempOrcamento(config.orcamento_total);
       setTempDiasAlerta(config.dias_alerta_troca);
+      setTempMensagemMotivacao(config.mensagem_motivacao || "");
     }
   }, [config]);
 
@@ -100,7 +102,8 @@ const Index = () => {
       await updateConfig({ 
         ...config, 
         orcamento_total: tempOrcamento,
-        dias_alerta_troca: tempDiasAlerta 
+        dias_alerta_troca: tempDiasAlerta,
+        mensagem_motivacao: tempMensagemMotivacao 
       });
     }
   };
@@ -172,10 +175,32 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="resumo" className="space-y-6">
+            {config?.mensagem_motivacao && (
+              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-center">
+                <p className="text-lg font-medium text-primary">{config.mensagem_motivacao}</p>
+              </div>
+            )}
             <DashboardTab items={items} budget={config?.orcamento_total || 5000} />
+            
+            {items.length > 0 && Math.round((items.filter(i => i.status === "Comprado").length / items.length) * 100) === 100 && (
+              <div className="bg-success/10 border border-success/30 rounded-lg p-6 text-center space-y-2">
+                <p className="text-2xl">🎉</p>
+                <p className="text-lg font-semibold text-success">Parabéns! Você finalizou o enxoval com consciência, economia e leveza.</p>
+                <p className="text-muted-foreground">Seu bebê vai sentir o amor em cada escolha feita com calma. 💕</p>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="enxoval" className="space-y-6">
+            <div className="bg-muted/30 border rounded-lg p-4 text-center space-y-1">
+              <p className="text-base text-muted-foreground">
+                Aqui você registra suas decisões com consciência.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Cada item marcado é um passo a menos na ansiedade — e um passo a mais na leveza.
+              </p>
+            </div>
+            
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -213,6 +238,12 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="config" className="space-y-6">
+            <div className="bg-muted/30 border rounded-lg p-4 text-center">
+              <p className="text-base text-muted-foreground">
+                Defina aqui o limite do seu enxoval. Este valor será seu farol — um lembrete gentil de que você está no controle do seu orçamento e da sua tranquilidade.
+              </p>
+            </div>
+            
             <Card>
               <CardHeader>
                 <CardTitle>Configurações Gerais</CardTitle>
@@ -250,17 +281,33 @@ const Index = () => {
                   </p>
                 </div>
 
+                <div className="space-y-2">
+                  <Label htmlFor="mensagemMotivacao">Mensagem Pessoal de Motivação</Label>
+                  <Input
+                    id="mensagemMotivacao"
+                    type="text"
+                    maxLength={100}
+                    placeholder="Ex: Quero viver esta fase com leveza e consciência."
+                    value={tempMensagemMotivacao}
+                    onChange={(e) => setTempMensagemMotivacao(e.target.value)}
+                    className="max-w-lg"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Esta mensagem aparecerá no topo do seu Dashboard
+                  </p>
+                </div>
+
                 <Button onClick={handleSaveConfig} className="gap-2">
                   <Save className="h-4 w-4" />
-                  Salvar Configurações
+                  Guardar e continuar com clareza 💕
                 </Button>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Guia de Quantidades RN</CardTitle>
-                <CardDescription>Recomendações para evitar desperdício de roupas tamanho RN</CardDescription>
+                <CardTitle>Guia de Quantidades RN — Comece com o Essencial</CardTitle>
+                <CardDescription>Lembre-se: menos é mais. Você pode ajustar conforme o bebê cresce.</CardDescription>
               </CardHeader>
               <CardContent>
                 <RNGuideTable />
@@ -269,6 +316,18 @@ const Index = () => {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Rodapé do Sistema */}
+      <footer className="border-t bg-muted/30 py-6 mt-12">
+        <div className="container mx-auto px-4 text-center space-y-2">
+          <p className="text-sm font-medium text-foreground">
+            Guia do Enxoval Inteligente — Aplicação do Método M.A.E.S.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            © 2025 Isabela Santos | Maternidade Real e Consciente.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 };

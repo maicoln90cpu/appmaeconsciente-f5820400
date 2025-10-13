@@ -52,6 +52,12 @@ export const RNGuideTable = () => {
           para a mala da maternidade + primeiros dias.
         </p>
       </div>
+
+      <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg text-center">
+        <p className="text-base text-muted-foreground italic">
+          "Cada peça escolhida com consciência vale mais do que um armário cheio de excessos. Confie na sua intuição — e no seu método."
+        </p>
+      </div>
     </div>
   );
 };

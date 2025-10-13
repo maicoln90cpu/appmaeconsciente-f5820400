@@ -2,7 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnxovalItem, Category } from "@/types/enxoval";
 import { calculateTotals, formatCurrency } from "@/lib/calculations";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { TrendingDown, TrendingUp, ShoppingCart, CheckCircle2, Package } from "lucide-react";
+import { TrendingDown, TrendingUp, ShoppingCart, CheckCircle2, Package, Sparkles } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface DashboardTabProps {
   items: EnxovalItem[];
@@ -37,6 +38,14 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
 
   return (
     <div className="space-y-6">
+      {/* Mensagem Motivacional */}
+      <Alert className="border-primary/30 bg-primary/5">
+        <Sparkles className="h-4 w-4 text-primary" />
+        <AlertDescription className="text-base">
+          Cada escolha consciente é um passo rumo a uma maternidade mais leve 💕
+        </AlertDescription>
+      </Alert>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card className="border-primary/20">
@@ -124,7 +133,32 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
             </p>
           </CardContent>
         </Card>
+
+        <Card className="border-success/30 bg-success/5">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Itens Supérfluos Evitados</CardTitle>
+            <Sparkles className="h-4 w-4 text-success" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-success">{totals.superfluosEvitados}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Economia potencial: {formatCurrency(totals.economiaPotencialSuperfluos)}
+            </p>
+            <p className="text-xs text-success font-medium mt-2">
+              Escolhas inteligentes!
+            </p>
+          </CardContent>
+        </Card>
       </div>
+
+      {totals.totalSavings > 0 && (
+        <Alert className="border-success/30 bg-success/5">
+          <Sparkles className="h-4 w-4 text-success" />
+          <AlertDescription className="text-base text-success font-medium">
+            🎉 Parabéns! Você já economizou {formatCurrency(totals.totalSavings)} com suas escolhas conscientes!
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -191,6 +225,45 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
             </ResponsiveContainer>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Gasto por Categoria (Pizza)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ category, pago }) => `${category}: ${formatCurrency(pago)}`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="pago"
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value: number) => formatCurrency(value)}
+                  contentStyle={{ 
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: 'var(--radius)'
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Rodapé do Dashboard */}
+      <div className="text-center py-4 text-muted-foreground italic">
+        "O enxoval perfeito é aquele que cabe na sua rotina, no seu orçamento e no seu coração." 💗
       </div>
     </div>
   );
