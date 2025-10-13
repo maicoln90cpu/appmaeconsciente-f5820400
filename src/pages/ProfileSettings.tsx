@@ -40,6 +40,28 @@ export default function ProfileSettings() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validação de tamanho (5MB)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: "Arquivo muito grande",
+        description: "O tamanho máximo permitido é 5MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validação de tipo MIME
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast({
+        title: "Formato inválido",
+        description: "Use apenas imagens JPEG, PNG, WebP ou GIF.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${profile?.id}/${Math.random()}.${fileExt}`;
 

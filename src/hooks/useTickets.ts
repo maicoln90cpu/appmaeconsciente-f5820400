@@ -26,10 +26,31 @@ export interface TicketMessage {
 }
 
 const ticketSchema = z.object({
-  name: z.string().trim().min(1, "Nome é obrigatório").max(100),
-  email: z.string().trim().email("Email inválido").max(255),
-  subject: z.string().trim().min(1, "Assunto é obrigatório").max(200),
-  message: z.string().trim().min(10, "Mensagem deve ter pelo menos 10 caracteres").max(2000),
+  name: z.string()
+    .trim()
+    .min(2, "Nome deve ter pelo menos 2 caracteres")
+    .max(100, "Nome muito longo")
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, "Nome deve conter apenas letras e espaços"),
+  email: z.string()
+    .trim()
+    .email("Email inválido")
+    .max(255, "Email muito longo")
+    .toLowerCase(),
+  subject: z.string()
+    .trim()
+    .min(5, "Assunto deve ter pelo menos 5 caracteres")
+    .max(200, "Assunto muito longo"),
+  message: z.string()
+    .trim()
+    .min(20, "Mensagem deve ter pelo menos 20 caracteres")
+    .max(2000, "Mensagem muito longa")
+    .refine(
+      (val) => {
+        const dangerousPatterns = [/<script/i, /javascript:/i, /on\w+\s*=/i];
+        return !dangerousPatterns.some(pattern => pattern.test(val));
+      },
+      { message: "Mensagem contém código potencialmente perigoso" }
+    ),
 });
 
 export type TicketFormData = z.infer<typeof ticketSchema>;
@@ -69,9 +90,28 @@ export const useTickets = () => {
 
   const createTicket = async (formData: TicketFormData) => {
     try {
-      const validatedData = ticketSchema.parse(formData);
-      
+      // Rate limiting: verificar se usuário criou ticket recentemente
       const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+        const { count } = await supabase
+          .from("support_tickets")
+          .select("*", { count: "exact", head: true })
+          .eq("user_id", user.id)
+          .gte("created_at", fiveMinutesAgo);
+
+        if (count && count >= 3) {
+          toast({
+            title: "Aguarde um momento",
+            description: "Você atingiu o limite de 3 tickets em 5 minutos. Tente novamente mais tarde.",
+            variant: "destructive",
+          });
+          return { success: false };
+        }
+      }
+
+      const validatedData = ticketSchema.parse(formData);
 
       const ticketData: any = {
         ...validatedData,

@@ -93,13 +93,56 @@ export const usePosts = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Validação de conteúdo
+      const trimmedContent = content.trim();
+      
+      if (trimmedContent.length === 0) {
+        toast({
+          title: "Conteúdo vazio",
+          description: "Escreva algo antes de publicar.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (trimmedContent.length > 5000) {
+        toast({
+          title: "Conteúdo muito longo",
+          description: "O post deve ter no máximo 5000 caracteres.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Verificação anti-XSS básica
+      const dangerousPatterns = [/<script/i, /javascript:/i, /on\w+\s*=/i];
+      if (dangerousPatterns.some(pattern => pattern.test(trimmedContent))) {
+        toast({
+          title: "Conteúdo inválido",
+          description: "O post contém código potencialmente perigoso.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase.from("posts").insert({
         user_id: user.id,
-        content,
+        content: trimmedContent,
         image_urls: imageUrls,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Tratamento específico de erro de rate limit
+        if (error.message.includes("Aguarde antes de postar novamente")) {
+          toast({
+            title: "Aguarde um momento",
+            description: "Você está postando muito rápido. Tente novamente em alguns segundos.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
 
       toast({ title: "Post criado com sucesso!" });
       await loadPosts();
@@ -107,6 +150,7 @@ export const usePosts = () => {
       console.error("Error creating post:", error);
       toast({
         title: "Erro ao criar post",
+        description: "Tente novamente mais tarde.",
         variant: "destructive",
       });
     }
