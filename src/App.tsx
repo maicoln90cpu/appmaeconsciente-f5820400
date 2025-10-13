@@ -16,6 +16,7 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 const Materiais = lazy(() => import("./pages/Materiais"));
 const Comunidade = lazy(() => import("./pages/Comunidade"));
+const Suporte = lazy(() => import("./pages/Suporte"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/admin" element={<AdminDashboard />} />
                 <Route path="/materiais" element={<Materiais />} />
                 <Route path="/comunidade" element={<Comunidade />} />
+                <Route path="/suporte" element={<Suporte />} />
                 
                 {/* Product Routes */}
                 <Route element={<ProductRoute productSlug="controle-enxoval" />}>
