@@ -1,0 +1,229 @@
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Trash2, ExternalLink } from "lucide-react";
+
+interface ProductMapping {
+  id: string;
+  hotmart_product_id: string;
+  internal_product_id: string;
+  product_title: string;
+}
+
+export const HotmartMappings = () => {
+  const [mappings, setMappings] = useState<ProductMapping[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [newMapping, setNewMapping] = useState({ hotmart_id: "", product_id: "" });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    loadMappings();
+    loadProducts();
+  }, []);
+
+  const loadMappings = async () => {
+    const { data, error } = await supabase
+      .from("hotmart_product_mapping")
+      .select(`
+        id,
+        hotmart_product_id,
+        internal_product_id,
+        products:internal_product_id (title)
+      `);
+
+    if (!error && data) {
+      setMappings(
+        data.map((m: any) => ({
+          id: m.id,
+          hotmart_product_id: m.hotmart_product_id,
+          internal_product_id: m.internal_product_id,
+          product_title: m.products?.title || "Produto Deletado",
+        }))
+      );
+    }
+  };
+
+  const loadProducts = async () => {
+    const { data } = await supabase
+      .from("products")
+      .select("id, title, is_free")
+      .eq("is_free", false)
+      .order("title");
+
+    if (data) setProducts(data);
+  };
+
+  const handleAddMapping = async () => {
+    if (!newMapping.hotmart_id || !newMapping.product_id) {
+      toast({
+        title: "Erro",
+        description: "Preencha todos os campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { error } = await supabase.from("hotmart_product_mapping").insert({
+      hotmart_product_id: newMapping.hotmart_id,
+      internal_product_id: newMapping.product_id,
+    });
+
+    if (error) {
+      toast({
+        title: "Erro ao criar mapeamento",
+        variant: "destructive",
+      });
+    } else {
+      toast({ title: "Mapeamento criado com sucesso!" });
+      setNewMapping({ hotmart_id: "", product_id: "" });
+      setDialogOpen(false);
+      loadMappings();
+    }
+  };
+
+  const handleDeleteMapping = async (id: string) => {
+    const { error } = await supabase
+      .from("hotmart_product_mapping")
+      .delete()
+      .eq("id", id);
+
+    if (!error) {
+      toast({ title: "Mapeamento deletado" });
+      loadMappings();
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Mapeamento de Produtos Hotmart</CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Vincule produtos da Hotmart aos produtos internos
+            </p>
+          </div>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Novo Mapeamento
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Criar Mapeamento</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>ID do Produto Hotmart</Label>
+                  <Input
+                    value={newMapping.hotmart_id}
+                    onChange={(e) =>
+                      setNewMapping({ ...newMapping, hotmart_id: e.target.value })
+                    }
+                    placeholder="123456"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Produto Interno</Label>
+                  <select
+                    className="w-full border rounded-md p-2"
+                    value={newMapping.product_id}
+                    onChange={(e) =>
+                      setNewMapping({ ...newMapping, product_id: e.target.value })
+                    }
+                  >
+                    <option value="">Selecione um produto</option>
+                    {products.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <Button onClick={handleAddMapping} className="w-full">
+                  Criar Mapeamento
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-4 p-4 bg-muted rounded-lg">
+          <p className="text-sm font-semibold mb-2">📍 URL do Webhook Hotmart:</p>
+          <code className="text-xs bg-background p-2 rounded block">
+            {import.meta.env.VITE_SUPABASE_URL}/functions/v1/hotmart-webhook
+          </code>
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-2"
+            onClick={() => {
+              navigator.clipboard.writeText(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hotmart-webhook`
+              );
+              toast({ title: "URL copiada!" });
+            }}
+          >
+            Copiar URL
+          </Button>
+        </div>
+
+        {mappings.length === 0 ? (
+          <p className="text-center text-muted-foreground py-8">
+            Nenhum mapeamento configurado
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID Hotmart</TableHead>
+                <TableHead>Produto Interno</TableHead>
+                <TableHead className="w-24">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {mappings.map((mapping) => (
+                <TableRow key={mapping.id}>
+                  <TableCell className="font-mono">{mapping.hotmart_product_id}</TableCell>
+                  <TableCell>{mapping.product_title}</TableCell>
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDeleteMapping(mapping.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
+  );
+};

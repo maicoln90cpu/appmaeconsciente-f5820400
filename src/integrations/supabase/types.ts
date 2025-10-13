@@ -44,6 +44,82 @@ export type Database = {
         }
         Relationships: []
       }
+      hotmart_product_mapping: {
+        Row: {
+          created_at: string
+          hotmart_product_id: string
+          id: string
+          internal_product_id: string
+        }
+        Insert: {
+          created_at?: string
+          hotmart_product_id: string
+          id?: string
+          internal_product_id: string
+        }
+        Update: {
+          created_at?: string
+          hotmart_product_id?: string
+          id?: string
+          internal_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hotmart_product_mapping_internal_product_id_fkey"
+            columns: ["internal_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hotmart_transactions: {
+        Row: {
+          amount: number | null
+          buyer_email: string
+          buyer_name: string | null
+          hotmart_product_id: string
+          id: string
+          processed_at: string
+          product_id: string | null
+          status: string
+          transaction_id: string
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          buyer_email: string
+          buyer_name?: string | null
+          hotmart_product_id: string
+          id?: string
+          processed_at?: string
+          product_id?: string | null
+          status: string
+          transaction_id: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          buyer_email?: string
+          buyer_name?: string | null
+          hotmart_product_id?: string
+          id?: string
+          processed_at?: string
+          product_id?: string | null
+          status?: string
+          transaction_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hotmart_transactions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       itens_enxoval: {
         Row: {
           categoria: string

@@ -17,6 +17,8 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HotmartMappings } from "@/components/admin/HotmartMappings";
+import { HotmartTransactions } from "@/components/admin/HotmartTransactions";
 import {
   BarChart,
   Bar,
@@ -258,6 +260,7 @@ export default function AdminDashboard() {
         <Tabs defaultValue="charts" className="space-y-4">
           <TabsList>
             <TabsTrigger value="charts">Gráficos</TabsTrigger>
+            <TabsTrigger value="hotmart">Hotmart</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
           </TabsList>
 
@@ -330,6 +333,11 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="hotmart" className="space-y-4">
+            <HotmartMappings />
+            <HotmartTransactions />
           </TabsContent>
 
           <TabsContent value="notifications">
