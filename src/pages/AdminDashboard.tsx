@@ -19,6 +19,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HotmartMappings } from "@/components/admin/HotmartMappings";
 import { HotmartTransactions } from "@/components/admin/HotmartTransactions";
+import { PostModeration } from "@/components/admin/PostModeration";
+import { TicketManagement } from "@/components/admin/TicketManagement";
+import { ProductManagement } from "@/components/admin/ProductManagement";
+import { UserManagement } from "@/components/admin/UserManagement";
 import {
   BarChart,
   Bar,
@@ -258,8 +262,12 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="charts" className="space-y-4">
-          <TabsList>
+          <TabsList className="grid grid-cols-7 w-full">
             <TabsTrigger value="charts">Gráficos</TabsTrigger>
+            <TabsTrigger value="users">Usuários</TabsTrigger>
+            <TabsTrigger value="products">Produtos</TabsTrigger>
+            <TabsTrigger value="tickets">Tickets</TabsTrigger>
+            <TabsTrigger value="posts">Posts</TabsTrigger>
             <TabsTrigger value="hotmart">Hotmart</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
           </TabsList>
@@ -333,6 +341,22 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="users">
+            <UserManagement />
+          </TabsContent>
+
+          <TabsContent value="products">
+            <ProductManagement />
+          </TabsContent>
+
+          <TabsContent value="tickets">
+            <TicketManagement />
+          </TabsContent>
+
+          <TabsContent value="posts">
+            <PostModeration />
           </TabsContent>
 
           <TabsContent value="hotmart" className="space-y-4">

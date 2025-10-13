@@ -6,8 +6,7 @@ import { Baby } from "lucide-react";
 
 export const Auth = () => {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md">
         <CardHeader className="space-y-4">
           <div className="flex items-center gap-3 justify-center">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -64,6 +63,5 @@ export const Auth = () => {
           />
         </CardContent>
       </Card>
-    </div>
   );
 };
