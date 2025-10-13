@@ -28,8 +28,11 @@ export const Auth = () => {
               variables: {
                 default: {
                   colors: {
-                    brand: "hsl(var(--primary))",
-                    brandAccent: "hsl(var(--primary))",
+                    brand: "hsl(2, 76%, 50%)",
+                    brandAccent: "hsl(2, 76%, 45%)",
+                    inputText: "hsl(0, 0%, 20%)",
+                    inputLabelText: "hsl(0, 0%, 20%)",
+                    anchorTextColor: "hsl(2, 76%, 45%)",
                   },
                 },
               },
