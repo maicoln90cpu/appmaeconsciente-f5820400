@@ -35,18 +35,16 @@ const App = () => (
             
             {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute />}>
-              <Route element={<MainLayout><Routes><Route path="*" element={null} /></Routes></MainLayout>}>
-                <Route path="/complete-profile" element={<CompleteProfile />} />
-                <Route path="/profile" element={<ProfileSettings />} />
-                <Route path="/admin" element={<AdminDashboard />} />
-                <Route path="/materiais" element={<Materiais />} />
-                <Route path="/comunidade" element={<Comunidade />} />
-                <Route path="/suporte" element={<Suporte />} />
-                
-                {/* Product Routes */}
-                <Route element={<ProductRoute productSlug="controle-enxoval" />}>
-                  <Route path="/materiais/controle-enxoval" element={<Index />} />
-                </Route>
+              <Route path="/complete-profile" element={<MainLayout><CompleteProfile /></MainLayout>} />
+              <Route path="/profile" element={<MainLayout><ProfileSettings /></MainLayout>} />
+              <Route path="/admin" element={<MainLayout><AdminDashboard /></MainLayout>} />
+              <Route path="/materiais" element={<MainLayout><Materiais /></MainLayout>} />
+              <Route path="/comunidade" element={<MainLayout><Comunidade /></MainLayout>} />
+              <Route path="/suporte" element={<MainLayout><Suporte /></MainLayout>} />
+              
+              {/* Product Routes */}
+              <Route element={<ProductRoute productSlug="controle-enxoval" />}>
+                <Route path="/materiais/controle-enxoval" element={<MainLayout><Index /></MainLayout>} />
               </Route>
             </Route>
 
