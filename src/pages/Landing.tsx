@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { InstallPrompt } from "@/components/install/InstallPrompt";
 
 const Landing = () => {
   return (
@@ -214,6 +215,8 @@ const Landing = () => {
           </div>
         </div>
       </footer>
+
+      <InstallPrompt />
     </div>
   );
 };

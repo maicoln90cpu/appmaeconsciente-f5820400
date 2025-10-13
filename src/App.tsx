@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ProductRoute } from "@/components/ProductRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Landing = lazy(() => import("./pages/Landing"));
 const Index = lazy(() => import("./pages/Index"));
@@ -21,12 +22,18 @@ const AuthPage = lazy(() => import("./pages/AuthPage"));
 
 const queryClient = new QueryClient();
 
+const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
+  useAnalytics();
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AnalyticsWrapper>
         <Suspense fallback={<div />}>
           <Routes>
             {/* Public Routes */}
@@ -52,6 +59,7 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
+        </AnalyticsWrapper>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

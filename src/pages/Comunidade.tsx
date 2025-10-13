@@ -2,6 +2,7 @@ import { Loader2 } from "lucide-react";
 import { usePosts } from "@/hooks/usePosts";
 import { CreatePostDialog } from "@/components/comunidade/CreatePostDialog";
 import { PostCard } from "@/components/comunidade/PostCard";
+import { InstallPrompt } from "@/components/install/InstallPrompt";
 
 const Comunidade = () => {
   const { posts, loading, createPost, deletePost, toggleLike } = usePosts();
@@ -44,6 +45,7 @@ const Comunidade = () => {
         </div>
 
         <CreatePostDialog onPostCreated={createPost} />
+        <InstallPrompt />
       </div>
     </div>
   );

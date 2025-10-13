@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { analytics } from "@/lib/analytics";
 
 export interface Post {
   id: string;
@@ -144,6 +145,7 @@ export const usePosts = () => {
         throw error;
       }
 
+      analytics.postCreated();
       toast({ title: "Post criado com sucesso!" });
       await loadPosts();
     } catch (error) {
@@ -192,6 +194,7 @@ export const usePosts = () => {
           post_id: postId,
           user_id: user.id,
         });
+        analytics.postLiked(postId);
       }
 
       await loadPosts();

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { analytics } from "@/lib/analytics";
 
 export interface Ticket {
   id: string;
@@ -134,6 +135,7 @@ export const useTickets = () => {
         body: { ticketId: data.id },
       });
 
+      analytics.ticketCreated(data.id);
       toast({ title: "Ticket criado com sucesso!" });
       await loadTickets();
       

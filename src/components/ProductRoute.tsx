@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Lock } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
+import { analytics } from "@/lib/analytics";
 
 interface ProductRouteProps {
   productSlug: string;
@@ -66,6 +67,11 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
           .maybeSingle();
 
         setHasAccess(!!accessData);
+      }
+
+      // Track product access
+      if (hasAccess) {
+        analytics.productAccess(productSlug);
       }
     } catch (error) {
       console.error("Error checking product access:", error);
