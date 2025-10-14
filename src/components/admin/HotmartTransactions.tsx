@@ -60,7 +60,7 @@ export const HotmartTransactions = () => {
       .limit(100);
 
     if (!error && data) {
-      setTransactions(data as Transaction[]);
+      setTransactions(data);
     }
     
     setIsRefreshing(false);

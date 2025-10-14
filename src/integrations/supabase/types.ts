@@ -78,6 +78,7 @@ export type Database = {
           amount: number | null
           buyer_email: string
           buyer_name: string | null
+          event_type: string | null
           hotmart_product_id: string
           id: string
           processed_at: string
@@ -90,6 +91,7 @@ export type Database = {
           amount?: number | null
           buyer_email: string
           buyer_name?: string | null
+          event_type?: string | null
           hotmart_product_id: string
           id?: string
           processed_at?: string
@@ -102,6 +104,7 @@ export type Database = {
           amount?: number | null
           buyer_email?: string
           buyer_name?: string | null
+          event_type?: string | null
           hotmart_product_id?: string
           id?: string
           processed_at?: string
