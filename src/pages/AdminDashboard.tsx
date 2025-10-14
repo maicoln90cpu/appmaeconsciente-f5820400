@@ -64,7 +64,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
-      navigate("/");
+      navigate("/materiais");
     }
   }, [isAdmin, roleLoading, navigate]);
 
