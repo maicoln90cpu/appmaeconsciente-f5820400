@@ -143,8 +143,14 @@ export const UserManagement = () => {
 
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      const { error } = await supabase.auth.admin.deleteUser(userId);
+      const { data, error } = await supabase.functions.invoke("delete-user-admin", {
+        body: { userId },
+      });
+      
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
@@ -152,7 +158,7 @@ export const UserManagement = () => {
     },
     onError: (error: any) => {
       console.error("Erro ao excluir usuário:", error);
-      toast.error("Erro ao excluir usuário");
+      toast.error(error.message || "Erro ao excluir usuário");
     },
   });
 
