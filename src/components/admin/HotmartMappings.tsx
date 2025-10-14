@@ -27,12 +27,18 @@ interface ProductMapping {
   hotmart_product_id: string;
   internal_product_id: string;
   product_title: string;
+  access_duration_days?: number | null;
 }
 
 export const HotmartMappings = () => {
   const [mappings, setMappings] = useState<ProductMapping[]>([]);
   const [products, setProducts] = useState<any[]>([]);
-  const [newMapping, setNewMapping] = useState({ hotmart_id: "", product_id: "" });
+  const [newMapping, setNewMapping] = useState({ 
+    hotmart_id: "", 
+    product_id: "",
+    access_duration_days: null as number | null,
+    is_lifetime: false
+  });
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
 
@@ -48,7 +54,7 @@ export const HotmartMappings = () => {
         id,
         hotmart_product_id,
         internal_product_id,
-        products:internal_product_id (title)
+        products:internal_product_id (title, access_duration_days)
       `);
 
     if (!error && data) {
@@ -58,6 +64,7 @@ export const HotmartMappings = () => {
           hotmart_product_id: m.hotmart_product_id,
           internal_product_id: m.internal_product_id,
           product_title: m.products?.title || "Produto Deletado",
+          access_duration_days: m.products?.access_duration_days
         }))
       );
     }
@@ -83,22 +90,54 @@ export const HotmartMappings = () => {
       return;
     }
 
-    const { error } = await supabase.from("hotmart_product_mapping").insert({
+    if (!newMapping.is_lifetime && !newMapping.access_duration_days) {
+      toast({
+        title: "Erro",
+        description: "Defina a duração do acesso ou marque como vitalício",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // First add the mapping
+    const { error: mappingError } = await supabase.from("hotmart_product_mapping").insert({
       hotmart_product_id: newMapping.hotmart_id,
       internal_product_id: newMapping.product_id,
     });
 
-    if (error) {
+    if (mappingError) {
       toast({
         title: "Erro ao criar mapeamento",
         variant: "destructive",
       });
-    } else {
-      toast({ title: "Mapeamento criado com sucesso!" });
-      setNewMapping({ hotmart_id: "", product_id: "" });
-      setDialogOpen(false);
-      loadMappings();
+      return;
     }
+
+    // Update product with access duration
+    const accessDuration = newMapping.is_lifetime ? null : newMapping.access_duration_days;
+    
+    const { error: productError } = await supabase
+      .from("products")
+      .update({ access_duration_days: accessDuration })
+      .eq("id", newMapping.product_id);
+
+    if (productError) {
+      toast({
+        title: "Erro ao configurar duração",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({ title: "Mapeamento criado com sucesso!" });
+    setNewMapping({ 
+      hotmart_id: "", 
+      product_id: "",
+      access_duration_days: null,
+      is_lifetime: false
+    });
+    setDialogOpen(false);
+    loadMappings();
   };
 
   const handleDeleteMapping = async (id: string) => {
@@ -162,6 +201,42 @@ export const HotmartMappings = () => {
                     ))}
                   </select>
                 </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="lifetime"
+                      checked={newMapping.is_lifetime}
+                      onChange={(e) => setNewMapping({
+                        ...newMapping,
+                        is_lifetime: e.target.checked,
+                        access_duration_days: e.target.checked ? null : newMapping.access_duration_days
+                      })}
+                      className="rounded"
+                    />
+                    <Label htmlFor="lifetime" className="cursor-pointer">
+                      Acesso Vitalício
+                    </Label>
+                  </div>
+                </div>
+                {!newMapping.is_lifetime && (
+                  <div className="space-y-2">
+                    <Label>Duração do Acesso (dias)</Label>
+                    <Input
+                      type="number"
+                      value={newMapping.access_duration_days || ''}
+                      onChange={(e) => setNewMapping({
+                        ...newMapping,
+                        access_duration_days: e.target.value ? parseInt(e.target.value) : null
+                      })}
+                      placeholder="Ex: 30, 90, 365..."
+                      min="1"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Exemplos: 30 dias (1 mês), 365 dias (1 ano)
+                    </p>
+                  </div>
+                )}
                 <Button onClick={handleAddMapping} className="w-full">
                   Criar Mapeamento
                 </Button>
@@ -201,6 +276,7 @@ export const HotmartMappings = () => {
               <TableRow>
                 <TableHead>ID Hotmart</TableHead>
                 <TableHead>Produto Interno</TableHead>
+                <TableHead>Validade</TableHead>
                 <TableHead className="w-24">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -209,6 +285,11 @@ export const HotmartMappings = () => {
                 <TableRow key={mapping.id}>
                   <TableCell className="font-mono">{mapping.hotmart_product_id}</TableCell>
                   <TableCell>{mapping.product_title}</TableCell>
+                  <TableCell>
+                    {mapping.access_duration_days 
+                      ? `${mapping.access_duration_days} dias` 
+                      : 'Vitalício'}
+                  </TableCell>
                   <TableCell>
                     <Button
                       variant="ghost"

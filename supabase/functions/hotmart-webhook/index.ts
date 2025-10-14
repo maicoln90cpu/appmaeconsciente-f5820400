@@ -62,27 +62,20 @@ serve(async (req) => {
       );
     }
 
-    // Only process approved purchases or PURCHASE_COMPLETE events
-    const isApprovedPurchase = payload.data.purchase.status === 'approved';
-    const isPurchaseComplete = payload.event === 'PURCHASE_COMPLETE';
+    console.log('=== Hotmart Webhook Processing ===');
+    console.log('Event:', payload.event);
+    console.log('Status:', payload.data.purchase.status);
+    console.log('Transaction:', payload.data.purchase.transaction);
     
-    if (!isApprovedPurchase && !isPurchaseComplete) {
-      console.log('Skipping non-approved purchase:', {
-        event: payload.event,
-        status: payload.data.purchase.status
-      });
-      return new Response(
-        JSON.stringify({ message: 'Event ignored - not approved' }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('Processing approved purchase');
-
     const hotmartProductId = payload.data.product.id.toString();
     const buyerEmail = payload.data.buyer.email.toLowerCase();
     const buyerName = payload.data.buyer.name;
     const transactionId = payload.data.purchase.transaction;
+    const event = payload.event;
+    const status = payload.data.purchase.status.toLowerCase();
+
+    console.log('Product ID:', hotmartProductId);
+    console.log('Buyer:', buyerEmail);
 
     // Find internal product mapping
     const { data: mapping, error: mappingError } = await supabase
@@ -121,53 +114,186 @@ serve(async (req) => {
 
     if (existingProfile) {
       userId = existingProfile.id;
+      console.log('User found:', userId);
     } else {
-      // Create placeholder profile for user to claim later
-      console.log('User not found, will need to create account:', buyerEmail);
-    }
+      console.log('Creating new user account:', buyerEmail);
+      
+      // Create user via Admin API
+      const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
+        email: buyerEmail,
+        email_confirm: true, // Confirm email automatically
+        user_metadata: {
+          full_name: buyerName,
+          created_by: 'hotmart_webhook'
+        }
+      });
 
-    // Grant product access
-    if (userId) {
-      const { error: accessError } = await supabase
-        .from('user_product_access')
-        .upsert({
-          user_id: userId,
+      if (createError) {
+        console.error('Error creating user:', createError);
+        
+        // Log transaction as pending
+        await supabase.from('hotmart_transactions').insert({
+          transaction_id: transactionId,
+          hotmart_product_id: hotmartProductId,
+          buyer_email: buyerEmail,
+          buyer_name: buyerName,
+          status: 'user_creation_failed',
+          amount: payload.data.commission?.value || 0,
           product_id: mapping.internal_product_id,
-        }, {
-          onConflict: 'user_id,product_id'
         });
 
-      if (accessError) {
-        console.error('Error granting access:', accessError);
+        return new Response(
+          JSON.stringify({ error: 'Failed to create user account' }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
       } else {
-        console.log('Access granted successfully to user:', userId);
+        userId = newUser.user.id;
+        console.log('User created successfully:', userId);
       }
     }
 
-    // Log transaction
+    // Check if this is a cancellation or refund
+    const isCancellation = event === 'PURCHASE_CANCELED';
+    const isRefund = event === 'PURCHASE_REFUNDED' || event === 'PURCHASE_PROTEST';
+
+    if (isCancellation || isRefund) {
+      console.log('Processing cancellation/refund');
+      
+      // Remove access from user
+      const { error: revokeError } = await supabase
+        .from('user_product_access')
+        .delete()
+        .eq('user_id', userId)
+        .eq('product_id', mapping.internal_product_id);
+
+      if (revokeError) {
+        console.error('Error revoking access:', revokeError);
+      } else {
+        console.log('Access revoked for user:', userId);
+      }
+      
+      // Log transaction
+      await supabase.from('hotmart_transactions').insert({
+        transaction_id: transactionId,
+        hotmart_product_id: hotmartProductId,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: isCancellation ? 'canceled' : 'refunded',
+        amount: payload.data.commission?.value || 0,
+        user_id: userId,
+        product_id: mapping.internal_product_id,
+      });
+      
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Access revoked',
+          userId,
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Process approved purchase
+    const isApprovedPurchase = status === 'approved';
+    const isPurchaseComplete = event === 'PURCHASE_COMPLETE';
+    
+    if (!isApprovedPurchase && !isPurchaseComplete) {
+      console.log('Skipping non-approved purchase:', {
+        event: event,
+        status: status
+      });
+      
+      // Log transaction but don't grant access
+      await supabase.from('hotmart_transactions').insert({
+        transaction_id: transactionId,
+        hotmart_product_id: hotmartProductId,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: 'pending',
+        amount: payload.data.commission?.value || 0,
+        user_id: userId,
+        product_id: mapping.internal_product_id,
+      });
+
+      return new Response(
+        JSON.stringify({ message: 'Event ignored - not approved' }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Processing approved purchase');
+
+    // Get product details including access duration
+    const { data: product } = await supabase
+      .from('products')
+      .select('access_duration_days')
+      .eq('id', mapping.internal_product_id)
+      .single();
+
+    // Calculate expiration date
+    let expiresAt = null;
+    if (product?.access_duration_days) {
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + product.access_duration_days);
+      expiresAt = expirationDate.toISOString();
+      console.log('Access will expire at:', expiresAt);
+    } else {
+      console.log('Lifetime access granted');
+    }
+
+    // Grant product access with expiration
+    const { error: accessError } = await supabase
+      .from('user_product_access')
+      .upsert({
+        user_id: userId,
+        product_id: mapping.internal_product_id,
+        expires_at: expiresAt
+      }, {
+        onConflict: 'user_id,product_id'
+      });
+
+    if (accessError) {
+      console.error('Error granting access:', accessError);
+      
+      // Log transaction as failed
+      await supabase.from('hotmart_transactions').insert({
+        transaction_id: transactionId,
+        hotmart_product_id: hotmartProductId,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: 'access_grant_failed',
+        amount: payload.data.commission?.value || 0,
+        user_id: userId,
+        product_id: mapping.internal_product_id,
+      });
+
+      return new Response(
+        JSON.stringify({ error: 'Failed to grant access' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Access granted successfully to user:', userId);
+
+    // Log successful transaction
     await supabase.from('hotmart_transactions').insert({
       transaction_id: transactionId,
       hotmart_product_id: hotmartProductId,
       buyer_email: buyerEmail,
       buyer_name: buyerName,
-      status: userId ? 'processed' : 'pending_account',
+      status: 'processed',
       amount: payload.data.commission?.value || 0,
       user_id: userId,
       product_id: mapping.internal_product_id,
     });
 
-    // TODO: Send welcome email
-    // if (userId) {
-    //   await supabase.functions.invoke('send-welcome-email', {
-    //     body: { userId, productId: mapping.internal_product_id }
-    //   });
-    // }
-
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: userId ? 'Access granted' : 'Transaction logged - awaiting user registration',
+        message: 'Access granted',
         userId,
+        expiresAt,
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

@@ -61,12 +61,30 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
       } else {
         const { data: accessData } = await supabase
           .from("user_product_access")
-          .select("id")
+          .select("id, expires_at")
           .eq("user_id", user.id)
           .eq("product_id", productData.id)
           .maybeSingle();
 
-        setHasAccess(!!accessData);
+        if (!accessData) {
+          setHasAccess(false);
+        } else {
+          // Check if access has expired
+          if (accessData.expires_at) {
+            const expirationDate = new Date(accessData.expires_at);
+            const now = new Date();
+            
+            if (now > expirationDate) {
+              setHasAccess(false);
+              console.log('Access expired on:', expirationDate);
+            } else {
+              setHasAccess(true);
+            }
+          } else {
+            // No expiration = lifetime access
+            setHasAccess(true);
+          }
+        }
       }
 
       // Track product access
@@ -100,6 +118,8 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
             <CardDescription className="text-center">
               {product?.is_free
                 ? "Você precisa estar logado para acessar este material."
+                : hasAccess === false && product
+                ? "Seu acesso a este material expirou ou você não tem permissão."
                 : "Este material está disponível apenas para assinantes premium."}
             </CardDescription>
           </CardHeader>
