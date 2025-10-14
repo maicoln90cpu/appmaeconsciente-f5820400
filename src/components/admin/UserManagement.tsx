@@ -23,13 +23,25 @@ export const UserManagement = () => {
       const { data, error } = await supabase
         .from("profiles")
         .select(`
-          *,
-          user_roles (role)
+          id,
+          email,
+          perfil_completo,
+          created_at,
+          updated_at,
+          user_roles (
+            id,
+            role
+          )
         `)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error('Erro ao carregar usuários:', error);
+        throw error;
+      }
+
+      console.log('Usuários carregados:', data?.length);
+      return data || [];
     },
   });
 
@@ -113,7 +125,9 @@ export const UserManagement = () => {
       </div>
       <div className="grid gap-4">
         {users?.map((user) => {
-          const isAdmin = (user.user_roles as any)?.some((r: any) => r.role === "admin");
+          const isAdmin = Array.isArray(user.user_roles) && user.user_roles.length > 0
+            ? user.user_roles.some((r: any) => r?.role === "admin")
+            : false;
           
           return (
             <Card key={user.id}>
