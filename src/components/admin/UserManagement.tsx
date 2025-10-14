@@ -8,16 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { useState } from "react";
-import { UserPlus, Shield } from "lucide-react";
+import { useState, useMemo } from "react";
+import { UserPlus, Shield, Search, ArrowUpDown, RefreshCw, Loader2 } from "lucide-react";
 import { CreateUserDialog } from "./CreateUserDialog";
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState<"all" | "admin" | "user">("all");
+  const [sortBy, setSortBy] = useState<"date" | "email">("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
-  const { data: users, isLoading: usersLoading } = useQuery({
+  const { data: users, isLoading: usersLoading, error: usersError } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -55,6 +59,38 @@ export const UserManagement = () => {
 
       if (error) throw error;
       return data;
+    },
+  });
+
+  const { data: productAccess } = useQuery({
+    queryKey: ["user-product-access"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("user_product_access")
+        .select(`
+          user_id,
+          product_id,
+          expires_at,
+          products (
+            title
+          )
+        `);
+      
+      if (error) throw error;
+      
+      // Agrupar por user_id
+      const grouped = (data || []).reduce((acc: any, item: any) => {
+        if (!acc[item.user_id]) {
+          acc[item.user_id] = [];
+        }
+        acc[item.user_id].push({
+          product_title: item.products?.title || "Produto desconhecido",
+          expires_at: item.expires_at
+        });
+        return acc;
+      }, {});
+      
+      return grouped;
     },
   });
 
@@ -113,8 +149,77 @@ export const UserManagement = () => {
     grantAccessMutation.mutate({ userId, productId: selectedProduct });
   };
 
+  // Filtrar e ordenar usuários
+  const filteredAndSortedUsers = useMemo(() => {
+    if (!users) return [];
+    
+    // Filtrar por busca e role
+    const filtered = users.filter(user => {
+      const matchesSearch = user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      if (roleFilter === "all") return matchesSearch;
+      
+      const isAdmin = Array.isArray(user.user_roles) && user.user_roles.length > 0
+        ? user.user_roles.some((r: any) => r?.role === "admin")
+        : false;
+      
+      if (roleFilter === "admin") return matchesSearch && isAdmin;
+      if (roleFilter === "user") return matchesSearch && !isAdmin;
+      
+      return matchesSearch;
+    });
+
+    // Ordenar
+    return [...filtered].sort((a, b) => {
+      if (sortBy === "date") {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+      } else {
+        return sortOrder === "asc" 
+          ? a.email.localeCompare(b.email)
+          : b.email.localeCompare(a.email);
+      }
+    });
+  }, [users, searchTerm, roleFilter, sortBy, sortOrder]);
+
   if (usersLoading) {
-    return <div>Carregando usuários...</div>;
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Gerenciamento de Usuários</h2>
+        </div>
+        <div className="flex items-center justify-center p-12">
+          <div className="text-center space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+            <p className="text-muted-foreground">Carregando usuários...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (usersError) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Gerenciamento de Usuários</h2>
+        </div>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-12">
+            <div className="text-destructive mb-4 text-4xl">⚠️</div>
+            <h3 className="text-lg font-semibold mb-2">Erro ao carregar usuários</h3>
+            <p className="text-muted-foreground text-center mb-4">
+              {(usersError as any)?.message || "Ocorreu um erro desconhecido"}
+            </p>
+            <Button onClick={() => queryClient.invalidateQueries({ queryKey: ["admin-users"] })}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Tentar Novamente
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   return (
@@ -123,8 +228,115 @@ export const UserManagement = () => {
         <h2 className="text-2xl font-bold">Gerenciamento de Usuários</h2>
         <CreateUserDialog onUserCreated={() => queryClient.invalidateQueries({ queryKey: ["admin-users"] })} />
       </div>
+
+      {/* Filtros e controles */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">
+                Total: {filteredAndSortedUsers.length} de {users?.length || 0} usuário(s)
+              </p>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => queryClient.invalidateQueries({ queryKey: ["admin-users"] })}
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Recarregar
+              </Button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+              </div>
+
+              <Select value={roleFilter} onValueChange={(value: any) => setRoleFilter(value)}>
+                <SelectTrigger className="w-full sm:w-[180px]">
+                  <SelectValue placeholder="Filtrar por role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="admin">Apenas Admins</SelectItem>
+                  <SelectItem value="user">Apenas Usuários</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="flex gap-2">
+                <Button
+                  variant={sortBy === "date" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSortBy("date")}
+                >
+                  📅 Data
+                </Button>
+                <Button
+                  variant={sortBy === "email" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSortBy("email")}
+                >
+                  📧 Email
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                >
+                  <ArrowUpDown className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Empty state */}
+      {filteredAndSortedUsers.length === 0 && users && users.length > 0 && (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-12">
+            <Search className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Nenhum usuário encontrado</h3>
+            <p className="text-muted-foreground text-center mb-4">
+              Tente ajustar os filtros de busca
+            </p>
+            <Button 
+              variant="outline"
+              onClick={() => {
+                setSearchTerm("");
+                setRoleFilter("all");
+              }}
+            >
+              Limpar Filtros
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
+      {filteredAndSortedUsers.length === 0 && (!users || users.length === 0) && (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center p-12">
+            <UserPlus className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Nenhum usuário cadastrado</h3>
+            <p className="text-muted-foreground text-center mb-4">
+              Crie o primeiro usuário para começar
+            </p>
+            <CreateUserDialog onUserCreated={() => queryClient.invalidateQueries({ queryKey: ["admin-users"] })} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Lista de usuários */}
       <div className="grid gap-4">
-        {users?.map((user) => {
+        {filteredAndSortedUsers.map((user) => {
           const isAdmin = Array.isArray(user.user_roles) && user.user_roles.length > 0
             ? user.user_roles.some((r: any) => r?.role === "admin")
             : false;
@@ -161,6 +373,25 @@ export const UserManagement = () => {
                   <p className="text-sm">
                     Perfil: {user.perfil_completo ? "Completo" : "Incompleto"}
                   </p>
+
+                  {/* Produtos com acesso */}
+                  {productAccess?.[user.id] && productAccess[user.id].length > 0 && (
+                    <div className="pt-2 border-t">
+                      <Label className="text-xs mb-2 block">Produtos com Acesso</Label>
+                      <div className="flex flex-wrap gap-1">
+                        {productAccess[user.id].map((access: any, idx: number) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {access.product_title}
+                            {access.expires_at && (
+                              <span className="ml-1 text-muted-foreground">
+                                (até {format(new Date(access.expires_at), "dd/MM/yyyy")})
+                              </span>
+                            )}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   <div className="flex gap-2 items-end pt-2 border-t">
                     <div className="flex-1">
