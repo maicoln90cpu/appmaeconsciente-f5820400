@@ -1,4 +1,4 @@
--- Add admin role for maicoln90@hotmai.com when user signs up or exists
+-- Add admin role for maicoln90@hotmail.com when user signs up or exists
 
 -- First, try to add admin role if user already exists
 DO $$
