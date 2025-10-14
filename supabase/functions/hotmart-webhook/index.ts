@@ -81,15 +81,27 @@ serve(async (req) => {
     if (hotmartProductId === '0') {
       console.log('⚠️ Webhook de TESTE da Hotmart detectado (Product ID: 0)');
       
-      await supabase.from('hotmart_transactions').insert({
-        transaction_id: transactionId,
-        hotmart_product_id: hotmartProductId,
-        buyer_email: buyerEmail,
-        buyer_name: buyerName,
-        status: 'test',
-        amount: payload.data.commission?.value || 0,
-        event_type: event,
-      });
+      // Usar upsert para evitar erro de duplicação em testes
+      const { error: insertError } = await supabase
+        .from('hotmart_transactions')
+        .upsert({
+          transaction_id: transactionId,
+          hotmart_product_id: hotmartProductId,
+          buyer_email: buyerEmail,
+          buyer_name: buyerName,
+          status: 'test',
+          amount: payload.data.commission?.value || 0,
+          event_type: event,
+        }, {
+          onConflict: 'transaction_id',
+          ignoreDuplicates: false
+        });
+
+      if (insertError) {
+        console.error('Erro ao registrar transação de teste:', insertError);
+      } else {
+        console.log('✅ Transação de TESTE registrada com sucesso');
+      }
 
       return new Response(
         JSON.stringify({ 
@@ -111,16 +123,25 @@ serve(async (req) => {
     if (mappingError || !mapping) {
       console.error('Product mapping not found:', hotmartProductId);
       
-      // Log transaction even if mapping doesn't exist
-      await supabase.from('hotmart_transactions').insert({
-        transaction_id: transactionId,
-        hotmart_product_id: hotmartProductId,
-        buyer_email: buyerEmail,
-        buyer_name: buyerName,
-        status: 'mapping_not_found',
-        amount: payload.data.commission?.value || 0,
-        event_type: event,
-      });
+      // Log transaction even if mapping doesn't exist - usar upsert
+      const { error: insertError } = await supabase
+        .from('hotmart_transactions')
+        .upsert({
+          transaction_id: transactionId,
+          hotmart_product_id: hotmartProductId,
+          buyer_email: buyerEmail,
+          buyer_name: buyerName,
+          status: 'mapping_not_found',
+          amount: payload.data.commission?.value || 0,
+          event_type: event,
+        }, {
+          onConflict: 'transaction_id',
+          ignoreDuplicates: false
+        });
+
+      if (insertError) {
+        console.error('Erro ao registrar transação sem mapping:', insertError);
+      }
 
       return new Response(
         JSON.stringify({ error: 'Product mapping not found' }),
@@ -156,17 +177,26 @@ serve(async (req) => {
       if (createError) {
         console.error('Error creating user:', createError);
         
-        // Log transaction as pending
-        await supabase.from('hotmart_transactions').insert({
-          transaction_id: transactionId,
-          hotmart_product_id: hotmartProductId,
-          buyer_email: buyerEmail,
-          buyer_name: buyerName,
-          status: 'user_creation_failed',
-          amount: payload.data.commission?.value || 0,
-          product_id: mapping.internal_product_id,
-          event_type: event,
-        });
+        // Log transaction as pending - usar upsert
+        const { error: insertError } = await supabase
+          .from('hotmart_transactions')
+          .upsert({
+            transaction_id: transactionId,
+            hotmart_product_id: hotmartProductId,
+            buyer_email: buyerEmail,
+            buyer_name: buyerName,
+            status: 'user_creation_failed',
+            amount: payload.data.commission?.value || 0,
+            product_id: mapping.internal_product_id,
+            event_type: event,
+          }, {
+            onConflict: 'transaction_id',
+            ignoreDuplicates: false
+          });
+
+        if (insertError) {
+          console.error('Erro ao registrar falha de criação:', insertError);
+        }
 
         return new Response(
           JSON.stringify({ error: 'Failed to create user account' }),
@@ -198,18 +228,27 @@ serve(async (req) => {
         console.log('Access revoked for user:', userId);
       }
       
-      // Log transaction
-      await supabase.from('hotmart_transactions').insert({
-        transaction_id: transactionId,
-        hotmart_product_id: hotmartProductId,
-        buyer_email: buyerEmail,
-        buyer_name: buyerName,
-        status: isCancellation ? 'canceled' : 'refunded',
-        amount: payload.data.commission?.value || 0,
-        user_id: userId,
-        product_id: mapping.internal_product_id,
-        event_type: event,
-      });
+      // Log transaction - usar upsert
+      const { error: insertError } = await supabase
+        .from('hotmart_transactions')
+        .upsert({
+          transaction_id: transactionId,
+          hotmart_product_id: hotmartProductId,
+          buyer_email: buyerEmail,
+          buyer_name: buyerName,
+          status: isCancellation ? 'canceled' : 'refunded',
+          amount: payload.data.commission?.value || 0,
+          user_id: userId,
+          product_id: mapping.internal_product_id,
+          event_type: event,
+        }, {
+          onConflict: 'transaction_id',
+          ignoreDuplicates: false
+        });
+
+      if (insertError) {
+        console.error('Erro ao registrar cancelamento/reembolso:', insertError);
+      }
       
       return new Response(
         JSON.stringify({ 
@@ -231,18 +270,27 @@ serve(async (req) => {
         status: status
       });
       
-      // Log transaction but don't grant access
-      await supabase.from('hotmart_transactions').insert({
-        transaction_id: transactionId,
-        hotmart_product_id: hotmartProductId,
-        buyer_email: buyerEmail,
-        buyer_name: buyerName,
-        status: 'pending',
-        amount: payload.data.commission?.value || 0,
-        user_id: userId,
-        product_id: mapping.internal_product_id,
-        event_type: event,
-      });
+      // Log transaction but don't grant access - usar upsert
+      const { error: insertError } = await supabase
+        .from('hotmart_transactions')
+        .upsert({
+          transaction_id: transactionId,
+          hotmart_product_id: hotmartProductId,
+          buyer_email: buyerEmail,
+          buyer_name: buyerName,
+          status: 'pending',
+          amount: payload.data.commission?.value || 0,
+          user_id: userId,
+          product_id: mapping.internal_product_id,
+          event_type: event,
+        }, {
+          onConflict: 'transaction_id',
+          ignoreDuplicates: false
+        });
+
+      if (insertError) {
+        console.error('Erro ao registrar pendência:', insertError);
+      }
 
       return new Response(
         JSON.stringify({ message: 'Event ignored - not approved' }),
@@ -284,18 +332,27 @@ serve(async (req) => {
     if (accessError) {
       console.error('Error granting access:', accessError);
       
-      // Log transaction as failed
-      await supabase.from('hotmart_transactions').insert({
-        transaction_id: transactionId,
-        hotmart_product_id: hotmartProductId,
-        buyer_email: buyerEmail,
-        buyer_name: buyerName,
-        status: 'access_grant_failed',
-        amount: payload.data.commission?.value || 0,
-        user_id: userId,
-        product_id: mapping.internal_product_id,
-        event_type: event,
-      });
+      // Log transaction as failed - usar upsert
+      const { error: insertError } = await supabase
+        .from('hotmart_transactions')
+        .upsert({
+          transaction_id: transactionId,
+          hotmart_product_id: hotmartProductId,
+          buyer_email: buyerEmail,
+          buyer_name: buyerName,
+          status: 'access_grant_failed',
+          amount: payload.data.commission?.value || 0,
+          user_id: userId,
+          product_id: mapping.internal_product_id,
+          event_type: event,
+        }, {
+          onConflict: 'transaction_id',
+          ignoreDuplicates: false
+        });
+
+      if (insertError) {
+        console.error('Erro ao registrar falha de acesso:', insertError);
+      }
 
       return new Response(
         JSON.stringify({ error: 'Failed to grant access' }),
@@ -305,18 +362,29 @@ serve(async (req) => {
 
     console.log('Access granted successfully to user:', userId);
 
-    // Log successful transaction
-    await supabase.from('hotmart_transactions').insert({
-      transaction_id: transactionId,
-      hotmart_product_id: hotmartProductId,
-      buyer_email: buyerEmail,
-      buyer_name: buyerName,
-      status: 'processed',
-      amount: payload.data.commission?.value || 0,
-      user_id: userId,
-      product_id: mapping.internal_product_id,
-      event_type: event,
-    });
+    // Log successful transaction - usar upsert
+    const { error: insertError } = await supabase
+      .from('hotmart_transactions')
+      .upsert({
+        transaction_id: transactionId,
+        hotmart_product_id: hotmartProductId,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: 'processed',
+        amount: payload.data.commission?.value || 0,
+        user_id: userId,
+        product_id: mapping.internal_product_id,
+        event_type: event,
+      }, {
+        onConflict: 'transaction_id',
+        ignoreDuplicates: false
+      });
+
+    if (insertError) {
+      console.error('Erro ao registrar sucesso:', insertError);
+    } else {
+      console.log('✅ Transação registrada com SUCESSO no banco');
+    }
 
     return new Response(
       JSON.stringify({ 
