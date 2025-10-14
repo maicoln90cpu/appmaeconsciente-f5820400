@@ -45,9 +45,25 @@ export const HotmartTransactions = () => {
   useEffect(() => {
     loadTransactions();
 
-    // Auto-refresh every 30s
-    const interval = setInterval(loadTransactions, 30000);
-    return () => clearInterval(interval);
+    // Realtime subscription
+    const channel = supabase
+      .channel('hotmart-transactions-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'hotmart_transactions'
+        },
+        () => {
+          loadTransactions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadTransactions = async () => {
