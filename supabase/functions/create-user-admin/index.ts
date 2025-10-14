@@ -21,10 +21,10 @@ serve(async (req) => {
     console.log("📝 Criando usuário:", email);
 
     if (!email) {
-      return new Response(
-        JSON.stringify({ error: "Email é obrigatório" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "Email é obrigatório" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Conectar ao Supabase com service role key
@@ -42,15 +42,15 @@ serve(async (req) => {
       email_confirm: true,
       user_metadata: {
         full_name: full_name || email,
-      }
+      },
     });
 
     if (authError) {
       console.error("❌ Erro ao criar usuário:", authError);
-      return new Response(
-        JSON.stringify({ error: authError.message }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: authError.message }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     console.log("✅ Usuário criado:", authData.user.id);
@@ -63,15 +63,15 @@ serve(async (req) => {
         <p><strong>Email:</strong> ${email}</p>
         <p><strong>Senha temporária:</strong> ${password}</p>
         <p>Por favor, faça login e altere sua senha nas configurações.</p>
-        <p>Acesse: <a href="https://maeconsciente.infoprolab.com.br">https://maeconsciente.infoprolab.com.br</a></p>
+        <p>Acesse: <a href="https://dashboard-enxovalcompleto.lovable.app">https://dashboard-enxovalcompleto.lovable.app</a></p>
       `;
 
-      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-resend-email', {
+      const { data: emailData, error: emailError } = await supabase.functions.invoke("send-resend-email", {
         body: {
           to: email,
           subject: "Bem-vindo(a) à Mãe Consciente - Dados de Acesso",
           html: emailHtml,
-        }
+        },
       });
 
       if (emailError) {
@@ -86,18 +86,18 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         user: authData.user,
-        message: "Usuário criado com sucesso"
+        message: "Usuário criado com sucesso",
       }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error: any) {
     console.error("🔥 Erro não tratado:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
