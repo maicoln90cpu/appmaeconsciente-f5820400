@@ -77,6 +77,30 @@ serve(async (req) => {
     console.log('Product ID:', hotmartProductId);
     console.log('Buyer:', buyerEmail);
 
+    // ⚠️ OPÇÃO 3: Se for ID 0 (webhook de teste da Hotmart), registrar mas não processar
+    if (hotmartProductId === '0') {
+      console.log('⚠️ Webhook de TESTE da Hotmart detectado (Product ID: 0)');
+      
+      await supabase.from('hotmart_transactions').insert({
+        transaction_id: transactionId,
+        hotmart_product_id: hotmartProductId,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: 'test',
+        amount: payload.data.commission?.value || 0,
+        event_type: event,
+      });
+
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          message: 'Test webhook received and logged',
+          test: true
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     // Find internal product mapping
     const { data: mapping, error: mappingError } = await supabase
       .from('hotmart_product_mapping')
@@ -95,6 +119,7 @@ serve(async (req) => {
         buyer_name: buyerName,
         status: 'mapping_not_found',
         amount: payload.data.commission?.value || 0,
+        event_type: event,
       });
 
       return new Response(
@@ -140,6 +165,7 @@ serve(async (req) => {
           status: 'user_creation_failed',
           amount: payload.data.commission?.value || 0,
           product_id: mapping.internal_product_id,
+          event_type: event,
         });
 
         return new Response(
@@ -182,6 +208,7 @@ serve(async (req) => {
         amount: payload.data.commission?.value || 0,
         user_id: userId,
         product_id: mapping.internal_product_id,
+        event_type: event,
       });
       
       return new Response(
@@ -214,6 +241,7 @@ serve(async (req) => {
         amount: payload.data.commission?.value || 0,
         user_id: userId,
         product_id: mapping.internal_product_id,
+        event_type: event,
       });
 
       return new Response(
@@ -266,6 +294,7 @@ serve(async (req) => {
         amount: payload.data.commission?.value || 0,
         user_id: userId,
         product_id: mapping.internal_product_id,
+        event_type: event,
       });
 
       return new Response(
@@ -286,6 +315,7 @@ serve(async (req) => {
       amount: payload.data.commission?.value || 0,
       user_id: userId,
       product_id: mapping.internal_product_id,
+      event_type: event,
     });
 
     return new Response(

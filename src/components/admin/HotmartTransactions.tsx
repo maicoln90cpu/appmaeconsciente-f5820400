@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -12,7 +13,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, RefreshCw, XCircle } from "lucide-react";
 
 interface Transaction {
   id: string;
@@ -23,16 +24,23 @@ interface Transaction {
   status: string;
   amount: number | null;
   processed_at: string;
+  event_type: string | null;
 }
 
 const statusConfig: Record<string, { label: string; icon: any; color: string }> = {
-  processed: { label: "Processado", icon: CheckCircle2, color: "bg-green-500" },
-  pending_account: { label: "Aguardando Cadastro", icon: Clock, color: "bg-yellow-500" },
-  mapping_not_found: { label: "Sem Mapeamento", icon: AlertCircle, color: "bg-red-500" },
+  processed: { label: "Processado", icon: CheckCircle2, color: "text-green-600" },
+  test: { label: "Teste", icon: AlertCircle, color: "text-blue-600" },
+  pending: { label: "Pendente", icon: Clock, color: "text-yellow-600" },
+  canceled: { label: "Cancelado", icon: XCircle, color: "text-red-600" },
+  refunded: { label: "Reembolsado", icon: XCircle, color: "text-orange-600" },
+  mapping_not_found: { label: "Sem Mapeamento", icon: AlertCircle, color: "text-red-600" },
+  user_creation_failed: { label: "Erro ao Criar Usuário", icon: XCircle, color: "text-red-600" },
+  access_grant_failed: { label: "Erro ao Dar Acesso", icon: XCircle, color: "text-red-600" },
 };
 
 export const HotmartTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadTransactions();
@@ -43,15 +51,19 @@ export const HotmartTransactions = () => {
   }, []);
 
   const loadTransactions = async () => {
+    setIsRefreshing(true);
+    
     const { data, error } = await supabase
       .from("hotmart_transactions")
       .select("*")
       .order("processed_at", { ascending: false })
-      .limit(50);
+      .limit(100);
 
     if (!error && data) {
       setTransactions(data as Transaction[]);
     }
+    
+    setIsRefreshing(false);
   };
 
   const formatCurrency = (value: number | null) => {
@@ -64,8 +76,17 @@ export const HotmartTransactions = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Transações Hotmart (Últimas 50)</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <CardTitle>Transações Hotmart</CardTitle>
+        <Button 
+          onClick={loadTransactions} 
+          variant="outline" 
+          size="sm"
+          disabled={isRefreshing}
+        >
+          <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+          Atualizar
+        </Button>
       </CardHeader>
       <CardContent>
         {transactions.length === 0 ? (
@@ -78,6 +99,7 @@ export const HotmartTransactions = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Data</TableHead>
+                  <TableHead>Evento</TableHead>
                   <TableHead>Comprador</TableHead>
                   <TableHead>ID Produto</TableHead>
                   <TableHead>Valor</TableHead>
@@ -86,7 +108,7 @@ export const HotmartTransactions = () => {
               </TableHeader>
               <TableBody>
                 {transactions.map((tx) => {
-                  const config = statusConfig[tx.status] || statusConfig.pending_account;
+                  const config = statusConfig[tx.status] || statusConfig.pending;
                   const StatusIcon = config.icon;
 
                   return (
@@ -96,6 +118,11 @@ export const HotmartTransactions = () => {
                           addSuffix: true,
                           locale: ptBR,
                         })}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="font-mono text-xs">
+                          {tx.event_type || 'N/A'}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div>
@@ -110,10 +137,10 @@ export const HotmartTransactions = () => {
                       </TableCell>
                       <TableCell>{formatCurrency(tx.amount)}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-2">
-                          <div className={`h-2 w-2 rounded-full ${config.color}`} />
-                          <span className="text-sm">{config.label}</span>
-                        </div>
+                        <Badge variant="outline" className={config.color}>
+                          <StatusIcon className="h-3 w-3 mr-1" />
+                          {config.label}
+                        </Badge>
                       </TableCell>
                     </TableRow>
                   );
