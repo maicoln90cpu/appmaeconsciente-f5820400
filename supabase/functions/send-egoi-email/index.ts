@@ -92,4 +92,31 @@ serve(async (req) => {
     let result: any;
     try {
       result = JSON.parse(raw);
-    } catch (
+    } catch (parseErr) {
+      console.error("❌ Erro ao parsear resposta:", parseErr);
+      return new Response(
+        JSON.stringify({
+          error: "Resposta da E-goi não é JSON válido",
+          raw: raw.slice(0, 500),
+        }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
+
+    // ✅ Sucesso
+    console.log("✅ Email enviado com sucesso:", result);
+    return new Response(
+      JSON.stringify({ success: true, data: result }),
+      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  } catch (error) {
+    console.error("💥 Erro geral:", error);
+    return new Response(
+      JSON.stringify({
+        error: "Erro interno no envio de email",
+        details: String(error),
+      }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+});
