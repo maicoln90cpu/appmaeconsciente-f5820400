@@ -55,7 +55,7 @@ serve(async (req) => {
 
     console.log("✅ Usuário criado:", authData.user.id);
 
-    // Enviar email com a senha via E-goi
+    // Enviar email com a senha via Resend
     try {
       const emailHtml = `
         <h1>Bem-vindo(a) à Mãe Consciente!</h1>
@@ -66,7 +66,7 @@ serve(async (req) => {
         <p>Acesse: <a href="https://maeconsciente.infoprolab.com.br">https://maeconsciente.infoprolab.com.br</a></p>
       `;
 
-      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-egoi-email', {
+      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-resend-email', {
         body: {
           to: email,
           subject: "Bem-vindo(a) à Mãe Consciente - Dados de Acesso",

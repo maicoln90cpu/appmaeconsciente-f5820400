@@ -263,7 +263,7 @@ serve(async (req) => {
       try {
         console.log('Tentando enviar email para:', buyerEmail);
         
-        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-egoi-email', {
+        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-resend-email', {
           body: {
             to: buyerEmail,
             subject: `Bem-vindo! Suas credenciais de acesso - ${product.title}`,
@@ -272,7 +272,7 @@ serve(async (req) => {
         });
         
         if (emailError) {
-          console.error('ERRO ao invocar send-egoi-email:', emailError);
+          console.error('ERRO ao invocar send-resend-email:', emailError);
         } else {
           console.log('✅ Email de boas-vindas enviado com sucesso!', emailData);
         }
