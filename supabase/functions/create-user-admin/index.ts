@@ -73,7 +73,7 @@ serve(async (req) => {
 
     let response: Response;
     try {
-      response = await fetch("https://api.egoiapp.com/v3/email/transactional", {
+      response = await fetch("https://api.egoiapp.com/v3/email/transactional/messages", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
