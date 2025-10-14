@@ -62,14 +62,22 @@ serve(async (req) => {
       );
     }
 
-    // Only process approved purchases
-    if (payload.event !== 'PURCHASE_COMPLETE' && payload.data.purchase.status !== 'approved') {
-      console.log('Skipping non-approved purchase');
+    // Only process approved purchases or PURCHASE_COMPLETE events
+    const isApprovedPurchase = payload.data.purchase.status === 'approved';
+    const isPurchaseComplete = payload.event === 'PURCHASE_COMPLETE';
+    
+    if (!isApprovedPurchase && !isPurchaseComplete) {
+      console.log('Skipping non-approved purchase:', {
+        event: payload.event,
+        status: payload.data.purchase.status
+      });
       return new Response(
-        JSON.stringify({ message: 'Event ignored' }),
+        JSON.stringify({ message: 'Event ignored - not approved' }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log('Processing approved purchase');
 
     const hotmartProductId = payload.data.product.id.toString();
     const buyerEmail = payload.data.buyer.email.toLowerCase();
