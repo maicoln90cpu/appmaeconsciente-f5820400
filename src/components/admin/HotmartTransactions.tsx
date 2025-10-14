@@ -24,7 +24,7 @@ interface Transaction {
   status: string;
   amount: number | null;
   processed_at: string;
-  event_type: string | null;
+  event_type?: string | null;
 }
 
 const statusConfig: Record<string, { label: string; icon: any; color: string }> = {
