@@ -13,16 +13,32 @@ export const PostModeration = () => {
   const { data: posts, isLoading } = useQuery({
     queryKey: ["admin-posts"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Passo 1: Buscar posts
+      const { data: postsData, error } = await supabase
         .from("posts")
-        .select(`
-          *,
-          profiles:user_id (email, foto_perfil_url)
-        `)
+        .select("*")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      if (!postsData) return [];
+
+      // Passo 2: Enriquecer com perfis
+      const enrichedPosts = await Promise.all(
+        postsData.map(async (post) => {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("email, foto_perfil_url")
+            .eq("id", post.user_id)
+            .maybeSingle();
+
+          return {
+            ...post,
+            profiles: profile || { email: "Usuário desconhecido", foto_perfil_url: null }
+          };
+        })
+      );
+
+      return enrichedPosts;
     },
   });
 

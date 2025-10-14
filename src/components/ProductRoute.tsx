@@ -28,6 +28,21 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
         return;
       }
 
+      // ✅ VERIFICAR ADMIN PRIMEIRO (ANTES DE TUDO)
+      const { data: userRole } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+
+      if (userRole) {
+        console.log('Admin detectado - acesso liberado');
+        setHasAccess(true);
+        setLoading(false);
+        return;
+      }
+
       const { data: productData } = await supabase
         .from("products")
         .select("*")

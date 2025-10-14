@@ -152,20 +152,54 @@ export default function AdminDashboard() {
       
       if (!user) return;
 
-      const { error } = await supabase
+      // Passo 1: Criar notificação
+      const { data: notificationData, error } = await supabase
         .from('notifications')
         .insert({
           title: notification.title,
           message: notification.message,
           created_by: user.id,
           is_global: true,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
 
+      console.log('Notificação criada:', notificationData.id);
+
+      // Passo 2: Buscar todos os usuários (exceto criador)
+      const { data: allUsers, error: usersError } = await supabase
+        .from('profiles')
+        .select('id')
+        .neq('id', user.id);
+
+      if (usersError) throw usersError;
+
+      console.log('Total de usuários a notificar:', allUsers?.length);
+
+      // Passo 3: Criar user_notifications para cada usuário
+      if (allUsers && allUsers.length > 0) {
+        const userNotifications = allUsers.map(u => ({
+          user_id: u.id,
+          notification_id: notificationData.id,
+        }));
+
+        const { error: insertError } = await supabase
+          .from('user_notifications')
+          .insert(userNotifications);
+
+        if (insertError) {
+          console.error('Erro ao criar user_notifications:', insertError);
+          throw insertError;
+        }
+
+        console.log('User notifications criadas com sucesso!');
+      }
+
       toast({
         title: "Notificação enviada!",
-        description: "Todos os usuários foram notificados.",
+        description: `${allUsers?.length || 0} usuários foram notificados.`,
       });
 
       setNotification({ title: "", message: "" });
