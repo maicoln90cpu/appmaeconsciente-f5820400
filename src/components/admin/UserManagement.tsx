@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useState, useMemo } from "react";
-import { UserPlus, Shield, Search, ArrowUpDown, RefreshCw, Loader2 } from "lucide-react";
+import { UserPlus, Shield, Search, ArrowUpDown, RefreshCw, Loader2, Trash2, KeyRound } from "lucide-react";
 import { CreateUserDialog } from "./CreateUserDialog";
 
 export const UserManagement = () => {
@@ -138,6 +138,37 @@ export const UserManagement = () => {
     },
     onError: () => {
       toast.error("Erro ao atualizar role");
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase.auth.admin.deleteUser(userId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+      toast.success("Usuário excluído com sucesso");
+    },
+    onError: (error: any) => {
+      console.error("Erro ao excluir usuário:", error);
+      toast.error("Erro ao excluir usuário");
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Email de recuperação enviado");
+    },
+    onError: (error: any) => {
+      console.error("Erro ao resetar senha:", error);
+      toast.error("Erro ao enviar email de recuperação");
     },
   });
 
@@ -359,13 +390,35 @@ export const UserManagement = () => {
                       Cadastrado em {format(new Date(user.created_at), "dd/MM/yyyy")}
                     </p>
                   </div>
-                  <Button
-                    variant={isAdmin ? "destructive" : "outline"}
-                    size="sm"
-                    onClick={() => toggleAdminMutation.mutate({ userId: user.id, isAdmin })}
-                  >
-                    {isAdmin ? "Remover Admin" : "Tornar Admin"}
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={isAdmin ? "destructive" : "outline"}
+                      size="sm"
+                      onClick={() => toggleAdminMutation.mutate({ userId: user.id, isAdmin })}
+                    >
+                      {isAdmin ? "Remover Admin" : "Tornar Admin"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => resetPasswordMutation.mutate(user.email)}
+                    >
+                      <KeyRound className="h-4 w-4 mr-2" />
+                      Resetar Senha
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => {
+                        if (confirm(`Tem certeza que deseja excluir o usuário ${user.email}? Esta ação não pode ser desfeita.`)) {
+                          deleteUserMutation.mutate(user.id);
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Excluir
+                    </Button>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
