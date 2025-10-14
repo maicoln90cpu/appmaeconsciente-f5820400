@@ -8,7 +8,7 @@ BEGIN
   -- Try to find user in auth.users
   SELECT id INTO admin_user_id 
   FROM auth.users 
-  WHERE email = 'maicoln90@hotmai.com';
+  WHERE email = 'maicoln90@hotmail.com';
   
   -- If user exists, add admin role
   IF admin_user_id IS NOT NULL THEN
@@ -21,7 +21,7 @@ BEGIN
     
     RAISE NOTICE 'Admin role added for existing user: %', admin_user_id;
   ELSE
-    RAISE NOTICE 'User maicoln90@hotmai.com not found yet';
+    RAISE NOTICE 'User maicoln90@hotmail.com not found yet';
   END IF;
 END $$;
 
@@ -34,7 +34,7 @@ SET search_path = public
 AS $$
 BEGIN
   -- Check if the new user has the admin email
-  IF NEW.email = 'maicoln90@hotmai.com' THEN
+  IF NEW.email = 'maicoln90@hotmail.com' THEN
     -- Insert admin role
     INSERT INTO public.user_roles (user_id, role)
     VALUES (NEW.id, 'admin')
