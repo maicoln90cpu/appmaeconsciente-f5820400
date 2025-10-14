@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { Lock, CheckCircle2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface Product {
   id: string;
@@ -18,6 +19,7 @@ interface Product {
   is_free: boolean;
   price: number | null;
   display_order: number;
+  destination_url: string | null;
 }
 
 interface ProductAccess {
@@ -31,6 +33,7 @@ const Materiais = () => {
   const [filter, setFilter] = useState<"all" | "free" | "paid" | "my">("all");
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isAdmin } = useUserRole();
 
   useEffect(() => {
     loadProducts();
@@ -79,8 +82,37 @@ const Materiais = () => {
   };
 
   const handleAccessProduct = async (product: Product) => {
+    // Admins têm acesso total
+    if (isAdmin) {
+      if (product.destination_url) {
+        window.open(product.destination_url, '_blank');
+      } else {
+        navigate(`/materiais/${product.slug}`);
+      }
+      return;
+    }
+
+    const canAccess = product.is_free || hasAccess(product.id);
+
+    // Se não tem acesso, redireciona para página de pagamento
+    if (!canAccess) {
+      // TODO: Implementar página de pagamento do produto
+      toast({
+        title: "Produto Premium",
+        description: "Este material está disponível apenas para assinantes. Redirecionando para página de pagamento...",
+      });
+      // navigate(`/produto/${product.slug}/checkout`);
+      return;
+    }
+
+    // Se tem acesso e há link de destino, abre o link
+    if (product.destination_url) {
+      window.open(product.destination_url, '_blank');
+      return;
+    }
+
+    // Grant access automatically for free products
     if (product.is_free) {
-      // Grant access automatically for free products
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -90,16 +122,9 @@ const Materiais = () => {
           product_id: product.id,
         });
       }
-
-      navigate(`/materiais/${product.slug}`);
-    } else if (hasAccess(product.id)) {
-      navigate(`/materiais/${product.slug}`);
-    } else {
-      toast({
-        title: "Produto Premium",
-        description: "Este material está disponível apenas para assinantes.",
-      });
     }
+
+    navigate(`/materiais/${product.slug}`);
   };
 
   const filteredProducts = products.filter((product) => {
@@ -140,7 +165,7 @@ const Materiais = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => {
             const userHasAccess = hasAccess(product.id);
-            const canAccess = product.is_free || userHasAccess;
+            const canAccess = product.is_free || userHasAccess || isAdmin;
 
             return (
               <Card key={product.id} className="flex flex-col">

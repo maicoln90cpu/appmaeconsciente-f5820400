@@ -22,6 +22,7 @@ interface Product {
   display_order: number;
   thumbnail_url: string | null;
   hotmart_product_id: string | null;
+  destination_url: string | null;
 }
 
 export const ProductManagement = () => {
@@ -37,6 +38,7 @@ export const ProductManagement = () => {
     is_free: true,
     is_active: true,
     display_order: 0,
+    destination_url: null,
   });
 
   const { data: products, isLoading } = useQuery({
@@ -118,6 +120,7 @@ export const ProductManagement = () => {
       is_free: true,
       is_active: true,
       display_order: 0,
+      destination_url: null,
     });
   };
 
@@ -191,6 +194,14 @@ export const ProductManagement = () => {
                 rows={3}
               />
             </div>
+            <div>
+              <Label>Link de Destino (opcional)</Label>
+              <Input
+                value={formData.destination_url || ""}
+                onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })}
+                placeholder="https://..."
+              />
+            </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label>Preço</Label>
@@ -257,6 +268,14 @@ export const ProductManagement = () => {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={2}
+                  />
+                </div>
+                <div>
+                  <Label>Link de Destino (opcional)</Label>
+                  <Input
+                    value={formData.destination_url || ""}
+                    onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })}
+                    placeholder="https://..."
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-4">

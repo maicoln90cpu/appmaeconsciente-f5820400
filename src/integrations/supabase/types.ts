@@ -368,6 +368,7 @@ export type Database = {
           access_duration_days: number | null
           created_at: string
           description: string
+          destination_url: string | null
           display_order: number
           hotmart_product_id: string | null
           id: string
@@ -384,6 +385,7 @@ export type Database = {
           access_duration_days?: number | null
           created_at?: string
           description: string
+          destination_url?: string | null
           display_order?: number
           hotmart_product_id?: string | null
           id?: string
@@ -400,6 +402,7 @@ export type Database = {
           access_duration_days?: number | null
           created_at?: string
           description?: string
+          destination_url?: string | null
           display_order?: number
           hotmart_product_id?: string | null
           id?: string

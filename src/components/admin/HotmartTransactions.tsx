@@ -73,7 +73,7 @@ export const HotmartTransactions = () => {
       .from("hotmart_transactions")
       .select("*")
       .order("processed_at", { ascending: false })
-      .limit(100);
+      .limit(30);
 
     if (!error && data) {
       setTransactions(data);
