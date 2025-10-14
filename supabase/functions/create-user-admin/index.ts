@@ -1,132 +1,105 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-function generateRandomPassword(length = 12): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return password;
+interface EmailRequest {
+  to: string;
+  subject: string;
+  html: string;
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    );
+    // 🔸 Lê o corpo da requisição (JSON)
+    const { to, subject, html }: EmailRequest = await req.json();
+    console.log("Enviando email via E-goi para:", to);
 
-    // Verificar se usuário é admin
-    const authHeader = req.headers.get('Authorization')!;
-    const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    const egoiApiKey = Deno.env.get("EGOI_API_KEY");
+    const senderEmail = Deno.env.get("EGOI_SENDER_EMAIL") || "noreply@example.com";
+    const senderName = Deno.env.get("EGOI_SENDER_NAME") || "Sistema";
 
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    if (!egoiApiKey) {
+      throw new Error("EGOI_API_KEY não configurada");
     }
 
-    // Verificar se é admin
-    const { data: userRole } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', user.id)
-      .eq('role', 'admin')
-      .maybeSingle();
+    // 🔸 Monta payload conforme documentação E-goi v3
+    const payload = {
+      subject,
+      html_body: html,
+      to: [to],
+      from: {
+        email: senderEmail,
+        name: senderName,
+      },
+    };
 
-    if (!userRole) {
-      return new Response(JSON.stringify({ error: 'Forbidden: Admin only' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    const { email, full_name } = await req.json();
-
-    if (!email) {
-      return new Response(JSON.stringify({ error: 'Email is required' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
-    }
-
-    // Gerar senha aleatória
-    const randomPassword = generateRandomPassword();
-
-    // Criar usuário
-    const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
-      email,
-      password: randomPassword,
-      email_confirm: true,
-      user_metadata: {
-        full_name: full_name || '',
-        created_by: 'admin_manual'
-      }
+    // 🔸 Usa o endpoint correto da API v3 da E-goi
+    const response = await fetch("https://api.egoiapp.com/v3/email/transactional", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Apikey: egoiApiKey,
+      },
+      body: JSON.stringify(payload),
     });
 
-    if (createError) {
-      console.error('Erro ao criar usuário:', createError);
-      return new Response(JSON.stringify({ error: createError.message }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      });
+    const raw = await response.text();
+
+    // 🔸 Trata erros HTTP da API
+    if (!response.ok) {
+      console.error("❌ Erro HTTP da E-goi:", response.status);
+      console.error("📩 Corpo retornado:", raw.slice(0, 300));
+      return new Response(
+        JSON.stringify({
+          error: `E-goi retornou erro HTTP ${response.status}`,
+          raw: raw,
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    // Enviar email com credenciais
-    const emailHtml = `
-      <h2>Bem-vindo(a)${full_name ? ', ' + full_name : ''}!</h2>
-      <p>Uma conta foi criada para você em nossa plataforma.</p>
-      <h3>Suas credenciais de acesso:</h3>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Senha:</strong> ${randomPassword}</p>
-      <p>Você pode alterar sua senha após o primeiro login nas configurações do perfil.</p>
-      <p>Acesse a plataforma e comece a explorar!</p>
-    `;
-
+    // 🔸 Faz parse manual do corpo da resposta
+    let result: any;
     try {
-      const { data: emailData, error: emailError } = await supabase.functions.invoke('send-egoi-email', {
-        body: {
-          to: email,
-          subject: 'Bem-vindo! Suas credenciais de acesso',
-          html: emailHtml,
-        }
-      });
-
-      if (emailError) {
-        console.error('Erro ao enviar email:', emailError);
-      } else {
-        console.log('Email de boas-vindas enviado para:', email);
-      }
-    } catch (emailError) {
-      console.error('Exceção ao enviar email:', emailError);
-      // Não falhar a criação se o email falhar
+      result = JSON.parse(raw);
+    } catch (e) {
+      console.error("⚠️ Resposta E-goi não é JSON válido:", raw.slice(0, 300));
+      return new Response(
+        JSON.stringify({
+          error: "A resposta da E-goi não é um JSON válido",
+          raw: raw,
+        }),
+        {
+          status: 502,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        user: { id: newUser.user.id, email: newUser.user.email } 
-      }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    // ✅ Sucesso
+    console.log("✅ Email enviado com sucesso via E-goi para:", to);
+    console.log("📬 Resposta:", result);
 
+    return new Response(JSON.stringify({ success: true, data: result }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error: any) {
-    console.error('Erro:', error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    console.error("🔥 Erro ao enviar email via E-goi:", error);
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
