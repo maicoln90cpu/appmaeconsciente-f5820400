@@ -26,12 +26,12 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<EnxovalItem | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
-  
+
   // State local para configurações
   const [tempOrcamento, setTempOrcamento] = useState<number>(5000);
   const [tempDiasAlerta, setTempDiasAlerta] = useState<number>(7);
   const [tempMensagemMotivacao, setTempMensagemMotivacao] = useState<string>("");
-  
+
   const { toast } = useToast();
   const { profile, loading: profileLoading } = useProfile();
   const { isAdmin } = useUserRole();
@@ -99,11 +99,11 @@ const Index = () => {
 
   const handleSaveConfig = async () => {
     if (config) {
-      await updateConfig({ 
-        ...config, 
+      await updateConfig({
+        ...config,
         orcamento_total: tempOrcamento,
         dias_alerta_troca: tempDiasAlerta,
-        mensagem_motivacao: tempMensagemMotivacao 
+        mensagem_motivacao: tempMensagemMotivacao,
       });
     }
   };
@@ -163,13 +163,22 @@ const Index = () => {
       <main className="container mx-auto px-4 py-8">
         <Tabs defaultValue="resumo" className="space-y-6">
           <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-3 h-auto p-1">
-            <TabsTrigger value="resumo" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger
+              value="resumo"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
               Dashboard
             </TabsTrigger>
-            <TabsTrigger value="enxoval" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger
+              value="enxoval"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
               Itens do Enxoval
             </TabsTrigger>
-            <TabsTrigger value="config" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+            <TabsTrigger
+              value="config"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
               Configurações
             </TabsTrigger>
           </TabsList>
@@ -181,26 +190,29 @@ const Index = () => {
               </div>
             )}
             <DashboardTab items={items} budget={config?.orcamento_total || 5000} />
-            
-            {items.length > 0 && Math.round((items.filter(i => i.status === "Comprado").length / items.length) * 100) === 100 && (
-              <div className="bg-success/10 border border-success/30 rounded-lg p-6 text-center space-y-2">
-                <p className="text-2xl">🎉</p>
-                <p className="text-lg font-semibold text-success">Parabéns! Você finalizou o enxoval com consciência, economia e leveza.</p>
-                <p className="text-muted-foreground">Seu bebê vai sentir o amor em cada escolha feita com calma. 💕</p>
-              </div>
-            )}
+
+            {items.length > 0 &&
+              Math.round((items.filter((i) => i.status === "Comprado").length / items.length) * 100) === 100 && (
+                <div className="bg-success/10 border border-success/30 rounded-lg p-6 text-center space-y-2">
+                  <p className="text-2xl">🎉</p>
+                  <p className="text-lg font-semibold text-success">
+                    Parabéns! Você finalizou o enxoval com consciência, economia e leveza.
+                  </p>
+                  <p className="text-muted-foreground">
+                    Seu bebê vai sentir o amor em cada escolha feita com calma. 💕
+                  </p>
+                </div>
+              )}
           </TabsContent>
 
           <TabsContent value="enxoval" className="space-y-6">
             <div className="bg-muted/30 border rounded-lg p-4 text-center space-y-1">
-              <p className="text-base text-muted-foreground">
-                Aqui você registra suas decisões com consciência.
-              </p>
+              <p className="text-base text-muted-foreground">Aqui você registra suas decisões com consciência.</p>
               <p className="text-sm text-muted-foreground">
                 Cada item marcado é um passo a menos na ansiedade — e um passo a mais na leveza.
               </p>
             </div>
-            
+
             <Card>
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -217,12 +229,7 @@ const Index = () => {
                     <p className="text-muted-foreground">Carregando itens...</p>
                   </div>
                 ) : (
-                  <EnxovalTable 
-                    items={items} 
-                    onEdit={handleEditClick}
-                    onDelete={handleDeleteItem}
-                    config={config}
-                  />
+                  <EnxovalTable items={items} onEdit={handleEditClick} onDelete={handleDeleteItem} config={config} />
                 )}
               </CardContent>
             </Card>
@@ -240,10 +247,11 @@ const Index = () => {
           <TabsContent value="config" className="space-y-6">
             <div className="bg-muted/30 border rounded-lg p-4 text-center">
               <p className="text-base text-muted-foreground">
-                Defina aqui o limite do seu enxoval. Este valor será seu farol — um lembrete gentil de que você está no controle do seu orçamento e da sua tranquilidade.
+                Defina aqui o limite do seu enxoval. Este valor será seu farol — um lembrete gentil de que você está no
+                controle do seu orçamento e da sua tranquilidade.
               </p>
             </div>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Configurações Gerais</CardTitle>
@@ -292,9 +300,7 @@ const Index = () => {
                     onChange={(e) => setTempMensagemMotivacao(e.target.value)}
                     className="max-w-lg"
                   />
-                  <p className="text-sm text-muted-foreground">
-                    Esta mensagem aparecerá no topo do seu Dashboard
-                  </p>
+                  <p className="text-sm text-muted-foreground">Esta mensagem aparecerá no topo do seu Dashboard</p>
                 </div>
 
                 <Button onClick={handleSaveConfig} className="gap-2">
@@ -321,11 +327,9 @@ const Index = () => {
       <footer className="border-t bg-muted/30 py-6 mt-12">
         <div className="container mx-auto px-4 text-center space-y-2">
           <p className="text-sm font-medium text-foreground">
-            Guia do Enxoval Inteligente — Aplicação do Método M.A.E.S.
+            Guia do Enxoval Consciente — Aplicação do Método M.A.E.S.
           </p>
-          <p className="text-xs text-muted-foreground">
-            © 2025 Isabela Santos | Maternidade Real e Consciente.
-          </p>
+          <p className="text-xs text-muted-foreground">© 2025 Isabela Santos | Maternidade Real e Consciente.</p>
         </div>
       </footer>
     </div>
