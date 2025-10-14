@@ -23,16 +23,13 @@ serve(async (req) => {
 
     // Get Resend API key from environment
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
-    
+
     if (!resendApiKey) {
       console.error("❌ RESEND_API_KEY não configurada");
-      return new Response(
-        JSON.stringify({ error: "RESEND_API_KEY não configurada" }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ error: "RESEND_API_KEY não configurada" }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Send email via Resend API
@@ -40,10 +37,10 @@ serve(async (req) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${resendApiKey}`,
+        Authorization: `Bearer ${resendApiKey}`,
       },
       body: JSON.stringify({
-        from: "Mãe Consciente <onboarding@resend.dev>",
+        from: "Mãe Consciente <contato@infprolab.com.br>",
         to: [to],
         subject: subject,
         html: html,
@@ -54,17 +51,17 @@ serve(async (req) => {
 
     if (!response.ok) {
       console.error("❌ Erro ao enviar email via Resend:", data);
-      return new Response(
-        JSON.stringify({ error: data.message || "Erro ao enviar email" }),
-        { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: data.message || "Erro ao enviar email" }), {
+        status: response.status,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     console.log("✅ Email enviado com sucesso via Resend:", data);
-    return new Response(
-      JSON.stringify({ success: true, data: data }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ success: true, data: data }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error: any) {
     console.error("💥 Erro geral:", error);
     return new Response(
@@ -72,7 +69,7 @@ serve(async (req) => {
         error: "Erro interno no envio de email",
         details: error.message || String(error),
       }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
 });
