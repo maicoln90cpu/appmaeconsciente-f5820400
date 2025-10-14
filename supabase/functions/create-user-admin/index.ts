@@ -6,9 +6,10 @@ const corsHeaders = {
 };
 
 interface EmailRequest {
-  to: string;
-  subject: string;
-  html: string;
+  to?: string;
+  subject?: string;
+  html?: string;
+  mode?: "send" | "check"; // 👈 Novo campo opcional para modo de teste
 }
 
 serve(async (req) => {
@@ -17,8 +18,7 @@ serve(async (req) => {
   }
 
   try {
-    const { to, subject, html }: EmailRequest = await req.json();
-    console.log("📤 Enviando email via E-goi para:", to);
+    const { to, subject, html, mode }: EmailRequest = await req.json();
 
     const egoiApiKey = Deno.env.get("EGOI_API_KEY");
     const senderEmail = Deno.env.get("EGOI_SENDER_EMAIL") || "noreply@example.com";
@@ -32,6 +32,33 @@ serve(async (req) => {
       });
     }
 
+    // 🧪 Se for apenas um teste de chave, faz uma chamada simples GET ou HEAD (sem enviar e-mail)
+    if (mode === "check") {
+      console.log("🔑 Testando chave de API E-goi...");
+      const checkRes = await fetch("https://api.egoiapp.com/v3/ping", {
+        method: "GET",
+        headers: { Apikey: egoiApiKey },
+      });
+
+      const checkRaw = await checkRes.text();
+      console.log("📩 Resposta da E-goi (ping):", checkRaw);
+
+      if (!checkRes.ok) {
+        return new Response(JSON.stringify({ success: false, status: checkRes.status, response: checkRaw }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true, status: checkRes.status, response: checkRaw }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // 📤 Envio de e-mail real
+    console.log("📤 Enviando email via E-goi para:", to);
+
     const payload = {
       subject,
       html_body: html,
@@ -41,6 +68,8 @@ serve(async (req) => {
         name: senderName,
       },
     };
+
+    console.log("📦 Payload enviado:", JSON.stringify(payload, null, 2));
 
     let response: Response;
     try {
@@ -63,14 +92,13 @@ serve(async (req) => {
 
     const raw = await response.text();
 
-    // 🚨 Logar tudo se status != 2xx
     if (!response.ok) {
       console.error("❌ Erro HTTP da E-goi:", response.status);
-      console.error("📩 Corpo retornado:", raw.slice(0, 500));
+      console.error("📩 Corpo retornado:", raw);
       return new Response(
         JSON.stringify({
           error: `E-goi retornou erro HTTP ${response.status}`,
-          raw: raw,
+          response: raw,
         }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
@@ -81,13 +109,10 @@ serve(async (req) => {
       result = JSON.parse(raw);
     } catch (e) {
       console.error("⚠️ Resposta E-goi não é JSON válido:", raw.slice(0, 300));
-      return new Response(
-        JSON.stringify({
-          error: "A resposta da E-goi não é um JSON válido",
-          raw: raw,
-        }),
-        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
+      return new Response(JSON.stringify({ error: "A resposta da E-goi não é um JSON válido", raw }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     console.log("✅ Email enviado com sucesso via E-goi para:", to);
