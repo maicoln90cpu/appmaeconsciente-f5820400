@@ -12,24 +12,33 @@ interface EmailRequest {
 }
 
 serve(async (req) => {
+  // 🔹 CORS pré-verificação
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Lê e valida o JSON recebido na requisição
+    // 📥 Recebe os dados do frontend / Supabase
     const { to, subject, html }: EmailRequest = await req.json();
-    console.log("Enviando email via E-goi para:", to);
+    console.log("📤 Enviando email via E-goi para:", to);
 
+    // 🔐 Variáveis de ambiente
     const egoiApiKey = Deno.env.get("EGOI_API_KEY");
     const senderEmail = Deno.env.get("EGOI_SENDER_EMAIL") || "noreply@example.com";
     const senderName = Deno.env.get("EGOI_SENDER_NAME") || "Sistema";
 
     if (!egoiApiKey) {
-      throw new Error("EGOI_API_KEY não configurada");
+      console.error("❌ Variável EGOI_API_KEY não configurada");
+      return new Response(
+        JSON.stringify({ error: "EGOI_API_KEY não configurada no Supabase" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    // Monta o payload conforme documentação da E-goi
+    // 📨 Payload E-goi
     const payload = {
       subject,
       html_body: html,
@@ -40,66 +49,47 @@ serve(async (req) => {
       },
     };
 
-    // Faz a requisição para a E-goi
-    const response = await fetch("https://api.egoiapp.com/emails/transactional", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Apikey: egoiApiKey,
-      },
-      body: JSON.stringify(payload),
-    });
+    // 🌐 Chamada à API E-goi
+    let response: Response;
+    try {
+      response = await fetch("https://api.egoiapp.com/v3/email/transactional/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Apikey: egoiApiKey,
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (fetchErr) {
+      console.error("🌐 Erro de conexão com E-goi:", fetchErr);
+      return new Response(
+        JSON.stringify({
+          error: "Falha ao conectar com a E-goi",
+          details: String(fetchErr),
+        }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
-    // Lê o corpo cru da resposta
+    // 🧾 Lê corpo bruto da resposta
     const raw = await response.text();
 
-    // Caso a API retorne erro HTTP, mostra o corpo bruto para debug
+    // 🚨 Se a resposta não for OK
     if (!response.ok) {
-      console.error("❌ Erro HTTP da E-goi:", response.status);
-      console.error("📩 Corpo retornado:", raw.slice(0, 300));
+      console.error(`❌ Erro HTTP da E-goi: ${response.status}`);
+      console.error("📩 Corpo retornado:", raw.slice(0, 500));
       return new Response(
         JSON.stringify({
           error: `E-goi retornou erro HTTP ${response.status}`,
           raw: raw,
         }),
-        {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 
-    // Tenta converter para JSON manualmente
+    // 🧠 Tenta parsear o JSON de retorno
     let result: any;
     try {
       result = JSON.parse(raw);
-    } catch (e) {
-      console.error("⚠️ Resposta E-goi não é JSON válido:", raw.slice(0, 300));
-      return new Response(
-        JSON.stringify({
-          error: "A resposta da E-goi não é um JSON válido",
-          raw: raw,
-        }),
-        {
-          status: 502,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        },
-      );
-    }
-
-    console.log("✅ Email enviado com sucesso via E-goi para:", to);
-    console.log("📬 Resposta:", result);
-
-    return new Response(JSON.stringify({ success: true, data: result }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (error: any) {
-    console.error("🔥 Erro ao enviar email via E-goi:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-});
+    } catch (
