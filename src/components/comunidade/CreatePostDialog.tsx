@@ -2,21 +2,26 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Plus, Image, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
 
 interface CreatePostDialogProps {
-  onPostCreated: (content: string, imageUrls: string[]) => Promise<void>;
+  onPostCreated: (content: string, imageUrls: string[], displayName?: string | null) => Promise<void>;
 }
 
 export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
+  const { isAdmin } = useUserRole();
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -78,10 +83,11 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
         imageUrls.push(data.publicUrl);
       }
 
-      await onPostCreated(content, imageUrls);
+      await onPostCreated(content, imageUrls, displayName || null);
 
       // Reset form
       setContent("");
+      setDisplayName("");
       setImages([]);
       setPreviews([]);
       setOpen(false);
@@ -122,6 +128,22 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
           <div className="text-sm text-muted-foreground text-right">
             {content.length}/500
           </div>
+
+          {isAdmin && (
+            <div className="space-y-2">
+              <Label htmlFor="display_name">Nome a ser exibido (opcional)</Label>
+              <Input
+                id="display_name"
+                placeholder="Deixe vazio para usar seu email"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                maxLength={50}
+              />
+              <p className="text-xs text-muted-foreground">
+                Como admin, você pode escolher um nome personalizado para este post.
+              </p>
+            </div>
+          )}
 
           {previews.length > 0 && (
             <div className="grid grid-cols-2 gap-2">

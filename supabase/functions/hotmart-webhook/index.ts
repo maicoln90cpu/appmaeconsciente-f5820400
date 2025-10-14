@@ -52,8 +52,9 @@ serve(async (req) => {
 
     const payload: HotmartWebhookData = await req.json();
     
-    console.log('=== Hotmart Webhook Recebido ===');
+    console.log('=== WEBHOOK HOTMART INICIADO ===');
     console.log('Event:', payload.event);
+    console.log('Payload completo:', JSON.stringify(payload, null, 2));
     console.log('Status:', payload.data.purchase.status);
     console.log('Transaction:', payload.data.purchase.transaction);
 
@@ -76,8 +77,10 @@ serve(async (req) => {
     const event = payload.event;
     const status = payload.data.purchase.status.toLowerCase();
 
-    console.log('Product ID Hotmart:', hotmartProductId);
-    console.log('Comprador:', buyerEmail);
+    console.log('Transaction ID:', transactionId);
+    console.log('Hotmart Product ID:', hotmartProductId);
+    console.log('Buyer Email:', buyerEmail);
+    console.log('Status da compra:', status);
 
     // Webhook de teste
     if (hotmartProductId === '0') {
@@ -258,7 +261,9 @@ serve(async (req) => {
       `;
 
       try {
-        const emailResponse = await supabase.functions.invoke('send-egoi-email', {
+        console.log('Tentando enviar email para:', buyerEmail);
+        
+        const { data: emailData, error: emailError } = await supabase.functions.invoke('send-egoi-email', {
           body: {
             to: buyerEmail,
             subject: `Bem-vindo! Suas credenciais de acesso - ${product.title}`,
@@ -266,13 +271,13 @@ serve(async (req) => {
           }
         });
         
-        if (emailResponse.error) {
-          console.error('Erro ao enviar email:', emailResponse.error);
+        if (emailError) {
+          console.error('ERRO ao invocar send-egoi-email:', emailError);
         } else {
-          console.log('✅ Email de boas-vindas enviado para:', buyerEmail);
+          console.log('✅ Email de boas-vindas enviado com sucesso!', emailData);
         }
       } catch (emailError) {
-        console.error('Erro ao invocar função de email:', emailError);
+        console.error('EXCEÇÃO ao enviar email:', emailError);
       }
     }
 
@@ -391,22 +396,37 @@ serve(async (req) => {
     console.log('✅ Acesso concedido com sucesso para:', userId);
 
     // Registrar transação bem-sucedida
-    await supabase.from('hotmart_transactions').upsert({
+    console.log('Tentando inserir transação:', {
       transaction_id: transactionId,
       hotmart_product_id: hotmartProductId,
       buyer_email: buyerEmail,
-      buyer_name: buyerName,
       status: 'processed',
-      amount: payload.data.commission?.value || 0,
-      user_id: userId,
-      product_id: productId,
-      event_type: event,
-    }, {
-      onConflict: 'transaction_id',
-      ignoreDuplicates: false
     });
 
-    console.log('✅ Transação registrada com SUCESSO');
+    const { data: txData, error: txError } = await supabase
+      .from('hotmart_transactions')
+      .insert({
+        transaction_id: transactionId,
+        hotmart_product_id: hotmartProductId,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: 'processed',
+        amount: payload.data.commission?.value || 0,
+        user_id: userId,
+        product_id: productId,
+        event_type: event,
+      });
+
+    if (txError) {
+      // Se for erro de duplicata, só logar e continuar
+      if (txError.code === '23505') {
+        console.log('Transação duplicada ignorada:', transactionId);
+      } else {
+        console.error('Erro ao registrar transação:', txError);
+      }
+    } else {
+      console.log('✅ Transação registrada com SUCESSO:', txData);
+    }
 
     return new Response(
       JSON.stringify({ 

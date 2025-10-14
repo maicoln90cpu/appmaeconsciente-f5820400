@@ -103,7 +103,7 @@ const Materiais = () => {
       return;
     }
 
-    // Admins têm acesso total
+    // ✅ VERIFICAR ADMIN PRIMEIRO (antes de qualquer outra lógica)
     if (isAdmin) {
       if (product.destination_url) {
         window.open(product.destination_url, '_blank');

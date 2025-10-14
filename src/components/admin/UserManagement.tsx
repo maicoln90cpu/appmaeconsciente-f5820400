@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { useState } from "react";
 import { UserPlus, Shield } from "lucide-react";
+import { CreateUserDialog } from "./CreateUserDialog";
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
@@ -23,7 +24,7 @@ export const UserManagement = () => {
         .from("profiles")
         .select(`
           *,
-          user_roles!left (role)
+          user_roles (role)
         `)
         .order("created_at", { ascending: false });
 
@@ -106,7 +107,10 @@ export const UserManagement = () => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Gerenciamento de Usuários</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Gerenciamento de Usuários</h2>
+        <CreateUserDialog onUserCreated={() => queryClient.invalidateQueries({ queryKey: ["admin-users"] })} />
+      </div>
       <div className="grid gap-4">
         {users?.map((user) => {
           const isAdmin = (user.user_roles as any)?.some((r: any) => r.role === "admin");

@@ -14,6 +14,7 @@ export interface Post {
   likes_count: number;
   comments_count: number;
   user_has_liked: boolean;
+  display_name: string | null;
 }
 
 export const usePosts = () => {
@@ -33,7 +34,8 @@ export const usePosts = () => {
           user_id,
           content,
           image_urls,
-          created_at
+          created_at,
+          display_name
         `)
         .order("created_at", { ascending: false });
 
@@ -67,7 +69,7 @@ export const usePosts = () => {
 
           return {
             ...post,
-            user_email: profile?.email || "Usuário",
+            user_email: post.display_name || profile?.email || "Usuário",
             user_photo: profile?.foto_perfil_url || null,
             likes_count: likesCount || 0,
             comments_count: commentsCount || 0,
@@ -89,7 +91,7 @@ export const usePosts = () => {
     }
   };
 
-  const createPost = async (content: string, imageUrls: string[]) => {
+  const createPost = async (content: string, imageUrls: string[], displayName?: string | null) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -130,6 +132,7 @@ export const usePosts = () => {
         user_id: user.id,
         content: trimmedContent,
         image_urls: imageUrls,
+        display_name: displayName || null,
       });
 
       if (error) {

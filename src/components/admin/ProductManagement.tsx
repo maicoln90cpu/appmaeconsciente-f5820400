@@ -22,9 +22,9 @@ interface Product {
   display_order: number;
   thumbnail_url: string | null;
   hotmart_product_id: string | null;
-  destination_url: string | null;
   payment_url: string | null;
   access_duration_days: number | null;
+  destination_url: string | null;
 }
 
 export const ProductManagement = () => {
@@ -41,6 +41,9 @@ export const ProductManagement = () => {
     is_active: true,
     display_order: 0,
     destination_url: null,
+    hotmart_product_id: null,
+    payment_url: null,
+    access_duration_days: null,
   });
 
   const { data: products, isLoading } = useQuery({
