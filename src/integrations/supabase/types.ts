@@ -340,6 +340,7 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          display_name: string | null
           id: string
           image_urls: string[] | null
           updated_at: string
@@ -348,6 +349,7 @@ export type Database = {
         Insert: {
           content: string
           created_at?: string
+          display_name?: string | null
           id?: string
           image_urls?: string[] | null
           updated_at?: string
@@ -356,6 +358,7 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          display_name?: string | null
           id?: string
           image_urls?: string[] | null
           updated_at?: string
@@ -374,6 +377,7 @@ export type Database = {
           id: string
           is_active: boolean
           is_free: boolean
+          payment_url: string | null
           price: number | null
           short_description: string | null
           slug: string
@@ -391,6 +395,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_free?: boolean
+          payment_url?: string | null
           price?: number | null
           short_description?: string | null
           slug: string
@@ -408,6 +413,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_free?: boolean
+          payment_url?: string | null
           price?: number | null
           short_description?: string | null
           slug?: string

@@ -20,11 +20,16 @@ interface Product {
   price: number | null;
   display_order: number;
   destination_url: string | null;
+  hotmart_product_id: string | null;
+  payment_url: string | null;
+  access_duration_days: number | null;
 }
 
 interface ProductAccess {
   product_id: string;
+  expires_at: string | null;
 }
+
 
 const Materiais = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -58,7 +63,7 @@ const Materiais = () => {
 
       const { data: accessData, error: accessError } = await supabase
         .from("user_product_access")
-        .select("product_id")
+        .select("product_id, expires_at")
         .eq("user_id", user.id);
 
       if (accessError) throw accessError;
@@ -78,10 +83,26 @@ const Materiais = () => {
   };
 
   const hasAccess = (productId: string) => {
-    return userAccess.some((access) => access.product_id === productId);
+    const access = userAccess.find((a) => a.product_id === productId);
+    if (!access) return false;
+    
+    // Se não tem data de expiração, acesso vitalício
+    if (!access.expires_at) return true;
+    
+    // Verificar se expirou
+    const now = new Date();
+    const expiresAt = new Date(access.expires_at);
+    return now < expiresAt;
   };
 
   const handleAccessProduct = async (product: Product) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
     // Admins têm acesso total
     if (isAdmin) {
       if (product.destination_url) {
@@ -92,39 +113,51 @@ const Materiais = () => {
       return;
     }
 
-    const canAccess = product.is_free || hasAccess(product.id);
-
-    // Se não tem acesso, redireciona para página de pagamento
-    if (!canAccess) {
-      // TODO: Implementar página de pagamento do produto
-      toast({
-        title: "Produto Premium",
-        description: "Este material está disponível apenas para assinantes. Redirecionando para página de pagamento...",
-      });
-      // navigate(`/produto/${product.slug}/checkout`);
-      return;
-    }
-
-    // Se tem acesso e há link de destino, abre o link
-    if (product.destination_url) {
-      window.open(product.destination_url, '_blank');
-      return;
-    }
-
-    // Grant access automatically for free products
+    // Verificar se produto é gratuito
     if (product.is_free) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
+      // Conceder acesso automaticamente
       if (!hasAccess(product.id)) {
         await supabase.from("user_product_access").insert({
           user_id: user.id,
           product_id: product.id,
         });
       }
+
+      // Acessar
+      if (product.destination_url) {
+        window.open(product.destination_url, '_blank');
+      } else {
+        navigate(`/materiais/${product.slug}`);
+      }
+      return;
     }
 
-    navigate(`/materiais/${product.slug}`);
+    // Produto pago - verificar acesso válido
+    const userHasValidAccess = hasAccess(product.id);
+
+    if (userHasValidAccess) {
+      // Tem acesso válido
+      if (product.destination_url) {
+        window.open(product.destination_url, '_blank');
+      } else {
+        navigate(`/materiais/${product.slug}`);
+      }
+    } else {
+      // Não tem acesso ou expirou - redirecionar para pagamento
+      if (product.payment_url) {
+        window.open(product.payment_url, '_blank');
+        toast({
+          title: "Redirecionando para pagamento",
+          description: "Você será direcionado para a página de checkout.",
+        });
+      } else {
+        toast({
+          title: "Produto Premium",
+          description: "Entre em contato para adquirir este produto.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   const filteredProducts = products.filter((product) => {

@@ -68,6 +68,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
 
         if (!accessData) {
           setHasAccess(false);
+          setProduct({ ...productData, access_data: null });
         } else {
           // Check if access has expired
           if (accessData.expires_at) {
@@ -76,6 +77,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
             
             if (now > expirationDate) {
               setHasAccess(false);
+              setProduct({ ...productData, access_data: accessData });
               console.log('Access expired on:', expirationDate);
             } else {
               setHasAccess(true);
@@ -107,6 +109,9 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
   }
 
   if (!hasAccess) {
+    const accessData = product?.access_data;
+    const isExpired = accessData && accessData.expires_at && new Date() > new Date(accessData.expires_at);
+    
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="max-w-md">
@@ -114,21 +119,28 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
               <Lock className="h-6 w-6 text-muted-foreground" />
             </div>
-            <CardTitle className="text-center">Acesso Restrito</CardTitle>
+            <CardTitle className="text-center">
+              {isExpired ? "Acesso Expirado" : "Acesso Restrito"}
+            </CardTitle>
             <CardDescription className="text-center">
               {product?.is_free
                 ? "Você precisa estar logado para acessar este material."
-                : hasAccess === false && product
-                ? "Seu acesso a este material expirou ou você não tem permissão."
-                : "Este material está disponível apenas para assinantes premium."}
+                : isExpired
+                ? `Seu acesso a este material expirou${accessData.expires_at ? ` em ${new Date(accessData.expires_at).toLocaleDateString()}` : ''}.`
+                : "Este material está disponível apenas para assinantes."}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
             <Button onClick={() => window.location.href = "/materiais"}>
               Ver Todos os Materiais
             </Button>
-            {!product?.is_free && (
-              <Button variant="outline">Assinar Agora</Button>
+            {!product?.is_free && product?.payment_url && (
+              <Button 
+                variant="default"
+                onClick={() => window.open(product.payment_url, '_blank')}
+              >
+                {isExpired ? "Renovar Acesso" : "Comprar Agora"}
+              </Button>
             )}
           </CardContent>
         </Card>

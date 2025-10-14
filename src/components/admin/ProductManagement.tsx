@@ -23,6 +23,8 @@ interface Product {
   thumbnail_url: string | null;
   hotmart_product_id: string | null;
   destination_url: string | null;
+  payment_url: string | null;
+  access_duration_days: number | null;
 }
 
 export const ProductManagement = () => {
@@ -121,6 +123,9 @@ export const ProductManagement = () => {
       is_active: true,
       display_order: 0,
       destination_url: null,
+      hotmart_product_id: null,
+      payment_url: null,
+      access_duration_days: null,
     });
   };
 
@@ -194,15 +199,49 @@ export const ProductManagement = () => {
                 rows={3}
               />
             </div>
-            <div>
-              <Label>Link de Destino (opcional)</Label>
-              <Input
-                value={formData.destination_url || ""}
-                onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })}
-                placeholder="https://..."
-              />
-            </div>
-            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>Link de Destino (opcional)</Label>
+                <Input
+                  value={formData.destination_url || ""}
+                  onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })}
+                  placeholder="https://..."
+                />
+              </div>
+              <div>
+                <Label>ID Produto Hotmart (opcional)</Label>
+                <Input
+                  value={formData.hotmart_product_id || ""}
+                  onChange={(e) => setFormData({ ...formData, hotmart_product_id: e.target.value || null })}
+                  placeholder="12345"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  ID do produto na Hotmart para mapear compras automáticas
+                </p>
+              </div>
+              <div>
+                <Label>URL de Pagamento (opcional)</Label>
+                <Input
+                  value={formData.payment_url || ""}
+                  onChange={(e) => setFormData({ ...formData, payment_url: e.target.value || null })}
+                  placeholder="https://pay.hotmart.com/..."
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  URL de checkout específica deste produto
+                </p>
+              </div>
+              <div>
+                <Label>Duração do Acesso (dias)</Label>
+                <Input
+                  type="number"
+                  value={formData.access_duration_days || ""}
+                  onChange={(e) => setFormData({ ...formData, access_duration_days: e.target.value ? parseInt(e.target.value) : null })}
+                  placeholder="365"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Deixe em branco para acesso vitalício
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label>Preço</Label>
                 <Input
@@ -276,6 +315,31 @@ export const ProductManagement = () => {
                     value={formData.destination_url || ""}
                     onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })}
                     placeholder="https://..."
+                  />
+                </div>
+                <div>
+                  <Label>ID Produto Hotmart</Label>
+                  <Input
+                    value={formData.hotmart_product_id || ""}
+                    onChange={(e) => setFormData({ ...formData, hotmart_product_id: e.target.value || null })}
+                    placeholder="12345"
+                  />
+                </div>
+                <div>
+                  <Label>URL de Pagamento</Label>
+                  <Input
+                    value={formData.payment_url || ""}
+                    onChange={(e) => setFormData({ ...formData, payment_url: e.target.value || null })}
+                    placeholder="https://pay.hotmart.com/..."
+                  />
+                </div>
+                <div>
+                  <Label>Duração do Acesso (dias)</Label>
+                  <Input
+                    type="number"
+                    value={formData.access_duration_days || ""}
+                    onChange={(e) => setFormData({ ...formData, access_duration_days: e.target.value ? parseInt(e.target.value) : null })}
+                    placeholder="365"
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
