@@ -25,6 +25,8 @@ interface Product {
   payment_url: string | null;
   access_duration_days: number | null;
   destination_url: string | null;
+  trial_enabled: boolean | null;
+  trial_days: number | null;
 }
 
 export const ProductManagement = () => {
@@ -44,6 +46,8 @@ export const ProductManagement = () => {
     hotmart_product_id: null,
     payment_url: null,
     access_duration_days: null,
+    trial_enabled: false,
+    trial_days: 3,
   });
 
   const { data: products, isLoading } = useQuery({
@@ -129,6 +133,8 @@ export const ProductManagement = () => {
       hotmart_product_id: null,
       payment_url: null,
       access_duration_days: null,
+      trial_enabled: false,
+      trial_days: 3,
     });
   };
 
@@ -244,6 +250,26 @@ export const ProductManagement = () => {
                   Deixe em branco para acesso vitalício
                 </p>
               </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={formData.trial_enabled || false}
+                    onCheckedChange={(checked) => setFormData({ ...formData, trial_enabled: checked })}
+                  />
+                  <Label>Trial para Novos Usuários</Label>
+                </div>
+                {formData.trial_enabled && (
+                  <div>
+                    <Label>Dias de Trial</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={formData.trial_days || 3}
+                      onChange={(e) => setFormData({ ...formData, trial_days: parseInt(e.target.value) })}
+                    />
+                  </div>
+                )}
+              </div>
               <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label>Preço</Label>
@@ -344,6 +370,26 @@ export const ProductManagement = () => {
                     onChange={(e) => setFormData({ ...formData, access_duration_days: e.target.value ? parseInt(e.target.value) : null })}
                     placeholder="365"
                   />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={formData.trial_enabled || false}
+                      onCheckedChange={(checked) => setFormData({ ...formData, trial_enabled: checked })}
+                    />
+                    <Label>Trial para Novos Usuários</Label>
+                  </div>
+                  {formData.trial_enabled && (
+                    <div>
+                      <Label>Dias de Trial</Label>
+                      <Input
+                        type="number"
+                        min="1"
+                        value={formData.trial_days || 3}
+                        onChange={(e) => setFormData({ ...formData, trial_days: parseInt(e.target.value) })}
+                      />
+                    </div>
+                  )}
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <div>

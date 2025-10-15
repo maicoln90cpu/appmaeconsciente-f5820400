@@ -217,57 +217,21 @@ serve(async (req) => {
       userId = newUser.user.id;
       console.log('Usuário criado com sucesso:', userId);
       
-      // Enviar email de boas-vindas via E-goi
-      const emailHtml = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-            .credentials { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea; }
-            .button { display: inline-block; padding: 12px 30px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <h1>🎉 Bem-vindo(a)!</h1>
-            </div>
-            <div class="content">
-              <h2>Olá, ${buyerName}!</h2>
-              <p>Sua compra do produto <strong>${product.title}</strong> foi confirmada com sucesso!</p>
-              <p>Seu acesso já está liberado na plataforma. Use as credenciais abaixo para fazer login:</p>
-              
-              <div class="credentials">
-                <p><strong>📧 Email:</strong> ${buyerEmail}</p>
-                <p><strong>🔑 Senha:</strong> <code style="background: #f0f0f0; padding: 5px 10px; border-radius: 3px; font-size: 16px;">${randomPassword}</code></p>
-              </div>
-              
-              <p>⚠️ <strong>Importante:</strong> Recomendamos que você altere sua senha após o primeiro acesso para maior segurança.</p>
-              
-              <p>Se você tiver qualquer dúvida, entre em contato com nosso suporte.</p>
-              
-              <div class="footer">
-                <p>Este é um email automático. Por favor, não responda.</p>
-              </div>
-            </div>
-          </div>
-        </body>
-        </html>
-      `;
-
+      // Enviar email de boas-vindas com compra aprovada
       try {
         console.log('Tentando enviar email para:', buyerEmail);
         
         const { data: emailData, error: emailError } = await supabase.functions.invoke('send-resend-email', {
           body: {
             to: buyerEmail,
-            subject: `Bem-vindo! Suas credenciais de acesso - ${product.title}`,
-            html: emailHtml,
+            template: "purchase",
+            data: {
+              userName: buyerName,
+              email: buyerEmail,
+              password: randomPassword,
+              productTitle: product.title,
+              expiresAt: expiresAt,
+            },
           }
         });
         

@@ -55,22 +55,17 @@ serve(async (req) => {
 
     console.log("✅ Usuário criado:", authData.user.id);
 
-    // Enviar email com a senha via Resend
+    // Enviar email de boas-vindas
     try {
-      const emailHtml = `
-        <h1>Bem-vindo(a) à Mãe Consciente!</h1>
-        <p>Sua conta foi criada com sucesso.</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Senha temporária:</strong> ${password}</p>
-        <p>Por favor, faça login e altere sua senha nas configurações.</p>
-        <p>Acesse: <a href="https://dashboard-enxovalcompleto.lovable.app">https://dashboard-enxovalcompleto.lovable.app</a></p>
-      `;
-
       const { data: emailData, error: emailError } = await supabase.functions.invoke("send-resend-email", {
         body: {
           to: email,
-          subject: "Bem-vindo(a) à Mãe Consciente - Dados de Acesso",
-          html: emailHtml,
+          template: "welcome",
+          data: {
+            userName: full_name || email.split("@")[0],
+            email: email,
+            password: password,
+          },
         },
       });
 
