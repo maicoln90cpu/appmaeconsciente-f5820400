@@ -7,6 +7,20 @@ interface AnalyticsEvent {
 
 class Analytics {
   private enabled = true;
+  private sessionId: string;
+
+  constructor() {
+    this.sessionId = this.getOrCreateSessionId();
+  }
+
+  private getOrCreateSessionId(): string {
+    let sessionId = sessionStorage.getItem("analytics_session_id");
+    if (!sessionId) {
+      sessionId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem("analytics_session_id", sessionId);
+    }
+    return sessionId;
+  }
 
   track(event: AnalyticsEvent) {
     if (!this.enabled) return;
@@ -19,10 +33,13 @@ class Analytics {
       events.push({
         ...event,
         timestamp: new Date().toISOString(),
+        sessionId: this.sessionId,
+        userAgent: navigator.userAgent,
+        screenSize: `${window.screen.width}x${window.screen.height}`,
       });
 
-      // Keep only last 100 events
-      if (events.length > 100) {
+      // Keep only last 200 events
+      if (events.length > 200) {
         events.shift();
       }
 
@@ -64,12 +81,61 @@ class Analytics {
     });
   }
 
+  itemAdded(category: string) {
+    this.track({
+      name: "item_added",
+      properties: { category },
+    });
+  }
+
+  itemPurchased(category: string, price: number) {
+    this.track({
+      name: "item_purchased",
+      properties: { category, price },
+    });
+  }
+
+  budgetExceeded(currentBudget: number, totalSpent: number) {
+    this.track({
+      name: "budget_exceeded",
+      properties: { currentBudget, totalSpent, overspent: totalSpent - currentBudget },
+    });
+  }
+
+  enxovalShared() {
+    this.track({ name: "enxoval_shared" });
+  }
+
+  enxovalExported(format: "pdf" | "excel") {
+    this.track({
+      name: "enxoval_exported",
+      properties: { format },
+    });
+  }
+
   getEvents() {
     try {
       return JSON.parse(localStorage.getItem("analytics_events") || "[]");
     } catch {
       return [];
     }
+  }
+
+  getEventsSummary() {
+    const events = this.getEvents();
+    const summary: Record<string, number> = {};
+    
+    events.forEach((event: any) => {
+      summary[event.name] = (summary[event.name] || 0) + 1;
+    });
+    
+    return summary;
+  }
+
+  clearEvents() {
+    localStorage.removeItem("analytics_events");
+    sessionStorage.removeItem("analytics_session_id");
+    this.sessionId = this.getOrCreateSessionId();
   }
 }
 
