@@ -34,29 +34,31 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AnalyticsWrapper>
-        <Suspense fallback={<div />}>
+        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
+          <div className="animate-pulse">Carregando...</div>
+        </div>}>
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<Landing />} />
-            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/" element={<div className="animate-fade-in"><Landing /></div>} />
+            <Route path="/auth" element={<div className="animate-fade-in"><AuthPage /></div>} />
             
             {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/complete-profile" element={<MainLayout><CompleteProfile /></MainLayout>} />
-              <Route path="/profile" element={<MainLayout><ProfileSettings /></MainLayout>} />
-              <Route path="/admin" element={<MainLayout><AdminDashboard /></MainLayout>} />
-              <Route path="/materiais" element={<MainLayout><Materiais /></MainLayout>} />
-              <Route path="/comunidade" element={<MainLayout><Comunidade /></MainLayout>} />
-              <Route path="/suporte" element={<MainLayout><Suporte /></MainLayout>} />
+              <Route path="/complete-profile" element={<MainLayout><div className="animate-scale-in"><CompleteProfile /></div></MainLayout>} />
+              <Route path="/profile" element={<MainLayout><div className="animate-scale-in"><ProfileSettings /></div></MainLayout>} />
+              <Route path="/admin" element={<MainLayout><div className="animate-scale-in"><AdminDashboard /></div></MainLayout>} />
+              <Route path="/materiais" element={<MainLayout><div className="animate-scale-in"><Materiais /></div></MainLayout>} />
+              <Route path="/comunidade" element={<MainLayout><div className="animate-scale-in"><Comunidade /></div></MainLayout>} />
+              <Route path="/suporte" element={<MainLayout><div className="animate-scale-in"><Suporte /></div></MainLayout>} />
               
               {/* Product Routes */}
               <Route element={<ProductRoute productSlug="controle-enxoval" />}>
-                <Route path="/materiais/controle-enxoval" element={<MainLayout><Index /></MainLayout>} />
+                <Route path="/materiais/controle-enxoval" element={<MainLayout><div className="animate-scale-in"><Index /></div></MainLayout>} />
               </Route>
             </Route>
 
             {/* Catch-all */}
-            <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<div className="animate-fade-in"><NotFound /></div>} />
           </Routes>
         </Suspense>
         </AnalyticsWrapper>

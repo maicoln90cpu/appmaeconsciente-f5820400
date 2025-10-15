@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { supabase } from "@/integrations/supabase/client";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -83,6 +84,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <NotificationBell />
 
             {isAdmin && (
