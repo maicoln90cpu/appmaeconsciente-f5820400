@@ -53,6 +53,7 @@ export interface EnxovalItem {
   etapaMaes?: EtapaMaes;
   classificacao?: Classificacao;
   emocao?: Emocao;
+  tags?: string[];
 }
 
 export interface Budget {

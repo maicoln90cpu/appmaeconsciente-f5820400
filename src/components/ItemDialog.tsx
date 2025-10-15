@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 import { EnxovalItem, Category, Necessity, Status, Size, Origin, EtapaMaes, Classificacao, Emocao } from "@/types/enxoval";
 import { calculatePriority, calculateSubtotalPlanned, calculateSubtotalPaid, calculateSavings, calculateSavingsPercent } from "@/lib/calculations";
+import { TagsInput } from "@/components/TagsInput";
 
 interface ItemDialogProps {
   onAdd?: (item: EnxovalItem) => void;
@@ -58,7 +59,8 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
     notes: "",
     etapaMaes: "Mapear" as EtapaMaes,
     classificacao: "" as Classificacao | "",
-    emocao: "" as Emocao | ""
+    emocao: "" as Emocao | "",
+    tags: [] as string[]
   });
 
   useEffect(() => {
@@ -83,7 +85,8 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         notes: editingItem.notes || "",
         etapaMaes: editingItem.etapaMaes || "Mapear",
         classificacao: editingItem.classificacao || "",
-        emocao: editingItem.emocao || ""
+        emocao: editingItem.emocao || "",
+        tags: editingItem.tags || []
       });
     } else if (!isOpen) {
       // Reset form when dialog closes and not editing
@@ -107,7 +110,8 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         notes: "",
         etapaMaes: "Mapear",
         classificacao: "",
-        emocao: ""
+        emocao: "",
+        tags: []
       });
     }
   }, [editingItem, isOpen]);
@@ -148,7 +152,8 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         notes: formData.notes || undefined,
         etapaMaes: formData.etapaMaes as EtapaMaes | undefined,
         classificacao: formData.classificacao || undefined,
-        emocao: formData.emocao || undefined
+        emocao: formData.emocao || undefined,
+        tags: formData.tags
       };
       onEdit(updatedItem);
     } else if (onAdd) {
@@ -179,7 +184,8 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         notes: formData.notes || undefined,
         etapaMaes: formData.etapaMaes as EtapaMaes | undefined,
         classificacao: formData.classificacao || undefined,
-        emocao: formData.emocao || undefined
+        emocao: formData.emocao || undefined,
+        tags: formData.tags
       };
       onAdd(newItem);
     }
@@ -478,6 +484,11 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
               rows={3}
             />
           </div>
+
+          <TagsInput
+            tags={formData.tags}
+            onChange={(tags) => setFormData({ ...formData, tags })}
+          />
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>

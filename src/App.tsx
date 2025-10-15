@@ -19,6 +19,7 @@ const Materiais = lazy(() => import("./pages/Materiais"));
 const Comunidade = lazy(() => import("./pages/Comunidade"));
 const Suporte = lazy(() => import("./pages/Suporte"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
+const SharedEnxoval = lazy(() => import("./pages/SharedEnxoval"));
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             {/* Public Routes */}
             <Route path="/" element={<div className="animate-fade-in"><Landing /></div>} />
             <Route path="/auth" element={<div className="animate-fade-in"><AuthPage /></div>} />
+            <Route path="/shared/:token" element={<div className="animate-fade-in"><SharedEnxoval /></div>} />
             
             {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute />}>

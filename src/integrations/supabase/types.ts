@@ -148,6 +148,7 @@ export type Database = {
           qtd_comprada: number | null
           qtd_planejada: number | null
           status: string
+          tags: string[] | null
           tamanho: string | null
           updated_at: string
           user_id: string
@@ -176,6 +177,7 @@ export type Database = {
           qtd_comprada?: number | null
           qtd_planejada?: number | null
           status?: string
+          tags?: string[] | null
           tamanho?: string | null
           updated_at?: string
           user_id: string
@@ -204,6 +206,7 @@ export type Database = {
           qtd_comprada?: number | null
           qtd_planejada?: number | null
           status?: string
+          tags?: string[] | null
           tamanho?: string | null
           updated_at?: string
           user_id?: string
@@ -523,6 +526,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      shared_enxoval_links: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          token: string
+          user_id: string
+          views_count: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_active?: boolean
+          token: string
+          user_id: string
+          views_count?: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          token?: string
+          user_id?: string
+          views_count?: number
+        }
+        Relationships: []
       }
       support_tickets: {
         Row: {

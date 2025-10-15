@@ -12,6 +12,9 @@ import { DashboardTab } from "@/components/DashboardTab";
 import { RNGuideTable } from "@/components/RNGuideTable";
 import { Auth } from "@/components/Auth";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ExportEnxoval } from "@/components/ExportEnxoval";
+import { ShareEnxoval } from "@/components/ShareEnxoval";
+import { SizeCalculator } from "@/components/SizeCalculator";
 import { EnxovalItem } from "@/types/enxoval";
 import { Baby, LogOut, Save, Shield, User } from "lucide-react";
 import { useConfig } from "@/hooks/useConfig";
@@ -215,12 +218,17 @@ const Index = () => {
 
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
                     <CardTitle>Itens do Enxoval</CardTitle>
                     <CardDescription>Gerencie todos os itens do seu enxoval</CardDescription>
                   </div>
-                  <ItemDialog onAdd={handleAddItem} />
+                  <div className="flex gap-2 flex-wrap">
+                    <SizeCalculator />
+                    <ShareEnxoval />
+                    <ExportEnxoval items={items} />
+                    <ItemDialog onAdd={handleAddItem} />
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>

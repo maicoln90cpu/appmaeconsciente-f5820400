@@ -73,6 +73,7 @@ export const useEnxovalItems = (config: Config | null) => {
       etapaMaes: dbItem.etapa_maes,
       classificacao: dbItem.classificacao,
       emocao: dbItem.emocao,
+      tags: dbItem.tags || [],
     };
   };
 
@@ -142,6 +143,7 @@ export const useEnxovalItems = (config: Config | null) => {
         etapa_maes: item.etapaMaes || null,
         classificacao: item.classificacao || null,
         emocao: item.emocao || null,
+        tags: item.tags || [],
       });
 
       if (error) throw error;
@@ -194,6 +196,7 @@ export const useEnxovalItems = (config: Config | null) => {
           etapa_maes: item.etapaMaes || null,
           classificacao: item.classificacao || null,
           emocao: item.emocao || null,
+          tags: item.tags || [],
         })
         .eq("id", item.id);
 
