@@ -15,6 +15,8 @@ export interface Post {
   comments_count: number;
   user_has_liked: boolean;
   display_name: string | null;
+  categoria: string | null;
+  tags: string[] | null;
 }
 
 export const usePosts = () => {
@@ -35,7 +37,9 @@ export const usePosts = () => {
           content,
           image_urls,
           created_at,
-          display_name
+          display_name,
+          categoria,
+          tags
         `)
         .order("created_at", { ascending: false });
 
@@ -91,7 +95,13 @@ export const usePosts = () => {
     }
   };
 
-  const createPost = async (content: string, imageUrls: string[], displayName?: string | null) => {
+  const createPost = async (
+    content: string,
+    imageUrls: string[],
+    displayName?: string | null,
+    categoria?: string,
+    tags?: string[]
+  ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -133,6 +143,8 @@ export const usePosts = () => {
         content: trimmedContent,
         image_urls: imageUrls,
         display_name: displayName || null,
+        categoria: categoria || null,
+        tags: tags || null,
       });
 
       if (error) {

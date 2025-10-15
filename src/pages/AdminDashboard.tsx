@@ -24,6 +24,8 @@ import { TicketManagement } from "@/components/admin/TicketManagement";
 import { ProductManagement } from "@/components/admin/ProductManagement";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { PromotionManagement } from "@/components/admin/PromotionManagement";
+import { CouponManagement } from "@/components/admin/CouponManagement";
+import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import {
   BarChart,
   Bar,
@@ -300,16 +302,21 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
-          <TabsList className="grid grid-cols-8 w-full">
-            <TabsTrigger value="charts">Gráficos</TabsTrigger>
+          <TabsList className="grid grid-cols-9 w-full">
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
             <TabsTrigger value="products">Produtos</TabsTrigger>
             <TabsTrigger value="promotions">Promoções</TabsTrigger>
+            <TabsTrigger value="coupons">Cupons</TabsTrigger>
             <TabsTrigger value="tickets">Tickets</TabsTrigger>
             <TabsTrigger value="posts">Posts</TabsTrigger>
             <TabsTrigger value="hotmart">Hotmart</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="analytics">
+            <AnalyticsDashboard />
+          </TabsContent>
 
           <TabsContent value="charts" className="space-y-4">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -392,6 +399,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="promotions">
             <PromotionManagement />
+          </TabsContent>
+
+          <TabsContent value="coupons">
+            <CouponManagement />
           </TabsContent>
 
           <TabsContent value="tickets">

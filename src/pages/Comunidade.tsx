@@ -1,11 +1,25 @@
+import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { usePosts } from "@/hooks/usePosts";
 import { CreatePostDialog } from "@/components/comunidade/CreatePostDialog";
 import { PostCard } from "@/components/comunidade/PostCard";
+import { PostFilters } from "@/components/comunidade/PostFilters";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
 
 const Comunidade = () => {
   const { posts, loading, createPost, deletePost, toggleLike } = usePosts();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const filteredPosts = posts.filter((post) => {
+    const matchesSearch = searchQuery
+      ? post.content.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+    const matchesCategory = selectedCategory
+      ? post.categoria === selectedCategory
+      : true;
+    return matchesSearch && matchesCategory;
+  });
 
   if (loading) {
     return (
@@ -25,15 +39,21 @@ const Comunidade = () => {
           </p>
         </div>
 
+        <PostFilters
+          onSearch={setSearchQuery}
+          onCategoryFilter={setSelectedCategory}
+          selectedCategory={selectedCategory}
+        />
+
         <div className="space-y-6">
-          {posts.length === 0 ? (
+          {filteredPosts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground mb-4">
                 Nenhum post ainda. Seja a primeira a compartilhar!
               </p>
             </div>
           ) : (
-            posts.map((post) => (
+            filteredPosts.map((post) => (
               <PostCard
                 key={post.id}
                 post={post}
