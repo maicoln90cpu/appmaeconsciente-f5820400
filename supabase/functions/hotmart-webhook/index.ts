@@ -219,12 +219,12 @@ serve(async (req) => {
       
       // Calcular expiresAt antes de enviar o email
       const durationDays = product.access_duration_days;
-      let expiresAt = null;
+      let newUserExpiresAt = null;
       
       if (durationDays) {
         const expirationDate = new Date();
         expirationDate.setDate(expirationDate.getDate() + durationDays);
-        expiresAt = expirationDate.toISOString();
+        newUserExpiresAt = expirationDate.toISOString();
       }
       
       // Enviar email de boas-vindas com compra aprovada
@@ -240,7 +240,7 @@ serve(async (req) => {
               email: buyerEmail,
               password: randomPassword,
               productTitle: product.title,
-              expiresAt: expiresAt,
+              expiresAt: newUserExpiresAt,
             },
           }
         });
