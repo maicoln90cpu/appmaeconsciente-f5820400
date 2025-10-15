@@ -9,6 +9,15 @@ import { Plus, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
+import { z } from "zod";
+
+const postSchema = z.object({
+  content: z.string()
+    .max(5000, "O post deve ter no máximo 5000 caracteres"),
+  displayName: z.string()
+    .max(100, "O nome deve ter no máximo 100 caracteres")
+    .optional(),
+});
 
 const CATEGORIES = [
   { value: "dicas", label: "💡 Dicas" },
@@ -50,6 +59,30 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
       return;
     }
 
+    // Validação de tamanho e tipo
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    for (const file of files) {
+      if (file.size > MAX_SIZE) {
+        toast({
+          title: "Arquivo muito grande",
+          description: `${file.name} excede o limite de 5MB.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast({
+          title: "Formato inválido",
+          description: `${file.name} não é um formato válido. Use JPG, PNG ou WebP.`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
     setImages((prev) => [...prev, ...files]);
     
     files.forEach((file) => {
@@ -71,6 +104,34 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
       toast({
         title: "Post vazio",
         description: "Adicione texto ou imagens ao seu post.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validação com Zod
+    try {
+      postSchema.parse({
+        content,
+        displayName: isAdmin ? displayName : undefined,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: "Erro de validação",
+          description: error.errors[0].message,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    // Validação anti-XSS
+    const dangerousPatterns = [/<script/i, /javascript:/i, /on\w+\s*=/i, /data:text\/html/i];
+    if (dangerousPatterns.some(pattern => pattern.test(content))) {
+      toast({
+        title: "Conteúdo bloqueado",
+        description: "O post contém código potencialmente perigoso.",
         variant: "destructive",
       });
       return;
