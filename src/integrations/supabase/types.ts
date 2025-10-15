@@ -383,6 +383,8 @@ export type Database = {
           slug: string
           thumbnail_url: string | null
           title: string
+          trial_days: number | null
+          trial_enabled: boolean | null
           updated_at: string
         }
         Insert: {
@@ -401,6 +403,8 @@ export type Database = {
           slug: string
           thumbnail_url?: string | null
           title: string
+          trial_days?: number | null
+          trial_enabled?: boolean | null
           updated_at?: string
         }
         Update: {
@@ -419,6 +423,8 @@ export type Database = {
           slug?: string
           thumbnail_url?: string | null
           title?: string
+          trial_days?: number | null
+          trial_enabled?: boolean | null
           updated_at?: string
         }
         Relationships: []
@@ -476,6 +482,47 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      promotions: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          duration_days: number
+          id: string
+          is_active: boolean
+          name: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          duration_days: number
+          id?: string
+          is_active?: boolean
+          name: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          duration_days?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promotions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_tickets: {
         Row: {
