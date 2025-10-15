@@ -213,9 +213,19 @@ serve(async (req) => {
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-
+      
       userId = newUser.user.id;
       console.log('Usuário criado com sucesso:', userId);
+      
+      // Calcular expiresAt antes de enviar o email
+      const durationDays = product.access_duration_days;
+      let expiresAt = null;
+      
+      if (durationDays) {
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + durationDays);
+        expiresAt = expirationDate.toISOString();
+      }
       
       // Enviar email de boas-vindas com compra aprovada
       try {
@@ -309,15 +319,15 @@ serve(async (req) => {
 
     console.log('Processando compra aprovada');
 
-    // Calcular data de expiração
+    // Calcular data de expiração (reutilizando se já calculado para usuário novo)
     const durationDays = product.access_duration_days;
-    let expiresAt = null;
+    let accessExpiresAt = null;
     
     if (durationDays) {
       const expirationDate = new Date();
       expirationDate.setDate(expirationDate.getDate() + durationDays);
-      expiresAt = expirationDate.toISOString();
-      console.log(`Acesso concedido por ${durationDays} dias, expira em:`, expiresAt);
+      accessExpiresAt = expirationDate.toISOString();
+      console.log(`Acesso concedido por ${durationDays} dias, expira em:`, accessExpiresAt);
     } else {
       console.log('Acesso vitalício concedido');
     }
@@ -328,7 +338,7 @@ serve(async (req) => {
       .upsert({
         user_id: userId,
         product_id: productId,
-        expires_at: expiresAt
+        expires_at: accessExpiresAt
       }, {
         onConflict: 'user_id,product_id'
       });
@@ -397,7 +407,7 @@ serve(async (req) => {
         success: true, 
         message: 'Acesso concedido',
         userId,
-        expiresAt,
+        expiresAt: accessExpiresAt,
       }),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
