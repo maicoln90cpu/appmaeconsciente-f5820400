@@ -105,23 +105,24 @@ serve(async (req) => {
       );
     }
 
-    // Buscar produto diretamente por hotmart_product_id
-    console.log('Buscando produto por hotmart_product_id:', hotmartProductId);
-    const { data: product, error: productError } = await supabase
-      .from('products')
-      .select('id, access_duration_days, payment_url, title')
+    // ✅ CORREÇÃO: Buscar mapeamento Hotmart primeiro
+    console.log('🔍 Buscando mapeamento para hotmart_product_id:', hotmartProductId);
+    
+    const { data: mapping, error: mappingError } = await supabase
+      .from('hotmart_product_mapping')
+      .select('internal_product_id')
       .eq('hotmart_product_id', hotmartProductId)
       .maybeSingle();
 
-    if (productError) {
-      console.error('Erro ao buscar produto:', productError);
+    if (mappingError) {
+      console.error('❌ Erro ao buscar mapeamento:', mappingError);
       
       await supabase.from('hotmart_transactions').upsert({
         transaction_id: transactionId,
         hotmart_product_id: hotmartProductId,
         buyer_email: buyerEmail,
         buyer_name: buyerName,
-        status: 'failed',
+        status: 'mapping_error',
         amount: payload.data.commission?.value || 0,
         event_type: event,
       }, {
@@ -130,13 +131,50 @@ serve(async (req) => {
       });
 
       return new Response(
-        JSON.stringify({ error: 'Erro ao buscar produto', details: productError }),
+        JSON.stringify({ error: 'Erro ao buscar mapeamento do produto', details: mappingError }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    if (!product) {
-      console.log('Produto não encontrado para hotmart_product_id:', hotmartProductId);
+    if (!mapping) {
+      console.error('❌ Mapeamento não encontrado para hotmart_product_id:', hotmartProductId);
+      console.log('💡 Configure o mapeamento em: Admin Dashboard > Mapeamentos Hotmart');
+      
+      await supabase.from('hotmart_transactions').upsert({
+        transaction_id: transactionId,
+        hotmart_product_id: hotmartProductId,
+        buyer_email: buyerEmail,
+        buyer_name: buyerName,
+        status: 'mapping_not_found',
+        amount: payload.data.commission?.value || 0,
+        event_type: event,
+      }, {
+        onConflict: 'transaction_id',
+        ignoreDuplicates: false
+      });
+
+      return new Response(
+        JSON.stringify({ 
+          error: 'Produto Hotmart não mapeado no sistema',
+          hotmart_product_id: hotmartProductId,
+          hint: 'Configure o mapeamento no Admin Dashboard'
+        }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const internalProductId = mapping.internal_product_id;
+    console.log('✅ Mapeamento encontrado! Internal Product ID:', internalProductId);
+
+    // Buscar produto interno
+    const { data: product, error: productError } = await supabase
+      .from('products')
+      .select('id, access_duration_days, payment_url, title')
+      .eq('id', internalProductId)
+      .maybeSingle();
+
+    if (productError || !product) {
+      console.error('❌ Erro ao buscar produto interno:', productError || 'Produto não existe');
       
       await supabase.from('hotmart_transactions').upsert({
         transaction_id: transactionId,
@@ -152,16 +190,13 @@ serve(async (req) => {
       });
 
       return new Response(
-        JSON.stringify({ 
-          message: 'Produto não cadastrado no sistema', 
-          hotmart_product_id: hotmartProductId 
-        }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Produto interno não encontrado', internal_product_id: internalProductId }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     const productId = product.id;
-    console.log('Produto encontrado:', productId, product.title);
+    console.log('✅ Produto encontrado:', productId, '|', product.title);
 
     // Buscar ou criar usuário
     let userId: string | null = null;
