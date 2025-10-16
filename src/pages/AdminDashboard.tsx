@@ -19,6 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HotmartMappings } from "@/components/admin/HotmartMappings";
 import { HotmartTransactions } from "@/components/admin/HotmartTransactions";
+import { ManualPurchaseResend } from "@/components/admin/ManualPurchaseResend";
 import { PostModeration } from "@/components/admin/PostModeration";
 import { TicketManagement } from "@/components/admin/TicketManagement";
 import { ProductManagement } from "@/components/admin/ProductManagement";
@@ -414,6 +415,7 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="hotmart" className="space-y-4">
+            <ManualPurchaseResend />
             <HotmartMappings />
             <HotmartTransactions />
           </TabsContent>
