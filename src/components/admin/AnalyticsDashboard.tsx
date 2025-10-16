@@ -57,11 +57,40 @@ export const AnalyticsDashboard = () => {
         .select("*", { count: "exact", head: true })
         .gte("created_at", firstDayOfMonth.toISOString());
 
+      // Calculate total revenue from Hotmart transactions
+      const { data: transactions } = await supabase
+        .from("hotmart_transactions")
+        .select("product_id, status")
+        .in("status", ["approved", "complete"]);
+
+      let totalRevenue = 0;
+      if (transactions && transactions.length > 0) {
+        const productIds = [...new Set(transactions.map(t => t.product_id).filter(Boolean))];
+        
+        if (productIds.length > 0) {
+          const { data: products } = await supabase
+            .from("products")
+            .select("id, price")
+            .in("id", productIds);
+
+          if (products) {
+            const priceMap = new Map(products.map(p => [p.id, p.price || 0]));
+            totalRevenue = transactions.reduce((sum, t) => {
+              if (t.product_id) {
+                return sum + (priceMap.get(t.product_id) || 0);
+              }
+              return sum;
+            }, 0);
+          }
+        }
+      }
+
       return {
         totalUsers: totalUsers || 0,
         newUsersThisMonth: newUsersThisMonth || 0,
         activeProducts: activeProducts || 0,
         postsThisMonth: postsThisMonth || 0,
+        totalRevenue,
       };
     },
   });
@@ -184,12 +213,17 @@ export const AnalyticsDashboard = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Engajamento</CardTitle>
+            <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{summary?.postsThisMonth || 0}</div>
-            <p className="text-xs text-muted-foreground">Posts este mês</p>
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              }).format(summary?.totalRevenue || 0)}
+            </div>
+            <p className="text-xs text-muted-foreground">Vendas via Hotmart</p>
           </CardContent>
         </Card>
       </div>
