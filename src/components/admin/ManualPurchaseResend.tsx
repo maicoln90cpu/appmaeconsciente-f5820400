@@ -27,12 +27,8 @@ export const ManualPurchaseResend = () => {
   // Carregar produtos
   useState(() => {
     const loadProducts = async () => {
-      const { data } = await supabase
-        .from('products')
-        .select('id, title')
-        .eq('is_active', true)
-        .order('title');
-      
+      const { data } = await supabase.from("products").select("id, title").eq("is_active", true).order("title");
+
       if (data) setProducts(data);
     };
     loadProducts();
@@ -62,18 +58,18 @@ export const ManualPurchaseResend = () => {
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('resend-purchase-credentials', {
+      const { data, error } = await supabase.functions.invoke("resend-purchase-credentials", {
         body: {
           buyer_email: buyerEmail.toLowerCase().trim(),
           buyer_name: buyerName.trim(),
           product_id: selectedProduct,
           transaction_id: transactionId || undefined,
           force_new_password: forceNewPassword,
-        }
+        },
       });
 
       if (error) {
-        console.error('Erro ao reenviar:', error);
+        console.error("Erro ao reenviar:", error);
         toast({
           title: "Erro ao reenviar",
           description: error.message || "Erro desconhecido",
@@ -94,16 +90,8 @@ export const ManualPurchaseResend = () => {
               <Mail className="h-4 w-4 text-blue-500" />
               <span>Email enviado para {buyerEmail}</span>
             </div>
-            {data.isNewUser && (
-              <div className="mt-2 text-sm text-muted-foreground">
-                • Novo usuário criado
-              </div>
-            )}
-            {data.passwordGenerated && (
-              <div className="text-sm text-muted-foreground">
-                • Nova senha gerada
-              </div>
-            )}
+            {data.isNewUser && <div className="mt-2 text-sm text-muted-foreground">• Novo usuário criado</div>}
+            {data.passwordGenerated && <div className="text-sm text-muted-foreground">• Nova senha gerada</div>}
             {data.warning && (
               <div className="flex items-center gap-2 mt-2 text-yellow-600">
                 <AlertCircle className="h-4 w-4" />
@@ -120,9 +108,8 @@ export const ManualPurchaseResend = () => {
       setSelectedProduct("");
       setTransactionId("");
       setForceNewPassword(false);
-
     } catch (err: any) {
-      console.error('Exceção ao reenviar:', err);
+      console.error("Exceção ao reenviar:", err);
       toast({
         title: "Erro",
         description: err.message || "Erro ao processar requisição",
@@ -141,8 +128,8 @@ export const ManualPurchaseResend = () => {
           Reenviar Credenciais de Compra Manualmente
         </CardTitle>
         <CardDescription>
-          Use esta ferramenta para reprocessar compras com erro ou reenviar credenciais manualmente.
-          O sistema irá criar/atualizar o usuário, conceder acesso ao produto e enviar o email.
+          Use esta ferramenta para reprocessar compras com erro ou reenviar credenciais manualmente. O sistema irá
+          criar/atualizar o usuário, conceder acesso ao produto e enviar o email.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -151,7 +138,7 @@ export const ManualPurchaseResend = () => {
           <Input
             id="buyer-email"
             type="email"
-            placeholder="isabela_vitoriass23@hotmail.com"
+            placeholder="e-mail do comprador"
             value={buyerEmail}
             onChange={(e) => setBuyerEmail(e.target.value)}
             disabled={loading}
@@ -162,7 +149,7 @@ export const ManualPurchaseResend = () => {
           <Label htmlFor="buyer-name">Nome do Comprador *</Label>
           <Input
             id="buyer-name"
-            placeholder="Isabela Vitória"
+            placeholder="Nome Completo"
             value={buyerName}
             onChange={(e) => setBuyerName(e.target.value)}
             disabled={loading}
@@ -171,11 +158,7 @@ export const ManualPurchaseResend = () => {
 
         <div className="space-y-2">
           <Label htmlFor="product">Produto Comprado *</Label>
-          <Select 
-            value={selectedProduct} 
-            onValueChange={setSelectedProduct}
-            disabled={loading}
-          >
+          <Select value={selectedProduct} onValueChange={setSelectedProduct} disabled={loading}>
             <SelectTrigger>
               <SelectValue placeholder="Selecione o produto" />
             </SelectTrigger>
@@ -198,14 +181,12 @@ export const ManualPurchaseResend = () => {
             onChange={(e) => setTransactionId(e.target.value)}
             disabled={loading}
           />
-          <p className="text-xs text-muted-foreground">
-            ID da transação Hotmart para registro no histórico
-          </p>
+          <p className="text-xs text-muted-foreground">ID da transação Hotmart para registro no histórico</p>
         </div>
 
         <div className="flex items-center space-x-2">
-          <Checkbox 
-            id="force-password" 
+          <Checkbox
+            id="force-password"
             checked={forceNewPassword}
             onCheckedChange={(checked) => setForceNewPassword(checked === true)}
             disabled={loading}
@@ -218,11 +199,7 @@ export const ManualPurchaseResend = () => {
           </label>
         </div>
 
-        <Button 
-          onClick={handleResend} 
-          disabled={loading}
-          className="w-full"
-        >
+        <Button onClick={handleResend} disabled={loading} className="w-full">
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
