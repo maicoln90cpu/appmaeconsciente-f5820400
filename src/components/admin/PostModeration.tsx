@@ -3,12 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Eye } from "lucide-react";
+import { Trash2, Eye, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { useState } from "react";
 
 export const PostModeration = () => {
   const queryClient = useQueryClient();
+  const [isSeeding, setIsSeeding] = useState(false);
 
   const { data: posts, isLoading } = useQuery({
     queryKey: ["admin-posts"],
@@ -56,13 +58,47 @@ export const PostModeration = () => {
     },
   });
 
+  const handleSeedCommunity = async () => {
+    try {
+      setIsSeeding(true);
+      toast.loading("Povoando comunidade...");
+
+      const { data, error } = await supabase.functions.invoke('seed-community');
+
+      if (error) throw error;
+
+      toast.dismiss();
+      toast.success(
+        `Comunidade povoada! ${data.stats.profiles} perfis, ${data.stats.posts} posts, ${data.stats.likes} curtidas, ${data.stats.comments} comentários`
+      );
+      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+    } catch (error: any) {
+      toast.dismiss();
+      toast.error(`Erro ao povoar comunidade: ${error.message}`);
+      console.error('Erro:', error);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
+
   if (isLoading) {
     return <div>Carregando posts...</div>;
   }
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold">Moderação de Posts</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Moderação de Posts</h2>
+        <Button 
+          onClick={handleSeedCommunity} 
+          disabled={isSeeding}
+          variant="default"
+          className="gap-2"
+        >
+          <Sparkles className="h-4 w-4" />
+          Povoar Comunidade
+        </Button>
+      </div>
       <div className="grid gap-4">
         {posts?.map((post) => (
           <Card key={post.id}>
