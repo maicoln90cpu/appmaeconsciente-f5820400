@@ -21,6 +21,7 @@ const Suporte = lazy(() => import("./pages/Suporte"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const SharedEnxoval = lazy(() => import("./pages/SharedEnxoval"));
 const CalculadoraFraldas = lazy(() => import("./pages/CalculadoraFraldas"));
+const MalaDaMaternidade = lazy(() => import("./pages/MalaDaMaternidade"));
 
 const queryClient = new QueryClient();
 
@@ -61,6 +62,10 @@ const App = () => (
               
               <Route element={<ProductRoute productSlug="calculadora-fraldas" />}>
                 <Route path="/materiais/calculadora-fraldas" element={<MainLayout><div className="animate-scale-in"><CalculadoraFraldas /></div></MainLayout>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="mala-maternidade" />}>
+                <Route path="/materiais/mala-maternidade" element={<MainLayout><div className="animate-scale-in"><MalaDaMaternidade /></div></MainLayout>} />
               </Route>
             </Route>
 
