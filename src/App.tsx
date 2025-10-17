@@ -20,6 +20,7 @@ const Comunidade = lazy(() => import("./pages/Comunidade"));
 const Suporte = lazy(() => import("./pages/Suporte"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
 const SharedEnxoval = lazy(() => import("./pages/SharedEnxoval"));
+const CalculadoraFraldas = lazy(() => import("./pages/CalculadoraFraldas"));
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,10 @@ const App = () => (
               {/* Product Routes */}
               <Route element={<ProductRoute productSlug="controle-enxoval" />}>
                 <Route path="/materiais/controle-enxoval" element={<MainLayout><div className="animate-scale-in"><Index /></div></MainLayout>} />
+              </Route>
+              
+              <Route element={<ProductRoute productSlug="calculadora-fraldas" />}>
+                <Route path="/materiais/calculadora-fraldas" element={<MainLayout><div className="animate-scale-in"><CalculadoraFraldas /></div></MainLayout>} />
               </Route>
             </Route>
 
