@@ -1,7 +1,7 @@
 project_id = "tiyumtsvuqxolxngdfhz"
 
 [functions.notify-ticket-created]
-verify_jwt = false
+verify_jwt = true
 
 [functions.hotmart-webhook]
 verify_jwt = false

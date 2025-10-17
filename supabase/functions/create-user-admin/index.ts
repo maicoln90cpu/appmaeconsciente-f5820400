@@ -11,6 +11,26 @@ interface CreateUserRequest {
   full_name?: string;
 }
 
+/**
+ * Generate a cryptographically secure random password
+ * @param length Password length (minimum 12 recommended)
+ * @returns Random password string
+ */
+function generateSecurePassword(length: number = 16): string {
+  const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*';
+  const charsetLength = charset.length;
+  
+  const randomValues = new Uint8Array(length);
+  crypto.getRandomValues(randomValues);
+  
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += charset[randomValues[i] % charsetLength];
+  }
+  
+  return password;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -32,8 +52,8 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Gerar senha aleatória
-    const password = crypto.randomUUID();
+    // Gerar senha aleatória segura
+    const password = generateSecurePassword(16);
 
     // Criar usuário
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({

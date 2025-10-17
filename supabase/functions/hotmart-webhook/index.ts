@@ -30,13 +30,23 @@ interface HotmartWebhookData {
   };
 }
 
-// Função para gerar senha aleatória segura
-function generateRandomPassword(length = 12): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
+/**
+ * Generate a cryptographically secure random password
+ * @param length Password length (minimum 12 recommended)
+ * @returns Random password string
+ */
+function generateSecurePassword(length: number = 16): string {
+  const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*';
+  const charsetLength = charset.length;
+  
+  const randomValues = new Uint8Array(length);
+  crypto.getRandomValues(randomValues);
+  
   let password = '';
   for (let i = 0; i < length; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
+    password += charset[randomValues[i] % charsetLength];
   }
+  
   return password;
 }
 
@@ -214,7 +224,7 @@ serve(async (req) => {
     } else {
       console.log('Criando novo usuário:', buyerEmail);
       
-      randomPassword = generateRandomPassword();
+      randomPassword = generateSecurePassword(16);
       
       const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
         email: buyerEmail,
