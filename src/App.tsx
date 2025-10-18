@@ -22,6 +22,7 @@ const AuthPage = lazy(() => import("./pages/AuthPage"));
 const SharedEnxoval = lazy(() => import("./pages/SharedEnxoval"));
 const CalculadoraFraldas = lazy(() => import("./pages/CalculadoraFraldas"));
 const MalaDaMaternidade = lazy(() => import("./pages/MalaDaMaternidade"));
+const GuiaAlimentacao = lazy(() => import("./pages/GuiaAlimentacao"));
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,10 @@ const App = () => (
 
               <Route element={<ProductRoute productSlug="mala-maternidade" />}>
                 <Route path="/materiais/mala-maternidade" element={<MainLayout><div className="animate-scale-in"><MalaDaMaternidade /></div></MainLayout>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="guia-alimentacao" />}>
+                <Route path="/materiais/guia-alimentacao" element={<MainLayout><div className="animate-scale-in"><GuiaAlimentacao /></div></MainLayout>} />
               </Route>
             </Route>
 

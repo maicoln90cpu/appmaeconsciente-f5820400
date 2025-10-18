@@ -136,6 +136,39 @@ export type Database = {
           },
         ]
       }
+      food_alerts: {
+        Row: {
+          alert_type: string
+          alternatives: string[] | null
+          created_at: string
+          food_name: string
+          id: string
+          is_active: boolean | null
+          reason: string
+          trimester_specific: number[] | null
+        }
+        Insert: {
+          alert_type: string
+          alternatives?: string[] | null
+          created_at?: string
+          food_name: string
+          id?: string
+          is_active?: boolean | null
+          reason: string
+          trimester_specific?: number[] | null
+        }
+        Update: {
+          alert_type?: string
+          alternatives?: string[] | null
+          created_at?: string
+          food_name?: string
+          id?: string
+          is_active?: boolean | null
+          reason?: string
+          trimester_specific?: number[] | null
+        }
+        Relationships: []
+      }
       hotmart_product_mapping: {
         Row: {
           created_at: string
@@ -342,6 +375,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      meal_plans: {
+        Row: {
+          calcium: number | null
+          calories: number | null
+          carbs: number | null
+          created_at: string
+          day_of_week: number
+          description: string | null
+          fats: number | null
+          fiber: number | null
+          folic_acid: number | null
+          id: string
+          ingredients: string[] | null
+          iron: number | null
+          meal_type: string
+          preparation: string | null
+          proteins: number | null
+          tips: string | null
+          title: string
+          trimester: number
+          updated_at: string
+        }
+        Insert: {
+          calcium?: number | null
+          calories?: number | null
+          carbs?: number | null
+          created_at?: string
+          day_of_week: number
+          description?: string | null
+          fats?: number | null
+          fiber?: number | null
+          folic_acid?: number | null
+          id?: string
+          ingredients?: string[] | null
+          iron?: number | null
+          meal_type: string
+          preparation?: string | null
+          proteins?: number | null
+          tips?: string | null
+          title: string
+          trimester: number
+          updated_at?: string
+        }
+        Update: {
+          calcium?: number | null
+          calories?: number | null
+          carbs?: number | null
+          created_at?: string
+          day_of_week?: number
+          description?: string | null
+          fats?: number | null
+          fiber?: number | null
+          folic_acid?: number | null
+          id?: string
+          ingredients?: string[] | null
+          iron?: number | null
+          meal_type?: string
+          preparation?: string | null
+          proteins?: number | null
+          tips?: string | null
+          title?: string
+          trimester?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -625,6 +724,69 @@ export type Database = {
           },
         ]
       }
+      recipes: {
+        Row: {
+          calories: number | null
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          ingredients: string[]
+          is_public: boolean | null
+          nutrients: Json | null
+          prep_time: number | null
+          preparation: string[]
+          servings: number | null
+          tags: string[] | null
+          tips: string | null
+          title: string
+          trimester_focus: number[] | null
+          updated_at: string
+        }
+        Insert: {
+          calories?: number | null
+          category: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients: string[]
+          is_public?: boolean | null
+          nutrients?: Json | null
+          prep_time?: number | null
+          preparation: string[]
+          servings?: number | null
+          tags?: string[] | null
+          tips?: string | null
+          title: string
+          trimester_focus?: number[] | null
+          updated_at?: string
+        }
+        Update: {
+          calories?: number | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string[]
+          is_public?: boolean | null
+          nutrients?: Json | null
+          prep_time?: number | null
+          preparation?: string[]
+          servings?: number | null
+          tags?: string[] | null
+          tips?: string | null
+          title?: string
+          trimester_focus?: number[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       shared_enxoval_links: {
         Row: {
           created_at: string
@@ -654,6 +816,44 @@ export type Database = {
           views_count?: number
         }
         Relationships: []
+      }
+      supplement_logs: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          scheduled_time: string | null
+          supplement_id: string
+          taken_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          scheduled_time?: string | null
+          supplement_id: string
+          taken_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          scheduled_time?: string | null
+          supplement_id?: string
+          taken_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplement_logs_supplement_id_fkey"
+            columns: ["supplement_id"]
+            isOneToOne: false
+            referencedRelation: "user_supplements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       support_tickets: {
         Row: {
@@ -747,6 +947,33 @@ export type Database = {
           follower_id?: string
           following_id?: string
           id?: string
+        }
+        Relationships: []
+      }
+      user_food_restrictions: {
+        Row: {
+          created_at: string
+          food_name: string
+          id: string
+          notes: string | null
+          restriction_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          food_name: string
+          id?: string
+          notes?: string | null
+          restriction_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          food_name?: string
+          id?: string
+          notes?: string | null
+          restriction_type?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -845,6 +1072,93 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_supplements: {
+        Row: {
+          created_at: string
+          dosage: string
+          end_date: string | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          start_date: string
+          supplement_name: string
+          time_of_day: string[] | null
+          times_per_day: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosage: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          start_date: string
+          supplement_name: string
+          time_of_day?: string[] | null
+          times_per_day?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dosage?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          start_date?: string
+          supplement_name?: string
+          time_of_day?: string[] | null
+          times_per_day?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      weight_tracking: {
+        Row: {
+          belly_measurement: number | null
+          created_at: string
+          date: string
+          id: string
+          notes: string | null
+          photo_url: string | null
+          updated_at: string
+          user_id: string
+          week_of_pregnancy: number | null
+          weight: number
+        }
+        Insert: {
+          belly_measurement?: number | null
+          created_at?: string
+          date: string
+          id?: string
+          notes?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id: string
+          week_of_pregnancy?: number | null
+          weight: number
+        }
+        Update: {
+          belly_measurement?: number | null
+          created_at?: string
+          date?: string
+          id?: string
+          notes?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id?: string
+          week_of_pregnancy?: number | null
+          weight?: number
+        }
+        Relationships: []
       }
     }
     Views: {
