@@ -6,7 +6,12 @@ import { ControleSuplemento } from "@/components/alimentacao/ControleSuplemento"
 import { Receitas } from "@/components/alimentacao/Receitas";
 import { MonitoramentoPeso } from "@/components/alimentacao/MonitoramentoPeso";
 import { AlertasAlimentos } from "@/components/alimentacao/AlertasAlimentos";
-import { Utensils, Pill, BookOpen, Scale, AlertTriangle } from "lucide-react";
+import { IANutricional } from "@/components/alimentacao/IANutricional";
+import { RastreadorHidratacao } from "@/components/alimentacao/RastreadorHidratacao";
+import { ExerciciosTrimestre } from "@/components/alimentacao/ExerciciosTrimestre";
+import { ListaCompras } from "@/components/alimentacao/ListaCompras";
+import { DashboardSaude } from "@/components/alimentacao/DashboardSaude";
+import { Utensils, Pill, BookOpen, Scale, AlertTriangle, Bot, Droplets, Dumbbell, ShoppingCart, BarChart3 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -49,22 +54,42 @@ export default function GuiaAlimentacao() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger value="ia" className="flex items-center gap-2">
+              <Bot className="h-4 w-4" />
+              <span className="hidden sm:inline">IA</span>
+            </TabsTrigger>
             <TabsTrigger value="plano" className="flex items-center gap-2">
               <Utensils className="h-4 w-4" />
-              <span className="hidden sm:inline">Plano Semanal</span>
-            </TabsTrigger>
-            <TabsTrigger value="suplementos" className="flex items-center gap-2">
-              <Pill className="h-4 w-4" />
-              <span className="hidden sm:inline">Suplementos</span>
+              <span className="hidden sm:inline">Plano</span>
             </TabsTrigger>
             <TabsTrigger value="receitas" className="flex items-center gap-2">
               <BookOpen className="h-4 w-4" />
               <span className="hidden sm:inline">Receitas</span>
             </TabsTrigger>
+            <TabsTrigger value="suplementos" className="flex items-center gap-2">
+              <Pill className="h-4 w-4" />
+              <span className="hidden sm:inline">Suplementos</span>
+            </TabsTrigger>
+            <TabsTrigger value="hidratacao" className="flex items-center gap-2">
+              <Droplets className="h-4 w-4" />
+              <span className="hidden sm:inline">Água</span>
+            </TabsTrigger>
+            <TabsTrigger value="exercicios" className="flex items-center gap-2">
+              <Dumbbell className="h-4 w-4" />
+              <span className="hidden sm:inline">Exercícios</span>
+            </TabsTrigger>
             <TabsTrigger value="peso" className="flex items-center gap-2">
               <Scale className="h-4 w-4" />
               <span className="hidden sm:inline">Peso</span>
+            </TabsTrigger>
+            <TabsTrigger value="compras" className="flex items-center gap-2">
+              <ShoppingCart className="h-4 w-4" />
+              <span className="hidden sm:inline">Compras</span>
             </TabsTrigger>
             <TabsTrigger value="alertas" className="flex items-center gap-2">
               <AlertTriangle className="h-4 w-4" />
@@ -72,20 +97,40 @@ export default function GuiaAlimentacao() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="plano">
-            <PlanoSemanal profile={profile} />
+          <TabsContent value="dashboard">
+            <DashboardSaude />
           </TabsContent>
 
-          <TabsContent value="suplementos">
-            <ControleSuplemento />
+          <TabsContent value="ia">
+            <IANutricional />
+          </TabsContent>
+
+          <TabsContent value="plano">
+            <PlanoSemanal profile={profile} />
           </TabsContent>
 
           <TabsContent value="receitas">
             <Receitas />
           </TabsContent>
 
+          <TabsContent value="suplementos">
+            <ControleSuplemento />
+          </TabsContent>
+
+          <TabsContent value="hidratacao">
+            <RastreadorHidratacao />
+          </TabsContent>
+
+          <TabsContent value="exercicios">
+            <ExerciciosTrimestre />
+          </TabsContent>
+
           <TabsContent value="peso">
             <MonitoramentoPeso profile={profile} />
+          </TabsContent>
+
+          <TabsContent value="compras">
+            <ListaCompras />
           </TabsContent>
 
           <TabsContent value="alertas">

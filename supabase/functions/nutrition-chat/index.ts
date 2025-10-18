@@ -1,0 +1,153 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const { message, conversationId } = await req.json();
+    
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('No authorization header');
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // Verificar usuário
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    
+    if (userError || !user) {
+      throw new Error('Unauthorized');
+    }
+
+    // Buscar histórico da conversa
+    const { data: messages } = await supabase
+      .from('nutrition_chat_messages')
+      .select('*')
+      .eq('conversation_id', conversationId)
+      .order('created_at', { ascending: true });
+
+    // Buscar dados do perfil para contexto
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('meses_gestacao')
+      .eq('id', user.id)
+      .single();
+
+    const trimester = profile?.meses_gestacao 
+      ? Math.ceil(profile.meses_gestacao / 3) 
+      : 1;
+
+    // Preparar mensagens para a IA
+    const conversationHistory = messages?.map(m => ({
+      role: m.role,
+      content: m.content
+    })) || [];
+
+    const systemPrompt = `Você é uma nutricionista especializada em gestação. Você está auxiliando uma gestante que está no ${trimester}º trimestre.
+
+Suas responsabilidades:
+- Fornecer orientações nutricionais baseadas em evidências científicas
+- Sugerir alimentos e receitas saudáveis para gestantes
+- Explicar os benefícios de nutrientes específicos para cada trimestre
+- Alertar sobre alimentos que devem ser evitados durante a gestação
+- Responder dúvidas sobre suplementação (mas sempre recomendando consultar o médico para prescrições)
+
+Diretrizes importantes:
+- Sempre reforce que suas orientações são gerais e não substituem consulta médica
+- Seja empática e acolhedora
+- Use linguagem simples e acessível
+- Quando relevante, sugira receitas práticas e rápidas
+- Considere as necessidades nutricionais específicas do trimestre atual
+- Mantenha respostas concisas e diretas
+
+Formato de resposta:
+- Use markdown para melhor formatação
+- Organize informações em listas quando apropriado
+- Seja objetiva mas calorosa no tom`;
+
+    // Chamar Lovable AI
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...conversationHistory,
+          { role: 'user', content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('AI Gateway error:', response.status, errorText);
+      throw new Error(`AI Gateway error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const assistantMessage = data.choices?.[0]?.message?.content;
+
+    if (!assistantMessage) {
+      throw new Error('No response from AI');
+    }
+
+    // Salvar mensagens no banco
+    await supabase.from('nutrition_chat_messages').insert([
+      {
+        conversation_id: conversationId,
+        role: 'user',
+        content: message
+      },
+      {
+        conversation_id: conversationId,
+        role: 'assistant',
+        content: assistantMessage
+      }
+    ]);
+
+    // Atualizar título da conversa se for a primeira mensagem
+    if (!messages || messages.length === 0) {
+      const title = message.length > 50 ? message.substring(0, 50) + '...' : message;
+      await supabase
+        .from('nutrition_chat_conversations')
+        .update({ title })
+        .eq('id', conversationId);
+    }
+
+    return new Response(
+      JSON.stringify({ message: assistantMessage }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      }
+    );
+  } catch (error: any) {
+    console.error('Error in nutrition-chat:', error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500,
+      }
+    );
+  }
+});

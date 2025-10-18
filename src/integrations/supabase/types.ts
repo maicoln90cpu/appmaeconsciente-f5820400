@@ -136,6 +136,60 @@ export type Database = {
           },
         ]
       }
+      exercises: {
+        Row: {
+          benefits: string[] | null
+          category: string
+          created_at: string
+          description: string
+          duration_minutes: number | null
+          id: string
+          image_url: string | null
+          instructions: string[] | null
+          intensity: string | null
+          is_active: boolean | null
+          precautions: string[] | null
+          title: string
+          trimester: number[]
+          updated_at: string
+          video_url: string | null
+        }
+        Insert: {
+          benefits?: string[] | null
+          category: string
+          created_at?: string
+          description: string
+          duration_minutes?: number | null
+          id?: string
+          image_url?: string | null
+          instructions?: string[] | null
+          intensity?: string | null
+          is_active?: boolean | null
+          precautions?: string[] | null
+          title: string
+          trimester: number[]
+          updated_at?: string
+          video_url?: string | null
+        }
+        Update: {
+          benefits?: string[] | null
+          category?: string
+          created_at?: string
+          description?: string
+          duration_minutes?: number | null
+          id?: string
+          image_url?: string | null
+          instructions?: string[] | null
+          intensity?: string | null
+          is_active?: boolean | null
+          precautions?: string[] | null
+          title?: string
+          trimester?: number[]
+          updated_at?: string
+          video_url?: string | null
+        }
+        Relationships: []
+      }
       food_alerts: {
         Row: {
           alert_type: string
@@ -468,6 +522,62 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      nutrition_chat_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nutrition_chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nutrition_chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "nutrition_chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       post_comments: {
         Row: {
@@ -929,6 +1039,44 @@ export type Database = {
           },
         ]
       }
+      user_exercise_logs: {
+        Row: {
+          created_at: string
+          date: string
+          duration_minutes: number
+          exercise_id: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string
+          duration_minutes: number
+          exercise_id: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          duration_minutes?: number
+          exercise_id?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_exercise_logs_exercise_id_fkey"
+            columns: ["exercise_id"]
+            isOneToOne: false
+            referencedRelation: "exercises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_follows: {
         Row: {
           created_at: string
@@ -1117,6 +1265,57 @@ export type Database = {
           time_of_day?: string[] | null
           times_per_day?: number | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      water_goals: {
+        Row: {
+          created_at: string
+          daily_goal_ml: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_goal_ml?: number
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_goal_ml?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      water_intake: {
+        Row: {
+          amount_ml: number
+          created_at: string
+          date: string
+          id: string
+          time: string
+          user_id: string
+        }
+        Insert: {
+          amount_ml: number
+          created_at?: string
+          date?: string
+          id?: string
+          time?: string
+          user_id: string
+        }
+        Update: {
+          amount_ml?: number
+          created_at?: string
+          date?: string
+          id?: string
+          time?: string
           user_id?: string
         }
         Relationships: []
