@@ -117,7 +117,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-[50vh]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -128,7 +128,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
     const isExpired = accessData && accessData.expires_at && new Date() > new Date(accessData.expires_at);
     
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="flex items-center justify-center p-4 min-h-[50vh]">
         <Card className="max-w-md">
           <CardHeader>
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-muted">

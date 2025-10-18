@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { MainLayout } from "@/components/layout/MainLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PlanoSemanal } from "@/components/alimentacao/PlanoSemanal";
 import { ControleSuplemento } from "@/components/alimentacao/ControleSuplemento";
@@ -21,31 +20,26 @@ export default function GuiaAlimentacao() {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="flex items-center justify-center min-h-[50vh]">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </MainLayout>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
     );
   }
 
   if (!profile?.perfil_completo) {
     return (
-      <MainLayout>
-        <div className="container max-w-4xl py-8">
-          <Alert>
-            <AlertDescription>
-              Por favor, complete seu perfil primeiro para acessar o Guia de Alimentação e Bem-Estar.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </MainLayout>
+      <div className="container max-w-4xl py-8">
+        <Alert>
+          <AlertDescription>
+            Por favor, complete seu perfil primeiro para acessar o Guia de Alimentação e Bem-Estar.
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="container max-w-6xl py-8">
+    <div className="container max-w-6xl py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">🌱 Guia de Alimentação e Bem-Estar</h1>
           <p className="text-muted-foreground">
@@ -138,6 +132,5 @@ export default function GuiaAlimentacao() {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
   );
 }
