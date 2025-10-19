@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Download, Share2 } from "lucide-react";
+import { Download, Share2, Mail } from "lucide-react";
 import jsPDF from "jspdf";
 import { useToast } from "@/hooks/use-toast";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface ChecklistItem {
   id: string;
@@ -143,15 +144,38 @@ export const ExportPDF = ({
     });
   };
 
-  const shareChecklist = async () => {
+  const getShareText = () => {
     const totalItems = motherItems.length + babyItems.length + companionItems.length;
     const checkedItems =
       motherItems.filter(i => i.checked).length +
       babyItems.filter(i => i.checked).length +
       companionItems.filter(i => i.checked).length;
 
-    const text = `Estou preparando minha mala da maternidade! 🎒\n\nProgresso: ${checkedItems}/${totalItems} itens prontos (${Math.round((checkedItems / totalItems) * 100)}%)\n\n👩 Mala da Mãe: ${motherItems.filter(i => i.checked).length}/${motherItems.length}\n👶 Mala do Bebê: ${babyItems.filter(i => i.checked).length}/${babyItems.length}\n👤 Mala do Acompanhante: ${companionItems.filter(i => i.checked).length}/${companionItems.length}`;
+    return `Estou preparando minha mala da maternidade! 🎒\n\nProgresso: ${checkedItems}/${totalItems} itens prontos (${Math.round((checkedItems / totalItems) * 100)}%)\n\n👩 Mala da Mãe: ${motherItems.filter(i => i.checked).length}/${motherItems.length}\n👶 Mala do Bebê: ${babyItems.filter(i => i.checked).length}/${babyItems.length}\n👤 Mala do Acompanhante: ${companionItems.filter(i => i.checked).length}/${companionItems.length}`;
+  };
 
+  const shareViaWhatsApp = () => {
+    const text = getShareText();
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+    toast({
+      title: "Compartilhando via WhatsApp",
+    });
+  };
+
+  const shareViaEmail = () => {
+    const text = getShareText();
+    const subject = "Meu Checklist de Mala da Maternidade";
+    const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
+    window.location.href = url;
+    toast({
+      title: "Abrindo email...",
+    });
+  };
+
+  const shareGeneric = async () => {
+    const text = getShareText();
+    
     if (navigator.share) {
       try {
         await navigator.share({
@@ -180,10 +204,29 @@ export const ExportPDF = ({
         <Download className="h-4 w-4 mr-2" />
         Baixar PDF
       </Button>
-      <Button onClick={shareChecklist} className="w-full" variant="outline">
-        <Share2 className="h-4 w-4 mr-2" />
-        Compartilhar Progresso
-      </Button>
+      
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="w-full" variant="outline">
+            <Share2 className="h-4 w-4 mr-2" />
+            Compartilhar Progresso
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuItem onClick={shareViaWhatsApp}>
+            <Share2 className="h-4 w-4 mr-2 text-green-600" />
+            Compartilhar via WhatsApp
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={shareViaEmail}>
+            <Mail className="h-4 w-4 mr-2 text-blue-600" />
+            Compartilhar via Email
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={shareGeneric}>
+            <Share2 className="h-4 w-4 mr-2" />
+            Outras opções
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

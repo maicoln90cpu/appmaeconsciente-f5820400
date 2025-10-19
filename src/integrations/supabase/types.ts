@@ -799,6 +799,7 @@ export type Database = {
       products: {
         Row: {
           access_duration_days: number | null
+          category: string | null
           created_at: string
           description: string
           destination_url: string | null
@@ -819,6 +820,7 @@ export type Database = {
         }
         Insert: {
           access_duration_days?: number | null
+          category?: string | null
           created_at?: string
           description: string
           destination_url?: string | null
@@ -839,6 +841,7 @@ export type Database = {
         }
         Update: {
           access_duration_days?: number | null
+          category?: string | null
           created_at?: string
           description?: string
           destination_url?: string | null

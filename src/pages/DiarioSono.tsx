@@ -3,6 +3,7 @@ import { RegistroSono } from "@/components/sono/RegistroSono";
 import { DashboardSono } from "@/components/sono/DashboardSono";
 import { HistoricoSono } from "@/components/sono/HistoricoSono";
 import { ConfiguracoesSono } from "@/components/sono/ConfiguracoesSono";
+import { ExportSonoPDF } from "@/components/sono/ExportSonoPDF";
 import { useBabySleep } from "@/hooks/useBabySleep";
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";

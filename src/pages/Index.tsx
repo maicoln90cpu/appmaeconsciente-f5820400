@@ -22,6 +22,8 @@ import { useEnxovalItems } from "@/hooks/useEnxovalItems";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserRole } from "@/hooks/useUserRole";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -192,6 +194,23 @@ const Index = () => {
                 <p className="text-lg font-medium text-primary">{config.mensagem_motivacao}</p>
               </div>
             )}
+            
+            {profile?.meses_gestacao && profile.meses_gestacao >= 8 && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription>
+                  🎒 Sua gestação está em {profile.meses_gestacao} meses. Já conferiu o{" "}
+                  <button
+                    onClick={() => navigate("/materiais/mala-maternidade")}
+                    className="font-semibold underline hover:text-primary"
+                  >
+                    Checklist de Mala da Maternidade
+                  </button>
+                  ? É importante estar preparada!
+                </AlertDescription>
+              </Alert>
+            )}
+
             <DashboardTab items={items} budget={config?.orcamento_total || 5000} />
 
             {items.length > 0 &&

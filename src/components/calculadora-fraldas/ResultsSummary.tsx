@@ -1,10 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, ShoppingCart, PieChart } from "lucide-react";
+import { Download, Share2, ShoppingCart, PieChart, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
 import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 interface Props {
   estimate: DiaperEstimate;
@@ -12,6 +14,7 @@ interface Props {
 
 export const ResultsSummary = ({ estimate }: Props) => {
   const { toast } = useToast();
+  const [addingToEnxoval, setAddingToEnxoval] = useState(false);
 
   const handleDownloadPDF = () => {
     toast({
@@ -39,6 +42,55 @@ export const ResultsSummary = ({ estimate }: Props) => {
         title: "Link copiado!",
         description: "Compartilhe seus resultados com quem quiser.",
       });
+    }
+  };
+
+  const handleAddToEnxoval = async () => {
+    setAddingToEnxoval(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Faça login",
+          description: "Você precisa estar logado para adicionar ao enxoval.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Adicionar cada tamanho de fralda ao enxoval
+      const itemsToAdd = estimate.estimates.map((est) => ({
+        user_id: user.id,
+        categoria: "Higiene",
+        item: `Fraldas tamanho ${est.size}`,
+        necessidade: "Necessário",
+        prioridade: "Alta",
+        qtd_planejada: est.monthlyQty,
+        preco_planejado: 0,
+        qtd_comprada: 0,
+        status: "A comprar",
+        obs: `Estimativa para ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? 'mês' : 'meses'}. Média: ${est.dailyAvg} fraldas/dia`,
+      }));
+
+      const { error } = await supabase
+        .from("itens_enxoval")
+        .insert(itemsToAdd);
+
+      if (error) throw error;
+
+      toast({
+        title: "✅ Adicionado ao Enxoval!",
+        description: `${estimate.estimates.length} itens de fraldas foram adicionados ao seu Controle de Enxoval.`,
+      });
+    } catch (error) {
+      console.error("Error adding to enxoval:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível adicionar ao enxoval. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setAddingToEnxoval(false);
     }
   };
 
@@ -133,15 +185,27 @@ export const ResultsSummary = ({ estimate }: Props) => {
         </div>
 
         {/* Ações */}
-        <div className="grid md:grid-cols-2 gap-3 pt-4">
-          <Button variant="default" onClick={handleDownloadPDF} className="w-full">
-            <Download className="mr-2 h-4 w-4" />
-            Baixar Relatório (PDF)
+        <div className="space-y-3 pt-4">
+          <Button 
+            variant="default" 
+            onClick={handleAddToEnxoval} 
+            className="w-full"
+            disabled={addingToEnxoval}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            {addingToEnxoval ? "Adicionando..." : "Adicionar ao Meu Enxoval"}
           </Button>
-          <Button variant="outline" onClick={handleShare} className="w-full">
-            <Share2 className="mr-2 h-4 w-4" />
-            Compartilhar Resultados
-          </Button>
+          
+          <div className="grid md:grid-cols-2 gap-3">
+            <Button variant="outline" onClick={handleDownloadPDF} className="w-full">
+              <Download className="mr-2 h-4 w-4" />
+              Baixar Relatório (PDF)
+            </Button>
+            <Button variant="outline" onClick={handleShare} className="w-full">
+              <Share2 className="mr-2 h-4 w-4" />
+              Compartilhar Resultados
+            </Button>
+          </div>
         </div>
 
         {/* Footer do Relatório */}

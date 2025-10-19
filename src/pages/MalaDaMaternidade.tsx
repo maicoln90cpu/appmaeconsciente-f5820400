@@ -168,8 +168,7 @@ const MalaDaMaternidade = () => {
   const daysUntilReady = Math.max(0, (37 - weeksPregnant) * 7);
 
   return (
-    <MainLayout>
-      <div className="container mx-auto py-8 px-4 max-w-6xl">
+    <div className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Checklist de Mala da Maternidade</h1>
           <p className="text-muted-foreground">
@@ -284,7 +283,6 @@ const MalaDaMaternidade = () => {
           </AlertDescription>
         </Alert>
       </div>
-    </MainLayout>
   );
 };
 

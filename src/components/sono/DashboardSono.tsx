@@ -2,9 +2,12 @@ import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BabySleepLog, BabySleepMilestone } from "@/types/babySleep";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby } from "lucide-react";
+import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby, AlertCircle } from "lucide-react";
 import { format, subDays, startOfDay, differenceInMinutes } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardSonoProps {
   sleepLogs: BabySleepLog[];
@@ -13,6 +16,7 @@ interface DashboardSonoProps {
 }
 
 export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: DashboardSonoProps) => {
+  const navigate = useNavigate();
   const last7DaysData = useMemo(() => {
     const days = Array.from({ length: 7 }, (_, i) => {
       const date = subDays(new Date(), 6 - i);
@@ -113,6 +117,21 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
     return { hours, minutes, total: awakeMinutes };
   }, [sleepLogs]);
 
+  // Verificar se o sono está abaixo do ideal nos últimos 3 dias
+  const sleepBelowIdeal = useMemo(() => {
+    if (!currentMilestone) return false;
+    
+    const last3Days = sleepLogs.filter(log => {
+      const logDate = new Date(log.sleep_start);
+      return logDate >= subDays(new Date(), 3) && log.duration_minutes;
+    });
+
+    if (last3Days.length === 0) return false;
+
+    const avgHoursLast3Days = last3Days.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) / 60 / 3;
+    return avgHoursLast3Days < currentMilestone.recommended_total_hours_min;
+  }, [sleepLogs, currentMilestone]);
+
   const getStatusColor = () => {
     if (!currentMilestone) return "text-muted-foreground";
     const totalHours = stats.totalHours24h;
@@ -123,6 +142,27 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
 
   return (
     <div className="space-y-6">
+      {/* Alerta de Sono Abaixo do Ideal */}
+      {sleepBelowIdeal && (
+        <Alert variant="default" className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20">
+          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <AlertDescription className="flex items-center justify-between">
+            <span className="text-yellow-800 dark:text-yellow-200">
+              💡 Sono abaixo do ideal nos últimos 3 dias. A alimentação pode influenciar o sono do bebê.{" "}
+              Confira dicas de nutrição no Guia de Bem-Estar.
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/materiais/guia-alimentacao")}
+              className="ml-4 shrink-0"
+            >
+              Ver Dicas
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* KPIs */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>

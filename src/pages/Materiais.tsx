@@ -4,8 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { Lock, CheckCircle2, Loader2 } from "lucide-react";
+import { Lock, CheckCircle2, Loader2, Tag } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -23,6 +24,7 @@ interface Product {
   hotmart_product_id: string | null;
   payment_url: string | null;
   access_duration_days: number | null;
+  category?: string | null;
 }
 
 interface ProductAccess {
@@ -36,6 +38,7 @@ const Materiais = () => {
   const [userAccess, setUserAccess] = useState<ProductAccess[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "free" | "paid" | "my">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
@@ -106,7 +109,7 @@ const Materiais = () => {
     // ✅ VERIFICAR ADMIN PRIMEIRO (antes de qualquer outra lógica)
     if (isAdmin) {
       if (product.destination_url) {
-        window.open(product.destination_url, '_blank');
+        navigate(product.destination_url);
       } else {
         navigate(`/materiais/${product.slug}`);
       }
@@ -125,7 +128,7 @@ const Materiais = () => {
 
       // Acessar
       if (product.destination_url) {
-        window.open(product.destination_url, '_blank');
+        navigate(product.destination_url);
       } else {
         navigate(`/materiais/${product.slug}`);
       }
@@ -138,7 +141,7 @@ const Materiais = () => {
     if (userHasValidAccess) {
       // Tem acesso válido
       if (product.destination_url) {
-        window.open(product.destination_url, '_blank');
+        navigate(product.destination_url);
       } else {
         navigate(`/materiais/${product.slug}`);
       }
@@ -160,12 +163,22 @@ const Materiais = () => {
     }
   };
 
+  const categories = Array.from(
+    new Set(products.map(p => p.category).filter(Boolean))
+  ) as string[];
+
   const filteredProducts = products.filter((product) => {
-    if (filter === "all") return true;
-    if (filter === "free") return product.is_free;
-    if (filter === "paid") return !product.is_free;
-    if (filter === "my") return hasAccess(product.id) || product.is_free;
-    return true;
+    // Filtro de acesso
+    const accessMatch = 
+      filter === "all" ? true :
+      filter === "free" ? product.is_free :
+      filter === "paid" ? !product.is_free :
+      filter === "my" ? (hasAccess(product.id) || product.is_free) : true;
+
+    // Filtro de categoria
+    const categoryMatch = categoryFilter === "all" || product.category === categoryFilter;
+
+    return accessMatch && categoryMatch;
   });
 
   if (loading) {
@@ -185,14 +198,35 @@ const Materiais = () => {
           </p>
         </div>
 
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as any)} className="mb-8">
-          <TabsList>
-            <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="free">Gratuitos</TabsTrigger>
-            <TabsTrigger value="paid">Pagos</TabsTrigger>
-            <TabsTrigger value="my">Meus Materiais</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="space-y-4 mb-8">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as any)}>
+            <TabsList>
+              <TabsTrigger value="all">Todos</TabsTrigger>
+              <TabsTrigger value="free">Gratuitos</TabsTrigger>
+              <TabsTrigger value="paid">Pagos</TabsTrigger>
+              <TabsTrigger value="my">Meus Materiais</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {categories.length > 0 && (
+            <div className="flex items-center gap-3">
+              <Tag className="h-4 w-4 text-muted-foreground" />
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="w-[280px]">
+                  <SelectValue placeholder="Filtrar por categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todas as categorias</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => {
@@ -204,13 +238,20 @@ const Materiais = () => {
                 <CardHeader>
                   <div className="flex items-start justify-between mb-2">
                     <CardTitle>{product.title}</CardTitle>
-                    {product.is_free ? (
-                      <Badge variant="secondary">Gratuito</Badge>
-                    ) : userHasAccess ? (
-                      <Badge className="bg-green-500">Seu</Badge>
-                    ) : (
-                      <Badge variant="outline">Premium</Badge>
-                    )}
+                    <div className="flex flex-col gap-1 items-end">
+                      {product.is_free ? (
+                        <Badge variant="secondary">Gratuito</Badge>
+                      ) : userHasAccess ? (
+                        <Badge className="bg-green-500">Seu</Badge>
+                      ) : (
+                        <Badge variant="outline">Premium</Badge>
+                      )}
+                      {product.category && (
+                        <Badge variant="outline" className="text-xs">
+                          {product.category}
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <CardDescription>
                     {product.short_description || product.description.substring(0, 100) + "..."}
