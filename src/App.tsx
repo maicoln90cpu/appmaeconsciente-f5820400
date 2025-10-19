@@ -23,6 +23,7 @@ const SharedEnxoval = lazy(() => import("./pages/SharedEnxoval"));
 const CalculadoraFraldas = lazy(() => import("./pages/CalculadoraFraldas"));
 const MalaDaMaternidade = lazy(() => import("./pages/MalaDaMaternidade"));
 const GuiaAlimentacao = lazy(() => import("./pages/GuiaAlimentacao"));
+const DiarioSono = lazy(() => import("./pages/DiarioSono"));
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,10 @@ const App = () => (
 
               <Route element={<ProductRoute productSlug="guia-alimentacao" />}>
                 <Route path="/materiais/guia-alimentacao" element={<MainLayout><div className="animate-scale-in"><GuiaAlimentacao /></div></MainLayout>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="diario-sono" />}>
+                <Route path="/materiais/diario-sono" element={<MainLayout><div className="animate-scale-in"><DiarioSono /></div></MainLayout>} />
               </Route>
             </Route>
 
