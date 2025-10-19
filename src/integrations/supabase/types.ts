@@ -14,6 +14,126 @@ export type Database = {
   }
   public: {
     Tables: {
+      baby_sleep_logs: {
+        Row: {
+          baby_age_months: number | null
+          baby_name: string | null
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          location: string | null
+          mom_mood: string | null
+          notes: string | null
+          sleep_end: string | null
+          sleep_start: string
+          sleep_type: string
+          updated_at: string
+          user_id: string
+          wakeup_mood: string | null
+        }
+        Insert: {
+          baby_age_months?: number | null
+          baby_name?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          location?: string | null
+          mom_mood?: string | null
+          notes?: string | null
+          sleep_end?: string | null
+          sleep_start: string
+          sleep_type: string
+          updated_at?: string
+          user_id: string
+          wakeup_mood?: string | null
+        }
+        Update: {
+          baby_age_months?: number | null
+          baby_name?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          location?: string | null
+          mom_mood?: string | null
+          notes?: string | null
+          sleep_end?: string | null
+          sleep_start?: string
+          sleep_type?: string
+          updated_at?: string
+          user_id?: string
+          wakeup_mood?: string | null
+        }
+        Relationships: []
+      }
+      baby_sleep_milestones: {
+        Row: {
+          age_range_end: number
+          age_range_start: number
+          avg_night_sleep_hours: number | null
+          created_at: string
+          id: string
+          recommended_naps: number | null
+          recommended_total_hours_max: number
+          recommended_total_hours_min: number
+          tips: string[] | null
+        }
+        Insert: {
+          age_range_end: number
+          age_range_start: number
+          avg_night_sleep_hours?: number | null
+          created_at?: string
+          id?: string
+          recommended_naps?: number | null
+          recommended_total_hours_max: number
+          recommended_total_hours_min: number
+          tips?: string[] | null
+        }
+        Update: {
+          age_range_end?: number
+          age_range_start?: number
+          avg_night_sleep_hours?: number | null
+          created_at?: string
+          id?: string
+          recommended_naps?: number | null
+          recommended_total_hours_max?: number
+          recommended_total_hours_min?: number
+          tips?: string[] | null
+        }
+        Relationships: []
+      }
+      baby_sleep_settings: {
+        Row: {
+          baby_birthdate: string
+          baby_name: string
+          created_at: string
+          id: string
+          reminder_enabled: boolean | null
+          reminder_interval_minutes: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baby_birthdate: string
+          baby_name: string
+          created_at?: string
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_interval_minutes?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baby_birthdate?: string
+          baby_name?: string
+          created_at?: string
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_interval_minutes?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       config: {
         Row: {
           created_at: string
