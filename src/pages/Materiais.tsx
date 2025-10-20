@@ -320,6 +320,11 @@ const Materiais = () => {
                   <CardDescription>
                     {product.short_description || product.description.substring(0, 100) + "..."}
                   </CardDescription>
+                  {!product.is_free && product.price && !userHasAccess && (
+                    <p className="text-lg font-bold text-primary mt-2">
+                      R$ {product.price.toFixed(2)}
+                    </p>
+                  )}
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-end">
                   <Button
