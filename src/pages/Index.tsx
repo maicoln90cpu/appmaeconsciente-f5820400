@@ -17,7 +17,7 @@ import { ExportEnxoval } from "@/components/ExportEnxoval";
 import { ShareEnxoval } from "@/components/ShareEnxoval";
 import { SizeCalculator } from "@/components/SizeCalculator";
 import { EnxovalItem } from "@/types/enxoval";
-import { Baby, LogOut, Save, Shield, User, Star, Info } from "lucide-react";
+import { Baby, LogOut, Save, Shield, User, Star, Info, Trophy } from "lucide-react";
 import { useConfig } from "@/hooks/useConfig";
 import { useEnxovalItems } from "@/hooks/useEnxovalItems";
 import { useToast } from "@/hooks/use-toast";
@@ -181,6 +181,15 @@ const Index = () => {
                   Membro Premium
                 </Badge>
               )}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => navigate("/conquistas")}
+                className="gap-2"
+              >
+                <Trophy className="h-4 w-4 text-yellow-500" />
+                Conquistas
+              </Button>
               <NotificationBell />
               <Button variant="outline" size="sm" onClick={() => navigate("/profile")} className="gap-2">
                 <User className="h-4 w-4" />

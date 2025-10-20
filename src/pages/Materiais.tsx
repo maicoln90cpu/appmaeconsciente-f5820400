@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { Lock, CheckCircle2, Loader2, Tag, Star } from "lucide-react";
+import { Lock, CheckCircle2, Loader2, Tag, Star, Baby } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -227,6 +227,31 @@ const Materiais = () => {
             </AlertDescription>
           </Alert>
         )}
+
+        {/* Dashboard Unificado - Destaque */}
+        <Card className="mb-6 border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-primary rounded-lg">
+                  <Baby className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    🍼💤 Dashboard Unificado - Minha Rotina do Bebê
+                    <Badge className="bg-green-500">NOVO</Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Visão 360° da rotina: mamadas, sono, alertas inteligentes e timeline completa
+                  </CardDescription>
+                </div>
+              </div>
+              <Button onClick={() => navigate('/dashboard-bebe')} size="lg">
+                Acessar Dashboard
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
 
         <div className="space-y-4 mb-8">
           <Tabs value={filter} onValueChange={(v) => setFilter(v as any)}>

@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BabySleepLog, BabySleepSettings, BabySleepMilestone } from "@/types/babySleep";
 import { toast } from "@/hooks/use-toast";
+import { useAchievements } from "@/hooks/useAchievements";
 
 export const useBabySleep = () => {
   const [sleepLogs, setSleepLogs] = useState<BabySleepLog[]>([]);
   const [settings, setSettings] = useState<BabySleepSettings | null>(null);
   const [milestones, setMilestones] = useState<BabySleepMilestone[]>([]);
   const [loading, setLoading] = useState(true);
+  const { checkAchievements } = useAchievements();
 
   const loadData = async () => {
     try {
@@ -118,6 +120,9 @@ export const useBabySleep = () => {
         title: "Registro salvo",
         description: "O registro de sono foi adicionado com sucesso!",
       });
+      
+      // Verificar conquistas após adicionar
+      setTimeout(() => checkAchievements(), 1000);
       
       return data;
     } catch (error: any) {

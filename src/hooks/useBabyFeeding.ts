@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useAchievements } from "@/hooks/useAchievements";
 import type { 
   BabyFeedingLog, 
   BreastMilkStorage, 
@@ -12,6 +13,7 @@ export const useBabyFeeding = () => {
   const [storage, setStorage] = useState<BreastMilkStorage[]>([]);
   const [settings, setSettings] = useState<FeedingSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const { checkAchievements } = useAchievements();
 
   const loadData = async () => {
     try {
@@ -105,6 +107,9 @@ export const useBabyFeeding = () => {
       }
       
       toast.success("Mamada registrada com sucesso!");
+      
+      // Verificar conquistas após adicionar
+      setTimeout(() => checkAchievements(), 1000);
     } catch (error) {
       console.error("Erro ao adicionar registro:", error);
       toast.error("Erro ao registrar mamada");
