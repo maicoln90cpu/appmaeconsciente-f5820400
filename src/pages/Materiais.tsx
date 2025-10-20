@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { Lock, CheckCircle2, Loader2, Tag, Star, Baby } from "lucide-react";
+import { Lock, CheckCircle2, Loader2, Tag, Star, Baby, Smartphone, Share, PlusSquare } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface Product {
   id: string;
@@ -42,9 +43,15 @@ const Materiais = () => {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [hasClubAccess, setHasClubAccess] = useState(false);
   const [clubPrice, setClubPrice] = useState<number | null>(null);
+  const [isIOS, setIsIOS] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
+
+  useEffect(() => {
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    setIsIOS(iOS);
+  }, []);
 
   useEffect(() => {
     loadProducts();
@@ -210,11 +217,126 @@ const Materiais = () => {
 
   return (
     <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Materiais</h1>
-          <p className="text-muted-foreground">
-            Ferramentas e conteúdos para sua jornada de maternidade consciente
-          </p>
+        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Materiais</h1>
+            <p className="text-muted-foreground">
+              Ferramentas e conteúdos para sua jornada de maternidade consciente
+            </p>
+          </div>
+          
+          {/* Botão Instalar App */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="lg" className="gap-2">
+                <Smartphone className="h-5 w-5" />
+                Instalar App
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-2xl">
+                  <Smartphone className="h-6 w-6 text-primary" />
+                  Instale o App na Tela Inicial
+                </DialogTitle>
+                <DialogDescription>
+                  Acesso rápido, offline e notificações personalizadas
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="grid md:grid-cols-2 gap-6 mt-4">
+                {/* iOS */}
+                <Card className="border-2">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Share className="h-5 w-5 text-primary" />
+                      iPhone (iOS)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        1
+                      </div>
+                      <p className="text-sm">Abra no <strong>Safari</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        2
+                      </div>
+                      <p className="text-sm">Toque em <strong>Compartilhar</strong> <Share className="h-4 w-4 inline" /></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        3
+                      </div>
+                      <p className="text-sm">Selecione <strong>"Adicionar à Tela de Início"</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        4
+                      </div>
+                      <p className="text-sm">Toque em <strong>"Adicionar"</strong></p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Android */}
+                <Card className="border-2">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Smartphone className="h-5 w-5 text-primary" />
+                      Android
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        1
+                      </div>
+                      <p className="text-sm">Abra no <strong>Chrome</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        2
+                      </div>
+                      <p className="text-sm">Toque no <strong>menu (⋮)</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        3
+                      </div>
+                      <p className="text-sm">Selecione <strong>"Instalar app"</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                        4
+                      </div>
+                      <p className="text-sm">Confirme a instalação</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="mt-6 p-4 bg-primary/5 rounded-lg">
+                <h4 className="font-semibold mb-2">Benefícios:</h4>
+                <ul className="space-y-1 text-sm">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Acesso offline aos materiais
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Carregamento mais rápido
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    Ícone na tela inicial do celular
+                  </li>
+                </ul>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Banner Clube Premium */}

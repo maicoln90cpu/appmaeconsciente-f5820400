@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star } from "lucide-react";
+import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
 import { supabase } from "@/integrations/supabase/client";
@@ -260,6 +260,111 @@ const Landing = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Seção "Baixe o App" */}
+      <section className="py-20 bg-gradient-to-r from-primary/5 to-accent/5">
+        <div className="container">
+          <div className="text-center mb-12">
+            <Smartphone className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-4xl font-bold mb-4">📱 Baixe Nosso App</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Instale na tela inicial e tenha acesso rápido, offline e notificações personalizadas
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
+            {/* iOS */}
+            <Card className="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Share className="h-5 w-5 text-primary" />
+                  iPhone (iOS)
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    1
+                  </div>
+                  <p className="text-sm">Abra o site no <strong>Safari</strong></p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    2
+                  </div>
+                  <p className="text-sm">Toque no botão <strong>Compartilhar</strong> <Share className="h-4 w-4 inline" /></p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    3
+                  </div>
+                  <p className="text-sm">Selecione <strong>"Adicionar à Tela de Início"</strong> <PlusSquare className="h-4 w-4 inline" /></p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    4
+                  </div>
+                  <p className="text-sm">Toque em <strong>"Adicionar"</strong> e pronto!</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Android */}
+            <Card className="border-2 hover:border-primary/50 transition-colors">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-primary" />
+                  Android
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    1
+                  </div>
+                  <p className="text-sm">Abra o site no <strong>Chrome</strong></p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    2
+                  </div>
+                  <p className="text-sm">Toque no <strong>menu (3 pontos)</strong> no canto superior direito</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    3
+                  </div>
+                  <p className="text-sm">Selecione <strong>"Instalar app"</strong> ou <strong>"Adicionar à tela inicial"</strong></p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold shrink-0">
+                    4
+                  </div>
+                  <p className="text-sm">Confirme e pronto! O app aparecerá na tela inicial</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="text-center">
+            <h3 className="text-lg font-semibold mb-4">Benefícios do App Instalado:</h3>
+            <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+              <div className="flex items-center gap-2 justify-center">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <span className="text-sm">Acesso offline</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <span className="text-sm">Carregamento rápido</span>
+              </div>
+              <div className="flex items-center gap-2 justify-center">
+                <CheckCircle2 className="h-5 w-5 text-green-500" />
+                <span className="text-sm">Ícone na tela inicial</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
