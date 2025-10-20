@@ -28,6 +28,7 @@ const MalaDaMaternidade = lazy(() => import("./pages/MalaDaMaternidade"));
 const GuiaAlimentacao = lazy(() => import("./pages/GuiaAlimentacao"));
 const DiarioSono = lazy(() => import("./pages/DiarioSono"));
 const RastreadorAmamentacao = lazy(() => import("./pages/RastreadorAmamentacao"));
+const CartaoVacinacao = lazy(() => import("./pages/CartaoVacinacao"));
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,10 @@ const App = () => (
 
               <Route element={<ProductRoute productSlug="rastreador-amamentacao" />}>
                 <Route path="/materiais/rastreador-amamentacao" element={<MainLayout><div className="animate-scale-in"><RastreadorAmamentacao /></div></MainLayout>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="cartao-vacinacao" />}>
+                <Route path="/materiais/cartao-vacinacao" element={<MainLayout><div className="animate-scale-in"><CartaoVacinacao /></div></MainLayout>} />
               </Route>
             </Route>
 

@@ -188,6 +188,120 @@ export type Database = {
         }
         Relationships: []
       }
+      baby_vaccination_profiles: {
+        Row: {
+          avatar_url: string | null
+          baby_name: string
+          birth_city: string | null
+          birth_date: string
+          birth_type: string | null
+          calendar_type: string
+          created_at: string
+          id: string
+          nickname: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          baby_name: string
+          birth_city?: string | null
+          birth_date: string
+          birth_type?: string | null
+          calendar_type?: string
+          created_at?: string
+          id?: string
+          nickname?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          baby_name?: string
+          birth_city?: string | null
+          birth_date?: string
+          birth_type?: string | null
+          calendar_type?: string
+          created_at?: string
+          id?: string
+          nickname?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      baby_vaccinations: {
+        Row: {
+          application_date: string
+          application_site: string | null
+          baby_profile_id: string
+          batch_number: string | null
+          calendar_vaccine_id: string | null
+          created_at: string
+          dose_label: string | null
+          health_professional: string | null
+          id: string
+          manufacturer: string | null
+          notes: string | null
+          proof_url: string | null
+          reactions: string | null
+          updated_at: string
+          user_id: string
+          vaccine_name: string
+        }
+        Insert: {
+          application_date: string
+          application_site?: string | null
+          baby_profile_id: string
+          batch_number?: string | null
+          calendar_vaccine_id?: string | null
+          created_at?: string
+          dose_label?: string | null
+          health_professional?: string | null
+          id?: string
+          manufacturer?: string | null
+          notes?: string | null
+          proof_url?: string | null
+          reactions?: string | null
+          updated_at?: string
+          user_id: string
+          vaccine_name: string
+        }
+        Update: {
+          application_date?: string
+          application_site?: string | null
+          baby_profile_id?: string
+          batch_number?: string | null
+          calendar_vaccine_id?: string | null
+          created_at?: string
+          dose_label?: string | null
+          health_professional?: string | null
+          id?: string
+          manufacturer?: string | null
+          notes?: string | null
+          proof_url?: string | null
+          reactions?: string | null
+          updated_at?: string
+          user_id?: string
+          vaccine_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_vaccinations_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "baby_vaccinations_calendar_vaccine_id_fkey"
+            columns: ["calendar_vaccine_id"]
+            isOneToOne: false
+            referencedRelation: "vaccination_calendar"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       breast_milk_storage: {
         Row: {
           created_at: string
@@ -1589,6 +1703,101 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      vaccination_calendar: {
+        Row: {
+          age_months: number
+          application_type: string | null
+          calendar_type: string
+          created_at: string
+          description: string | null
+          dose_label: string | null
+          dose_number: number
+          id: string
+          interval_days: number | null
+          post_vaccine_tips: string | null
+          purpose: string | null
+          side_effects: string | null
+          vaccine_name: string
+        }
+        Insert: {
+          age_months: number
+          application_type?: string | null
+          calendar_type?: string
+          created_at?: string
+          description?: string | null
+          dose_label?: string | null
+          dose_number: number
+          id?: string
+          interval_days?: number | null
+          post_vaccine_tips?: string | null
+          purpose?: string | null
+          side_effects?: string | null
+          vaccine_name: string
+        }
+        Update: {
+          age_months?: number
+          application_type?: string | null
+          calendar_type?: string
+          created_at?: string
+          description?: string | null
+          dose_label?: string | null
+          dose_number?: number
+          id?: string
+          interval_days?: number | null
+          post_vaccine_tips?: string | null
+          purpose?: string | null
+          side_effects?: string | null
+          vaccine_name?: string
+        }
+        Relationships: []
+      }
+      vaccination_reminder_settings: {
+        Row: {
+          baby_profile_id: string
+          created_at: string
+          email_enabled: boolean | null
+          id: string
+          push_enabled: boolean | null
+          reminder_days_before: number | null
+          reminder_enabled: boolean | null
+          updated_at: string
+          user_id: string
+          whatsapp_enabled: boolean | null
+        }
+        Insert: {
+          baby_profile_id: string
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          reminder_days_before?: number | null
+          reminder_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+          whatsapp_enabled?: boolean | null
+        }
+        Update: {
+          baby_profile_id?: string
+          created_at?: string
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          reminder_days_before?: number | null
+          reminder_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+          whatsapp_enabled?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vaccination_reminder_settings_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: true
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       water_goals: {
         Row: {
