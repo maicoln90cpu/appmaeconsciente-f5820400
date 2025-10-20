@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      baby_feeding_logs: {
+        Row: {
+          baby_name: string | null
+          breast_side: string | null
+          created_at: string
+          duration_minutes: number | null
+          end_time: string | null
+          feeding_type: string
+          id: string
+          leftover_ml: number | null
+          milk_type: string | null
+          notes: string | null
+          start_time: string
+          temperature: string | null
+          updated_at: string
+          user_id: string
+          volume_ml: number | null
+        }
+        Insert: {
+          baby_name?: string | null
+          breast_side?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          end_time?: string | null
+          feeding_type: string
+          id?: string
+          leftover_ml?: number | null
+          milk_type?: string | null
+          notes?: string | null
+          start_time: string
+          temperature?: string | null
+          updated_at?: string
+          user_id: string
+          volume_ml?: number | null
+        }
+        Update: {
+          baby_name?: string | null
+          breast_side?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          end_time?: string | null
+          feeding_type?: string
+          id?: string
+          leftover_ml?: number | null
+          milk_type?: string | null
+          notes?: string | null
+          start_time?: string
+          temperature?: string | null
+          updated_at?: string
+          user_id?: string
+          volume_ml?: number | null
+        }
+        Relationships: []
+      }
       baby_sleep_logs: {
         Row: {
           baby_age_months: number | null
@@ -131,6 +185,51 @@ export type Database = {
           reminder_interval_minutes?: number | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      breast_milk_storage: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          is_used: boolean | null
+          notes: string | null
+          pump_method: string | null
+          pumped_at: string
+          storage_location: string
+          updated_at: string
+          used_at: string | null
+          user_id: string
+          volume_ml: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_used?: boolean | null
+          notes?: string | null
+          pump_method?: string | null
+          pumped_at: string
+          storage_location: string
+          updated_at?: string
+          used_at?: string | null
+          user_id: string
+          volume_ml: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean | null
+          notes?: string | null
+          pump_method?: string | null
+          pumped_at?: string
+          storage_location?: string
+          updated_at?: string
+          used_at?: string | null
+          user_id?: string
+          volume_ml?: number
         }
         Relationships: []
       }
@@ -307,6 +406,42 @@ export type Database = {
           trimester?: number[]
           updated_at?: string
           video_url?: string | null
+        }
+        Relationships: []
+      }
+      feeding_settings: {
+        Row: {
+          baby_birthdate: string
+          baby_name: string
+          created_at: string
+          feeding_interval_minutes: number | null
+          id: string
+          last_breast_side: string | null
+          reminder_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baby_birthdate: string
+          baby_name: string
+          created_at?: string
+          feeding_interval_minutes?: number | null
+          id?: string
+          last_breast_side?: string | null
+          reminder_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baby_birthdate?: string
+          baby_name?: string
+          created_at?: string
+          feeding_interval_minutes?: number | null
+          id?: string
+          last_breast_side?: string | null
+          reminder_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
