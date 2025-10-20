@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ItemDialog } from "@/components/ItemDialog";
 import { EnxovalTable } from "@/components/EnxovalTable";
 import { DashboardTab } from "@/components/DashboardTab";
@@ -16,14 +17,13 @@ import { ExportEnxoval } from "@/components/ExportEnxoval";
 import { ShareEnxoval } from "@/components/ShareEnxoval";
 import { SizeCalculator } from "@/components/SizeCalculator";
 import { EnxovalItem } from "@/types/enxoval";
-import { Baby, LogOut, Save, Shield, User } from "lucide-react";
+import { Baby, LogOut, Save, Shield, User, Star, Info } from "lucide-react";
 import { useConfig } from "@/hooks/useConfig";
 import { useEnxovalItems } from "@/hooks/useEnxovalItems";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -32,6 +32,7 @@ const Index = () => {
   const [editingItem, setEditingItem] = useState<EnxovalItem | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [hasBreastfeeding, setHasBreastfeeding] = useState(false);
+  const [hasClubAccess, setHasClubAccess] = useState(false);
 
   // State local para configurações
   const [tempOrcamento, setTempOrcamento] = useState<number>(5000);
@@ -69,7 +70,7 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Check breastfeeding
+  // Check breastfeeding and club access
   useEffect(() => {
     const checkBreastfeeding = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -84,6 +85,15 @@ const Index = () => {
         .maybeSingle();
 
       setHasBreastfeeding(!!data);
+
+      // Check club access
+      const { data: clubData } = await supabase
+        .from("user_club_access")
+        .select("has_active_access")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      setHasClubAccess(clubData?.has_active_access || false);
     };
 
     if (session) checkBreastfeeding();
@@ -165,6 +175,12 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {hasClubAccess && (
+                <Badge className="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white border-0">
+                  <Star className="h-3 w-3 mr-1" />
+                  Membro Premium
+                </Badge>
+              )}
               <NotificationBell />
               <Button variant="outline" size="sm" onClick={() => navigate("/profile")} className="gap-2">
                 <User className="h-4 w-4" />

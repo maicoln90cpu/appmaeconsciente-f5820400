@@ -1297,6 +1297,41 @@ export type Database = {
           },
         ]
       }
+      user_access_logs: {
+        Row: {
+          accessed_at: string | null
+          id: string
+          ip_address: string | null
+          product_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          accessed_at?: string | null
+          id?: string
+          ip_address?: string | null
+          product_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          accessed_at?: string | null
+          id?: string
+          ip_address?: string | null
+          product_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_access_logs_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_exercise_logs: {
         Row: {
           created_at: string
@@ -1619,7 +1654,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      user_club_access: {
+        Row: {
+          expires_at: string | null
+          has_active_access: boolean | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {

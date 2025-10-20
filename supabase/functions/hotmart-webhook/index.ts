@@ -87,9 +87,11 @@ serve(async (req) => {
     const event = payload.event;
     const status = payload.data.purchase.status.toLowerCase();
 
+    // 🔒 Logs sanitizados para segurança
     console.log('Transaction ID:', transactionId);
     console.log('Hotmart Product ID:', hotmartProductId);
-    console.log('Buyer Email:', buyerEmail);
+    console.log('Buyer Email:', buyerEmail.substring(0, 3) + '***@' + buyerEmail.split('@')[1]);
+    console.log('Buyer Name:', buyerName.substring(0, 3) + '***');
     console.log('Status da compra:', status);
 
     // Webhook de teste
@@ -220,7 +222,7 @@ serve(async (req) => {
 
     if (existingProfile) {
       userId = existingProfile.id;
-      console.log('Usuário existente encontrado:', userId);
+      console.log('✅ Usuário existente encontrado');
     } else {
       console.log('Criando novo usuário:', buyerEmail);
       

@@ -43,6 +43,20 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
         return;
       }
 
+      // 🌟 VERIFICAR CLUBE PREMIUM (ACESSO A TODOS OS MATERIAIS)
+      const { data: clubAccess } = await supabase
+        .from('user_club_access')
+        .select('has_active_access')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (clubAccess?.has_active_access) {
+        console.log('Clube Premium ativo - acesso liberado a todos os materiais');
+        setHasAccess(true);
+        setLoading(false);
+        return;
+      }
+
       const { data: productData } = await supabase
         .from("products")
         .select("*")
@@ -104,9 +118,21 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
         }
       }
 
-      // Track product access
+      // Track product access and log
       if (hasAccess) {
         analytics.productAccess(productSlug);
+        
+        // Registrar acesso para auditoria
+        if (productData) {
+          try {
+            await supabase.from('user_access_logs').insert({
+              user_id: user.id,
+              product_id: productData.id,
+            });
+          } catch (err) {
+            console.log('Log access error (non-critical):', err);
+          }
+        }
       }
     } catch (error) {
       console.error("Error checking product access:", error);

@@ -16,6 +16,7 @@ const CompleteProfile = lazy(() => import("./pages/CompleteProfile"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 const Materiais = lazy(() => import("./pages/Materiais"));
+const ClubePremium = lazy(() => import("./pages/ClubePremium"));
 const Comunidade = lazy(() => import("./pages/Comunidade"));
 const Suporte = lazy(() => import("./pages/Suporte"));
 const AuthPage = lazy(() => import("./pages/AuthPage"));
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="/profile" element={<MainLayout><div className="animate-scale-in"><ProfileSettings /></div></MainLayout>} />
               <Route path="/admin" element={<MainLayout><div className="animate-scale-in"><AdminDashboard /></div></MainLayout>} />
               <Route path="/materiais" element={<MainLayout><div className="animate-scale-in"><Materiais /></div></MainLayout>} />
+              <Route path="/clube-premium" element={<MainLayout><div className="animate-scale-in"><ClubePremium /></div></MainLayout>} />
               <Route path="/comunidade" element={<MainLayout><div className="animate-scale-in"><Comunidade /></div></MainLayout>} />
               <Route path="/suporte" element={<MainLayout><div className="animate-scale-in"><Suporte /></div></MainLayout>} />
               

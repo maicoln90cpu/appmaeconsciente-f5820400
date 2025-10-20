@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.export-users-crm]
 verify_jwt = true
+
+[functions.configure-auth-security]
+verify_jwt = true

@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { Lock, CheckCircle2, Loader2, Tag } from "lucide-react";
+import { Lock, CheckCircle2, Loader2, Tag, Star } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
 
@@ -39,6 +40,7 @@ const Materiais = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "free" | "paid" | "my">("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [hasClubAccess, setHasClubAccess] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
@@ -71,8 +73,16 @@ const Materiais = () => {
 
       if (accessError) throw accessError;
 
+      // Verificar acesso ao Clube Premium
+      const { data: clubData } = await supabase
+        .from("user_club_access")
+        .select("has_active_access")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
       setProducts(productsData || []);
       setUserAccess(accessData || []);
+      setHasClubAccess(clubData?.has_active_access || false);
     } catch (error) {
       console.error("Error loading products:", error);
       toast({
@@ -197,6 +207,26 @@ const Materiais = () => {
             Ferramentas e conteúdos para sua jornada de maternidade consciente
           </p>
         </div>
+
+        {/* Banner Clube Premium */}
+        {!hasClubAccess && (
+          <Alert className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary border-2">
+            <Star className="h-5 w-5 text-primary" />
+            <AlertDescription className="flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-primary mb-1">
+                  🌟 Acesse TODOS os materiais por R$ 59,90/mês!
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Economize 65% com o Clube M.A.E.S. Premium
+                </p>
+              </div>
+              <Button onClick={() => navigate('/clube-premium')} className="ml-4">
+                Ver Clube Premium
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="space-y-4 mb-8">
           <Tabs value={filter} onValueChange={(v) => setFilter(v as any)}>
