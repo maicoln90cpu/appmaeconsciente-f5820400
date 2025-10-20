@@ -105,7 +105,6 @@ export const useBabyFeeding = () => {
       }
       
       toast.success("Mamada registrada com sucesso!");
-      return data;
     } catch (error) {
       console.error("Erro ao adicionar registro:", error);
       toast.error("Erro ao registrar mamada");

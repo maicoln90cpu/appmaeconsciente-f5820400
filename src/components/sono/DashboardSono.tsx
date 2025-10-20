@@ -1,13 +1,14 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BabySleepLog, BabySleepMilestone } from "@/types/babySleep";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby, AlertCircle } from "lucide-react";
-import { format, subDays, startOfDay, differenceInMinutes } from "date-fns";
+import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby, AlertCircle, Info } from "lucide-react";
+import { format, subDays, startOfDay, differenceInMinutes, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardSonoProps {
   sleepLogs: BabySleepLog[];
@@ -17,6 +18,32 @@ interface DashboardSonoProps {
 
 export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: DashboardSonoProps) => {
   const navigate = useNavigate();
+  const [lastFeeding, setLastFeeding] = useState<{ time: string; type: string } | null>(null);
+
+  useEffect(() => {
+    const loadLastFeeding = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("baby_feeding_logs")
+        .select("start_time, feeding_type")
+        .eq("user_id", user.id)
+        .order("start_time", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (data) {
+        setLastFeeding({
+          time: data.start_time,
+          type: data.feeding_type === 'breastfeeding' ? 'Amamentação' : data.feeding_type === 'bottle' ? 'Mamadeira' : 'Ordenha'
+        });
+      }
+    };
+
+    loadLastFeeding();
+  }, []);
+
   const last7DaysData = useMemo(() => {
     const days = Array.from({ length: 7 }, (_, i) => {
       const date = subDays(new Date(), 6 - i);
@@ -158,6 +185,20 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
               className="ml-4 shrink-0"
             >
               Ver Dicas
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {lastFeeding && (
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>
+              Última {lastFeeding.type} há {formatDistanceToNow(new Date(lastFeeding.time), { locale: ptBR })}
+            </span>
+            <Button variant="outline" size="sm" onClick={() => navigate('/materiais/rastreador-amamentacao')}>
+              Ver Rastreador
             </Button>
           </AlertDescription>
         </Alert>

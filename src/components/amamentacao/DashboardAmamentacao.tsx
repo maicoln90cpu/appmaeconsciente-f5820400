@@ -1,16 +1,60 @@
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
-import { Baby, Droplets, Timer, TrendingUp } from "lucide-react";
+import { Baby, Droplets, Timer, TrendingUp, AlertCircle } from "lucide-react";
 import { differenceInMinutes, format, startOfDay, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import type { BabyFeedingLog } from "@/types/babyFeeding";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardAmamentacaoProps {
   feedingLogs: BabyFeedingLog[];
 }
 
 export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps) => {
+  const navigate = useNavigate();
+  const [lastSleep, setLastSleep] = useState<Date | null>(null);
+
+  useEffect(() => {
+    const loadLastSleep = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("baby_sleep_logs")
+        .select("sleep_end")
+        .eq("user_id", user.id)
+        .not("sleep_end", "is", null)
+        .order("sleep_end", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (data?.sleep_end) {
+        setLastSleep(new Date(data.sleep_end));
+      }
+    };
+
+    loadLastSleep();
+  }, []);
+
+  const today = new Date();
+  
+  const lowProduction = useMemo(() => {
+    const last3Days = feedingLogs.filter(log => 
+      new Date(log.start_time) > subDays(today, 3) && 
+      log.feeding_type === 'breastfeeding'
+    );
+    return last3Days.length < 18;
+  }, [feedingLogs]);
+
+  const hoursSinceLastSleep = useMemo(() => {
+    if (!lastSleep) return null;
+    return Math.floor(differenceInMinutes(today, lastSleep) / 60);
+  }, [lastSleep]);
+
   const stats = useMemo(() => {
     const today = startOfDay(new Date());
     const last7Days = subDays(today, 7);
@@ -97,6 +141,29 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
 
   return (
     <div className="space-y-6">
+      {lowProduction && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>Produção de leite abaixo do esperado. Confira receitas lactogênicas!</span>
+            <Button variant="outline" size="sm" onClick={() => navigate('/materiais/guia-alimentacao?tab=receitas')}>
+              Ver Receitas
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {hoursSinceLastSleep && hoursSinceLastSleep > 3 && (
+        <Alert>
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>Bebê acordado há {hoursSinceLastSleep}h. Pode estar na hora de descansar!</span>
+            <Button variant="outline" size="sm" onClick={() => navigate('/materiais/diario-sono')}>
+              Ver Diário de Sono
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-6">

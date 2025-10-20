@@ -31,6 +31,7 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<EnxovalItem | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [hasBreastfeeding, setHasBreastfeeding] = useState(false);
 
   // State local para configurações
   const [tempOrcamento, setTempOrcamento] = useState<number>(5000);
@@ -67,6 +68,26 @@ const Index = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Check breastfeeding
+  useEffect(() => {
+    const checkBreastfeeding = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("baby_feeding_logs")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("feeding_type", "breastfeeding")
+        .limit(1)
+        .maybeSingle();
+
+      setHasBreastfeeding(!!data);
+    };
+
+    if (session) checkBreastfeeding();
+  }, [session]);
 
   // Redirect to profile completion if needed
   useEffect(() => {
@@ -207,6 +228,41 @@ const Index = () => {
                     Checklist de Mala da Maternidade
                   </button>
                   ? É importante estar preparada!
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {hasBreastfeeding && (
+              <Alert>
+                <Info className="h-4 w-4" />
+                <AlertDescription className="flex items-center justify-between">
+                  <span>Você está amamentando! Não esqueça de adicionar absorventes de seio ao enxoval.</span>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      addItem({
+                        item: "Absorventes de seio",
+                        category: "Mãe",
+                        necessity: "Necessário",
+                        priority: "Alta",
+                        status: "A comprar",
+                        plannedQty: 3,
+                        plannedPrice: 0,
+                        boughtQty: 0,
+                        unitPricePaid: 0,
+                        frete: 0,
+                        desconto: 0,
+                        precoReferencia: 0,
+                        subtotalPlanned: 0,
+                        subtotalPaid: 0,
+                        savings: 0,
+                        savingsPercent: 0,
+                      });
+                    }}
+                  >
+                    Adicionar ao Enxoval
+                  </Button>
                 </AlertDescription>
               </Alert>
             )}
