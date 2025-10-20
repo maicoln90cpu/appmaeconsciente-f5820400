@@ -41,6 +41,7 @@ const Materiais = () => {
   const [filter, setFilter] = useState<"all" | "free" | "paid" | "my">("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [hasClubAccess, setHasClubAccess] = useState(false);
+  const [clubPrice, setClubPrice] = useState<number | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
@@ -80,9 +81,17 @@ const Materiais = () => {
         .eq("user_id", user.id)
         .maybeSingle();
 
+      // Buscar preço do Clube Premium
+      const { data: clubProduct } = await supabase
+        .from("products")
+        .select("price")
+        .eq("slug", "clube-premium")
+        .single();
+
       setProducts(productsData || []);
       setUserAccess(accessData || []);
       setHasClubAccess(clubData?.has_active_access || false);
+      setClubPrice(clubProduct?.price || null);
     } catch (error) {
       console.error("Error loading products:", error);
       toast({
@@ -209,16 +218,16 @@ const Materiais = () => {
         </div>
 
         {/* Banner Clube Premium */}
-        {!hasClubAccess && (
+        {!hasClubAccess && clubPrice && (
           <Alert className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary border-2">
             <Star className="h-5 w-5 text-primary" />
             <AlertDescription className="flex items-center justify-between">
               <div>
                 <p className="font-semibold text-primary mb-1">
-                  🌟 Acesse TODOS os materiais por R$ 59,90/mês!
+                  🌟 Acesse TODOS os materiais por R$ {clubPrice.toFixed(2)}/mês!
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Economize 65% com o Clube M.A.E.S. Premium
+                  Clube M.A.E.S. Premium - {products.filter(p => p.slug !== 'clube-premium').length} materiais incluídos
                 </p>
               </div>
               <Button onClick={() => navigate('/clube-premium')} className="ml-4">

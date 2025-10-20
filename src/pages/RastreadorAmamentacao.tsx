@@ -1,4 +1,3 @@
-import { MainLayout } from "@/components/layout/MainLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Baby, BarChart3, History, Droplets, Settings, Info } from "lucide-react";
@@ -28,46 +27,41 @@ const RastreadorAmamentacao = () => {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </MainLayout>
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
   }
 
   if (!settings) {
     return (
-      <MainLayout>
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
-                <Baby className="h-8 w-8 text-primary" />
-                🍼 Rastreador de Amamentação
-              </h1>
-              <p className="text-muted-foreground mt-2">
-                Configure os dados do seu bebê para começar
-              </p>
-            </div>
-
-            <Alert>
-              <Info className="h-4 w-4" />
-              <AlertDescription>
-                Primeiro, configure as informações básicas do seu bebê para começar a usar o rastreador.
-              </AlertDescription>
-            </Alert>
-
-            <ConfiguracoesAmamentacao settings={settings} onSave={saveSettings} />
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <Baby className="h-8 w-8 text-primary" />
+              🍼 Rastreador de Amamentação
+            </h1>
+            <p className="text-muted-foreground mt-2">
+              Configure os dados do seu bebê para começar
+            </p>
           </div>
+
+          <Alert>
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Primeiro, configure as informações básicas do seu bebê para começar a usar o rastreador.
+            </AlertDescription>
+          </Alert>
+
+          <ConfiguracoesAmamentacao settings={settings} onSave={saveSettings} />
         </div>
-      </MainLayout>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         <div className="space-y-6">
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -134,7 +128,6 @@ const RastreadorAmamentacao = () => {
           </Tabs>
         </div>
       </div>
-    </MainLayout>
   );
 };
 

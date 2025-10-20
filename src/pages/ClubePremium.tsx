@@ -12,6 +12,7 @@ const ClubePremium = () => {
   const [loading, setLoading] = useState(true);
   const [hasClubAccess, setHasClubAccess] = useState(false);
   const [clubProduct, setClubProduct] = useState<any>(null);
+  const [allMaterials, setAllMaterials] = useState<any[]>([]);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -36,6 +37,16 @@ const ClubePremium = () => {
         .single();
 
       setClubProduct(product);
+
+      // Buscar TODOS os materiais ativos (exceto clube-premium)
+      const { data: materials } = await supabase
+        .from("products")
+        .select("*")
+        .eq("is_active", true)
+        .neq("slug", "clube-premium")
+        .order("display_order");
+
+      setAllMaterials(materials || []);
 
       // Verificar se já tem acesso ao clube
       const { data: clubAccess } = await supabase
@@ -62,16 +73,6 @@ const ClubePremium = () => {
     }
   };
 
-  const materials = [
-    "🍼 Rastreador de Amamentação e Mamadeiras",
-    "💤 Diário de Sono do Bebê",
-    "🥗 Guia de Alimentação na Gestação",
-    "👶 Checklist de Mala da Maternidade",
-    "🧷 Calculadora de Fraldas",
-    "🛍️ Controle de Enxoval",
-    "📚 E-book Guia Rápido Mala da Maternidade"
-  ];
-
   const benefits = [
     "Dashboard Unificado com visão 360° da rotina",
     "Suporte prioritário via chat",
@@ -80,6 +81,16 @@ const ClubePremium = () => {
     "Relatórios em PDF ilimitados",
     "Acesso a comunidade exclusiva Premium"
   ];
+
+  // Calcular custo total dos materiais
+  const totalMaterialsCost = allMaterials.reduce((sum, material) => {
+    return sum + (material.price || 0);
+  }, 0);
+
+  // Calcular economia percentual
+  const savingsPercentage = clubProduct?.price && totalMaterialsCost > 0
+    ? Math.round(((totalMaterialsCost - clubProduct.price) / totalMaterialsCost) * 100)
+    : 65;
 
   if (loading) {
     return (
@@ -104,7 +115,7 @@ const ClubePremium = () => {
           Acesso ilimitado a TODOS os materiais
         </p>
         <p className="text-3xl font-bold text-primary">
-          R$ 59,90<span className="text-lg text-muted-foreground">/mês</span>
+          R$ {clubProduct?.price?.toFixed(2) || "59,90"}<span className="text-lg text-muted-foreground">/mês</span>
         </p>
       </div>
 
@@ -127,17 +138,19 @@ const ClubePremium = () => {
           <CardContent className="space-y-3">
             <div className="text-center py-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground">Custo total estimado</p>
-              <p className="text-3xl font-bold text-destructive line-through">R$ 170,90</p>
+              <p className="text-3xl font-bold text-destructive line-through">
+                R$ {totalMaterialsCost.toFixed(2)}
+              </p>
             </div>
             <p className="text-sm text-muted-foreground text-center">
-              Acesso limitado a apenas 1 material
+              Comprando {allMaterials.length} materiais separadamente
             </p>
           </CardContent>
         </Card>
 
         <Card className="border-2 border-primary shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 bg-gradient-to-br from-yellow-400 to-yellow-600 text-white px-4 py-1 text-sm font-bold">
-            ECONOMIZE 65%
+            ECONOMIZE {savingsPercentage}%
           </div>
           <CardHeader>
             <CardTitle className="text-center">Clube Premium</CardTitle>
@@ -146,11 +159,13 @@ const ClubePremium = () => {
           <CardContent className="space-y-3">
             <div className="text-center py-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary">
               <p className="text-sm text-muted-foreground">Apenas</p>
-              <p className="text-3xl font-bold text-primary">R$ 59,90<span className="text-lg">/mês</span></p>
+              <p className="text-3xl font-bold text-primary">
+                R$ {clubProduct?.price?.toFixed(2) || "59,90"}<span className="text-lg">/mês</span>
+              </p>
             </div>
             <div className="flex items-center justify-center gap-2 text-green-600 font-semibold">
               <TrendingUp className="h-4 w-4" />
-              <p className="text-sm">Acesso total a 7 materiais!</p>
+              <p className="text-sm">Acesso total a {allMaterials.length} materiais!</p>
             </div>
           </CardContent>
         </Card>
@@ -161,15 +176,15 @@ const ClubePremium = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Check className="h-5 w-5 text-green-600" />
-            Materiais Incluídos (7 no total)
+            Materiais Incluídos ({allMaterials.length} no total)
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-3">
-            {materials.map((material, index) => (
-              <div key={index} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+            {allMaterials.map((material) => (
+              <div key={material.id} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                 <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
-                <span className="text-sm">{material}</span>
+                <span className="text-sm">{material.title}</span>
               </div>
             ))}
           </div>
