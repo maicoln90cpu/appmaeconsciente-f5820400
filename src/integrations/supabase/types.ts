@@ -66,15 +66,7 @@ export type Database = {
           user_id?: string
           volume_ml?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "baby_feeding_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       baby_sleep_logs: {
         Row: {
@@ -125,15 +117,7 @@ export type Database = {
           user_id?: string
           wakeup_mood?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "baby_sleep_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       baby_sleep_milestones: {
         Row: {
@@ -202,15 +186,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "baby_sleep_settings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       breast_milk_storage: {
         Row: {
@@ -255,15 +231,7 @@ export type Database = {
           user_id?: string
           volume_ml?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "breast_milk_storage_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       config: {
         Row: {
@@ -335,13 +303,6 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "coupon_usage_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       coupons: {
@@ -385,13 +346,6 @@ export type Database = {
           product_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "coupons_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
           {
             foreignKeyName: "coupons_product_id_fkey"
             columns: ["product_id"]
@@ -489,15 +443,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "feeding_settings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       food_alerts: {
         Row: {
@@ -830,15 +776,7 @@ export type Database = {
           message?: string
           title?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "notifications_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       nutrition_chat_conversations: {
         Row: {
@@ -862,15 +800,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "nutrition_chat_conversations_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       nutrition_chat_messages: {
         Row: {
@@ -1119,15 +1049,7 @@ export type Database = {
           sexo?: string | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       promotions: {
         Row: {
@@ -1231,15 +1153,7 @@ export type Database = {
           trimester_focus?: number[] | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "recipes_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       shared_enxoval_links: {
         Row: {
@@ -1269,15 +1183,7 @@ export type Database = {
           user_id?: string
           views_count?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "shared_enxoval_links_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       supplement_logs: {
         Row: {
@@ -1314,13 +1220,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "user_supplements"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "supplement_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1431,13 +1330,6 @@ export type Database = {
             referencedRelation: "products"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_access_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       user_achievements: {
@@ -1459,15 +1351,7 @@ export type Database = {
           unlocked_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_achievements_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       user_exercise_logs: {
         Row: {
@@ -1505,13 +1389,6 @@ export type Database = {
             referencedRelation: "exercises"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_exercise_logs_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
         ]
       }
       user_follows: {
@@ -1533,22 +1410,7 @@ export type Database = {
           following_id?: string
           id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_follows_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_follows_following_id_fkey"
-            columns: ["following_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       user_food_restrictions: {
         Row: {
@@ -1575,15 +1437,7 @@ export type Database = {
           restriction_type?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_food_restrictions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       user_notifications: {
         Row: {
@@ -1617,13 +1471,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "notifications"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1686,6 +1533,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_achievement_progress"
+            referencedColumns: ["user_id"]
+          },
         ]
       }
       user_supplements: {
@@ -1734,15 +1588,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_supplements_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       water_goals: {
         Row: {
@@ -1766,15 +1612,7 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "water_goals_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       water_intake: {
         Row: {
@@ -1801,15 +1639,7 @@ export type Database = {
           time?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "water_intake_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
       weight_tracking: {
         Row: {
@@ -1848,15 +1678,7 @@ export type Database = {
           week_of_pregnancy?: number | null
           weight?: number
         }
-        Relationships: [
-          {
-            foreignKeyName: "weight_tracking_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_achievement_progress"
-            referencedColumns: ["user_id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
