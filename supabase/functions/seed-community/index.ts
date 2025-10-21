@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1';
-import { posts, communityProfiles } from './data.ts';
+import { POSTS_DATA, FAKE_PROFILES } from './data.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +24,7 @@ serve(async (req) => {
     let profilesSkipped = 0;
 
     // Create fake user profiles (check for duplicates first)
-    for (const profile of communityProfiles) {
+    for (const profile of FAKE_PROFILES) {
       const { data: existingUser } = await supabaseClient
         .from('profiles')
         .select('id')
@@ -41,7 +41,7 @@ serve(async (req) => {
         email: profile.email,
         email_confirm: true,
         user_metadata: {
-          display_name: profile.display_name,
+          display_name: profile.nome,
         }
       });
 
@@ -56,9 +56,6 @@ serve(async (req) => {
           id: authUser.user.id,
           email: profile.email,
           perfil_completo: true,
-          meses_gestacao: profile.meses_gestacao,
-          possui_filhos: profile.possui_filhos,
-          idades_filhos: profile.idades_filhos,
           cidade: profile.cidade,
           estado: profile.estado,
         });
@@ -72,7 +69,7 @@ serve(async (req) => {
     let postsCreated = 0;
     let commentsCreated = 0;
 
-    for (const post of posts) {
+    for (const post of POSTS_DATA) {
       const randomUser = allUsers![Math.floor(Math.random() * allUsers!.length)];
       const { error: postError } = await supabaseClient.from('posts').insert({
         user_id: randomUser.id,

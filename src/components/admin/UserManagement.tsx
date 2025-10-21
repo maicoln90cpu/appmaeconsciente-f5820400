@@ -54,7 +54,7 @@ export const UserManagement = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, title")
+        .select("id, title, access_duration_days")
         .eq("is_active", true);
 
       if (error) throw error;
@@ -208,7 +208,18 @@ export const UserManagement = () => {
       toast.error("Selecione um produto");
       return;
     }
-    grantAccessMutation.mutate({ userId, productId: selectedProduct });
+    
+    // Find product details to determine expiration
+    const product = products?.find(p => p.id === selectedProduct);
+    let expiresAt = null;
+    
+    if (product?.access_duration_days) {
+      const expirationDate = new Date();
+      expirationDate.setDate(expirationDate.getDate() + product.access_duration_days);
+      expiresAt = expirationDate.toISOString();
+    }
+    
+    grantAccessMutation.mutate({ userId, productId: selectedProduct, expiresAt });
   };
 
   // Filtrar e ordenar usuários
