@@ -27,6 +27,7 @@ import { UserManagement } from "@/components/admin/UserManagement";
 import { PromotionManagement } from "@/components/admin/PromotionManagement";
 import { CouponManagement } from "@/components/admin/CouponManagement";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
+import { BundleManagement } from "@/components/admin/BundleManagement";
 import {
   BarChart,
   Bar,
@@ -303,10 +304,11 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
-          <TabsList className="grid grid-cols-9 w-full">
+          <TabsList className="grid grid-cols-10 w-full">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
             <TabsTrigger value="products">Produtos</TabsTrigger>
+            <TabsTrigger value="bundles">Bundles</TabsTrigger>
             <TabsTrigger value="promotions">Promoções</TabsTrigger>
             <TabsTrigger value="coupons">Cupons</TabsTrigger>
             <TabsTrigger value="tickets">Tickets</TabsTrigger>
@@ -396,6 +398,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="products">
             <ProductManagement />
+          </TabsContent>
+
+          <TabsContent value="bundles">
+            <BundleManagement />
           </TabsContent>
 
           <TabsContent value="promotions">

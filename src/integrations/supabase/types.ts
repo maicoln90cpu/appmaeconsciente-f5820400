@@ -1045,6 +1045,48 @@ export type Database = {
         }
         Relationships: []
       }
+      product_bundles: {
+        Row: {
+          bonus_duration_days: number | null
+          bonus_product_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          main_product_id: string
+        }
+        Insert: {
+          bonus_duration_days?: number | null
+          bonus_product_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          main_product_id: string
+        }
+        Update: {
+          bonus_duration_days?: number | null
+          bonus_product_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          main_product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_bundles_bonus_product_id_fkey"
+            columns: ["bonus_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_bundles_main_product_id_fkey"
+            columns: ["main_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           access_duration_days: number | null

@@ -416,6 +416,54 @@ serve(async (req) => {
 
     console.log('✅ Acesso concedido com sucesso para:', userId);
 
+    // 🎁 VERIFICAR E CONCEDER PRODUTOS BÔNUS
+    console.log('Verificando produtos bônus para o produto:', productId);
+    const { data: bundles, error: bundlesError } = await supabase
+      .from('product_bundles')
+      .select('bonus_product_id, bonus_duration_days')
+      .eq('main_product_id', productId)
+      .eq('is_active', true);
+
+    if (bundlesError) {
+      console.error('Erro ao buscar bundles:', bundlesError);
+    } else if (bundles && bundles.length > 0) {
+      console.log(`🎁 ${bundles.length} produto(s) bônus encontrado(s)`);
+      
+      for (const bundle of bundles) {
+        // Calcular expiração do bônus
+        let bonusExpiresAt = null;
+        const bonusDuration = bundle.bonus_duration_days || durationDays;
+        
+        if (bonusDuration) {
+          const bonusExpiration = new Date();
+          bonusExpiration.setDate(bonusExpiration.getDate() + bonusDuration);
+          bonusExpiresAt = bonusExpiration.toISOString();
+          console.log(`Bônus ${bundle.bonus_product_id} expira em ${bonusDuration} dias:`, bonusExpiresAt);
+        } else {
+          console.log(`Bônus ${bundle.bonus_product_id} sem data de expiração (acesso vitalício)`);
+        }
+
+        // Conceder acesso ao produto bônus
+        const { error: bonusAccessError } = await supabase
+          .from('user_product_access')
+          .upsert({
+            user_id: userId,
+            product_id: bundle.bonus_product_id,
+            expires_at: bonusExpiresAt
+          }, {
+            onConflict: 'user_id,product_id'
+          });
+
+        if (bonusAccessError) {
+          console.error('Erro ao conceder acesso ao bônus:', bonusAccessError);
+        } else {
+          console.log('✅ Produto bônus concedido:', bundle.bonus_product_id);
+        }
+      }
+    } else {
+      console.log('ℹ️ Nenhum produto bônus configurado para este produto');
+    }
+
     // Registrar transação bem-sucedida
     console.log('Tentando inserir transação:', {
       transaction_id: transactionId,
