@@ -84,6 +84,7 @@ export const UserManagement = () => {
           acc[item.user_id] = [];
         }
         acc[item.user_id].push({
+          product_id: item.product_id,
           product_title: item.products?.title || "Produto desconhecido",
           expires_at: item.expires_at
         });
@@ -109,7 +110,7 @@ export const UserManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['product-access'] });
+      queryClient.invalidateQueries({ queryKey: ['user-product-access'] });
       toast.success("Acesso concedido com sucesso");
       setSelectedUser(null);
       setSelectedProduct("");
@@ -130,7 +131,7 @@ export const UserManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['product-access'] });
+      queryClient.invalidateQueries({ queryKey: ['user-product-access'] });
       toast.success("Acesso revogado com sucesso");
     },
     onError: (error: any) => {
@@ -473,16 +474,30 @@ export const UserManagement = () => {
                   {productAccess?.[user.id] && productAccess[user.id].length > 0 && (
                     <div className="pt-2 border-t">
                       <Label className="text-xs mb-2 block">Produtos com Acesso</Label>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-2">
                         {productAccess[user.id].map((access: any, idx: number) => (
-                          <Badge key={idx} variant="secondary" className="text-xs">
-                            {access.product_title}
-                            {access.expires_at && (
-                              <span className="ml-1 text-muted-foreground">
-                                (até {format(new Date(access.expires_at), "dd/MM/yyyy")})
-                              </span>
-                            )}
-                          </Badge>
+                          <div key={idx} className="flex items-center gap-1 bg-secondary rounded-md px-2 py-1 group">
+                            <span className="text-xs">
+                              {access.product_title}
+                              {access.expires_at && (
+                                <span className="ml-1 text-muted-foreground">
+                                  (até {format(new Date(access.expires_at), "dd/MM/yyyy")})
+                                </span>
+                              )}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => {
+                                if (confirm(`Deseja revogar o acesso de ${user.email} ao produto "${access.product_title}"?`)) {
+                                  revokeAccessMutation.mutate({ userId: user.id, productId: access.product_id });
+                                }
+                              }}
+                            >
+                              <X className="h-3 w-3 text-destructive" />
+                            </Button>
+                          </div>
                         ))}
                       </div>
                     </div>
