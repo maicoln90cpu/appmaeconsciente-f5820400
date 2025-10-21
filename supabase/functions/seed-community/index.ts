@@ -80,23 +80,42 @@ serve(async (req) => {
       if (!postError) postsCreated++;
     }
 
-    if (existingPosts && existingPosts.length > 0) {
+    if (existingPosts && existingPosts.length > 0 && allUsers && allUsers.length > 0) {
       for (const post of existingPosts.slice(0, 5)) {
-        const commentResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/generate-comment`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
-          body: JSON.stringify({ postContent: post.content, postCategory: post.categoria }),
-        });
+        try {
+          const randomCommenter = allUsers[Math.floor(Math.random() * allUsers.length)];
+          
+          // Validar usuário antes de continuar
+          if (!randomCommenter || !randomCommenter.id) {
+            console.warn('Usuário inválido selecionado, pulando comentário');
+            continue;
+          }
 
-        if (commentResponse.ok) {
-          const { comment } = await commentResponse.json();
-          const randomCommenter = allUsers![Math.floor(Math.random() * allUsers!.length)];
-          const { error } = await supabaseClient.from('post_comments').insert({
-            post_id: post.id,
-            user_id: randomCommenter.id,
-            comment: comment,
+          const commentResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/generate-comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}` },
+            body: JSON.stringify({ postContent: post.content, postCategory: post.categoria }),
           });
-          if (!error) commentsCreated++;
+
+          if (commentResponse.ok) {
+            const { comment } = await commentResponse.json();
+            const { error } = await supabaseClient.from('post_comments').insert({
+              post_id: post.id,
+              user_id: randomCommenter.id,
+              comment: comment || 'Que legal! 💕',
+            });
+            
+            if (!error) {
+              commentsCreated++;
+            } else {
+              console.error('Erro ao inserir comentário:', error);
+            }
+          } else {
+            console.warn('Falha ao gerar comentário:', await commentResponse.text());
+          }
+        } catch (err) {
+          console.error('Erro no loop de comentários:', err);
+          // Continuar processando outros comentários
         }
       }
     }

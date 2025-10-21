@@ -12,19 +12,26 @@ serve(async (req) => {
   }
 
   try {
+    // Verificar autenticação manualmente
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      throw new Error('Unauthorized - No token provided');
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    
+    // Usar SERVICE_ROLE_KEY para operações privilegiadas
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: {
-          headers: { Authorization: req.headers.get('Authorization')! },
-        },
-      }
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      throw new Error('Unauthorized');
+    // Verificar o token JWT manualmente
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      throw new Error('Unauthorized - Invalid token');
     }
 
     // Get user profile
