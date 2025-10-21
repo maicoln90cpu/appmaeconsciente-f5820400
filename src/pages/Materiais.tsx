@@ -135,7 +135,7 @@ const Materiais = () => {
     // ✅ VERIFICAR ADMIN PRIMEIRO (antes de qualquer outra lógica)
     if (isAdmin) {
       if (product.destination_url) {
-        navigate(product.destination_url);
+        window.open(product.destination_url, '_blank');
       } else {
         navigate(`/materiais/${product.slug}`);
       }
@@ -154,7 +154,7 @@ const Materiais = () => {
 
       // Acessar
       if (product.destination_url) {
-        navigate(product.destination_url);
+        window.open(product.destination_url, '_blank');
       } else {
         navigate(`/materiais/${product.slug}`);
       }
@@ -167,7 +167,7 @@ const Materiais = () => {
     if (userHasValidAccess) {
       // Tem acesso válido
       if (product.destination_url) {
-        navigate(product.destination_url);
+        window.open(product.destination_url, '_blank');
       } else {
         navigate(`/materiais/${product.slug}`);
       }
