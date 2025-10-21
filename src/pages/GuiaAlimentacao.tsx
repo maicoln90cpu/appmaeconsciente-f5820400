@@ -10,13 +10,33 @@ import { RastreadorHidratacao } from "@/components/alimentacao/RastreadorHidrata
 import { ExerciciosTrimestre } from "@/components/alimentacao/ExerciciosTrimestre";
 import { ListaCompras } from "@/components/alimentacao/ListaCompras";
 import { DashboardSaude } from "@/components/alimentacao/DashboardSaude";
+import { GenerateNutritionButton } from "@/components/alimentacao/GenerateNutritionButton";
 import { Utensils, Pill, BookOpen, Scale, AlertTriangle, Bot, Droplets, Dumbbell, ShoppingCart, BarChart3 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function GuiaAlimentacao() {
   const { profile, loading } = useProfile();
   const [activeTab, setActiveTab] = useState("plano");
+
+  // Check if user has any nutrition content
+  const { data: hasContent, refetch: refetchContent } = useQuery({
+    queryKey: ['nutrition-content', profile?.id],
+    queryFn: async () => {
+      if (!profile?.id) return false;
+
+      const [mealPlans, recipes, exercises] = await Promise.all([
+        supabase.from('meal_plans').select('id', { count: 'exact', head: true }).eq('created_by', profile.id),
+        supabase.from('recipes').select('id', { count: 'exact', head: true }).eq('created_by', profile.id),
+        supabase.from('exercises').select('id', { count: 'exact', head: true }).eq('created_by', profile.id),
+      ]);
+
+      return (mealPlans.count || 0) > 0 || (recipes.count || 0) > 0 || (exercises.count || 0) > 0;
+    },
+    enabled: !!profile?.id,
+  });
 
   if (loading) {
     return (
@@ -41,10 +61,18 @@ export default function GuiaAlimentacao() {
   return (
     <div className="container max-w-6xl py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">🌱 Guia de Alimentação e Bem-Estar</h1>
-          <p className="text-muted-foreground">
-            Sua nutrição e saúde durante a gestação, com planos personalizados e acompanhamento completo
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">🌱 Guia de Alimentação e Bem-Estar</h1>
+              <p className="text-muted-foreground">
+                Sua nutrição e saúde durante a gestação, com planos personalizados e acompanhamento completo
+              </p>
+            </div>
+            <GenerateNutritionButton 
+              hasExistingContent={hasContent}
+              onSuccess={() => refetchContent()}
+            />
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">

@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { useState, useMemo } from "react";
-import { UserPlus, Shield, Search, ArrowUpDown, RefreshCw, Loader2, Trash2, KeyRound } from "lucide-react";
+import { UserPlus, Shield, Search, ArrowUpDown, RefreshCw, Loader2, Trash2, KeyRound, X } from "lucide-react";
 import { CreateUserDialog } from "./CreateUserDialog";
 
 export const UserManagement = () => {
@@ -95,21 +95,46 @@ export const UserManagement = () => {
   });
 
   const grantAccessMutation = useMutation({
-    mutationFn: async ({ userId, productId }: { userId: string; productId: string }) => {
-      const { error } = await supabase.from("user_product_access").insert({
-        user_id: userId,
-        product_id: productId,
-      });
+    mutationFn: async ({ userId, productId, expiresAt }: { userId: string; productId: string; expiresAt: string | null }) => {
+      const { error } = await supabase
+        .from('user_product_access')
+        .upsert({
+          user_id: userId,
+          product_id: productId,
+          expires_at: expiresAt
+        }, {
+          onConflict: 'user_id,product_id'
+        });
+      
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast.success("Acesso concedido");
+      queryClient.invalidateQueries({ queryKey: ['product-access'] });
+      toast.success("Acesso concedido com sucesso");
       setSelectedUser(null);
       setSelectedProduct("");
     },
-    onError: () => {
-      toast.error("Erro ao conceder acesso");
+    onError: (error: any) => {
+      toast.error("Erro ao conceder acesso: " + error.message);
+    },
+  });
+
+  const revokeAccessMutation = useMutation({
+    mutationFn: async ({ userId, productId }: { userId: string; productId: string }) => {
+      const { error } = await supabase
+        .from('user_product_access')
+        .delete()
+        .eq('user_id', userId)
+        .eq('product_id', productId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-access'] });
+      toast.success("Acesso revogado com sucesso");
+    },
+    onError: (error: any) => {
+      toast.error("Erro ao revogar acesso: " + error.message);
     },
   });
 

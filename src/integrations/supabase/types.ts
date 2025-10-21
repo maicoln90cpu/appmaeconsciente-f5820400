@@ -474,6 +474,7 @@ export type Database = {
           benefits: string[] | null
           category: string
           created_at: string
+          created_by: string | null
           description: string
           duration_minutes: number | null
           id: string
@@ -481,6 +482,7 @@ export type Database = {
           instructions: string[] | null
           intensity: string | null
           is_active: boolean | null
+          is_ai_generated: boolean | null
           precautions: string[] | null
           title: string
           trimester: number[]
@@ -491,6 +493,7 @@ export type Database = {
           benefits?: string[] | null
           category: string
           created_at?: string
+          created_by?: string | null
           description: string
           duration_minutes?: number | null
           id?: string
@@ -498,6 +501,7 @@ export type Database = {
           instructions?: string[] | null
           intensity?: string | null
           is_active?: boolean | null
+          is_ai_generated?: boolean | null
           precautions?: string[] | null
           title: string
           trimester: number[]
@@ -508,6 +512,7 @@ export type Database = {
           benefits?: string[] | null
           category?: string
           created_at?: string
+          created_by?: string | null
           description?: string
           duration_minutes?: number | null
           id?: string
@@ -515,6 +520,7 @@ export type Database = {
           instructions?: string[] | null
           intensity?: string | null
           is_active?: boolean | null
+          is_ai_generated?: boolean | null
           precautions?: string[] | null
           title?: string
           trimester?: number[]
@@ -805,6 +811,7 @@ export type Database = {
           calories: number | null
           carbs: number | null
           created_at: string
+          created_by: string | null
           day_of_week: number
           description: string | null
           fats: number | null
@@ -813,6 +820,7 @@ export type Database = {
           id: string
           ingredients: string[] | null
           iron: number | null
+          is_ai_generated: boolean | null
           meal_type: string
           preparation: string | null
           proteins: number | null
@@ -826,6 +834,7 @@ export type Database = {
           calories?: number | null
           carbs?: number | null
           created_at?: string
+          created_by?: string | null
           day_of_week: number
           description?: string | null
           fats?: number | null
@@ -834,6 +843,7 @@ export type Database = {
           id?: string
           ingredients?: string[] | null
           iron?: number | null
+          is_ai_generated?: boolean | null
           meal_type: string
           preparation?: string | null
           proteins?: number | null
@@ -847,6 +857,7 @@ export type Database = {
           calories?: number | null
           carbs?: number | null
           created_at?: string
+          created_by?: string | null
           day_of_week?: number
           description?: string | null
           fats?: number | null
@@ -855,6 +866,7 @@ export type Database = {
           id?: string
           ingredients?: string[] | null
           iron?: number | null
+          is_ai_generated?: boolean | null
           meal_type?: string
           preparation?: string | null
           proteins?: number | null
@@ -1258,6 +1270,7 @@ export type Database = {
           id: string
           image_url: string | null
           ingredients: string[]
+          is_ai_generated: boolean | null
           is_public: boolean | null
           nutrients: Json | null
           prep_time: number | null
@@ -1278,6 +1291,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           ingredients: string[]
+          is_ai_generated?: boolean | null
           is_public?: boolean | null
           nutrients?: Json | null
           prep_time?: number | null
@@ -1298,6 +1312,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           ingredients?: string[]
+          is_ai_generated?: boolean | null
           is_public?: boolean | null
           nutrients?: Json | null
           prep_time?: number | null
