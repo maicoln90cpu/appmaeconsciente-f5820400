@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
 import { Lock, CheckCircle2, Loader2, Tag, Star, Baby, Smartphone, Share, PlusSquare } from "lucide-react";
+import { ToolSuggestionCard } from "@/components/materiais/ToolSuggestionCard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
@@ -359,30 +360,36 @@ const Materiais = () => {
           </Alert>
         )}
 
-        {/* Dashboard Unificado - Destaque */}
-        <Card className="mb-6 border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+        {/* Cards Especiais - Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Dashboard Unificado */}
+          <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
+            <CardHeader>
+              <div className="flex items-start gap-3">
                 <div className="p-3 bg-primary rounded-lg">
                   <Baby className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    🍼💤 Dashboard Unificado - Minha Rotina do Bebê
+                <div className="flex-1">
+                  <CardTitle className="flex items-center gap-2 text-xl">
+                    🍼💤 Dashboard Unificado
                     <Badge className="bg-green-500">NOVO</Badge>
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="mt-1">
                     Visão 360° da rotina: mamadas, sono, alertas inteligentes e timeline completa
                   </CardDescription>
                 </div>
               </div>
-              <Button onClick={() => navigate('/dashboard-bebe')} size="lg">
+            </CardHeader>
+            <CardContent>
+              <Button onClick={() => navigate('/dashboard-bebe')} size="lg" className="w-full">
                 Acessar Dashboard
               </Button>
-            </div>
-          </CardHeader>
-        </Card>
+            </CardContent>
+          </Card>
+
+          {/* Card de Sugestão de Ferramenta */}
+          <ToolSuggestionCard />
+        </div>
 
         <div className="space-y-4 mb-8">
           <Tabs value={filter} onValueChange={(v) => setFilter(v as any)}>

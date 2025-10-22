@@ -1402,8 +1402,10 @@ export type Database = {
           message: string
           name: string
           priority: string
+          related_suggestion_id: string | null
           status: string
           subject: string
+          ticket_type: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1414,8 +1416,10 @@ export type Database = {
           message: string
           name: string
           priority?: string
+          related_suggestion_id?: string | null
           status?: string
           subject: string
+          ticket_type?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1426,12 +1430,22 @@ export type Database = {
           message?: string
           name?: string
           priority?: string
+          related_suggestion_id?: string | null
           status?: string
           subject?: string
+          ticket_type?: string | null
           updated_at?: string
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "support_tickets_related_suggestion_id_fkey"
+            columns: ["related_suggestion_id"]
+            isOneToOne: false
+            referencedRelation: "tool_suggestions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ticket_messages: {
         Row: {
@@ -1467,6 +1481,72 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tool_suggestions: {
+        Row: {
+          admin_feedback: string | null
+          available_for_beta: boolean | null
+          contact_email: string
+          created_at: string
+          id: string
+          integrations: string[] | null
+          main_functions: string
+          main_idea: string
+          phases: string[] | null
+          priority_rating: number | null
+          problem_solved: string | null
+          reference_examples: string | null
+          reward_granted: boolean | null
+          share_count: number | null
+          status: string
+          target_audience: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_feedback?: string | null
+          available_for_beta?: boolean | null
+          contact_email: string
+          created_at?: string
+          id?: string
+          integrations?: string[] | null
+          main_functions: string
+          main_idea: string
+          phases?: string[] | null
+          priority_rating?: number | null
+          problem_solved?: string | null
+          reference_examples?: string | null
+          reward_granted?: boolean | null
+          share_count?: number | null
+          status?: string
+          target_audience?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_feedback?: string | null
+          available_for_beta?: boolean | null
+          contact_email?: string
+          created_at?: string
+          id?: string
+          integrations?: string[] | null
+          main_functions?: string
+          main_idea?: string
+          phases?: string[] | null
+          priority_rating?: number | null
+          problem_solved?: string | null
+          reference_examples?: string | null
+          reward_granted?: boolean | null
+          share_count?: number | null
+          status?: string
+          target_audience?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_access_logs: {
         Row: {

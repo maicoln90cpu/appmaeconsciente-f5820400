@@ -28,6 +28,7 @@ import { PromotionManagement } from "@/components/admin/PromotionManagement";
 import { CouponManagement } from "@/components/admin/CouponManagement";
 import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { BundleManagement } from "@/components/admin/BundleManagement";
+import { ToolSuggestionManagement } from "@/components/admin/ToolSuggestionManagement";
 import {
   BarChart,
   Bar,
@@ -304,7 +305,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
-          <TabsList className="grid grid-cols-10 w-full">
+          <TabsList className="grid grid-cols-11 w-full">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
             <TabsTrigger value="products">Produtos</TabsTrigger>
@@ -312,6 +313,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="promotions">Promoções</TabsTrigger>
             <TabsTrigger value="coupons">Cupons</TabsTrigger>
             <TabsTrigger value="tickets">Tickets</TabsTrigger>
+            <TabsTrigger value="suggestions">Sugestões</TabsTrigger>
             <TabsTrigger value="posts">Posts</TabsTrigger>
             <TabsTrigger value="hotmart">Hotmart</TabsTrigger>
             <TabsTrigger value="notifications">Notificações</TabsTrigger>
@@ -414,6 +416,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="tickets">
             <TicketManagement />
+          </TabsContent>
+
+          <TabsContent value="suggestions">
+            <ToolSuggestionManagement />
           </TabsContent>
 
           <TabsContent value="posts">
