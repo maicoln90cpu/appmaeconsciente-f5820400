@@ -137,14 +137,33 @@ export function IANutricional() {
       );
 
       if (!response.ok) {
-        throw new Error('Erro ao enviar mensagem');
+        const data = await response.json();
+        
+        // Tratamento específico para rate limiting
+        if (response.status === 429) {
+          toast.error("Limite de mensagens atingido", {
+            description: data.message || "Você atingiu o limite de mensagens por hora. Tente novamente mais tarde.",
+          });
+          return;
+        }
+        
+        throw new Error(data.error || 'Erro ao enviar mensagem');
       }
 
       await loadMessages();
       await loadConversations();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao enviar mensagem:', error);
-      toast.error('Erro ao enviar mensagem');
+      
+      if (error.message?.includes('Não autenticado')) {
+        toast.error('Sessão expirada', {
+          description: 'Faça login novamente para continuar.',
+        });
+      } else {
+        toast.error('Erro ao enviar mensagem', {
+          description: error.message || 'Tente novamente em alguns instantes.',
+        });
+      }
     } finally {
       setLoading(false);
     }

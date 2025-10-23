@@ -40,7 +40,21 @@ export function GenerateExercisesButton({ onSuccess }: GenerateExercisesButtonPr
       onSuccess();
     } catch (error: any) {
       console.error('Erro ao gerar exercícios:', error);
-      toast.error(error.message || "Erro ao gerar exercícios");
+      
+      // Tratamento específico para rate limiting
+      if (error.message?.includes('Limite de gerações atingido') || error.message?.includes('429')) {
+        toast.error("Limite diário atingido", {
+          description: "Você já gerou 3 exercícios hoje. Tente novamente amanhã.",
+        });
+      } else if (error.message?.includes('Unauthorized')) {
+        toast.error("Sessão expirada", {
+          description: "Faça login novamente para continuar.",
+        });
+      } else {
+        toast.error("Erro ao gerar exercícios", {
+          description: error.message || "Tente novamente em alguns instantes.",
+        });
+      }
     } finally {
       setLoading(false);
       setProgress(0);

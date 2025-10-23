@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
+import { checkRateLimit, getRateLimitHeaders } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -29,6 +30,29 @@ serve(async (req) => {
     
     if (userError || !user) {
       throw new Error('Unauthorized');
+    }
+
+    // Rate limiting: 20 mensagens por hora
+    const rateLimit = checkRateLimit(user.id, 'nutrition-chat', {
+      maxRequests: 20,
+      windowMs: 60 * 60 * 1000, // 1 hora
+    });
+
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Limite de mensagens atingido',
+          message: `Você atingiu o limite de mensagens. Tente novamente em ${rateLimit.retryAfter} segundos.`
+        }),
+        {
+          headers: { 
+            ...corsHeaders, 
+            ...getRateLimitHeaders(rateLimit.retryAfter),
+            'Content-Type': 'application/json' 
+          },
+          status: 429,
+        }
+      );
     }
 
     // Buscar histórico da conversa

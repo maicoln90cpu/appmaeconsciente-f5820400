@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+import { checkRateLimit, getRateLimitHeaders } from "../_shared/rate-limiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,6 +29,29 @@ serve(async (req) => {
     
     if (authError || !user) {
       throw new Error('Unauthorized');
+    }
+
+    // Rate limiting: 3 gerações de plano por dia
+    const rateLimit = checkRateLimit(user.id, 'generate-meal-plan', {
+      maxRequests: 3,
+      windowMs: 24 * 60 * 60 * 1000, // 24 horas
+    });
+
+    if (!rateLimit.allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Limite de gerações atingido',
+          message: `Você atingiu o limite diário de geração de planos. Tente novamente em ${Math.ceil(rateLimit.retryAfter! / 3600)} horas.`
+        }),
+        {
+          headers: { 
+            ...corsHeaders, 
+            ...getRateLimitHeaders(rateLimit.retryAfter),
+            'Content-Type': 'application/json' 
+          },
+          status: 429,
+        }
+      );
     }
 
     const { data: profile, error: profileError } = await supabaseClient

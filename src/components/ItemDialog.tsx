@@ -9,6 +9,8 @@ import { Plus } from "lucide-react";
 import { EnxovalItem, Category, Necessity, Status, Size, Origin, EtapaMaes, Classificacao, Emocao } from "@/types/enxoval";
 import { calculatePriority, calculateSubtotalPlanned, calculateSubtotalPaid, calculateSavings, calculateSavingsPercent } from "@/lib/calculations";
 import { TagsInput } from "@/components/TagsInput";
+import { sanitizeUrl } from "@/lib/url-validator";
+import { useToast } from "@/hooks/use-toast";
 
 interface ItemDialogProps {
   onAdd?: (item: EnxovalItem) => void;
@@ -36,6 +38,7 @@ const classificacoes: Classificacao[] = ["Essencial", "Pode Esperar", "Supérflu
 const emocoes: Emocao[] = ["😌 útil", "💸 impulso", "🧡 amor"];
 
 export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, onOpenChange }: ItemDialogProps) => {
+  const { toast } = useToast();
   const [internalOpen, setInternalOpen] = useState(false);
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setIsOpen = onOpenChange || setInternalOpen;
@@ -118,6 +121,20 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validar URL se fornecida
+    if (formData.link && formData.link.trim()) {
+      const safeUrl = sanitizeUrl(formData.link);
+      if (!safeUrl) {
+        toast({
+          title: "URL inválida",
+          description: "A URL fornecida contém caracteres perigosos ou é inválida. Use apenas links HTTP/HTTPS.",
+          variant: "destructive",
+        });
+        return;
+      }
+      formData.link = safeUrl;
+    }
     
     const priority = calculatePriority(formData.necessity);
     const subtotalPlanned = calculateSubtotalPlanned(formData.plannedQty, formData.plannedPrice);
