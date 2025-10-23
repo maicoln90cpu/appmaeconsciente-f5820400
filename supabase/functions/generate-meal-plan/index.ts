@@ -85,7 +85,7 @@ Crie um plano alimentar SEMANAL COMPLETO para uma gestante:
   "meal_plans": [
     {
       "day_of_week": 0,
-      "meal_type": "cafe_da_manha",
+      "meal_type": "breakfast",
       "title": "Café nutritivo",
       "description": "Descrição breve",
       "ingredients": ["ingrediente 1", "ingrediente 2"],
@@ -104,11 +104,12 @@ Crie um plano alimentar SEMANAL COMPLETO para uma gestante:
 }
 
 **REGRAS:**
-1. Crie 21 planos (7 dias x 3 refeições: cafe_da_manha, almoco, jantar)
+1. Crie 21 planos (7 dias x 3 refeições: breakfast, lunch, dinner)
 2. Use day_of_week: 0-6 (0=domingo)
-3. Nutrientes realistas para trimestre ${trimester}
-4. Foco em ácido fólico, ferro e cálcio
-5. Evite alimentos crus`;
+3. Use meal_type: breakfast, lunch, dinner
+4. Nutrientes realistas para trimestre ${trimester}
+5. Foco em ácido fólico, ferro e cálcio
+6. Evite alimentos crus`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

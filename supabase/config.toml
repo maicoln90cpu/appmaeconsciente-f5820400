@@ -17,3 +17,39 @@ verify_jwt = true
 
 [functions.generate-nutrition-plan]
 verify_jwt = true
+
+[functions.generate-meal-plan]
+verify_jwt = true
+
+[functions.generate-recipes]
+verify_jwt = true
+
+[functions.generate-exercises]
+verify_jwt = true
+
+[functions.generate-comment]
+verify_jwt = true
+
+[functions.send-resend-email]
+verify_jwt = true
+
+[functions.create-user-admin]
+verify_jwt = true
+
+[functions.delete-user-admin]
+verify_jwt = true
+
+[functions.grant-trial-access]
+verify_jwt = true
+
+[functions.apply-promotion]
+verify_jwt = true
+
+[functions.resend-purchase-credentials]
+verify_jwt = true
+
+[functions.check-exchange-alerts]
+verify_jwt = true
+
+[functions.seed-community]
+verify_jwt = true

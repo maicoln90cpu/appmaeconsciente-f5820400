@@ -7,13 +7,20 @@ import { Progress } from "@/components/ui/progress";
 
 interface GenerateRecipesButtonProps {
   onSuccess: () => void;
+  onNeedsProfile?: () => void;
+  needsProfile?: boolean;
 }
 
-export function GenerateRecipesButton({ onSuccess }: GenerateRecipesButtonProps) {
+export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile }: GenerateRecipesButtonProps) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleGenerate = async () => {
+    if (needsProfile && onNeedsProfile) {
+      onNeedsProfile();
+      return;
+    }
+    
     setLoading(true);
     setProgress(0);
 

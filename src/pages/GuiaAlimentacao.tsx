@@ -145,7 +145,11 @@ export default function GuiaAlimentacao() {
 
           <TabsContent value="receitas">
             <div className="space-y-4">
-              <GenerateRecipesButton onSuccess={() => refetchContent()} />
+              <GenerateRecipesButton 
+                onSuccess={() => refetchContent()}
+                onNeedsProfile={() => setShowProfileDialog(true)}
+                needsProfile={needsProfileData}
+              />
               <Receitas />
             </div>
           </TabsContent>
@@ -160,7 +164,11 @@ export default function GuiaAlimentacao() {
 
           <TabsContent value="exercicios">
             <div className="space-y-4">
-              <GenerateExercisesButton onSuccess={() => refetchContent()} />
+              <GenerateExercisesButton 
+                onSuccess={() => refetchContent()}
+                onNeedsProfile={() => setShowProfileDialog(true)}
+                needsProfile={needsProfileData}
+              />
               <ExerciciosTrimestre />
             </div>
           </TabsContent>

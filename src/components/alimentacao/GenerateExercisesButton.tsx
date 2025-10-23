@@ -7,13 +7,20 @@ import { Progress } from "@/components/ui/progress";
 
 interface GenerateExercisesButtonProps {
   onSuccess: () => void;
+  onNeedsProfile?: () => void;
+  needsProfile?: boolean;
 }
 
-export function GenerateExercisesButton({ onSuccess }: GenerateExercisesButtonProps) {
+export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfile }: GenerateExercisesButtonProps) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const handleGenerate = async () => {
+    if (needsProfile && onNeedsProfile) {
+      onNeedsProfile();
+      return;
+    }
+    
     setLoading(true);
     setProgress(0);
 

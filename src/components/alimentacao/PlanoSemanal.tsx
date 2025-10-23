@@ -33,12 +33,9 @@ interface PlanoSemanalProps {
 
 const DAYS_OF_WEEK = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 const MEAL_TYPES = {
-  cafe_manha: "Café da Manhã",
-  lanche_manha: "Lanche da Manhã",
-  almoco: "Almoço",
-  lanche_tarde: "Lanche da Tarde",
-  jantar: "Jantar",
-  ceia: "Ceia"
+  breakfast: "Café da Manhã",
+  lunch: "Almoço",
+  dinner: "Jantar"
 };
 
 export function PlanoSemanal({ profile }: PlanoSemanalProps) {
