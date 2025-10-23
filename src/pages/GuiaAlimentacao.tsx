@@ -10,7 +10,9 @@ import { RastreadorHidratacao } from "@/components/alimentacao/RastreadorHidrata
 import { ExerciciosTrimestre } from "@/components/alimentacao/ExerciciosTrimestre";
 import { ListaCompras } from "@/components/alimentacao/ListaCompras";
 import { DashboardSaude } from "@/components/alimentacao/DashboardSaude";
-import { GenerateNutritionButton } from "@/components/alimentacao/GenerateNutritionButton";
+import { GenerateMealPlanButton } from "@/components/alimentacao/GenerateMealPlanButton";
+import { GenerateRecipesButton } from "@/components/alimentacao/GenerateRecipesButton";
+import { GenerateExercisesButton } from "@/components/alimentacao/GenerateExercisesButton";
 import { Utensils, Pill, BookOpen, Scale, AlertTriangle, Bot, Droplets, Dumbbell, ShoppingCart, BarChart3 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -61,17 +63,11 @@ export default function GuiaAlimentacao() {
   return (
     <div className="container max-w-6xl py-8">
         <div className="mb-8">
-          <div className="flex items-start justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">🌱 Guia de Alimentação e Bem-Estar</h1>
-              <p className="text-muted-foreground">
-                Sua nutrição e saúde durante a gestação, com planos personalizados e acompanhamento completo
-              </p>
-            </div>
-            <GenerateNutritionButton 
-              hasExistingContent={hasContent}
-              onSuccess={() => refetchContent()}
-            />
+          <div>
+            <h1 className="text-3xl font-bold mb-2">🌱 Guia de Alimentação e Bem-Estar</h1>
+            <p className="text-muted-foreground">
+              Sua nutrição e saúde durante a gestação, com planos personalizados e acompanhamento completo
+            </p>
           </div>
         </div>
 
@@ -128,11 +124,17 @@ export default function GuiaAlimentacao() {
           </TabsContent>
 
           <TabsContent value="plano">
-            <PlanoSemanal profile={profile} />
+            <div className="space-y-4">
+              <GenerateMealPlanButton onSuccess={() => refetchContent()} />
+              <PlanoSemanal profile={profile} />
+            </div>
           </TabsContent>
 
           <TabsContent value="receitas">
-            <Receitas />
+            <div className="space-y-4">
+              <GenerateRecipesButton onSuccess={() => refetchContent()} />
+              <Receitas />
+            </div>
           </TabsContent>
 
           <TabsContent value="suplementos">
@@ -144,7 +146,10 @@ export default function GuiaAlimentacao() {
           </TabsContent>
 
           <TabsContent value="exercicios">
-            <ExerciciosTrimestre />
+            <div className="space-y-4">
+              <GenerateExercisesButton onSuccess={() => refetchContent()} />
+              <ExerciciosTrimestre />
+            </div>
           </TabsContent>
 
           <TabsContent value="peso">

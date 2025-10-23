@@ -23,6 +23,9 @@ interface HotmartWebhookData {
       transaction: string;
       status: string;
       approved_date?: number;
+      price?: {
+        value: number;
+      };
     };
     commission?: {
       value: number;
@@ -86,6 +89,11 @@ serve(async (req) => {
     const transactionId = payload.data.purchase.transaction;
     const event = payload.event;
     const status = payload.data.purchase.status.toLowerCase();
+    
+    // ✅ CORREÇÃO: Capturar valor correto da compra
+    const purchaseAmount = payload.data.purchase?.price?.value || 
+                          payload.data.commission?.value || 
+                          0;
 
     // 🔒 Logs sanitizados para segurança
     console.log('Transaction ID:', transactionId);
@@ -104,7 +112,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: 'test',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         event_type: event,
       }, {
         onConflict: 'transaction_id',
@@ -135,7 +143,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: 'mapping_error',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         event_type: event,
       }, {
         onConflict: 'transaction_id',
@@ -158,7 +166,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: 'mapping_not_found',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         event_type: event,
       }, {
         onConflict: 'transaction_id',
@@ -194,7 +202,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: 'product_not_found',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         event_type: event,
       }, {
         onConflict: 'transaction_id',
@@ -247,7 +255,7 @@ serve(async (req) => {
           buyer_email: buyerEmail,
           buyer_name: buyerName,
           status: 'user_creation_failed',
-          amount: payload.data.commission?.value || 0,
+          amount: purchaseAmount,
           product_id: productId,
           event_type: event,
         }, {
@@ -321,7 +329,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: isCancellation ? 'canceled' : 'refunded',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         user_id: userId,
         product_id: productId,
         event_type: event,
@@ -349,7 +357,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: 'pending',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         user_id: userId,
         product_id: productId,
         event_type: event,
@@ -399,7 +407,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: 'access_grant_failed',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         user_id: userId,
         product_id: productId,
         event_type: event,
@@ -480,7 +488,7 @@ serve(async (req) => {
         buyer_email: buyerEmail,
         buyer_name: buyerName,
         status: 'processed',
-        amount: payload.data.commission?.value || 0,
+        amount: purchaseAmount,
         user_id: userId,
         product_id: productId,
         event_type: event,

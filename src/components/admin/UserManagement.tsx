@@ -16,6 +16,8 @@ export const UserManagement = () => {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<string>("");
+  const [accessDuration, setAccessDuration] = useState<number>(30);
+  const [lifetimeAccess, setLifetimeAccess] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState<"all" | "admin" | "user">("all");
   const [sortBy, setSortBy] = useState<"date" | "email">("date");
@@ -210,17 +212,18 @@ export const UserManagement = () => {
       return;
     }
     
-    // Find product details to determine expiration
-    const product = products?.find(p => p.id === selectedProduct);
     let expiresAt = null;
     
-    if (product?.access_duration_days) {
+    if (!lifetimeAccess) {
       const expirationDate = new Date();
-      expirationDate.setDate(expirationDate.getDate() + product.access_duration_days);
+      expirationDate.setDate(expirationDate.getDate() + accessDuration);
       expiresAt = expirationDate.toISOString();
     }
     
     grantAccessMutation.mutate({ userId, productId: selectedProduct, expiresAt });
+    setSelectedUser(null);
+    setAccessDuration(30);
+    setLifetimeAccess(false);
   };
 
   // Filtrar e ordenar usuários
