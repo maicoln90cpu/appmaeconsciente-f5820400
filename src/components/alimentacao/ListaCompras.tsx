@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { ShoppingCart, Plus, Trash2, Share2 } from "lucide-react";
+import { ShoppingCart, Trash2, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { useProfile } from "@/hooks/useProfile";
+import { AddItemDialog } from "./ListaComprasEditable";
 
 interface ShoppingItem {
   item: string;
@@ -172,6 +173,7 @@ export function ListaCompras() {
           </p>
         </div>
         <div className="flex gap-2">
+          <AddItemDialog onAdd={(item) => setItems([...items, item])} />
           <Button variant="outline" onClick={shareList}>
             <Share2 className="h-4 w-4 mr-2" />
             Compartilhar

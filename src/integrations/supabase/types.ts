@@ -1167,6 +1167,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          altura_cm: number | null
           cidade: string | null
           created_at: string
           data_inicio_planejamento: string | null
@@ -1179,11 +1180,13 @@ export type Database = {
           idades_filhos: number[] | null
           meses_gestacao: number | null
           perfil_completo: boolean | null
+          peso_atual: number | null
           possui_filhos: boolean | null
           sexo: string | null
           updated_at: string
         }
         Insert: {
+          altura_cm?: number | null
           cidade?: string | null
           created_at?: string
           data_inicio_planejamento?: string | null
@@ -1196,11 +1199,13 @@ export type Database = {
           idades_filhos?: number[] | null
           meses_gestacao?: number | null
           perfil_completo?: boolean | null
+          peso_atual?: number | null
           possui_filhos?: boolean | null
           sexo?: string | null
           updated_at?: string
         }
         Update: {
+          altura_cm?: number | null
           cidade?: string | null
           created_at?: string
           data_inicio_planejamento?: string | null
@@ -1213,6 +1218,7 @@ export type Database = {
           idades_filhos?: number[] | null
           meses_gestacao?: number | null
           perfil_completo?: boolean | null
+          peso_atual?: number | null
           possui_filhos?: boolean | null
           sexo?: string | null
           updated_at?: string

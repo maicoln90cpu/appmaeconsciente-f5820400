@@ -14,6 +14,8 @@ export interface Profile {
   estado?: string;
   data_prevista_parto?: string;
   data_inicio_planejamento?: string;
+  peso_atual?: number;
+  altura_cm?: number;
   perfil_completo: boolean;
   created_at: string;
   updated_at: string;

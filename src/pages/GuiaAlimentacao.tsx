@@ -13,6 +13,7 @@ import { DashboardSaude } from "@/components/alimentacao/DashboardSaude";
 import { GenerateMealPlanButton } from "@/components/alimentacao/GenerateMealPlanButton";
 import { GenerateRecipesButton } from "@/components/alimentacao/GenerateRecipesButton";
 import { GenerateExercisesButton } from "@/components/alimentacao/GenerateExercisesButton";
+import { ProfileRequiredDialog } from "@/components/alimentacao/ProfileRequiredDialog";
 import { Utensils, Pill, BookOpen, Scale, AlertTriangle, Bot, Droplets, Dumbbell, ShoppingCart, BarChart3 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -22,6 +23,9 @@ import { supabase } from "@/integrations/supabase/client";
 export default function GuiaAlimentacao() {
   const { profile, loading } = useProfile();
   const [activeTab, setActiveTab] = useState("plano");
+  const [showProfileDialog, setShowProfileDialog] = useState(false);
+
+  const needsProfileData = !profile?.peso_atual || !profile?.altura_cm;
 
   // Check if user has any nutrition content
   const { data: hasContent, refetch: refetchContent } = useQuery({
@@ -61,7 +65,12 @@ export default function GuiaAlimentacao() {
   }
 
   return (
-    <div className="container max-w-6xl py-8">
+    <>
+      <ProfileRequiredDialog 
+        open={showProfileDialog} 
+        onComplete={() => setShowProfileDialog(false)} 
+      />
+      <div className="container max-w-6xl py-8">
         <div className="mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">🌱 Guia de Alimentação e Bem-Estar</h1>
@@ -125,7 +134,11 @@ export default function GuiaAlimentacao() {
 
           <TabsContent value="plano">
             <div className="space-y-4">
-              <GenerateMealPlanButton onSuccess={() => refetchContent()} />
+              <GenerateMealPlanButton 
+                onSuccess={() => refetchContent()} 
+                onNeedsProfile={() => setShowProfileDialog(true)}
+                needsProfile={needsProfileData}
+              />
               <PlanoSemanal profile={profile} />
             </div>
           </TabsContent>
@@ -165,5 +178,6 @@ export default function GuiaAlimentacao() {
           </TabsContent>
         </Tabs>
       </div>
+    </>
   );
 }
