@@ -12,14 +12,15 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   Legend,
   ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
 } from "recharts";
-import { TrendingUp, Users, DollarSign, ShoppingCart } from "lucide-react";
+import { TrendingUp, Users, DollarSign, ShoppingCart, HelpCircle } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const COLORS = [
   "hsl(var(--primary))",
@@ -60,27 +61,23 @@ export const AnalyticsDashboard = () => {
       // Calculate total revenue from Hotmart transactions
       const { data: transactions } = await supabase
         .from("hotmart_transactions")
-        .select("product_id, status")
-        .in("status", ["approved", "complete"]);
+        .select("amount, product_id, status")
+        .in("status", ["approved", "complete", "processed"]);
 
       let totalRevenue = 0;
       if (transactions && transactions.length > 0) {
-        const productIds = [...new Set(transactions.map(t => t.product_id).filter(Boolean))];
-        
-        if (productIds.length > 0) {
-          const { data: products } = await supabase
-            .from("products")
-            .select("id, price")
-            .in("id", productIds);
-
-          if (products) {
-            const priceMap = new Map(products.map(p => [p.id, p.price || 0]));
-            totalRevenue = transactions.reduce((sum, t) => {
-              if (t.product_id) {
-                return sum + (priceMap.get(t.product_id) || 0);
-              }
-              return sum;
-            }, 0);
+        // Use amount from transactions (priority) or fallback to product price
+        for (const t of transactions) {
+          if (t.amount && t.amount > 0) {
+            totalRevenue += t.amount;
+          } else if (t.product_id) {
+            // Fallback: buscar preço do produto
+            const { data: product } = await supabase
+              .from('products')
+              .select('price')
+              .eq('id', t.product_id)
+              .single();
+            totalRevenue += product?.price || 0;
           }
         }
       }
@@ -120,23 +117,48 @@ export const AnalyticsDashboard = () => {
     },
   });
 
-  // Category distribution
-  const { data: categoryData } = useQuery({
-    queryKey: ["category-distribution"],
+  // Top 5 materiais mais acessados (excluindo admin)
+  const { data: topMaterials } = useQuery({
+    queryKey: ["top-materials"],
     queryFn: async () => {
-      const { data } = await supabase.from("itens_enxoval").select("categoria");
+      // Get admin email
+      const { data: { user } } = await supabase.auth.getUser();
+      const { data: adminProfile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", user?.id || "")
+        .single();
 
-      if (!data) return [];
+      // Get all accesses with product info and user email
+      const { data: accesses } = await supabase
+        .from("user_product_access")
+        .select(`
+          product_id,
+          products!inner(title, slug),
+          profiles!inner(email)
+        `);
 
-      const categories: Record<string, number> = {};
-      data.forEach((item) => {
-        categories[item.categoria] = (categories[item.categoria] || 0) + 1;
+      if (!accesses) return [];
+
+      // Filter out admin accesses and count by product
+      const productCounts: Record<string, { title: string; count: number }> = {};
+      
+      accesses.forEach((access: any) => {
+        if (access.profiles?.email !== adminProfile?.email) {
+          const productId = access.product_id;
+          if (!productCounts[productId]) {
+            productCounts[productId] = {
+              title: access.products?.title || "Desconhecido",
+              count: 0,
+            };
+          }
+          productCounts[productId].count++;
+        }
       });
 
-      return Object.entries(categories)
-        .map(([name, value]) => ({ name, value }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 6);
+      return Object.values(productCounts)
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
     },
   });
 
@@ -173,7 +195,19 @@ export const AnalyticsDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Usuários</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-sm font-medium">Total de Usuários</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">Número total de contas cadastradas no sistema, incluindo usuários ativos e inativos.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -186,7 +220,19 @@ export const AnalyticsDashboard = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Acessos Ativos</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-sm font-medium">Acessos Ativos</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">Usuários com acesso válido a pelo menos um material premium (não expirado).</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -197,7 +243,19 @@ export const AnalyticsDashboard = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Taxa de Conversão</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-sm font-medium">Taxa de Conversão</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">Porcentagem de usuários que possuem acesso a materiais pagos em relação ao total de usuários.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -213,7 +271,19 @@ export const AnalyticsDashboard = () => {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-sm font-medium">Receita Total</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs">Soma de todas as vendas processadas via Hotmart. Atualizado em tempo real.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -231,7 +301,7 @@ export const AnalyticsDashboard = () => {
       <Tabs defaultValue="growth" className="space-y-4">
         <TabsList>
           <TabsTrigger value="growth">Crescimento</TabsTrigger>
-          <TabsTrigger value="categories">Categorias</TabsTrigger>
+          <TabsTrigger value="materials">Top Materiais</TabsTrigger>
           <TabsTrigger value="funnel">Funil de Conversão</TabsTrigger>
         </TabsList>
 
@@ -253,7 +323,7 @@ export const AnalyticsDashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Area
                     type="monotone"
                     dataKey="users"
@@ -267,31 +337,33 @@ export const AnalyticsDashboard = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="categories">
+        <TabsContent value="materials">
           <Card>
             <CardHeader>
-              <CardTitle>Distribuição de Categorias</CardTitle>
-              <CardDescription>Categorias mais populares</CardDescription>
+              <div className="flex items-center gap-2">
+                <CardTitle>Top 5 Materiais Mais Acessados</CardTitle>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">Materiais com mais usuários ativos. Acessos do admin não são contabilizados.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+              <CardDescription>Baseado na quantidade de acessos únicos</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
-                <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={(entry) => `${entry.name}: ${entry.value}`}
-                    outerRadius={120}
-                    fill="hsl(var(--primary))"
-                    dataKey="value"
-                  >
-                    {categoryData?.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
+                <BarChart data={topMaterials}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="title" angle={-15} textAnchor="end" height={100} />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" name="Acessos" />
+                </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
@@ -309,7 +381,7 @@ export const AnalyticsDashboard = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" />
                   <YAxis dataKey="stage" type="category" width={120} />
-                  <Tooltip />
+                  <RechartsTooltip />
                   <Legend />
                   <Bar dataKey="value" fill="hsl(var(--primary))" name="Usuários" />
                 </BarChart>

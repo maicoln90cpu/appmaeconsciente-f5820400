@@ -8,9 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import { useState, useMemo } from "react";
 import { UserPlus, Shield, Search, ArrowUpDown, RefreshCw, Loader2, Trash2, KeyRound, X } from "lucide-react";
 import { CreateUserDialog } from "./CreateUserDialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
@@ -47,7 +50,33 @@ export const UserManagement = () => {
       }
 
       console.log('Usuários carregados:', data?.length);
-      return data || [];
+      
+      // Enriquecer com dados de última atividade
+      const enrichedUsers = await Promise.all((data || []).map(async (user) => {
+        const [feedingLogs, sleepLogs, items] = await Promise.all([
+          supabase.from('baby_feeding_logs').select('created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('baby_sleep_logs').select('created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+          supabase.from('itens_enxoval').select('created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
+        ]);
+
+        const activities = [
+          feedingLogs.data?.created_at,
+          sleepLogs.data?.created_at,
+          items.data?.created_at,
+        ].filter(Boolean).map(d => new Date(d!));
+
+        const lastActivity = activities.length > 0 
+          ? new Date(Math.max(...activities.map(d => d.getTime())))
+          : null;
+
+        return {
+          ...user,
+          lastActivity,
+          hasUsedTools: activities.length > 0,
+        };
+      }));
+
+      return enrichedUsers;
     },
   });
 
@@ -431,6 +460,15 @@ export const UserManagement = () => {
                           Admin
                         </Badge>
                       )}
+                      {(user as any).hasUsedTools ? (
+                        <Badge variant="secondary">
+                          Ativo há {(user as any).lastActivity 
+                            ? formatDistanceToNow(new Date((user as any).lastActivity), { locale: ptBR })
+                            : ''}
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">Nunca usou</Badge>
+                      )}
                     </div>
                     <p className="text-sm text-muted-foreground">
                       Cadastrado em {format(new Date(user.created_at), "dd/MM/yyyy")}
@@ -507,7 +545,7 @@ export const UserManagement = () => {
                   )}
                   
                   <div className="flex gap-2 items-end pt-2 border-t">
-                    <div className="flex-1">
+                    <div className="flex-1 space-y-2">
                       <Label className="text-xs">Conceder Acesso ao Produto</Label>
                       <Select
                         value={selectedUser === user.id ? selectedProduct : ""}
@@ -527,6 +565,29 @@ export const UserManagement = () => {
                           ))}
                         </SelectContent>
                       </Select>
+                      
+                      {selectedUser === user.id && selectedProduct && (
+                        <div className="flex items-center gap-2">
+                          <Input 
+                            type="number" 
+                            value={accessDuration} 
+                            onChange={(e) => setAccessDuration(parseInt(e.target.value) || 30)}
+                            disabled={lifetimeAccess}
+                            min={1}
+                            className="w-20"
+                          />
+                          <span className="text-xs text-muted-foreground">dias</span>
+                          <div className="flex items-center gap-2 ml-auto">
+                            <input 
+                              type="checkbox" 
+                              checked={lifetimeAccess} 
+                              onChange={(e) => setLifetimeAccess(e.target.checked)}
+                              className="rounded"
+                            />
+                            <Label className="text-xs">Vitalício</Label>
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <Button
                       size="sm"
