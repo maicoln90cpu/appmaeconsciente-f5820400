@@ -19,6 +19,7 @@ interface Exercise {
   description: string;
   trimester: number[];
   category: string;
+  exercise_type: string | null;
   duration_minutes: number | null;
   intensity: string | null;
   instructions: string[] | null;
@@ -49,11 +50,21 @@ const INTENSITY = {
   intenso: "Intenso"
 };
 
+const EXERCISE_TYPES = {
+  em_casa: "Em Casa",
+  aerobio: "Aeróbio",
+  academia: "Academia",
+  yoga: "Yoga",
+  alongamento: "Alongamento"
+};
+
 export function ExerciciosTrimestre() {
   const { profile } = useProfile();
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [todayLogs, setTodayLogs] = useState<ExerciseLog[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
   const [logDialogOpen, setLogDialogOpen] = useState(false);
   const [logDuration, setLogDuration] = useState("");
   const [logNotes, setLogNotes] = useState("");
@@ -67,6 +78,14 @@ export function ExerciciosTrimestre() {
     loadExercises();
     loadTodayLogs();
   }, [trimester]);
+
+  useEffect(() => {
+    if (selectedType) {
+      setFilteredExercises(exercises.filter(ex => ex.exercise_type === selectedType));
+    } else {
+      setFilteredExercises(exercises);
+    }
+  }, [selectedType, exercises]);
 
   const loadExercises = async () => {
     try {
@@ -171,7 +190,7 @@ export function ExerciciosTrimestre() {
       {/* Resumo do Dia */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm text-muted-foreground">Atividade de Hoje</p>
               <p className="text-2xl font-bold">{totalMinutesToday} minutos</p>
@@ -183,19 +202,45 @@ export function ExerciciosTrimestre() {
               </span>
             </div>
           </div>
+
+          {/* Filtros por Tipo */}
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            <Button
+              variant={selectedType === null ? "default" : "outline"}
+              onClick={() => setSelectedType(null)}
+              size="sm"
+            >
+              Todos
+            </Button>
+            {Object.entries(EXERCISE_TYPES).map(([key, label]) => (
+              <Button
+                key={key}
+                variant={selectedType === key ? "default" : "outline"}
+                onClick={() => setSelectedType(key)}
+                size="sm"
+                className="whitespace-nowrap"
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
-      {exercises.length === 0 ? (
+      {filteredExercises.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-muted-foreground">
             <Dumbbell className="mx-auto h-12 w-12 mb-4 opacity-50" />
-            <p>Em breve teremos exercícios para o {trimester}º trimestre!</p>
+            <p>
+              {exercises.length === 0 
+                ? `Em breve teremos exercícios para o ${trimester}º trimestre!`
+                : "Nenhum exercício encontrado com o filtro selecionado."}
+            </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
-          {exercises.map((exercise) => {
+          {filteredExercises.map((exercise) => {
             const completed = hasCompletedToday(exercise.id);
             const categoryConfig = CATEGORIES[exercise.category as keyof typeof CATEGORIES];
 

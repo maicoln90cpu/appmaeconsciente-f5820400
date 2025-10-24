@@ -477,6 +477,7 @@ export type Database = {
           created_by: string | null
           description: string
           duration_minutes: number | null
+          exercise_type: string | null
           id: string
           image_url: string | null
           instructions: string[] | null
@@ -496,6 +497,7 @@ export type Database = {
           created_by?: string | null
           description: string
           duration_minutes?: number | null
+          exercise_type?: string | null
           id?: string
           image_url?: string | null
           instructions?: string[] | null
@@ -515,6 +517,7 @@ export type Database = {
           created_by?: string | null
           description?: string
           duration_minutes?: number | null
+          exercise_type?: string | null
           id?: string
           image_url?: string | null
           instructions?: string[] | null
@@ -1269,10 +1272,12 @@ export type Database = {
       recipes: {
         Row: {
           calories: number | null
+          carbs: number | null
           category: string
           created_at: string
           created_by: string | null
           description: string | null
+          fats: number | null
           id: string
           image_url: string | null
           ingredients: string[]
@@ -1281,6 +1286,7 @@ export type Database = {
           nutrients: Json | null
           prep_time: number | null
           preparation: string[]
+          proteins: number | null
           servings: number | null
           tags: string[] | null
           tips: string | null
@@ -1290,10 +1296,12 @@ export type Database = {
         }
         Insert: {
           calories?: number | null
+          carbs?: number | null
           category: string
           created_at?: string
           created_by?: string | null
           description?: string | null
+          fats?: number | null
           id?: string
           image_url?: string | null
           ingredients: string[]
@@ -1302,6 +1310,7 @@ export type Database = {
           nutrients?: Json | null
           prep_time?: number | null
           preparation: string[]
+          proteins?: number | null
           servings?: number | null
           tags?: string[] | null
           tips?: string | null
@@ -1311,10 +1320,12 @@ export type Database = {
         }
         Update: {
           calories?: number | null
+          carbs?: number | null
           category?: string
           created_at?: string
           created_by?: string | null
           description?: string | null
+          fats?: number | null
           id?: string
           image_url?: string | null
           ingredients?: string[]
@@ -1323,6 +1334,7 @@ export type Database = {
           nutrients?: Json | null
           prep_time?: number | null
           preparation?: string[]
+          proteins?: number | null
           servings?: number | null
           tags?: string[] | null
           tips?: string | null

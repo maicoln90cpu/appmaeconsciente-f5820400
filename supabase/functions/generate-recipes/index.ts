@@ -26,17 +26,17 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
     if (authError || !user) throw new Error('Unauthorized');
 
-    // Rate limiting: 3 gerações de receitas por dia
+    // Rate limiting: 1 geração por semana
     const rateLimit = checkRateLimit(user.id, 'generate-recipes', {
-      maxRequests: 3,
-      windowMs: 24 * 60 * 60 * 1000, // 24 horas
+      maxRequests: 1,
+      windowMs: 7 * 24 * 60 * 60 * 1000, // 7 dias
     });
 
     if (!rateLimit.allowed) {
       return new Response(
         JSON.stringify({ 
           error: 'Limite de gerações atingido',
-          message: `Você atingiu o limite diário de geração de receitas. Tente novamente em ${Math.ceil(rateLimit.retryAfter! / 3600)} horas.`
+          message: `Você já gerou receitas esta semana. Tente novamente em ${Math.ceil(rateLimit.retryAfter! / 86400)} dias.`
         }),
         {
           headers: { 
@@ -73,6 +73,9 @@ serve(async (req) => {
       "ingredients": ["item 1", "item 2"],
       "preparation": ["passo 1", "passo 2"],
       "calories": 280,
+      "proteins": 15.5,
+      "carbs": 35.2,
+      "fats": 8.3,
       "prep_time": 15,
       "servings": 2,
       "trimester_focus": [${trimester}],
@@ -83,7 +86,7 @@ serve(async (req) => {
 }
 
 Categorias: cafe_manha, almoco, jantar, lanche, sobremesa.
-Foco: ferro, cálcio, ácido fólico.`;
+Foco: ferro, cálcio, ácido fólico. Inclua valores nutricionais realistas.`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

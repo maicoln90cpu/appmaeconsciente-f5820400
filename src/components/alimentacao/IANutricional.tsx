@@ -4,9 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
-import { Send, Bot, User, Plus, MessageSquare } from "lucide-react";
+import { Send, Bot, User, Plus, MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Message {
   id: string;
@@ -27,6 +37,8 @@ export function IANutricional() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -108,6 +120,36 @@ export function IANutricional() {
       console.error('Erro ao criar conversa:', error);
       toast.error('Erro ao criar nova conversa');
     }
+  };
+
+  const confirmDeleteConversation = (convId: string) => {
+    setConversationToDelete(convId);
+    setDeleteDialogOpen(true);
+  };
+
+  const deleteConversation = async () => {
+    if (!conversationToDelete) return;
+
+    const { error } = await supabase
+      .from('nutrition_chat_conversations')
+      .delete()
+      .eq('id', conversationToDelete);
+
+    if (error) {
+      toast.error("Erro ao deletar conversa");
+      return;
+    }
+
+    setConversations(conversations.filter(c => c.id !== conversationToDelete));
+    
+    if (currentConversationId === conversationToDelete) {
+      setCurrentConversationId(null);
+      setMessages([]);
+    }
+
+    toast.success("Conversa deletada");
+    setDeleteDialogOpen(false);
+    setConversationToDelete(null);
   };
 
   const sendMessage = async () => {
@@ -192,27 +234,39 @@ export function IANutricional() {
           <ScrollArea className="h-[calc(100vh-20rem)]">
             <div className="space-y-2 p-4">
               {conversations.map((conv) => (
-                <button
-                  key={conv.id}
-                  onClick={() => setCurrentConversationId(conv.id)}
-                  className={`w-full text-left p-3 rounded-lg transition-colors ${
-                    currentConversationId === conv.id
-                      ? "bg-primary text-primary-foreground"
-                      : "hover:bg-muted"
-                  }`}
-                >
-                  <div className="flex items-start gap-2">
-                    <MessageSquare className="h-4 w-4 mt-1 flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {conv.title || "Nova conversa"}
-                      </p>
-                      <p className="text-xs opacity-70">
-                        {new Date(conv.created_at).toLocaleDateString('pt-BR')}
-                      </p>
+                <div key={conv.id} className="flex items-center gap-1">
+                  <button
+                    onClick={() => setCurrentConversationId(conv.id)}
+                    className={`flex-1 text-left p-3 rounded-lg transition-colors ${
+                      currentConversationId === conv.id
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <MessageSquare className="h-4 w-4 mt-1 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {conv.title || "Nova conversa"}
+                        </p>
+                        <p className="text-xs opacity-70">
+                          {new Date(conv.created_at).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
+                  </button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      confirmDeleteConversation(conv.id);
+                    }}
+                    className="h-8 w-8 text-destructive hover:text-destructive flex-shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               ))}
               {conversations.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-8">
@@ -333,6 +387,26 @@ export function IANutricional() {
           )}
         </CardContent>
       </Card>
+
+      {/* Dialog de Confirmação de Exclusão */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deletar conversa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. A conversa e todas as mensagens serão permanentemente removidas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConversationToDelete(null)}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={deleteConversation} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Deletar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

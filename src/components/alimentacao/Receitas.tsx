@@ -148,7 +148,7 @@ export function Receitas() {
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex gap-4 text-sm text-muted-foreground">
+                <div className="flex gap-4 text-sm text-muted-foreground flex-wrap">
                   {recipe.prep_time && (
                     <div className="flex items-center gap-1">
                       <Clock className="h-4 w-4" />
@@ -167,6 +167,30 @@ export function Receitas() {
                   )}
                 </div>
 
+                {/* Informações Nutricionais */}
+                {(recipe.nutrients?.proteins || recipe.nutrients?.carbs || recipe.nutrients?.fats) && (
+                  <div className="grid grid-cols-3 gap-2 p-3 bg-muted/50 rounded-lg">
+                    {recipe.nutrients.proteins && (
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Proteínas</p>
+                        <p className="font-semibold text-sm">{recipe.nutrients.proteins}g</p>
+                      </div>
+                    )}
+                    {recipe.nutrients.carbs && (
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Carboidratos</p>
+                        <p className="font-semibold text-sm">{recipe.nutrients.carbs}g</p>
+                      </div>
+                    )}
+                    {recipe.nutrients.fats && (
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground">Gorduras</p>
+                        <p className="font-semibold text-sm">{recipe.nutrients.fats}g</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {recipe.trimester_focus && recipe.trimester_focus.length > 0 && (
                   <div className="flex gap-2">
                     {recipe.trimester_focus.map((trimester) => (
@@ -177,15 +201,26 @@ export function Receitas() {
                   </div>
                 )}
 
+                {/* Modo de Preparo Resumido */}
+                {recipe.preparation && recipe.preparation.length > 0 && (
+                  <div className="bg-muted/30 p-3 rounded-lg">
+                    <h4 className="font-semibold mb-2 text-sm">Como Preparar:</h4>
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {recipe.preparation[0]}
+                      {recipe.preparation.length > 1 && ` (+ ${recipe.preparation.length - 1} passos)`}
+                    </p>
+                  </div>
+                )}
+
                 <div>
                   <h4 className="font-semibold mb-2">Ingredientes:</h4>
                   <ul className="list-disc list-inside space-y-1 text-sm">
-                    {recipe.ingredients.slice(0, 5).map((ingredient, index) => (
+                    {recipe.ingredients.slice(0, 4).map((ingredient, index) => (
                       <li key={index}>{ingredient}</li>
                     ))}
-                    {recipe.ingredients.length > 5 && (
+                    {recipe.ingredients.length > 4 && (
                       <li className="text-muted-foreground">
-                        + {recipe.ingredients.length - 5} ingredientes...
+                        + {recipe.ingredients.length - 4} ingredientes...
                       </li>
                     )}
                   </ul>

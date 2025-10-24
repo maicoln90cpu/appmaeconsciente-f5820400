@@ -22,7 +22,7 @@ setInterval(() => {
 
 export interface RateLimitConfig {
   maxRequests: number;  // Máximo de requisições
-  windowMs: number;     // Janela de tempo em ms
+  windowMs: number;     // Janela de tempo em ms (7 dias = 7 * 24 * 60 * 60 * 1000)
 }
 
 export function checkRateLimit(

@@ -26,17 +26,17 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
     if (authError || !user) throw new Error('Unauthorized');
 
-    // Rate limiting: 3 gerações de exercícios por dia
+    // Rate limiting: 1 geração por semana
     const rateLimit = checkRateLimit(user.id, 'generate-exercises', {
-      maxRequests: 3,
-      windowMs: 24 * 60 * 60 * 1000, // 24 horas
+      maxRequests: 1,
+      windowMs: 7 * 24 * 60 * 60 * 1000, // 7 dias
     });
 
     if (!rateLimit.allowed) {
       return new Response(
         JSON.stringify({ 
           error: 'Limite de gerações atingido',
-          message: `Você atingiu o limite diário de geração de exercícios. Tente novamente em ${Math.ceil(rateLimit.retryAfter! / 3600)} horas.`
+          message: `Você já gerou exercícios esta semana. Tente novamente em ${Math.ceil(rateLimit.retryAfter! / 86400)} dias.`
         }),
         {
           headers: { 
@@ -62,7 +62,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY not configured');
 
-    const prompt = `Crie 8 exercícios seguros para gestante no ${trimester}° trimestre:
+    const prompt = `Crie 10 exercícios seguros para gestante no ${trimester}° trimestre:
 
 {
   "exercises": [
@@ -70,6 +70,7 @@ serve(async (req) => {
       "title": "Nome do exercício",
       "description": "Descrição breve",
       "category": "cardio",
+      "exercise_type": "em_casa",
       "duration_minutes": 20,
       "intensity": "leve",
       "trimester": [${trimester}],
@@ -81,6 +82,7 @@ serve(async (req) => {
 }
 
 Categorias: cardio, forca, flexibilidade, respiracao, relaxamento.
+Tipos: em_casa, aerobio, academia, yoga, alongamento (distribua entre os tipos).
 Intensidades: leve, moderado.
 Foco: segurança e bem-estar.`;
 

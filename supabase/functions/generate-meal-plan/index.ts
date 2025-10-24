@@ -31,17 +31,17 @@ serve(async (req) => {
       throw new Error('Unauthorized');
     }
 
-    // Rate limiting: 3 gerações de plano por dia
+    // Rate limiting: 1 geração por semana
     const rateLimit = checkRateLimit(user.id, 'generate-meal-plan', {
-      maxRequests: 3,
-      windowMs: 24 * 60 * 60 * 1000, // 24 horas
+      maxRequests: 1,
+      windowMs: 7 * 24 * 60 * 60 * 1000, // 7 dias
     });
 
     if (!rateLimit.allowed) {
       return new Response(
         JSON.stringify({ 
           error: 'Limite de gerações atingido',
-          message: `Você atingiu o limite diário de geração de planos. Tente novamente em ${Math.ceil(rateLimit.retryAfter! / 3600)} horas.`
+          message: `Você já gerou um plano esta semana. Tente novamente em ${Math.ceil(rateLimit.retryAfter! / 86400)} dias.`
         }),
         {
           headers: { 
