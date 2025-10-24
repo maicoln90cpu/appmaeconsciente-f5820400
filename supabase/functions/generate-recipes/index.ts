@@ -57,12 +57,20 @@ serve(async (req) => {
 
     if (!profile) throw new Error('Profile not found');
 
-    const trimester = Math.ceil((profile.meses_gestacao || 1) / 3);
+    const trimester = Math.min(Math.ceil((profile.meses_gestacao || 1) / 3), 3);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY not configured');
 
-    const prompt = `Crie 12 receitas saudáveis para gestante no ${trimester}° trimestre:
+    const prompt = `Crie 12 receitas saudáveis personalizadas para gestante no ${trimester}° trimestre:
+
+**Perfil da Gestante:**
+- Peso: ${profile.peso_atual || 'não informado'} kg
+- Altura: ${profile.altura_cm || 'não informado'} cm
+- Sexo: ${profile.sexo || 'feminino'}
+- Trimestre: ${trimester}º
+
+Ajuste as porções e valores nutricionais baseados nesses dados.
 
 {
   "recipes": [
@@ -73,9 +81,15 @@ serve(async (req) => {
       "ingredients": ["item 1", "item 2"],
       "preparation": ["passo 1", "passo 2"],
       "calories": 280,
-      "proteins": 15.5,
-      "carbs": 35.2,
-      "fats": 8.3,
+      "nutrients": {
+        "proteins": 15.5,
+        "carbs": 35.2,
+        "fats": 8.3,
+        "calcium": 200,
+        "iron": 5,
+        "folic_acid": 100,
+        "fiber": 6
+      },
       "prep_time": 15,
       "servings": 2,
       "trimester_focus": [${trimester}],
@@ -86,7 +100,7 @@ serve(async (req) => {
 }
 
 Categorias: cafe_manha, almoco, jantar, lanche, sobremesa.
-Foco: ferro, cálcio, ácido fólico. Inclua valores nutricionais realistas.`;
+Foco: ferro, cálcio, ácido fólico. Inclua valores nutricionais realistas dentro do objeto 'nutrients'.`;
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

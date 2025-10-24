@@ -50,8 +50,8 @@ export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfil
       
       // Tratamento específico para rate limiting
       if (error.message?.includes('Limite de gerações atingido') || error.message?.includes('429')) {
-        toast.error("Limite diário atingido", {
-          description: "Você já gerou 3 exercícios hoje. Tente novamente amanhã.",
+        toast.error("Limite semanal atingido", {
+          description: "Você já gerou exercícios esta semana. Tente novamente na próxima semana.",
         });
       } else if (error.message?.includes('Unauthorized')) {
         toast.error("Sessão expirada", {

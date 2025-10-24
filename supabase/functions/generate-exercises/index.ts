@@ -57,12 +57,20 @@ serve(async (req) => {
 
     if (!profile) throw new Error('Profile not found');
 
-    const trimester = Math.ceil((profile.meses_gestacao || 1) / 3);
+    const trimester = Math.min(Math.ceil((profile.meses_gestacao || 1) / 3), 3);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) throw new Error('LOVABLE_API_KEY not configured');
 
-    const prompt = `Crie 10 exercícios seguros para gestante no ${trimester}° trimestre:
+    const prompt = `Crie 10 exercícios seguros personalizados para gestante no ${trimester}° trimestre:
+
+**Perfil da Gestante:**
+- Peso: ${profile.peso_atual || 'não informado'} kg
+- Altura: ${profile.altura_cm || 'não informado'} cm
+- Sexo: ${profile.sexo || 'feminino'}
+- Trimestre: ${trimester}º
+
+Ajuste intensidade e duração baseadas nesses dados.
 
 {
   "exercises": [
@@ -82,7 +90,7 @@ serve(async (req) => {
 }
 
 Categorias: cardio, forca, flexibilidade, respiracao, relaxamento.
-Tipos: em_casa, aerobio, academia, yoga, alongamento (distribua entre os tipos).
+Tipos (OBRIGATÓRIO): em_casa, aerobio, academia, yoga, alongamento (distribua entre TODOS os tipos).
 Intensidades: leve, moderado.
 Foco: segurança e bem-estar.`;
 

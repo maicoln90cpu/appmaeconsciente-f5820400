@@ -65,7 +65,7 @@ serve(async (req) => {
     }
 
     const mesesGestacao = profile.meses_gestacao || 1;
-    const trimester = Math.ceil(mesesGestacao / 3);
+    const trimester = Math.min(Math.ceil(mesesGestacao / 3), 3);
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -73,12 +73,17 @@ serve(async (req) => {
     }
 
     const prompt = `Você é uma nutricionista especializada em gestação.
-Crie um plano alimentar SEMANAL COMPLETO para uma gestante:
+Crie um plano alimentar SEMANAL COMPLETO personalizado para uma gestante:
 
 **Perfil:**
 - Trimestre: ${trimester}° 
 - Meses: ${mesesGestacao}
+- Peso: ${profile.peso_atual || 'não informado'} kg
+- Altura: ${profile.altura_cm || 'não informado'} cm
+- Sexo: ${profile.sexo || 'feminino'}
 - Localização: ${profile.cidade || 'Brasil'}
+
+**IMPORTANTE:** Calcule as necessidades calóricas e nutricionais baseadas nesses dados para criar um plano mais preciso e personalizado.
 
 **RETORNE JSON VÁLIDO:**
 {

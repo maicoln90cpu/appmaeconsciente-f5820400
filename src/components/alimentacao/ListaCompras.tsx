@@ -21,7 +21,7 @@ export function ListaCompras() {
   const [loading, setLoading] = useState(true);
 
   const trimester = profile?.meses_gestacao 
-    ? Math.ceil(profile.meses_gestacao / 3) 
+    ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
     : 1;
 
   useEffect(() => {
@@ -30,11 +30,12 @@ export function ListaCompras() {
 
   const generateShoppingList = async () => {
     try {
-      // Buscar plano alimentar da semana
+      // Buscar plano alimentar da semana (gerados pela IA)
       const { data: mealPlans } = await supabase
         .from('meal_plans')
         .select('ingredients')
-        .eq('trimester', trimester);
+        .eq('trimester', trimester)
+        .eq('is_ai_generated', true);
 
       // Buscar receitas populares
       const { data: recipes } = await supabase

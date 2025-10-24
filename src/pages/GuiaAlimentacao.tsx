@@ -26,6 +26,9 @@ export default function GuiaAlimentacao() {
   const [showProfileDialog, setShowProfileDialog] = useState(false);
 
   const needsProfileData = !profile?.peso_atual || !profile?.altura_cm;
+  const trimester = profile?.meses_gestacao 
+    ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
+    : 1;
 
   // Check if user has any nutrition content
   const { data: hasContent, refetch: refetchContent } = useQuery({
