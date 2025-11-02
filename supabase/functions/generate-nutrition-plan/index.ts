@@ -71,7 +71,7 @@ ${profile.idades_filhos?.length ? `- Idades dos filhos: ${profile.idades_filhos.
   "meal_plans": [
     {
       "day_of_week": 0,
-      "meal_type": "cafe_da_manha",
+      "meal_type": "breakfast",
       "title": "Café da manhã energético",
       "description": "Pão integral com abacate e ovo",
       "ingredients": ["2 fatias de pão integral", "1/2 abacate", "1 ovo cozido", "1 copo de suco de laranja"],
@@ -132,7 +132,7 @@ ${profile.idades_filhos?.length ? `- Idades dos filhos: ${profile.idades_filhos.
 2. Crie 12 receitas variadas adaptadas ao trimestre
 3. Crie 6 exercícios seguros para o trimestre atual
 4. A lista de compras deve incluir TODOS os ingredientes usados
-5. Use meal_type: "cafe_da_manha", "almoco", "jantar", "lanche_manha", "lanche_tarde", "ceia"
+5. Use meal_type: "breakfast", "lunch", "dinner", "morning_snack", "afternoon_snack", "supper"
 6. Para day_of_week use 0-6 (0=domingo)
 7. Adapte as porções e nutrientes ao trimestre (${trimester}° trimestre precisa de mais calorias)
 8. Inclua alimentos ricos em ácido fólico, ferro e cálcio

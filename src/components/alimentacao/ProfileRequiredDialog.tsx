@@ -16,13 +16,14 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
   const [formData, setFormData] = useState({
     peso_atual: "",
     altura_cm: "",
+    sexo: "",
   });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.peso_atual || !formData.altura_cm) {
+    if (!formData.peso_atual || !formData.altura_cm || !formData.sexo) {
       toast.error("Preencha todos os campos obrigatórios");
       return;
     }
@@ -31,6 +32,7 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
     const { error } = await updateProfile({
       peso_atual: parseFloat(formData.peso_atual),
       altura_cm: parseInt(formData.altura_cm),
+      sexo: formData.sexo as 'masculino' | 'feminino' | 'outro',
     });
 
     if (error) {
@@ -52,6 +54,21 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="sexo">Sexo *</Label>
+            <select
+              id="sexo"
+              value={formData.sexo}
+              onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              required
+            >
+              <option value="">Selecione...</option>
+              <option value="feminino">Feminino</option>
+              <option value="masculino">Masculino</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="peso">Peso Atual (kg) *</Label>
             <Input
