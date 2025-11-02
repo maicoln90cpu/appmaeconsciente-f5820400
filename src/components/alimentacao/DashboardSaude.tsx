@@ -126,7 +126,7 @@ export function DashboardSaude() {
   };
 
   const trimester = profile?.meses_gestacao 
-    ? Math.ceil(profile.meses_gestacao / 3) 
+    ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
     : 1;
 
   const weekOfPregnancy = profile?.meses_gestacao 
