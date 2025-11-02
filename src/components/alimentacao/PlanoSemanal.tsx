@@ -44,7 +44,7 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
   const [selectedDay, setSelectedDay] = useState(new Date().getDay());
 
   const trimester = profile.meses_gestacao 
-    ? Math.ceil(profile.meses_gestacao / 3) 
+    ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
     : 1;
 
   useEffect(() => {
