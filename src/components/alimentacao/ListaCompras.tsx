@@ -30,14 +30,17 @@ export function ListaCompras() {
 
   const generateShoppingList = async () => {
     try {
-      // Buscar plano alimentar da semana (gerados pela IA)
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Buscar plano alimentar da semana atual do usuário autenticado
       const { data: mealPlans } = await supabase
         .from('meal_plans')
         .select('ingredients')
         .eq('trimester', trimester)
-        .eq('is_ai_generated', true);
+        .or(`created_by.eq.${user?.id},is_ai_generated.eq.true`)
+        .limit(21); // 3 refeições por dia x 7 dias
 
-      // Buscar receitas populares
+      // Buscar receitas populares do trimestre
       const { data: recipes } = await supabase
         .from('recipes')
         .select('ingredients, category')
@@ -45,15 +48,29 @@ export function ListaCompras() {
         .contains('trimester_focus', [trimester])
         .limit(5);
 
-      // Combinar todos os ingredientes
+      // Combinar todos os ingredientes únicos
       const allIngredients = new Set<string>();
       
+      // Extrair ingredientes dos meal_plans
       mealPlans?.forEach(plan => {
-        plan.ingredients?.forEach((ing: string) => allIngredients.add(ing));
+        if (Array.isArray(plan.ingredients)) {
+          plan.ingredients.forEach((ing: string) => {
+            if (ing && ing.trim()) {
+              allIngredients.add(ing.trim());
+            }
+          });
+        }
       });
 
+      // Extrair ingredientes das receitas
       recipes?.forEach(recipe => {
-        recipe.ingredients?.forEach((ing: string) => allIngredients.add(ing));
+        if (Array.isArray(recipe.ingredients)) {
+          recipe.ingredients.forEach((ing: string) => {
+            if (ing && ing.trim()) {
+              allIngredients.add(ing.trim());
+            }
+          });
+        }
       });
 
       // Criar lista organizada por categorias

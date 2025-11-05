@@ -55,7 +55,8 @@ const EXERCISE_TYPES = {
   aerobio: "Aeróbio",
   academia: "Academia",
   yoga: "Yoga",
-  alongamento: "Alongamento"
+  alongamento: "Alongamento",
+  outros: "Outros"
 };
 
 export function ExerciciosTrimestre() {
@@ -81,7 +82,9 @@ export function ExerciciosTrimestre() {
 
   useEffect(() => {
     if (selectedType) {
-      setFilteredExercises(exercises.filter(ex => ex.exercise_type === selectedType));
+      setFilteredExercises(exercises.filter(ex => 
+        ex.exercise_type === selectedType || (ex.exercise_type === null && selectedType === 'outros')
+      ));
     } else {
       setFilteredExercises(exercises);
     }

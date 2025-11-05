@@ -168,7 +168,7 @@ export function Receitas() {
                 </div>
 
                 {/* Informações Nutricionais */}
-                {(recipe.nutrients?.proteins || recipe.nutrients?.carbs || recipe.nutrients?.fats) && (
+                {recipe.nutrients && (recipe.nutrients.proteins || recipe.nutrients.carbs || recipe.nutrients.fats) && (
                   <div className="grid grid-cols-3 gap-2 p-3 bg-muted/50 rounded-lg">
                     {recipe.nutrients.proteins && (
                       <div className="text-center">
@@ -188,6 +188,15 @@ export function Receitas() {
                         <p className="font-semibold text-sm">{recipe.nutrients.fats}g</p>
                       </div>
                     )}
+                  </div>
+                )}
+                
+                {/* Aviso para receitas sem info nutricional */}
+                {!recipe.nutrients && (
+                  <div className="p-3 bg-muted/30 rounded-lg">
+                    <p className="text-xs text-muted-foreground italic">
+                      Informações nutricionais não disponíveis para esta receita
+                    </p>
                   </div>
                 )}
 
