@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 import { Profile } from "@/hooks/useProfile";
 import { Calendar, Clock, Flame, AlertCircle } from "lucide-react";
@@ -70,7 +71,48 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
   };
 
   if (loading) {
-    return <div className="flex justify-center py-8">Carregando plano semanal...</div>;
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <Skeleton className="h-7 w-64 mb-2" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+              <Skeleton className="h-8 w-32" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
+              {[1, 2, 3, 4, 5, 6, 7].map(i => (
+                <Skeleton key={i} className="h-10 w-24" />
+              ))}
+            </div>
+            <div className="space-y-6">
+              {[1, 2, 3].map(i => (
+                <Card key={i}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <Skeleton className="h-6 w-32 mb-2" />
+                        <Skeleton className="h-5 w-48" />
+                      </div>
+                      <Skeleton className="h-6 w-20" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-32 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   if (mealPlans.length === 0) {
