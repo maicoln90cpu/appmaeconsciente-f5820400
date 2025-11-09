@@ -4,15 +4,24 @@ import { toast } from 'sonner';
 
 type FavoriteType = 'recipe' | 'exercise';
 
+interface FavoriteItem {
+  item_id: string;
+  notes: string | null;
+}
+
 interface UseFavoritesReturn {
   favorites: Set<string>;
+  favoriteNotes: Map<string, string | null>;
   loading: boolean;
   toggleFavorite: (itemId: string, itemType: FavoriteType) => Promise<void>;
   isFavorite: (itemId: string) => boolean;
+  updateNotes: (itemId: string, notes: string) => Promise<void>;
+  getNotes: (itemId: string) => string | null;
 }
 
 export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [favoriteNotes, setFavoriteNotes] = useState<Map<string, string | null>>(new Map());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,13 +38,15 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
 
       const { data, error } = await supabase
         .from('user_favorites')
-        .select('item_id')
+        .select('item_id, notes')
         .eq('user_id', user.id)
         .eq('item_type', itemType);
 
       if (error) throw error;
 
-      setFavorites(new Set(data?.map(f => f.item_id) || []));
+      const items = data || [];
+      setFavorites(new Set(items.map(f => f.item_id)));
+      setFavoriteNotes(new Map(items.map(f => [f.item_id, f.notes])));
     } catch (error) {
       console.error('Erro ao carregar favoritos:', error);
     } finally {
@@ -93,5 +104,32 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
 
   const isFavorite = (itemId: string) => favorites.has(itemId);
 
-  return { favorites, loading, toggleFavorite, isFavorite };
+  const updateNotes = async (itemId: string, notes: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('Você precisa estar logado');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('user_favorites')
+        .update({ notes })
+        .eq('user_id', user.id)
+        .eq('item_type', itemType)
+        .eq('item_id', itemId);
+
+      if (error) throw error;
+
+      setFavoriteNotes(prev => new Map(prev).set(itemId, notes));
+      toast.success('Nota atualizada com sucesso');
+    } catch (error) {
+      console.error('Erro ao atualizar nota:', error);
+      toast.error('Erro ao atualizar nota');
+    }
+  };
+
+  const getNotes = (itemId: string) => favoriteNotes.get(itemId) || null;
+
+  return { favorites, favoriteNotes, loading, toggleFavorite, isFavorite, updateNotes, getNotes };
 }

@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Clock, Users, ChefHat, BookOpen, Heart, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, Clock, Users, ChefHat, BookOpen, Heart, ChevronDown, ChevronUp, Save } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useFavorites } from "@/hooks/useFavorites";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -44,7 +45,9 @@ export function Receitas() {
   const [selectedPrepTime, setSelectedPrepTime] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [expandedRecipes, setExpandedRecipes] = useState<Set<string>>(new Set());
-  const { isFavorite, toggleFavorite } = useFavorites('recipe');
+  const [editingNotes, setEditingNotes] = useState<string | null>(null);
+  const [noteText, setNoteText] = useState<string>('');
+  const { isFavorite, toggleFavorite, updateNotes, getNotes } = useFavorites('recipe');
 
   useEffect(() => {
     loadRecipes();
@@ -117,6 +120,21 @@ export function Receitas() {
       }
       return newSet;
     });
+  };
+
+  const handleEditNotes = (recipeId: string) => {
+    setEditingNotes(recipeId);
+    setNoteText(getNotes(recipeId) || '');
+  };
+
+  const handleSaveNotes = async (recipeId: string) => {
+    await updateNotes(recipeId, noteText);
+    setEditingNotes(null);
+  };
+
+  const handleCancelNotes = () => {
+    setEditingNotes(null);
+    setNoteText('');
   };
 
   // Extract all unique tags from recipes
@@ -406,6 +424,60 @@ export function Receitas() {
                       </>
                     )}
                   </Button>
+
+                  {/* Notes section for favorited recipes */}
+                  {isFav && (
+                    <div className="pt-4 border-t mt-4">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-semibold text-foreground">Minhas Anotações</h4>
+                          {editingNotes !== recipe.id && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEditNotes(recipe.id)}
+                            >
+                              {getNotes(recipe.id) ? 'Editar' : 'Adicionar nota'}
+                            </Button>
+                          )}
+                        </div>
+                        
+                        {editingNotes === recipe.id ? (
+                          <div className="space-y-2">
+                            <Textarea
+                              value={noteText}
+                              onChange={(e) => setNoteText(e.target.value)}
+                              placeholder="Adicione ajustes, substituições, ou observações pessoais sobre esta receita..."
+                              className="min-h-[100px]"
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={() => handleSaveNotes(recipe.id)}
+                                className="gap-2"
+                              >
+                                <Save className="h-4 w-4" />
+                                Salvar
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleCancelNotes}
+                              >
+                                Cancelar
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          getNotes(recipe.id) && (
+                            <p className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-md whitespace-pre-wrap">
+                              {getNotes(recipe.id)}
+                            </p>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             );

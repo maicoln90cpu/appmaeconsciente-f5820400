@@ -1666,6 +1666,8 @@ export type Database = {
           id: string
           item_id: string
           item_type: string
+          notes: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -1673,6 +1675,8 @@ export type Database = {
           id?: string
           item_id: string
           item_type: string
+          notes?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -1680,6 +1684,8 @@ export type Database = {
           id?: string
           item_id?: string
           item_type?: string
+          notes?: string | null
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
