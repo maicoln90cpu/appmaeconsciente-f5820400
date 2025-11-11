@@ -17,6 +17,9 @@ export interface Profile {
   peso_atual?: number;
   altura_cm?: number;
   perfil_completo: boolean;
+  delivery_date?: string;
+  delivery_type?: 'normal' | 'cesarean' | 'forceps' | 'vacuum';
+  postpartum_week?: number;
   created_at: string;
   updated_at: string;
 }
