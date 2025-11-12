@@ -39,6 +39,7 @@ export const usePostpartumMedications = () => {
 
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('postpartum_medications')
         .select('*')
         .eq('user_id', user.id)
@@ -46,6 +47,7 @@ export const usePostpartumMedications = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      // @ts-ignore
       return data as PostpartumMedication[];
     },
   });
@@ -59,6 +61,7 @@ export const usePostpartumMedications = () => {
       const today = new Date().toISOString().split('T')[0];
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('medication_logs')
         .select('*')
         .eq('user_id', user.id)
@@ -66,6 +69,7 @@ export const usePostpartumMedications = () => {
         .order('taken_at', { ascending: false });
 
       if (error) throw error;
+      // @ts-ignore
       return data as MedicationLog[];
     },
   });
@@ -77,6 +81,7 @@ export const usePostpartumMedications = () => {
 
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('postpartum_medications')
         .insert({ ...medication, user_id: user.id })
         .select()
@@ -98,6 +103,7 @@ export const usePostpartumMedications = () => {
     mutationFn: async ({ id, ...updates }: Partial<PostpartumMedication> & { id: string }) => {
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('postpartum_medications')
         .update(updates)
         .eq('id', id)
@@ -120,6 +126,7 @@ export const usePostpartumMedications = () => {
 
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('medication_logs')
         .insert({ ...log, user_id: user.id })
         .select()

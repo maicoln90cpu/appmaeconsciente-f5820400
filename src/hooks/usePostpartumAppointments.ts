@@ -29,12 +29,14 @@ export const usePostpartumAppointments = () => {
 
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('postpartum_appointments')
         .select('*')
         .eq('user_id', user.id)
         .order('scheduled_date', { ascending: true });
 
       if (error) throw error;
+      // @ts-ignore
       return data as PostpartumAppointment[];
     },
   });
@@ -46,6 +48,7 @@ export const usePostpartumAppointments = () => {
 
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('postpartum_appointments')
         .insert({ ...appointment, user_id: user.id })
         .select()
@@ -67,6 +70,7 @@ export const usePostpartumAppointments = () => {
     mutationFn: async ({ id, ...updates }: Partial<PostpartumAppointment> & { id: string }) => {
       // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
+        // @ts-ignore
         .from('postpartum_appointments')
         .update(updates)
         .eq('id', id)
@@ -86,6 +90,7 @@ export const usePostpartumAppointments = () => {
     mutationFn: async (id: string) => {
       // @ts-ignore - types will be updated after migration
       const { error } = await supabase
+        // @ts-ignore
         .from('postpartum_appointments')
         .delete()
         .eq('id', id);
