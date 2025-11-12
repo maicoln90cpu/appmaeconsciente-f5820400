@@ -2,8 +2,11 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { DashboardRecuperacao } from "@/components/recuperacao/DashboardRecuperacao";
 import { RastreadorSintomas } from "@/components/recuperacao/RastreadorSintomas";
 import { ControleMedicamentos } from "@/components/recuperacao/ControleMedicamentos";
+import { DiarioAutoestima } from "@/components/recuperacao/DiarioAutoestima";
+import { AcessoParceiro } from "@/components/recuperacao/AcessoParceiro";
+import { ConquistasRecuperacao } from "@/components/recuperacao/ConquistasRecuperacao";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, Pill, Calendar, Heart, FileText } from "lucide-react";
+import { Activity, Pill, Calendar, Heart, FileText, Camera, Users, Trophy } from "lucide-react";
 
 const RecuperacaoPosPartoPage = () => {
   return (
@@ -17,7 +20,7 @@ const RecuperacaoPosPartoPage = () => {
         </div>
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-5 w-full">
+          <TabsList className="grid grid-cols-4 sm:grid-cols-8 w-full">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -37,6 +40,18 @@ const RecuperacaoPosPartoPage = () => {
             <TabsTrigger value="emocional" className="flex items-center gap-2">
               <Heart className="h-4 w-4" />
               <span className="hidden sm:inline">Emocional</span>
+            </TabsTrigger>
+            <TabsTrigger value="autoestima" className="flex items-center gap-2">
+              <Camera className="h-4 w-4" />
+              <span className="hidden sm:inline">Autoestima</span>
+            </TabsTrigger>
+            <TabsTrigger value="parceiro" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              <span className="hidden sm:inline">Parceiro</span>
+            </TabsTrigger>
+            <TabsTrigger value="conquistas" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              <span className="hidden sm:inline">Conquistas</span>
             </TabsTrigger>
           </TabsList>
 
@@ -62,6 +77,18 @@ const RecuperacaoPosPartoPage = () => {
             <div className="text-center text-muted-foreground py-12">
               Rastreador Emocional (em desenvolvimento)
             </div>
+          </TabsContent>
+
+          <TabsContent value="autoestima">
+            <DiarioAutoestima />
+          </TabsContent>
+
+          <TabsContent value="parceiro">
+            <AcessoParceiro />
+          </TabsContent>
+
+          <TabsContent value="conquistas">
+            <ConquistasRecuperacao />
           </TabsContent>
         </Tabs>
       </div>
