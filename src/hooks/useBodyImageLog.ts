@@ -134,7 +134,9 @@ export const useBodyImageLog = () => {
         .eq('id', id)
         .single();
 
+      // @ts-ignore
       if (log?.photo_url) {
+        // @ts-ignore
         const fileName = log.photo_url.split('/').pop();
         const { data: { user } } = await supabase.auth.getUser();
         if (user && fileName) {

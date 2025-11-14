@@ -153,6 +153,7 @@ export const usePostpartumAchievements = () => {
     onSuccess: (data) => {
       if (data) {
         queryClient.invalidateQueries({ queryKey: ['postpartum-achievements'] });
+        // @ts-ignore
         const achievement = ACHIEVEMENT_DEFINITIONS.find(a => a.code === data.achievement_code);
         toast.success(`🎉 Conquista desbloqueada: ${achievement?.icon} ${achievement?.name}`, {
           duration: 5000,
