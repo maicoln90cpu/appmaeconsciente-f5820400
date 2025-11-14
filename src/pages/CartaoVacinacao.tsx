@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Baby } from "lucide-react";
+import { Loader2, Baby, Activity } from "lucide-react";
 import { useVaccination } from "@/hooks/useVaccination";
 import { CadastroBebe } from "@/components/vacinacao/CadastroBebe";
 import { DashboardVacinacao } from "@/components/vacinacao/DashboardVacinacao";
@@ -64,12 +66,22 @@ const CartaoVacinacao = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">
-          💉 Cartão de Vacinação - {currentProfile.nickname || currentProfile.baby_name}
-        </h1>
-        <p className="text-muted-foreground">
-          Acompanhe todas as vacinas e mantenha a saúde do bebê em dia
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">
+              💉 Cartão de Vacinação - {currentProfile.nickname || currentProfile.baby_name}
+            </h1>
+            <p className="text-muted-foreground">
+              Acompanhe todas as vacinas e mantenha a saúde do bebê em dia
+            </p>
+          </div>
+          <Link to="/materiais/monitor-desenvolvimento">
+            <Button variant="outline" className="gap-2">
+              <Activity className="h-4 w-4" />
+              Monitor de Desenvolvimento
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Tabs defaultValue="dashboard" className="space-y-6">
