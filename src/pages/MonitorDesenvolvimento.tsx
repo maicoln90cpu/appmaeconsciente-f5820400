@@ -9,9 +9,12 @@ import { LinhaTempoMarcos } from "@/components/desenvolvimento/LinhaTempoMarcos"
 import { MilestoneDetailDialog } from "@/components/desenvolvimento/MilestoneDetailDialog";
 import { RegistroRapidoMarcos } from "@/components/desenvolvimento/RegistroRapidoMarcos";
 import { RelatorioPediatraDialog } from "@/components/desenvolvimento/RelatorioPediatraDialog";
-import { BabyMilestoneRecord } from "@/types/development";
-import { Plus, Baby } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ConfiguracoesAlertas } from "@/components/desenvolvimento/ConfiguracoesAlertas";
+import { MarcosAtencao } from "@/components/desenvolvimento/MarcosAtencao";
+import { BabyMilestoneRecord, DevelopmentAlertSettings } from "@/types/development";
+import { Plus, Baby, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const MonitorDesenvolvimento = () => {
   const { profiles, currentProfile } = useVaccination();
@@ -20,12 +23,17 @@ const MonitorDesenvolvimento = () => {
     summary, 
     loading, 
     markAsAchieved,
-    milestoneTypes 
+    updateRecord,
+    milestoneTypes,
+    getAttentionMilestones
   } = useDevelopmentMilestones(currentProfile?.id || null);
 
   const [selectedMilestone, setSelectedMilestone] = useState<BabyMilestoneRecord | null>(null);
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showQuickRegister, setShowQuickRegister] = useState(false);
+  const [alertSettings, setAlertSettings] = useState<DevelopmentAlertSettings | null>(null);
+
+  const attentionMilestones = getAttentionMilestones();
 
   const handleMilestoneClick = (record: BabyMilestoneRecord) => {
     setSelectedMilestone(record);
@@ -36,6 +44,15 @@ const MonitorDesenvolvimento = () => {
     for (const id of milestoneIds) {
       await markAsAchieved(id, date);
     }
+  };
+
+  const handleMarkAsDoubt = (recordId: string) => {
+    updateRecord(recordId, { status: 'doubt' });
+  };
+
+  const handleSaveAlertSettings = (settings: Partial<DevelopmentAlertSettings>) => {
+    // TODO: Implement save to database
+    console.log('Saving alert settings:', settings);
   };
 
   if (!currentProfile) {
@@ -79,27 +96,64 @@ const MonitorDesenvolvimento = () => {
           </Button>
         </div>
 
+        {/* Mensagem contextual motivacional */}
+        <Alert className="bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200">
+          <AlertCircle className="h-4 w-4 text-pink-600" />
+          <AlertTitle className="text-pink-800">💕 Cada bebê tem seu próprio ritmo</AlertTitle>
+          <AlertDescription className="text-pink-700">
+            Este monitor é uma ferramenta de acompanhamento com amor, não de comparação. 
+            Observe, celebre e confie no desenvolvimento único do seu bebê.
+          </AlertDescription>
+        </Alert>
+
         {summary && (
-          <>
-            <DashboardDesenvolvimento summary={summary} />
+          <Tabs defaultValue="dashboard" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+              <TabsTrigger value="timeline">Linha do Tempo</TabsTrigger>
+              <TabsTrigger value="attention">
+                Atenção 
+                {attentionMilestones.length > 0 && (
+                  <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">
+                    {attentionMilestones.length}
+                  </span>
+                )}
+              </TabsTrigger>
+              <TabsTrigger value="settings">Alertas</TabsTrigger>
+            </TabsList>
 
-            <LinhaTempoMarcos
-              records={records}
-              babyAgeMonths={summary.age_months}
-              onMilestoneClick={handleMilestoneClick}
-            />
+            <TabsContent value="dashboard" className="space-y-6">
+              <DashboardDesenvolvimento summary={summary} />
+            </TabsContent>
 
-            <RelatorioPediatraDialog
-              summary={summary}
-              records={records}
-              babyProfile={{
-                baby_name: currentProfile.baby_name,
-                birth_date: currentProfile.birth_date,
-                birth_type: currentProfile.birth_type || undefined,
-                birth_city: currentProfile.birth_city || undefined
-              }}
-            />
-          </>
+            <TabsContent value="timeline" className="space-y-6">
+              <LinhaTempoMarcos
+                records={records}
+                babyAgeMonths={summary.age_months}
+                onMilestoneClick={handleMilestoneClick}
+              />
+            </TabsContent>
+
+            <TabsContent value="attention" className="space-y-6">
+              <MarcosAtencao
+                attentionRecords={attentionMilestones}
+                babyAgeMonths={summary.age_months}
+                onMarkAsAchieved={(milestoneTypeId) => markAsAchieved(milestoneTypeId, new Date())}
+                onMarkAsDoubt={handleMarkAsDoubt}
+                onGenerateReport={() => {
+                  console.log('Generate report');
+                }}
+              />
+            </TabsContent>
+
+            <TabsContent value="settings" className="space-y-6">
+              <ConfiguracoesAlertas
+                settings={alertSettings}
+                babyProfileId={currentProfile.id}
+                onSave={handleSaveAlertSettings}
+              />
+            </TabsContent>
+          </Tabs>
         )}
 
         <MilestoneDetailDialog
