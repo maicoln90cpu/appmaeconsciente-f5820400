@@ -30,6 +30,7 @@ const DiarioSono = lazy(() => import("./pages/DiarioSono"));
 const RastreadorAmamentacao = lazy(() => import("./pages/RastreadorAmamentacao"));
 const CartaoVacinacao = lazy(() => import("./pages/CartaoVacinacao"));
 const RecuperacaoPosPartoPage = lazy(() => import("./pages/RecuperacaoPosPartoPage"));
+const MonitorDesenvolvimento = lazy(() => import("./pages/MonitorDesenvolvimento"));
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,10 @@ const App = () => (
 
               <Route element={<ProductRoute productSlug="recuperacao-pos-parto" />}>
                 <Route path="/materiais/recuperacao-pos-parto" element={<MainLayout><div className="animate-scale-in"><RecuperacaoPosPartoPage /></div></MainLayout>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="monitor-desenvolvimento" />}>
+                <Route path="/materiais/monitor-desenvolvimento" element={<MainLayout><div className="animate-scale-in"><MonitorDesenvolvimento /></div></MainLayout>} />
               </Route>
             </Route>
 
