@@ -68,6 +68,66 @@ export type Database = {
         }
         Relationships: []
       }
+      baby_milestone_records: {
+        Row: {
+          achieved_date: string | null
+          baby_profile_id: string
+          created_at: string | null
+          id: string
+          marked_as_achieved_at: string | null
+          milestone_type_id: string
+          mother_notes: string | null
+          photo_url: string | null
+          status: string
+          updated_at: string | null
+          user_id: string
+          video_url: string | null
+        }
+        Insert: {
+          achieved_date?: string | null
+          baby_profile_id: string
+          created_at?: string | null
+          id?: string
+          marked_as_achieved_at?: string | null
+          milestone_type_id: string
+          mother_notes?: string | null
+          photo_url?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id: string
+          video_url?: string | null
+        }
+        Update: {
+          achieved_date?: string | null
+          baby_profile_id?: string
+          created_at?: string | null
+          id?: string
+          marked_as_achieved_at?: string | null
+          milestone_type_id?: string
+          mother_notes?: string | null
+          photo_url?: string | null
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+          video_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_milestone_records_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "baby_milestone_records_milestone_type_id_fkey"
+            columns: ["milestone_type_id"]
+            isOneToOne: false
+            referencedRelation: "development_milestone_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       baby_sleep_logs: {
         Row: {
           baby_age_months: number | null
@@ -197,6 +257,8 @@ export type Database = {
           birth_type: string | null
           calendar_type: string
           created_at: string
+          development_monitoring_enabled: boolean | null
+          development_notes: string | null
           id: string
           nickname: string | null
           updated_at: string
@@ -210,6 +272,8 @@ export type Database = {
           birth_type?: string | null
           calendar_type?: string
           created_at?: string
+          development_monitoring_enabled?: boolean | null
+          development_notes?: string | null
           id?: string
           nickname?: string | null
           updated_at?: string
@@ -223,6 +287,8 @@ export type Database = {
           birth_type?: string | null
           calendar_type?: string
           created_at?: string
+          development_monitoring_enabled?: boolean | null
+          development_notes?: string | null
           id?: string
           nickname?: string | null
           updated_at?: string
@@ -468,6 +534,98 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      development_alert_settings: {
+        Row: {
+          alert_when_passed_max_age: boolean | null
+          alerts_enabled: boolean | null
+          baby_profile_id: string
+          created_at: string | null
+          email_enabled: boolean | null
+          id: string
+          push_enabled: boolean | null
+          reminder_frequency_days: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_when_passed_max_age?: boolean | null
+          alerts_enabled?: boolean | null
+          baby_profile_id: string
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          reminder_frequency_days?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_when_passed_max_age?: boolean | null
+          alerts_enabled?: boolean | null
+          baby_profile_id?: string
+          created_at?: string | null
+          email_enabled?: boolean | null
+          id?: string
+          push_enabled?: boolean | null
+          reminder_frequency_days?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "development_alert_settings_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      development_milestone_types: {
+        Row: {
+          age_max_months: number
+          age_min_months: number
+          area: string
+          created_at: string | null
+          description: string
+          id: string
+          is_active: boolean | null
+          milestone_code: string
+          pediatrician_alert: string | null
+          stimulation_tips: string[] | null
+          title: string
+          video_demo_url: string | null
+        }
+        Insert: {
+          age_max_months: number
+          age_min_months: number
+          area: string
+          created_at?: string | null
+          description: string
+          id?: string
+          is_active?: boolean | null
+          milestone_code: string
+          pediatrician_alert?: string | null
+          stimulation_tips?: string[] | null
+          title: string
+          video_demo_url?: string | null
+        }
+        Update: {
+          age_max_months?: number
+          age_min_months?: number
+          area?: string
+          created_at?: string | null
+          description?: string
+          id?: string
+          is_active?: boolean | null
+          milestone_code?: string
+          pediatrician_alert?: string | null
+          stimulation_tips?: string[] | null
+          title?: string
+          video_demo_url?: string | null
+        }
+        Relationships: []
       }
       exercises: {
         Row: {
