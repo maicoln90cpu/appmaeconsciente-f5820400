@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useVaccination } from "@/hooks/useVaccination";
 import { useDevelopmentMilestones } from "@/hooks/useDevelopmentMilestones";
-import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DashboardDesenvolvimento } from "@/components/desenvolvimento/DashboardDesenvolvimento";
@@ -77,33 +76,28 @@ const MonitorDesenvolvimento = () => {
 
   if (!currentProfile) {
     return (
-      <MainLayout>
-        <div className="container max-w-4xl py-8">
-          <Alert>
-            <Baby className="h-4 w-4" />
-            <AlertDescription>
-              Você precisa cadastrar um perfil de bebê primeiro. Acesse o Cartão de Vacinação para criar um perfil.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </MainLayout>
+      <div className="container max-w-4xl py-8">
+        <Alert>
+          <Baby className="h-4 w-4" />
+          <AlertDescription>
+            Você precisa cadastrar um perfil de bebê primeiro. Acesse o Cartão de Vacinação para criar um perfil.
+          </AlertDescription>
+        </Alert>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="container max-w-4xl py-8">
-          <p>Carregando...</p>
-        </div>
-      </MainLayout>
+      <div className="container max-w-4xl py-8">
+        <p>Carregando...</p>
+      </div>
     );
   }
 
   return (
-    <MainLayout>
-      <TooltipProvider>
-        <div className="container max-w-6xl py-8 space-y-6">
+    <TooltipProvider>
+      <div className="container max-w-6xl py-8 space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div>
@@ -251,9 +245,8 @@ const MonitorDesenvolvimento = () => {
           open={showOnboarding}
           onComplete={handleOnboardingComplete}
         />
-        </div>
-      </TooltipProvider>
-    </MainLayout>
+      </div>
+    </TooltipProvider>
   );
 };
 
