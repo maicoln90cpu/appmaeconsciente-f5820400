@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useVaccination } from "@/hooks/useVaccination";
 import { useDevelopmentMilestones } from "@/hooks/useDevelopmentMilestones";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -11,10 +11,17 @@ import { RegistroRapidoMarcos } from "@/components/desenvolvimento/RegistroRapid
 import { RelatorioPediatraDialog } from "@/components/desenvolvimento/RelatorioPediatraDialog";
 import { ConfiguracoesAlertas } from "@/components/desenvolvimento/ConfiguracoesAlertas";
 import { MarcosAtencao } from "@/components/desenvolvimento/MarcosAtencao";
+import { OnboardingMonitor } from "@/components/desenvolvimento/OnboardingMonitor";
 import { BabyMilestoneRecord, DevelopmentAlertSettings } from "@/types/development";
-import { Plus, Baby, AlertCircle } from "lucide-react";
+import { Plus, Baby, AlertCircle, HelpCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const MonitorDesenvolvimento = () => {
   const { profiles, currentProfile } = useVaccination();
@@ -32,8 +39,21 @@ const MonitorDesenvolvimento = () => {
   const [showDetailDialog, setShowDetailDialog] = useState(false);
   const [showQuickRegister, setShowQuickRegister] = useState(false);
   const [alertSettings, setAlertSettings] = useState<DevelopmentAlertSettings | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const attentionMilestones = getAttentionMilestones();
+
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('monitor-desenvolvimento-onboarding');
+    if (!hasSeenOnboarding && currentProfile) {
+      setShowOnboarding(true);
+    }
+  }, [currentProfile]);
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('monitor-desenvolvimento-onboarding', 'true');
+    setShowOnboarding(false);
+  };
 
   const handleMilestoneClick = (record: BabyMilestoneRecord) => {
     setSelectedMilestone(record);
@@ -82,19 +102,44 @@ const MonitorDesenvolvimento = () => {
 
   return (
     <MainLayout>
-      <div className="container max-w-6xl py-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Monitor de Desenvolvimento</h1>
-            <p className="text-muted-foreground mt-1">
-              Acompanhe as conquistas do seu bebê com carinho e sem paranoia
-            </p>
+      <TooltipProvider>
+        <div className="container max-w-6xl py-8 space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div>
+                <h1 className="text-3xl font-bold">Monitor de Desenvolvimento</h1>
+                <p className="text-muted-foreground mt-1">
+                  Acompanhe as conquistas do seu bebê com carinho e sem paranoia
+                </p>
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowOnboarding(true)}
+                    className="h-8 w-8"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Ver tutorial novamente</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button onClick={() => setShowQuickRegister(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Registrar Conquistas
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Registre múltiplas conquistas de uma vez</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
-          <Button onClick={() => setShowQuickRegister(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Registrar Conquistas
-          </Button>
-        </div>
 
         {/* Mensagem contextual motivacional */}
         <Alert className="bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200">
@@ -109,17 +154,48 @@ const MonitorDesenvolvimento = () => {
         {summary && (
           <Tabs defaultValue="dashboard" className="space-y-6">
             <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-              <TabsTrigger value="timeline">Linha do Tempo</TabsTrigger>
-              <TabsTrigger value="attention">
-                Atenção 
-                {attentionMilestones.length > 0 && (
-                  <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">
-                    {attentionMilestones.length}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="settings">Alertas</TabsTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Visão geral do desenvolvimento por área</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <TabsTrigger value="timeline">Linha do Tempo</TabsTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Veja todos os marcos organizados por faixa etária</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <TabsTrigger value="attention">
+                    Atenção 
+                    {attentionMilestones.length > 0 && (
+                      <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">
+                        {attentionMilestones.length}
+                      </span>
+                    )}
+                  </TabsTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Marcos que podem precisar de atenção especial</p>
+                </TooltipContent>
+              </Tooltip>
+              
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <TabsTrigger value="settings">Alertas</TabsTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Configure lembretes e notificações</p>
+                </TooltipContent>
+              </Tooltip>
             </TabsList>
 
             <TabsContent value="dashboard" className="space-y-6">
@@ -170,7 +246,13 @@ const MonitorDesenvolvimento = () => {
           onOpenChange={setShowQuickRegister}
           onSave={handleQuickRegister}
         />
-      </div>
+
+        <OnboardingMonitor
+          open={showOnboarding}
+          onComplete={handleOnboardingComplete}
+        />
+        </div>
+      </TooltipProvider>
     </MainLayout>
   );
 };
