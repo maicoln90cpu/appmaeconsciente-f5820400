@@ -368,6 +368,45 @@ export type Database = {
           },
         ]
       }
+      body_image_log: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          mood: string | null
+          notes: string | null
+          photo_url: string | null
+          privacy: string
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          privacy?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          mood?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          privacy?: string
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       breast_milk_storage: {
         Row: {
           created_at: string
@@ -535,6 +574,48 @@ export type Database = {
           },
         ]
       }
+      daily_wellness_score: {
+        Row: {
+          created_at: string | null
+          date: string
+          emotional_score: number | null
+          energy_score: number | null
+          id: string
+          is_good_day: boolean | null
+          notes: string | null
+          pain_score: number | null
+          physical_score: number | null
+          total_score: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date?: string
+          emotional_score?: number | null
+          energy_score?: number | null
+          id?: string
+          is_good_day?: boolean | null
+          notes?: string | null
+          pain_score?: number | null
+          physical_score?: number | null
+          total_score?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          emotional_score?: number | null
+          energy_score?: number | null
+          id?: string
+          is_good_day?: boolean | null
+          notes?: string | null
+          pain_score?: number | null
+          physical_score?: number | null
+          total_score?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       development_alert_settings: {
         Row: {
           alert_when_passed_max_age: boolean | null
@@ -624,6 +705,39 @@ export type Database = {
           stimulation_tips?: string[] | null
           title?: string
           video_demo_url?: string | null
+        }
+        Relationships: []
+      }
+      emotional_logs: {
+        Row: {
+          created_at: string | null
+          date: string
+          edinburgh_score: number | null
+          id: string
+          mood: string
+          notes: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date?: string
+          edinburgh_score?: number | null
+          id?: string
+          mood: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          edinburgh_score?: number | null
+          id?: string
+          mood?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1038,6 +1152,44 @@ export type Database = {
         }
         Relationships: []
       }
+      medication_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          medication_id: string
+          notes: string | null
+          scheduled_time: string | null
+          taken_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          medication_id: string
+          notes?: string | null
+          scheduled_time?: string | null
+          taken_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          medication_id?: string
+          notes?: string | null
+          scheduled_time?: string | null
+          taken_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medication_logs_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "postpartum_medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -1181,6 +1333,189 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      postpartum_achievements: {
+        Row: {
+          achievement_code: string
+          id: string
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_code: string
+          id?: string
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_code?: string
+          id?: string
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      postpartum_appointments: {
+        Row: {
+          appointment_type: string
+          completed: boolean | null
+          created_at: string | null
+          doctor_name: string | null
+          id: string
+          location: string | null
+          notes: string | null
+          reminder_sent: boolean | null
+          scheduled_date: string
+          scheduled_time: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          appointment_type: string
+          completed?: boolean | null
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          reminder_sent?: boolean | null
+          scheduled_date: string
+          scheduled_time?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          appointment_type?: string
+          completed?: boolean | null
+          created_at?: string | null
+          doctor_name?: string | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          reminder_sent?: boolean | null
+          scheduled_date?: string
+          scheduled_time?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      postpartum_medications: {
+        Row: {
+          created_at: string | null
+          dosage: string
+          end_date: string | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          medication_name: string
+          notes: string | null
+          start_date: string
+          time_of_day: string[] | null
+          times_per_day: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dosage: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          is_active?: boolean | null
+          medication_name: string
+          notes?: string | null
+          start_date: string
+          time_of_day?: string[] | null
+          times_per_day?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dosage?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          medication_name?: string
+          notes?: string | null
+          start_date?: string
+          time_of_day?: string[] | null
+          times_per_day?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      postpartum_symptoms: {
+        Row: {
+          appetite: string | null
+          bleeding_intensity: string | null
+          bowel_movement: string | null
+          breast_pain: boolean | null
+          cramps_level: number | null
+          created_at: string | null
+          date: string
+          energy_level: number | null
+          fever: boolean | null
+          healing_status: string | null
+          id: string
+          notes: string | null
+          pain_level: number | null
+          sleep_quality: number | null
+          swelling: string[] | null
+          temperature: number | null
+          updated_at: string | null
+          urination: string | null
+          user_id: string
+        }
+        Insert: {
+          appetite?: string | null
+          bleeding_intensity?: string | null
+          bowel_movement?: string | null
+          breast_pain?: boolean | null
+          cramps_level?: number | null
+          created_at?: string | null
+          date?: string
+          energy_level?: number | null
+          fever?: boolean | null
+          healing_status?: string | null
+          id?: string
+          notes?: string | null
+          pain_level?: number | null
+          sleep_quality?: number | null
+          swelling?: string[] | null
+          temperature?: number | null
+          updated_at?: string | null
+          urination?: string | null
+          user_id: string
+        }
+        Update: {
+          appetite?: string | null
+          bleeding_intensity?: string | null
+          bowel_movement?: string | null
+          breast_pain?: boolean | null
+          cramps_level?: number | null
+          created_at?: string | null
+          date?: string
+          energy_level?: number | null
+          fever?: boolean | null
+          healing_status?: string | null
+          id?: string
+          notes?: string | null
+          pain_level?: number | null
+          sleep_quality?: number | null
+          swelling?: string[] | null
+          temperature?: number | null
+          updated_at?: string | null
+          urination?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       posts: {
         Row: {
@@ -1333,6 +1668,8 @@ export type Database = {
           created_at: string
           data_inicio_planejamento: string | null
           data_prevista_parto: string | null
+          delivery_date: string | null
+          delivery_type: string | null
           email: string
           estado: string | null
           foto_perfil_url: string | null
@@ -1343,6 +1680,7 @@ export type Database = {
           perfil_completo: boolean | null
           peso_atual: number | null
           possui_filhos: boolean | null
+          postpartum_notes: string | null
           sexo: string | null
           updated_at: string
         }
@@ -1352,6 +1690,8 @@ export type Database = {
           created_at?: string
           data_inicio_planejamento?: string | null
           data_prevista_parto?: string | null
+          delivery_date?: string | null
+          delivery_type?: string | null
           email: string
           estado?: string | null
           foto_perfil_url?: string | null
@@ -1362,6 +1702,7 @@ export type Database = {
           perfil_completo?: boolean | null
           peso_atual?: number | null
           possui_filhos?: boolean | null
+          postpartum_notes?: string | null
           sexo?: string | null
           updated_at?: string
         }
@@ -1371,6 +1712,8 @@ export type Database = {
           created_at?: string
           data_inicio_planejamento?: string | null
           data_prevista_parto?: string | null
+          delivery_date?: string | null
+          delivery_type?: string | null
           email?: string
           estado?: string | null
           foto_perfil_url?: string | null
@@ -1381,6 +1724,7 @@ export type Database = {
           perfil_completo?: boolean | null
           peso_atual?: number | null
           possui_filhos?: boolean | null
+          postpartum_notes?: string | null
           sexo?: string | null
           updated_at?: string
         }
@@ -1499,6 +1843,42 @@ export type Database = {
           title?: string
           trimester_focus?: number[] | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      recovery_checklist: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          item: string
+          notes: string | null
+          updated_at: string | null
+          user_id: string
+          week_number: number
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          item: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id: string
+          week_number: number
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          item?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+          week_number?: number
         }
         Relationships: []
       }

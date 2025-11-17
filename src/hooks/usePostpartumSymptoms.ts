@@ -7,14 +7,18 @@ export interface PostpartumSymptom {
   user_id: string;
   date: string;
   pain_level?: number;
-  bleeding_intensity?: 'none' | 'light' | 'moderate' | 'heavy' | 'very_heavy';
-  swelling_level?: number;
-  healing_status?: 'good' | 'normal' | 'concerning' | 'infected';
+  bleeding_intensity?: 'light' | 'moderate' | 'heavy' | 'very_heavy';
+  cramps_level?: number;
+  swelling?: string[];
+  healing_status?: 'normal' | 'slow' | 'infected' | 'concerning';
   energy_level?: number;
-  sleep_hours?: number;
-  appetite?: 'none' | 'low' | 'normal' | 'high';
-  bowel_movement?: boolean;
+  sleep_quality?: number;
+  appetite?: 'normal' | 'low' | 'high' | 'none';
+  bowel_movement?: 'normal' | 'constipated' | 'diarrhea' | 'painful';
+  urination?: 'normal' | 'painful' | 'frequent' | 'difficult';
   fever?: boolean;
+  temperature?: number;
+  breast_pain?: boolean;
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -148,7 +152,7 @@ function checkAlerts(symptom: PostpartumSymptom) {
   }
 
   // Energia muito baixa
-  if (symptom.energy_level !== undefined && symptom.energy_level <= 1 && symptom.sleep_hours && symptom.sleep_hours < 4) {
+  if (symptom.energy_level !== undefined && symptom.energy_level <= 1 && symptom.sleep_quality && symptom.sleep_quality < 4) {
     toast.info('💙 Você está com energia muito baixa. Tente descansar quando o bebê dormir.', {
       duration: 6000,
     });
