@@ -6,9 +6,10 @@ export interface RecoveryChecklistItem {
   id: string;
   user_id: string;
   week_number: number;
-  checklist_item: string;
+  item: string;
   completed: boolean;
   completed_at?: string;
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -127,10 +128,10 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
       const weekTemplate = RECOVERY_TIMELINE.find(t => t.week === week);
       if (!weekTemplate) throw new Error('Week not found');
 
-      const items = weekTemplate.items.map(item => ({
+      const items = weekTemplate.items.map(itemText => ({
         user_id: user.id,
         week_number: week,
-        checklist_item: item,
+        item: itemText,
         completed: false,
       }));
 

@@ -13,14 +13,18 @@ export const RastreadorSintomas = () => {
   const { addSymptom, isAdding } = usePostpartumSymptoms();
   const [formData, setFormData] = useState({
     pain_level: 0,
-    bleeding_intensity: 'light' as 'none' | 'light' | 'moderate' | 'heavy' | 'very_heavy',
-    swelling_level: 0,
-    healing_status: 'normal' as 'good' | 'normal' | 'concerning' | 'infected',
+    bleeding_intensity: 'light' as 'light' | 'moderate' | 'heavy' | 'very_heavy',
+    cramps_level: 0,
+    swelling: [] as string[],
+    healing_status: 'normal' as 'normal' | 'slow' | 'infected' | 'concerning',
     energy_level: 3,
-    sleep_hours: 6,
-    appetite: 'normal' as 'none' | 'low' | 'normal' | 'high',
-    bowel_movement: false,
+    sleep_quality: 6,
+    appetite: 'normal' as 'normal' | 'low' | 'high' | 'none',
+    bowel_movement: 'normal' as 'normal' | 'constipated' | 'diarrhea' | 'painful',
+    urination: 'normal' as 'normal' | 'painful' | 'frequent' | 'difficult',
     fever: false,
+    temperature: undefined as number | undefined,
+    breast_pain: false,
     notes: '',
   });
 
@@ -87,20 +91,7 @@ export const RastreadorSintomas = () => {
             </RadioGroup>
           </div>
 
-          {/* Inchaço */}
-          <div className="space-y-2">
-            <Label>Nível de Inchaço (0 = nenhum, 5 = muito inchado)</Label>
-            <div className="flex items-center gap-4">
-              <Slider
-                value={[formData.swelling_level]}
-                onValueChange={([value]) => setFormData(prev => ({ ...prev, swelling_level: value }))}
-                max={5}
-                step={1}
-                className="flex-1"
-              />
-              <span className="text-2xl font-bold w-8 text-center">{formData.swelling_level}</span>
-            </div>
-          </div>
+          {/* Inchaço - removido pois swelling é array no schema */}
 
           {/* Status de cicatrização */}
           <div className="space-y-2">
@@ -110,12 +101,12 @@ export const RastreadorSintomas = () => {
               onValueChange={(value: any) => setFormData(prev => ({ ...prev, healing_status: value }))}
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="good" id="good" />
-                <Label htmlFor="good">Ótima</Label>
+                <RadioGroupItem value="normal" id="normal-heal" />
+                <Label htmlFor="normal-heal">Normal</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="normal" id="normal" />
-                <Label htmlFor="normal">Normal</Label>
+                <RadioGroupItem value="slow" id="slow" />
+                <Label htmlFor="slow">Cicatrização lenta</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="concerning" id="concerning" />
@@ -143,18 +134,18 @@ export const RastreadorSintomas = () => {
             </div>
           </div>
 
-          {/* Horas de sono */}
+          {/* Qualidade do sono */}
           <div className="space-y-2">
-            <Label>Horas de Sono (aproximadas)</Label>
+            <Label>Qualidade do Sono (0 = péssimo, 10 = excelente)</Label>
             <div className="flex items-center gap-4">
               <Slider
-                value={[formData.sleep_hours]}
-                onValueChange={([value]) => setFormData(prev => ({ ...prev, sleep_hours: value }))}
-                max={12}
-                step={0.5}
+                value={[formData.sleep_quality]}
+                onValueChange={([value]) => setFormData(prev => ({ ...prev, sleep_quality: value }))}
+                max={10}
+                step={1}
                 className="flex-1"
               />
-              <span className="text-2xl font-bold w-12 text-center">{formData.sleep_hours}h</span>
+              <span className="text-2xl font-bold w-12 text-center">{formData.sleep_quality}</span>
             </div>
           </div>
 
@@ -184,16 +175,60 @@ export const RastreadorSintomas = () => {
             </RadioGroup>
           </div>
 
+          {/* Evacuação */}
+          <div className="space-y-2">
+            <Label>Evacuação</Label>
+            <RadioGroup
+              value={formData.bowel_movement}
+              onValueChange={(value: any) => setFormData(prev => ({ ...prev, bowel_movement: value }))}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="normal" id="bowel-normal" />
+                <Label htmlFor="bowel-normal">Normal</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="constipated" id="bowel-const" />
+                <Label htmlFor="bowel-const">Constipação</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="diarrhea" id="bowel-diarr" />
+                <Label htmlFor="bowel-diarr">Diarreia</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="painful" id="bowel-pain" />
+                <Label htmlFor="bowel-pain">Dolorida</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          {/* Urinação */}
+          <div className="space-y-2">
+            <Label>Urinação</Label>
+            <RadioGroup
+              value={formData.urination}
+              onValueChange={(value: any) => setFormData(prev => ({ ...prev, urination: value }))}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="normal" id="urin-normal" />
+                <Label htmlFor="urin-normal">Normal</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="painful" id="urin-pain" />
+                <Label htmlFor="urin-pain">Dolorida</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="frequent" id="urin-freq" />
+                <Label htmlFor="urin-freq">Muito frequente</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="difficult" id="urin-diff" />
+                <Label htmlFor="urin-diff">Difícil</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
           {/* Checkboxes */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="bowel"
-                checked={formData.bowel_movement}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, bowel_movement: checked as boolean }))}
-              />
-              <Label htmlFor="bowel">Tive evacuação hoje</Label>
-            </div>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="fever"
@@ -201,6 +236,14 @@ export const RastreadorSintomas = () => {
                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, fever: checked as boolean }))}
               />
               <Label htmlFor="fever" className="text-destructive">Estou com febre ⚠️</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="breast_pain"
+                checked={formData.breast_pain}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, breast_pain: checked as boolean }))}
+              />
+              <Label htmlFor="breast_pain">Dor nas mamas</Label>
             </div>
           </div>
 
