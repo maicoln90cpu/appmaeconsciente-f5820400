@@ -1080,6 +1080,125 @@ export type Database = {
           },
         ]
       }
+      maternity_bag_categories: {
+        Row: {
+          created_at: string
+          delivery_type_filter: string | null
+          display_order: number
+          icon: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_type_filter?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_type_filter?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      maternity_bag_items: {
+        Row: {
+          category_id: string
+          cesarean_only: boolean | null
+          checked: boolean
+          created_at: string
+          id: string
+          name: string
+          normal_only: boolean | null
+          notes: string | null
+          quantity: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          cesarean_only?: boolean | null
+          checked?: boolean
+          created_at?: string
+          id?: string
+          name: string
+          normal_only?: boolean | null
+          notes?: string | null
+          quantity?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_id?: string
+          cesarean_only?: boolean | null
+          checked?: boolean
+          created_at?: string
+          id?: string
+          name?: string
+          normal_only?: boolean | null
+          notes?: string | null
+          quantity?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maternity_bag_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "maternity_bag_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maternity_bag_shared_access: {
+        Row: {
+          access_token: string
+          created_at: string
+          expires_at: string
+          id: string
+          is_active: boolean
+          last_accessed: string | null
+          shared_with_email: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          is_active?: boolean
+          last_accessed?: string | null
+          shared_with_email: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          is_active?: boolean
+          last_accessed?: string | null
+          shared_with_email?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       meal_plans: {
         Row: {
           calcium: number | null
