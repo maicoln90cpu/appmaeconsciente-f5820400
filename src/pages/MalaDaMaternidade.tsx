@@ -7,7 +7,10 @@ import { ProgressTracker } from "@/components/mala-maternidade/ProgressTracker";
 import { HospitalSettings } from "@/components/mala-maternidade/HospitalSettings";
 import { ExportPDF } from "@/components/mala-maternidade/ExportPDF";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, Download } from "lucide-react";
+import { Info, Calendar } from "lucide-react";
+import { useMaternityBag } from "@/hooks/useMaternityBag";
+import { useProfile } from "@/hooks/useProfile";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ChecklistItem {
   id: string;
@@ -21,127 +24,94 @@ interface ChecklistItem {
 }
 
 const MalaDaMaternidade = () => {
-  const [motherItems, setMotherItems] = useState<ChecklistItem[]>([]);
-  const [babyItems, setBabyItems] = useState<ChecklistItem[]>([]);
-  const [companionItems, setCompanionItems] = useState<ChecklistItem[]>([]);
+  const { categories, items, loading, updateItem, addItem, getItemsByCategory } = useMaternityBag();
+  const { profile } = useProfile();
   const [selectedHospital, setSelectedHospital] = useState<string>("");
   const [deliveryType, setDeliveryType] = useState<string>("normal");
   const [weeksPregnant, setWeeksPregnant] = useState<number>(32);
 
   useEffect(() => {
-    // Carregar dados salvos do localStorage
-    const savedMother = localStorage.getItem("checklist-mother");
-    const savedBaby = localStorage.getItem("checklist-baby");
-    const savedCompanion = localStorage.getItem("checklist-companion");
+    // Load settings from localStorage (only for hospital and weeks)
     const savedHospital = localStorage.getItem("checklist-hospital");
     const savedDeliveryType = localStorage.getItem("checklist-delivery-type");
     const savedWeeks = localStorage.getItem("checklist-weeks");
 
-    if (savedMother) setMotherItems(JSON.parse(savedMother));
-    else setMotherItems(getDefaultMotherItems());
-
-    if (savedBaby) setBabyItems(JSON.parse(savedBaby));
-    else setBabyItems(getDefaultBabyItems());
-
-    if (savedCompanion) setCompanionItems(JSON.parse(savedCompanion));
-    else setCompanionItems(getDefaultCompanionItems());
-
     if (savedHospital) setSelectedHospital(savedHospital);
     if (savedDeliveryType) setDeliveryType(savedDeliveryType);
     if (savedWeeks) setWeeksPregnant(parseInt(savedWeeks));
-  }, []);
+    
+    // Use profile data if available
+    if (profile?.delivery_type) {
+      setDeliveryType(profile.delivery_type);
+    }
+    if (profile?.meses_gestacao) {
+      const weeks = Math.floor((profile.meses_gestacao * 4.33)); // Convert months to weeks
+      setWeeksPregnant(weeks);
+    }
+  }, [profile]);
 
-  const getDefaultMotherItems = (): ChecklistItem[] => [
-    // Documentos
-    { id: "m1", name: "RG ou CNH", category: "Documentos", checked: false },
-    { id: "m2", name: "Cartão do pré-natal", category: "Documentos", checked: false },
-    { id: "m3", name: "Exames recentes", category: "Documentos", checked: false },
-    { id: "m4", name: "Cartão do convênio (se houver)", category: "Documentos", checked: false },
-    { id: "m5", name: "Cartão SUS", category: "Documentos", checked: false },
-    
-    // Roupas
-    { id: "m6", name: "Camisolas abertas na frente", quantity: "2-3", category: "Roupas", checked: false },
-    { id: "m7", name: "Calcinhas descartáveis pós-parto", quantity: "5-7", category: "Roupas", checked: false },
-    { id: "m8", name: "Roupão ou robe", quantity: "1", category: "Roupas", checked: false },
-    { id: "m9", name: "Meias", quantity: "2 pares", category: "Roupas", checked: false },
-    { id: "m10", name: "Roupa confortável para alta", quantity: "1", category: "Roupas", checked: false },
-    
-    // Higiene
-    { id: "m11", name: "Absorventes noturnos", quantity: "2 pacotes", category: "Higiene", checked: false },
-    { id: "m12", name: "Xampu e condicionador", category: "Higiene", checked: false },
-    { id: "m13", name: "Sabonete", category: "Higiene", checked: false },
-    { id: "m14", name: "Escova e pente", category: "Higiene", checked: false },
-    { id: "m15", name: "Desodorante", category: "Higiene", checked: false },
-    { id: "m16", name: "Escova de dentes e pasta", category: "Higiene", checked: false },
-    { id: "m17", name: "Toalha de banho", quantity: "2", category: "Higiene", checked: false },
-    
-    // Pós-parto
-    { id: "m18", name: "Sutiãs de amamentação", quantity: "2-3", category: "Pós-parto", checked: false },
-    { id: "m19", name: "Absorventes para seios", quantity: "1 caixa", category: "Pós-parto", checked: false },
-    { id: "m20", name: "Pomada para mamilos", category: "Pós-parto", checked: false },
-    { id: "m21", name: "Cinta pós-parto", category: "Pós-parto", checked: false, cesareanOnly: true },
-    
-    // Conforto
-    { id: "m22", name: "Chinelos confortáveis", category: "Conforto", checked: false },
-    { id: "m23", name: "Carregador de celular", category: "Conforto", checked: false },
-    { id: "m24", name: "Travesseiro (se permitido)", category: "Conforto", checked: false },
-    { id: "m25", name: "Lanches leves", category: "Conforto", checked: false },
-  ];
+  // Convert database items to ChecklistItem format for each category
+  const getCategoryItems = (categoryName: string): ChecklistItem[] => {
+    const category = categories.find((cat) => cat.name === categoryName);
+    if (!category) return [];
 
-  const getDefaultBabyItems = (): ChecklistItem[] => [
-    // Roupas
-    { id: "b1", name: "Bodies manga curta RN", quantity: "3", category: "Roupas", checked: false },
-    { id: "b2", name: "Bodies manga longa RN", quantity: "3", category: "Roupas", checked: false },
-    { id: "b3", name: "Macacões RN", quantity: "3", category: "Roupas", checked: false },
-    { id: "b4", name: "Calças/Mijões RN", quantity: "2-3", category: "Roupas", checked: false },
-    { id: "b5", name: "Meias", quantity: "3 pares", category: "Roupas", checked: false },
-    { id: "b6", name: "Luvas anti-arranhões", quantity: "2 pares", category: "Roupas", checked: false },
-    { id: "b7", name: "Gorro/Touca", quantity: "2", category: "Roupas", checked: false },
-    { id: "b8", name: "Bodies P (reserva)", quantity: "2", category: "Roupas", checked: false },
-    
-    // Saída de maternidade
-    { id: "b9", name: "Conjunto de saída da maternidade", quantity: "1", category: "Saída", checked: false },
-    { id: "b10", name: "Manta/Cobertor leve", quantity: "2", category: "Saída", checked: false },
-    
-    // Higiene
-    { id: "b11", name: "Fraldas RN", quantity: "1 pacote", category: "Higiene", checked: false },
-    { id: "b12", name: "Lenços umedecidos", quantity: "1 pacote", category: "Higiene", checked: false },
-    { id: "b13", name: "Pomada para assaduras", category: "Higiene", checked: false },
-    { id: "b14", name: "Hastes flexíveis", category: "Higiene", checked: false },
-    { id: "b15", name: "Álcool 70%", category: "Higiene", checked: false },
-    { id: "b16", name: "Gazes esterilizadas", category: "Higiene", checked: false },
-    
-    // Outros
-    { id: "b17", name: "Chupeta (opcional)", quantity: "2", category: "Outros", checked: false },
-    { id: "b18", name: "Naninha/Paninho", category: "Outros", checked: false },
-    { id: "b19", name: "Toalha fralda", quantity: "2", category: "Outros", checked: false },
-  ];
-
-  const getDefaultCompanionItems = (): ChecklistItem[] => [
-    { id: "c1", name: "Documento com foto", category: "Documentos", checked: false },
-    { id: "c2", name: "Roupas confortáveis", quantity: "2 trocas", category: "Roupas", checked: false },
-    { id: "c3", name: "Chinelos", category: "Roupas", checked: false },
-    { id: "c4", name: "Produtos de higiene pessoal", category: "Higiene", checked: false },
-    { id: "c5", name: "Carregador de celular", category: "Eletrônicos", checked: false },
-    { id: "c6", name: "Lanches e água", category: "Alimentação", checked: false },
-    { id: "c7", name: "Travesseiro pequeno", category: "Conforto", checked: false },
-    { id: "c8", name: "Cobertor leve", category: "Conforto", checked: false },
-    { id: "c9", name: "Dinheiro/Cartão", category: "Financeiro", checked: false },
-  ];
-
-  const handleMotherUpdate = (items: ChecklistItem[]) => {
-    setMotherItems(items);
-    localStorage.setItem("checklist-mother", JSON.stringify(items));
+    const categoryItems = getItemsByCategory(category.id);
+    return categoryItems.map((item) => ({
+      id: item.id,
+      name: item.name,
+      quantity: item.quantity.toString(),
+      category: categoryName,
+      checked: item.checked,
+      note: item.notes,
+      cesareanOnly: item.cesarean_only,
+      normalOnly: item.normal_only,
+    }));
   };
 
-  const handleBabyUpdate = (items: ChecklistItem[]) => {
-    setBabyItems(items);
-    localStorage.setItem("checklist-baby", JSON.stringify(items));
+  const motherItems = getCategoryItems("Mãe");
+  const babyItems = getCategoryItems("Bebê");
+  const companionItems = getCategoryItems("Acompanhante");
+
+  const handleItemUpdate = (categoryName: string, updatedItems: ChecklistItem[]) => {
+    const category = categories.find((cat) => cat.name === categoryName);
+    if (!category) return;
+
+    // Update items in database
+    updatedItems.forEach((item) => {
+      const existingItem = items.find((i) => i.id === item.id);
+      if (existingItem) {
+        // Update existing item
+        updateItem(item.id, {
+          name: item.name,
+          quantity: parseInt(item.quantity || "1"),
+          checked: item.checked,
+          notes: item.note,
+          cesarean_only: item.cesareanOnly || false,
+          normal_only: item.normalOnly || false,
+        });
+      } else {
+        // Add new item
+        addItem(
+          category.id,
+          item.name,
+          parseInt(item.quantity || "1"),
+          item.cesareanOnly || false,
+          item.normalOnly || false
+        );
+      }
+    });
   };
 
-  const handleCompanionUpdate = (items: ChecklistItem[]) => {
-    setCompanionItems(items);
-    localStorage.setItem("checklist-companion", JSON.stringify(items));
+  const handleMotherUpdate = (updatedItems: ChecklistItem[]) => {
+    handleItemUpdate("Mãe", updatedItems);
+  };
+
+  const handleBabyUpdate = (updatedItems: ChecklistItem[]) => {
+    handleItemUpdate("Bebê", updatedItems);
+  };
+
+  const handleCompanionUpdate = (updatedItems: ChecklistItem[]) => {
+    handleItemUpdate("Acompanhante", updatedItems);
   };
 
   const handleHospitalChange = (hospital: string) => {
@@ -166,9 +136,27 @@ const MalaDaMaternidade = () => {
     companionItems.filter(i => i.checked).length;
 
   const daysUntilReady = Math.max(0, (37 - weeksPregnant) * 7);
+  const daysUntilDueDate = weeksPregnant ? (40 - weeksPregnant) * 7 : 0;
+
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto p-6 space-y-8">
+          <Skeleton className="h-12 w-3/4" />
+          <Skeleton className="h-24 w-full" />
+          <div className="grid md:grid-cols-2 gap-6">
+            <Skeleton className="h-48" />
+            <Skeleton className="h-48" />
+          </div>
+          <Skeleton className="h-96 w-full" />
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-6xl">
+    <MainLayout>
+      <div className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Checklist de Mala da Maternidade</h1>
           <p className="text-muted-foreground">
@@ -177,20 +165,23 @@ const MalaDaMaternidade = () => {
         </div>
 
         {weeksPregnant < 37 && daysUntilReady > 0 && (
-          <Alert className="mb-6">
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Você está com {weeksPregnant} semanas. Sua mala deve estar pronta em aproximadamente {daysUntilReady} dias 
-              (na semana 37). {weeksPregnant >= 32 ? "Hora de começar a preparar!" : "Ainda há tempo, mas você pode ir se organizando!"}
+          <Alert className="mb-6 bg-blue-50 border-blue-200">
+            <Calendar className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800">
+              {daysUntilDueDate > 0 
+                ? `Faltam aproximadamente ${daysUntilDueDate} dias para a data prevista do parto. Organize sua mala com antecedência!`
+                : "Sua data prevista do parto está próxima ou já passou. Certifique-se de que está tudo pronto!"}
             </AlertDescription>
           </Alert>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          <Card className="lg:col-span-2">
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <Card>
             <CardHeader>
-              <CardTitle>Progresso Geral</CardTitle>
-              <CardDescription>Acompanhe o que já está pronto</CardDescription>
+              <CardTitle>Progresso</CardTitle>
+              <CardDescription>
+                {checkedItems} de {totalItems} itens completos
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ProgressTracker
@@ -204,85 +195,90 @@ const MalaDaMaternidade = () => {
           <Card>
             <CardHeader>
               <CardTitle>Configurações</CardTitle>
-              <CardDescription>Personalize seu checklist</CardDescription>
+              <CardDescription>
+                Personalize sua lista de acordo com o seu hospital
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               <HospitalSettings
                 selectedHospital={selectedHospital}
-                onHospitalChange={handleHospitalChange}
                 deliveryType={deliveryType}
-                onDeliveryTypeChange={handleDeliveryTypeChange}
                 weeksPregnant={weeksPregnant}
+                onHospitalChange={handleHospitalChange}
+                onDeliveryTypeChange={handleDeliveryTypeChange}
                 onWeeksChange={handleWeeksChange}
               />
-              <ExportPDF
-                motherItems={motherItems}
-                babyItems={babyItems}
-                companionItems={companionItems}
-                hospital={selectedHospital}
-                deliveryType={deliveryType}
-              />
+              <div className="mt-4">
+                <ExportPDF
+                  motherItems={motherItems}
+                  babyItems={babyItems}
+                  companionItems={companionItems}
+                  hospital={selectedHospital}
+                  deliveryType={deliveryType}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="mother" className="w-full">
+        <Tabs defaultValue="mother" className="mb-8">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="mother">
-              Mala da Mãe ({motherItems.filter(i => i.checked).length}/{motherItems.length})
+              Mãe ({motherItems.filter(i => i.checked).length}/{motherItems.length})
             </TabsTrigger>
             <TabsTrigger value="baby">
-              Mala do Bebê ({babyItems.filter(i => i.checked).length}/{babyItems.length})
+              Bebê ({babyItems.filter(i => i.checked).length}/{babyItems.length})
             </TabsTrigger>
             <TabsTrigger value="companion">
-              Mala do Acompanhante ({companionItems.filter(i => i.checked).length}/{companionItems.length})
+              Acompanhante ({companionItems.filter(i => i.checked).length}/{companionItems.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="mother">
             <ChecklistBag
               title="Mala da Mãe"
+              icon="👩"
               items={motherItems}
               onUpdate={handleMotherUpdate}
               deliveryType={deliveryType}
-              icon="👩"
             />
           </TabsContent>
 
           <TabsContent value="baby">
             <ChecklistBag
               title="Mala do Bebê"
+              icon="👶"
               items={babyItems}
               onUpdate={handleBabyUpdate}
               deliveryType={deliveryType}
-              icon="👶"
             />
           </TabsContent>
 
           <TabsContent value="companion">
             <ChecklistBag
               title="Mala do Acompanhante"
+              icon="👨"
               items={companionItems}
               onUpdate={handleCompanionUpdate}
               deliveryType={deliveryType}
-              icon="👤"
             />
           </TabsContent>
         </Tabs>
 
-        <Alert className="mt-6">
+        <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription>
             <strong>Dicas importantes:</strong>
-            <ul className="list-disc list-inside mt-2 space-y-1">
-              <li>Coloque etiquetas com seu nome em todas as malas</li>
-              <li>Deixe a mala no porta-malas do carro após 37 semanas</li>
-              <li>Tenha cópias digitais dos documentos no celular</li>
+            <ul className="mt-2 space-y-1 list-disc list-inside">
+              <li>Comece a preparar suas malas a partir da 36ª semana</li>
               <li>Confirme com o hospital o que eles fornecem</li>
+              <li>Deixe as malas em local de fácil acesso</li>
+              <li>Informe sua família ou acompanhante sobre onde estão as malas</li>
             </ul>
           </AlertDescription>
         </Alert>
       </div>
+    </MainLayout>
   );
 };
 
