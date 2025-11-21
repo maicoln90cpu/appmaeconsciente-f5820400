@@ -2036,18 +2036,21 @@ export type Database = {
           created_at: string | null
           gtm_id: string | null
           id: string
+          singleton_guard: number | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           gtm_id?: string | null
           id?: string
+          singleton_guard?: number | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           gtm_id?: string | null
           id?: string
+          singleton_guard?: number | null
           updated_at?: string | null
         }
         Relationships: []
