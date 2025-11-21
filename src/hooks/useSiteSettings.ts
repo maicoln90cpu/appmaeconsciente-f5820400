@@ -19,21 +19,39 @@ export const useSiteSettings = () => {
       const { data, error } = await supabase
         .from("site_settings")
         .select("*")
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       if (error) throw error;
+      
+      // If no settings exist, create default
+      if (!data) {
+        const { data: newData, error: insertError } = await supabase
+          .from("site_settings")
+          .insert({ gtm_id: 'GTM-K9TPFGCJ' })
+          .select()
+          .single();
+        
+        if (insertError) throw insertError;
+        return newData as SiteSettings;
+      }
+      
       return data as SiteSettings;
     },
   });
 
   const updateSettings = useMutation({
     mutationFn: async (gtmId: string) => {
+      if (!settings?.id) {
+        throw new Error("Settings not loaded");
+      }
+
       const { data, error } = await supabase
         .from("site_settings")
         .update({ gtm_id: gtmId })
-        .eq("id", settings?.id)
+        .eq("id", settings.id)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
