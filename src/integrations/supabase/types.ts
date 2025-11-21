@@ -2031,6 +2031,27 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          created_at: string | null
+          gtm_id: string | null
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          gtm_id?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          gtm_id?: string | null
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       supplement_logs: {
         Row: {
           created_at: string

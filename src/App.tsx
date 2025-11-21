@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ProductRoute } from "@/components/ProductRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { GTMScript } from "@/components/GTMScript";
 
 const Landing = lazy(() => import("./pages/Landing"));
 const Index = lazy(() => import("./pages/Index"));
@@ -44,6 +45,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <GTMScript />
       <BrowserRouter>
         <AnalyticsWrapper>
         <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
