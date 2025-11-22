@@ -176,7 +176,7 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
               onChange={(e) => setNewItemName(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleAddItem()}
             />
-            <Button onClick={handleAddItem} size="icon">
+            <Button onClick={handleAddItem} size="icon" aria-label="Adicionar item">
               <Plus className="h-4 w-4" />
             </Button>
           </div>

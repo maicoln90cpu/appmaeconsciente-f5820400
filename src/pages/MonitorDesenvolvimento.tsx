@@ -113,6 +113,7 @@ const MonitorDesenvolvimento = () => {
                     size="icon"
                     onClick={() => setShowOnboarding(true)}
                     className="h-8 w-8"
+                    aria-label="Abrir ajuda"
                   >
                     <HelpCircle className="h-4 w-4" />
                   </Button>

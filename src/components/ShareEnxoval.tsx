@@ -132,6 +132,7 @@ export const ShareEnxoval = () => {
                     variant="outline"
                     size="icon"
                     onClick={copyToClipboard}
+                    aria-label={copied ? "Link copiado" : "Copiar link"}
                   >
                     {copied ? (
                       <Check className="h-4 w-4 text-success" />

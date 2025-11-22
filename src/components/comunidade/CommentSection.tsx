@@ -138,6 +138,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
                     size="icon"
                     className="h-6 w-6"
                     onClick={() => handleDeleteComment(comment.id)}
+                    aria-label="Deletar comentário"
                   >
                     <Trash2 className="h-3 w-3" />
                   </Button>
@@ -155,7 +156,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
           onChange={(e) => setNewComment(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && handleAddComment()}
         />
-        <Button size="icon" onClick={handleAddComment}>
+        <Button size="icon" onClick={handleAddComment} aria-label="Enviar comentário">
           <Send className="h-4 w-4" />
         </Button>
       </div>

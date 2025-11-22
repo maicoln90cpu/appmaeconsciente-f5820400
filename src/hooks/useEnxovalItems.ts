@@ -82,9 +82,7 @@ export const useEnxovalItems = (config: Config | null) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // @ts-ignore
       const { data, error } = await supabase
-        // @ts-ignore
         .from("itens_enxoval")
         .select("*")
         .eq("user_id", user.id)
@@ -113,13 +111,9 @@ export const useEnxovalItems = (config: Config | null) => {
 
       const priority = calculatePriority(item.necessity);
 
-      // @ts-ignore
       const { error } = await supabase
-        // @ts-ignore
         .from("itens_enxoval")
-        // @ts-ignore
         .insert({
-        // @ts-ignore
         user_id: user.id,
         data: item.date || null,
         categoria: item.category,
@@ -168,11 +162,8 @@ export const useEnxovalItems = (config: Config | null) => {
     try {
       const priority = calculatePriority(item.necessity);
 
-      // @ts-ignore
       const { error } = await supabase
-        // @ts-ignore
         .from("itens_enxoval")
-        // @ts-ignore
         .update({
           data: item.date || null,
           categoria: item.category,
@@ -220,7 +211,6 @@ export const useEnxovalItems = (config: Config | null) => {
 
   const deleteItem = async (id: string) => {
     try {
-      // @ts-ignore
       const { error } = await supabase.from("itens_enxoval").delete().eq("id", id);
 
       if (error) throw error;

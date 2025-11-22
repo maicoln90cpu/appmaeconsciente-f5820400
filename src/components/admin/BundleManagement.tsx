@@ -350,6 +350,7 @@ export function BundleManagement() {
                     variant="outline"
                     size="icon"
                     onClick={() => handleEdit(bundle)}
+                    aria-label="Editar bundle"
                   >
                     <Pencil className="w-4 h-4" />
                   </Button>
@@ -357,6 +358,7 @@ export function BundleManagement() {
                     variant="outline"
                     size="icon"
                     onClick={() => handleDelete(bundle.id)}
+                    aria-label="Deletar bundle"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>

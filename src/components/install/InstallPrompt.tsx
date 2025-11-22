@@ -78,7 +78,7 @@ export const InstallPrompt = () => {
                 </CardDescription>
               </div>
             </div>
-            <Button size="icon" variant="ghost" onClick={handleDismiss}>
+            <Button size="icon" variant="ghost" onClick={handleDismiss} aria-label="Fechar">
               <X className="h-4 w-4" />
             </Button>
           </div>

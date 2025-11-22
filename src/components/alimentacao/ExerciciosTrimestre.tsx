@@ -325,6 +325,7 @@ export function ExerciciosTrimestre() {
                           size="icon"
                           onClick={() => toggleFavorite(exercise.id, 'exercise')}
                           className="shrink-0"
+                          aria-label={isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                         >
                           <Heart className={`h-5 w-5 ${isFav ? 'fill-red-500 text-red-500' : ''}`} />
                         </Button>

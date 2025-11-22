@@ -24,16 +24,13 @@ export const useBodyImageLog = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore
       const { data, error } = await supabase
-        // @ts-ignore
         .from('body_image_log')
         .select('*')
         .eq('user_id', user.id)
         .order('date', { ascending: false });
 
       if (error) throw error;
-      // @ts-ignore
       return data as BodyImageLog[];
     },
   });
@@ -70,9 +67,7 @@ export const useBodyImageLog = () => {
         photo_url = urlData.publicUrl;
       }
 
-      // @ts-ignore
       const { data, error } = await supabase
-        // @ts-ignore
         .from('body_image_log')
         .insert({
           user_id: user.id,
@@ -87,7 +82,6 @@ export const useBodyImageLog = () => {
         .single();
 
       if (error) throw error;
-      // @ts-ignore
       return data;
     },
     onSuccess: () => {
@@ -104,9 +98,7 @@ export const useBodyImageLog = () => {
       id, 
       ...updates 
     }: Partial<BodyImageLog> & { id: string }) => {
-      // @ts-ignore
       const { data, error } = await supabase
-        // @ts-ignore
         .from('body_image_log')
         .update(updates)
         .eq('id', id)
@@ -114,7 +106,6 @@ export const useBodyImageLog = () => {
         .single();
 
       if (error) throw error;
-      // @ts-ignore
       return data;
     },
     onSuccess: () => {
@@ -126,17 +117,13 @@ export const useBodyImageLog = () => {
   const deleteLog = useMutation({
     mutationFn: async (id: string) => {
       // Buscar log para deletar foto se existir
-      // @ts-ignore
       const { data: log } = await supabase
-        // @ts-ignore
         .from('body_image_log')
         .select('photo_url')
         .eq('id', id)
         .single();
 
-      // @ts-ignore
       if (log?.photo_url) {
-        // @ts-ignore
         const fileName = log.photo_url.split('/').pop();
         const { data: { user } } = await supabase.auth.getUser();
         if (user && fileName) {
@@ -146,9 +133,7 @@ export const useBodyImageLog = () => {
         }
       }
 
-      // @ts-ignore
       const { error } = await supabase
-        // @ts-ignore
         .from('body_image_log')
         .delete()
         .eq('id', id);
