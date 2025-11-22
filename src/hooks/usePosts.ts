@@ -29,7 +29,8 @@ export const usePosts = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: postsData, error } = await supabase
+      // Fetch all posts
+      const { data: postsData, error: postsError } = await supabase
         .from("posts")
         .select(`
           id,
@@ -43,44 +44,63 @@ export const usePosts = () => {
         `)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (postsError) throw postsError;
+      if (!postsData || postsData.length === 0) {
+        setPosts([]);
+        return;
+      }
 
-      // Enrich posts with user data, likes, and comments
-      const enrichedPosts = await Promise.all(
-        (postsData || []).map(async (post) => {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("email, foto_perfil_url")
-            .eq("id", post.user_id)
-            .single();
+      // Get all unique user IDs
+      const userIds = [...new Set(postsData.map(p => p.user_id))];
+      const postIds = postsData.map(p => p.id);
 
-          const { count: likesCount } = await supabase
-            .from("post_likes")
-            .select("*", { count: "exact", head: true })
-            .eq("post_id", post.id);
+      // Batch fetch profiles
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, email, foto_perfil_url")
+        .in("id", userIds);
 
-          const { count: commentsCount } = await supabase
-            .from("post_comments")
-            .select("*", { count: "exact", head: true })
-            .eq("post_id", post.id);
+      // Batch fetch likes counts and user likes
+      const { data: allLikes } = await supabase
+        .from("post_likes")
+        .select("post_id, user_id")
+        .in("post_id", postIds);
 
-          const { data: userLike } = await supabase
-            .from("post_likes")
-            .select("id")
-            .eq("post_id", post.id)
-            .eq("user_id", user.id)
-            .maybeSingle();
+      // Batch fetch comments counts
+      const { data: allComments } = await supabase
+        .from("post_comments")
+        .select("post_id")
+        .in("post_id", postIds);
 
-          return {
-            ...post,
-            user_email: post.display_name || profile?.email || "Usuário",
-            user_photo: profile?.foto_perfil_url || null,
-            likes_count: likesCount || 0,
-            comments_count: commentsCount || 0,
-            user_has_liked: !!userLike,
-          };
-        })
-      );
+      // Create lookup maps for O(1) access
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const likesCountMap = new Map<string, number>();
+      const userLikesSet = new Set<string>();
+
+      allLikes?.forEach(like => {
+        likesCountMap.set(like.post_id, (likesCountMap.get(like.post_id) || 0) + 1);
+        if (like.user_id === user.id) {
+          userLikesSet.add(like.post_id);
+        }
+      });
+
+      const commentsCountMap = new Map<string, number>();
+      allComments?.forEach(comment => {
+        commentsCountMap.set(comment.post_id, (commentsCountMap.get(comment.post_id) || 0) + 1);
+      });
+
+      // Enrich posts using lookup maps
+      const enrichedPosts = postsData.map(post => {
+        const profile = profileMap.get(post.user_id);
+        return {
+          ...post,
+          user_email: post.display_name || profile?.email || "Usuário",
+          user_photo: profile?.foto_perfil_url || null,
+          likes_count: likesCountMap.get(post.id) || 0,
+          comments_count: commentsCountMap.get(post.id) || 0,
+          user_has_liked: userLikesSet.has(post.id),
+        };
+      });
 
       setPosts(enrichedPosts);
     } catch (error) {
