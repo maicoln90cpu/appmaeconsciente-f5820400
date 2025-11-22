@@ -295,6 +295,7 @@ export const HotmartMappings = () => {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDeleteMapping(mapping.id)}
+                      aria-label="Deletar mapeamento"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

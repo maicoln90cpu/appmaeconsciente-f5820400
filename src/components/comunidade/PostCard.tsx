@@ -62,7 +62,7 @@ export const PostCard = ({ post, onLike, onDelete }: PostCardProps) => {
         {isOwner && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Deletar post">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </AlertDialogTrigger>

@@ -263,6 +263,7 @@ export function IANutricional() {
                       confirmDeleteConversation(conv.id);
                     }}
                     className="h-8 w-8 text-destructive hover:text-destructive flex-shrink-0"
+                    aria-label="Deletar conversa"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

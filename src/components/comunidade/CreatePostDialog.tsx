@@ -261,6 +261,7 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
                     size="icon"
                     className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => removeImage(index)}
+                    aria-label="Remover imagem"
                   >
                     <X className="h-3 w-3" />
                   </Button>

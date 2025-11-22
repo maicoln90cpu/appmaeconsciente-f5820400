@@ -122,7 +122,7 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
                 onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                 maxLength={1000}
               />
-              <Button size="icon" onClick={handleSendMessage}>
+              <Button size="icon" onClick={handleSendMessage} aria-label="Enviar mensagem">
                 <Send className="h-4 w-4" />
               </Button>
             </div>

@@ -53,6 +53,7 @@ export const PostFilters = ({ onSearch, onCategoryFilter, selectedCategory }: Po
               setSearchQuery("");
               onSearch("");
             }}
+            aria-label="Limpar busca"
           >
             <X className="h-4 w-4" />
           </Button>
