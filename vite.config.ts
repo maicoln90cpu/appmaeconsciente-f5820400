@@ -72,8 +72,35 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
+        manualChunks: (id) => {
+          // Core React dependencies
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-vendor';
+          }
+          // Router
+          if (id.includes('node_modules/react-router')) {
+            return 'router';
+          }
+          // Radix UI components (large library)
+          if (id.includes('node_modules/@radix-ui')) {
+            return 'radix-ui';
+          }
+          // Charts library (loaded only when needed)
+          if (id.includes('node_modules/recharts')) {
+            return 'charts';
+          }
+          // Export libraries (XLSX, jsPDF)
+          if (id.includes('node_modules/xlsx') || id.includes('node_modules/jspdf')) {
+            return 'export-libs';
+          }
+          // Supabase
+          if (id.includes('node_modules/@supabase')) {
+            return 'supabase';
+          }
+          // React Query
+          if (id.includes('node_modules/@tanstack/react-query')) {
+            return 'react-query';
+          }
         },
       },
     },

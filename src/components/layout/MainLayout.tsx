@@ -50,6 +50,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   };
 
   const navItems = [
+    { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { path: "/comunidade", label: "Comunidade", icon: Users },
     { path: "/materiais", label: "Materiais", icon: BookOpen },
     { path: "/suporte", label: "Suporte", icon: HeadphonesIcon },

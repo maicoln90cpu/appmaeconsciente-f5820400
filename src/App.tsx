@@ -12,6 +12,7 @@ import { GTMScript } from "@/components/GTMScript";
 
 const Landing = lazy(() => import("./pages/Landing"));
 const Index = lazy(() => import("./pages/Index"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const CompleteProfile = lazy(() => import("./pages/CompleteProfile"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -60,6 +61,7 @@ const App = () => (
             {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute />}>
               <Route path="/complete-profile" element={<MainLayout><div className="animate-scale-in"><CompleteProfile /></div></MainLayout>} />
+              <Route path="/dashboard" element={<MainLayout><div className="animate-scale-in"><Dashboard /></div></MainLayout>} />
               <Route path="/profile" element={<MainLayout><div className="animate-scale-in"><ProfileSettings /></div></MainLayout>} />
               <Route path="/admin" element={<MainLayout><div className="animate-scale-in"><AdminDashboard /></div></MainLayout>} />
               <Route path="/materiais" element={<MainLayout><div className="animate-scale-in"><Materiais /></div></MainLayout>} />

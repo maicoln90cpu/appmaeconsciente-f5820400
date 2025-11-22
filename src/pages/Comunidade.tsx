@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
 import { usePosts } from "@/hooks/usePosts";
 import { CreatePostDialog } from "@/components/comunidade/CreatePostDialog";
 import { PostCard } from "@/components/comunidade/PostCard";
 import { PostFilters } from "@/components/comunidade/PostFilters";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
+import { LoadingCards } from "@/components/ui/loading-card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { MessageSquare } from "lucide-react";
 
 const Comunidade = () => {
   const { posts, loading, createPost, deletePost, toggleLike } = usePosts();
@@ -20,14 +22,6 @@ const Comunidade = () => {
       : true;
     return matchesSearch && matchesCategory;
   });
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -45,24 +39,30 @@ const Comunidade = () => {
           selectedCategory={selectedCategory}
         />
 
-        <div className="space-y-6">
-          {filteredPosts.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">
-                Nenhum post ainda. Seja a primeira a compartilhar!
-              </p>
-            </div>
-          ) : (
-            filteredPosts.map((post) => (
+        {loading ? (
+          <LoadingCards count={3} />
+        ) : filteredPosts.length === 0 ? (
+          <EmptyState
+            icon={MessageSquare}
+            title="Nenhum post encontrado"
+            description={
+              searchQuery || selectedCategory
+                ? "Tente ajustar os filtros de busca"
+                : "Seja a primeira a compartilhar algo com a comunidade!"
+            }
+          />
+        ) : (
+          <div className="space-y-6">
+            {filteredPosts.map((post) => (
               <PostCard
                 key={post.id}
                 post={post}
                 onLike={toggleLike}
                 onDelete={deletePost}
               />
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
 
         <CreatePostDialog onPostCreated={createPost} />
         <InstallPrompt />
