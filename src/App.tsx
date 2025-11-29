@@ -33,6 +33,7 @@ const RastreadorAmamentacao = lazy(() => import("./pages/RastreadorAmamentacao")
 const CartaoVacinacao = lazy(() => import("./pages/CartaoVacinacao"));
 const RecuperacaoPosPartoPage = lazy(() => import("./pages/RecuperacaoPosPartoPage"));
 const MonitorDesenvolvimento = lazy(() => import("./pages/MonitorDesenvolvimento"));
+const Offline = lazy(() => import("./pages/Offline"));
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,9 @@ const App = () => (
               </Route>
             </Route>
 
+            {/* Offline fallback */}
+            <Route path="/offline" element={<div className="animate-fade-in"><Offline /></div>} />
+            
             {/* Catch-all */}
             <Route path="*" element={<div className="animate-fade-in"><NotFound /></div>} />
           </Routes>

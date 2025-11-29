@@ -7,10 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Send } from "lucide-react";
 import { useTickets, TicketFormData } from "@/hooks/useTickets";
 import { useProfile } from "@/hooks/useProfile";
+import { backgroundSync } from "@/lib/background-sync";
+import { useToast } from "@/hooks/use-toast";
 
 export const TicketForm = () => {
   const { createTicket } = useTickets();
   const { profile } = useProfile();
+  const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<TicketFormData>({
     name: "",
@@ -23,18 +26,42 @@ export const TicketForm = () => {
     e.preventDefault();
     setSubmitting(true);
 
-    const result = await createTicket(formData);
-    
-    if (result.success) {
-      setFormData({
-        name: "",
-        email: profile?.email || "",
-        subject: "",
-        message: "",
+    try {
+      if (!navigator.onLine) {
+        // Queue for background sync when offline
+        await backgroundSync.addTask("ticket", formData);
+        toast({
+          title: "Ticket salvo",
+          description: "Seu ticket será enviado quando a conexão retornar.",
+        });
+        setFormData({
+          name: "",
+          email: profile?.email || "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        const result = await createTicket(formData);
+        
+        if (result.success) {
+          setFormData({
+            name: "",
+            email: profile?.email || "",
+            subject: "",
+            message: "",
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting ticket:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível enviar o ticket. Tente novamente.",
+        variant: "destructive",
       });
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   return (

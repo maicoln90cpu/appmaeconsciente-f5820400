@@ -1,16 +1,32 @@
-// Simple analytics tracking utility
+// Analytics tracking utility with Plausible integration
 
 interface AnalyticsEvent {
   name: string;
   properties?: Record<string, any>;
 }
 
+declare global {
+  interface Window {
+    plausible?: (event: string, options?: { props?: Record<string, any> }) => void;
+  }
+}
+
 class Analytics {
   private enabled = true;
   private sessionId: string;
+  private plausibleEnabled = false;
 
   constructor() {
     this.sessionId = this.getOrCreateSessionId();
+    this.checkPlausible();
+  }
+
+  private checkPlausible() {
+    // Check if Plausible script is loaded
+    if (typeof window !== "undefined" && window.plausible) {
+      this.plausibleEnabled = true;
+      console.log("[Analytics] Plausible detected");
+    }
   }
 
   private getOrCreateSessionId(): string {
@@ -27,7 +43,18 @@ class Analytics {
 
     console.log("[Analytics]", event.name, event.properties);
 
-    // Store event in localStorage for basic tracking
+    // Send to Plausible if available
+    if (this.plausibleEnabled && window.plausible) {
+      try {
+        window.plausible(event.name, {
+          props: event.properties,
+        });
+      } catch (error) {
+        console.error("Plausible tracking error:", error);
+      }
+    }
+
+    // Store event in localStorage for backup tracking
     try {
       const events = JSON.parse(localStorage.getItem("analytics_events") || "[]");
       events.push({
