@@ -21,12 +21,12 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 100% 98%;
-    --secondary-foreground: 0 0% 33%;
+    --secondary-foreground: 0 0% 25%;
 
     --muted: 0 29% 97%;
-    --muted-foreground: 0 0% 32%;
+    --muted-foreground: 0 0% 25%;
 
-    --accent: 2 76% 73%;
+    --accent: 2 76% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,7 +34,7 @@ All colors MUST be HSL.
 
     --border: 5 29% 92%;
     --input: 5 29% 92%;
-    --ring: 2 76% 73%;
+    --ring: 2 76% 55%;
 
     --radius: 0.75rem;
     
@@ -75,12 +75,12 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 95%;
+    --secondary-foreground: 0 0% 85%;
 
     --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted-foreground: 0 0% 80%;
 
-    --accent: 2 76% 73%;
+    --accent: 2 76% 65%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 50%;
@@ -88,7 +88,7 @@ All colors MUST be HSL.
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 2 76% 73%;
+    --ring: 2 76% 65%;
     
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
@@ -126,5 +126,12 @@ All colors MUST be HSL.
   
   img[loading="lazy"].loaded {
     @apply opacity-100;
+  }
+
+  /* iOS Safe Area Support */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .safe-bottom {
+      padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+    }
   }
 }
