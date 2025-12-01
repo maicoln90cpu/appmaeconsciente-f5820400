@@ -24,7 +24,7 @@ const Dashboard = () => {
       title: "Enxoval",
       description: "Organize e planeje seu enxoval",
       icon: ShoppingBag,
-      path: "/",
+      path: "/materiais/controle-enxoval",
       color: "text-pink-500",
       bgColor: "bg-pink-500/10"
     },
@@ -32,7 +32,7 @@ const Dashboard = () => {
       title: "Vacinação",
       description: "Cartão de vacinação digital",
       icon: Calendar,
-      path: "/vacinacao",
+      path: "/materiais/cartao-vacinacao",
       color: "text-blue-500",
       bgColor: "bg-blue-500/10"
     },
@@ -40,7 +40,7 @@ const Dashboard = () => {
       title: "Alimentação",
       description: "Guia nutricional para gestantes",
       icon: Utensils,
-      path: "/alimentacao",
+      path: "/materiais/guia-alimentacao",
       color: "text-green-500",
       bgColor: "bg-green-500/10"
     },
@@ -48,7 +48,7 @@ const Dashboard = () => {
       title: "Amamentação",
       description: "Rastreador de mamadas",
       icon: Heart,
-      path: "/amamentacao",
+      path: "/materiais/rastreador-amamentacao",
       color: "text-red-500",
       bgColor: "bg-red-500/10"
     },
@@ -56,7 +56,7 @@ const Dashboard = () => {
       title: "Sono do Bebê",
       description: "Diário de sono",
       icon: Moon,
-      path: "/sono",
+      path: "/materiais/diario-sono",
       color: "text-indigo-500",
       bgColor: "bg-indigo-500/10"
     },
@@ -64,7 +64,7 @@ const Dashboard = () => {
       title: "Desenvolvimento",
       description: "Monitor de marcos do bebê",
       icon: Baby,
-      path: "/desenvolvimento",
+      path: "/materiais/monitor-desenvolvimento",
       color: "text-purple-500",
       bgColor: "bg-purple-500/10"
     },
@@ -72,7 +72,7 @@ const Dashboard = () => {
       title: "Mala Maternidade",
       description: "Checklist completo",
       icon: ShoppingBag,
-      path: "/mala-maternidade",
+      path: "/materiais/mala-maternidade",
       color: "text-orange-500",
       bgColor: "bg-orange-500/10"
     },
@@ -80,7 +80,7 @@ const Dashboard = () => {
       title: "Recuperação Pós-Parto",
       description: "Acompanhe sua recuperação",
       icon: TrendingUp,
-      path: "/recuperacao",
+      path: "/materiais/recuperacao-pos-parto",
       color: "text-teal-500",
       bgColor: "bg-teal-500/10"
     },
@@ -88,7 +88,7 @@ const Dashboard = () => {
       title: "Calculadora de Fraldas",
       description: "Calcule custos e economize",
       icon: Baby,
-      path: "/calculadora-fraldas",
+      path: "/materiais/calculadora-fraldas",
       color: "text-yellow-500",
       bgColor: "bg-yellow-500/10"
     },
