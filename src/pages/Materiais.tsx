@@ -217,11 +217,11 @@ const Materiais = () => {
   }
 
   return (
-    <div className="container py-8">
-        <div className="mb-8 flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="text-4xl font-bold mb-2">Materiais</h1>
-            <p className="text-muted-foreground">
+    <div className="container px-4 sm:px-6 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Materiais</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
               Ferramentas e conteúdos para sua jornada de maternidade consciente
             </p>
           </div>
@@ -229,23 +229,23 @@ const Materiais = () => {
           {/* Botão Instalar App */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" size="lg" className="gap-2">
-                <Smartphone className="h-5 w-5" />
+              <Button variant="outline" size="default" className="gap-2 w-full sm:w-auto">
+                <Smartphone className="h-4 w-4 sm:h-5 sm:w-5" />
                 Instalar App
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-2xl">
-                  <Smartphone className="h-6 w-6 text-primary" />
+                <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl">
+                  <Smartphone className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   Instale o App na Tela Inicial
                 </DialogTitle>
-                <DialogDescription>
+                <DialogDescription className="text-sm">
                   Acesso rápido, offline e notificações personalizadas
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="grid md:grid-cols-2 gap-6 mt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-4">
                 {/* iOS */}
                 <Card className="border-2">
                   <CardHeader>
@@ -342,18 +342,18 @@ const Materiais = () => {
 
         {/* Banner Clube Premium */}
         {!hasClubAccess && clubPrice && (
-          <Alert className="mb-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary border-2">
-            <Star className="h-5 w-5 text-primary" />
-            <AlertDescription className="flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-primary mb-1">
+          <Alert className="mb-4 sm:mb-6 bg-gradient-to-r from-primary/10 to-primary/5 border-primary border-2">
+            <Star className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <AlertDescription className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div className="flex-1">
+                <p className="font-semibold text-primary mb-1 text-sm sm:text-base">
                   🌟 Acesse TODOS os materiais por R$ {clubPrice.toFixed(2)}/mês!
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Clube M.A.E.S. Premium - {products.filter(p => p.slug !== 'clube-premium').length} materiais incluídos
                 </p>
               </div>
-              <Button onClick={() => navigate('/clube-premium')} className="ml-4">
+              <Button onClick={() => navigate('/clube-premium')} className="w-full sm:w-auto sm:ml-4" size="default">
                 Ver Clube Premium
               </Button>
             </AlertDescription>
@@ -361,27 +361,27 @@ const Materiais = () => {
         )}
 
         {/* Cards Especiais - Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           {/* Dashboard Unificado */}
           <Card className="border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
-            <CardHeader>
+            <CardHeader className="pb-3">
               <div className="flex items-start gap-3">
-                <div className="p-3 bg-primary rounded-lg">
-                  <Baby className="h-6 w-6 text-primary-foreground" />
+                <div className="p-2 sm:p-3 bg-primary rounded-lg shrink-0">
+                  <Baby className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                 </div>
-                <div className="flex-1">
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    🍼💤 Dashboard Unificado
-                    <Badge className="bg-green-500">NOVO</Badge>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="flex flex-wrap items-center gap-2 text-base sm:text-lg md:text-xl">
+                    <span className="break-words">🍼💤 Dashboard Unificado</span>
+                    <Badge className="bg-green-500 text-xs">NOVO</Badge>
                   </CardTitle>
-                  <CardDescription className="mt-1">
+                  <CardDescription className="mt-1 text-xs sm:text-sm">
                     Visão 360° da rotina: mamadas, sono, alertas inteligentes e timeline completa
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
-              <Button onClick={() => navigate('/dashboard-bebe')} size="lg" className="w-full">
+            <CardContent className="pt-0">
+              <Button onClick={() => navigate('/dashboard-bebe')} size="default" className="w-full">
                 Acessar Dashboard
               </Button>
             </CardContent>
@@ -391,21 +391,21 @@ const Materiais = () => {
           <ToolSuggestionCard />
         </div>
 
-        <div className="space-y-4 mb-8">
-          <Tabs value={filter} onValueChange={(v) => setFilter(v as any)}>
-            <TabsList>
-              <TabsTrigger value="all">Todos</TabsTrigger>
-              <TabsTrigger value="free">Gratuitos</TabsTrigger>
-              <TabsTrigger value="paid">Pagos</TabsTrigger>
-              <TabsTrigger value="my">Meus Materiais</TabsTrigger>
+        <div className="space-y-4 mb-6 sm:mb-8">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as any)} className="w-full">
+            <TabsList className="w-full grid grid-cols-2 sm:inline-flex h-auto">
+              <TabsTrigger value="all" className="text-xs sm:text-sm">Todos</TabsTrigger>
+              <TabsTrigger value="free" className="text-xs sm:text-sm">Gratuitos</TabsTrigger>
+              <TabsTrigger value="paid" className="text-xs sm:text-sm">Pagos</TabsTrigger>
+              <TabsTrigger value="my" className="text-xs sm:text-sm">Meus Materiais</TabsTrigger>
             </TabsList>
           </Tabs>
 
           {categories.length > 0 && (
-            <div className="flex items-center gap-3">
-              <Tag className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Tag className="h-4 w-4 text-muted-foreground shrink-0" />
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[280px]">
+                <SelectTrigger className="w-full sm:w-[280px]">
                   <SelectValue placeholder="Filtrar por categoria" />
                 </SelectTrigger>
                 <SelectContent>
@@ -421,7 +421,7 @@ const Materiais = () => {
           )}
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredProducts.map((product) => {
             const userHasAccess = hasAccess(product.id);
             const canAccess = product.is_free || userHasAccess || isAdmin;
