@@ -13,6 +13,15 @@ export default {
       },
     },
     extend: {
+      fontSize: {
+        'xs': ['0.8125rem', { lineHeight: '1.25rem' }],
+        'sm': ['0.9375rem', { lineHeight: '1.375rem' }],
+        'base': ['1.0625rem', { lineHeight: '1.625rem' }],
+        'lg': ['1.1875rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.375rem', { lineHeight: '1.875rem' }],
+        '2xl': ['1.75rem', { lineHeight: '2.125rem' }],
+        '3xl': ['2.125rem', { lineHeight: '2.5rem' }],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -124,26 +133,31 @@ export default {
             transform: "translateX(0)",
           },
         },
-        "scale-in": {
-          from: {
-            opacity: "0",
-            transform: "scale(0.95)",
-          },
-          to: {
-            opacity: "1",
-            transform: "scale(1)",
-          },
-        },
+         "scale-in": {
+           from: {
+             opacity: "0",
+             transform: "scale(0.95)",
+           },
+           to: {
+             opacity: "1",
+             transform: "scale(1)",
+           },
+         },
+         "press": {
+           "0%, 100%": { transform: "scale(1)" },
+           "50%": { transform: "scale(0.97)" },
+         },
       },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.3s ease-out",
-        "fade-out": "fade-out 0.3s ease-out",
-        "slide-in-right": "slide-in-right 0.3s ease-out",
-        "slide-in-left": "slide-in-left 0.3s ease-out",
-        "scale-in": "scale-in 0.2s ease-out",
-      },
+       animation: {
+         "accordion-down": "accordion-down 0.2s ease-out",
+         "accordion-up": "accordion-up 0.2s ease-out",
+         "fade-in": "fade-in 0.3s ease-out",
+         "fade-out": "fade-out 0.3s ease-out",
+         "slide-in-right": "slide-in-right 0.3s ease-out",
+         "slide-in-left": "slide-in-left 0.3s ease-out",
+         "scale-in": "scale-in 0.2s ease-out",
+         "press": "press 0.15s ease-out",
+       },
     },
   },
   plugins: [require("tailwindcss-animate")],
