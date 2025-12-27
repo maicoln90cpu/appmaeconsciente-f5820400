@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,6 +9,7 @@ import { ProductRoute } from "@/components/ProductRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { GTMScript } from "@/components/GTMScript";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const Landing = lazy(() => import("./pages/Landing"));
 const Index = lazy(() => import("./pages/Index"));
@@ -35,19 +36,22 @@ const RecuperacaoPosPartoPage = lazy(() => import("./pages/RecuperacaoPosPartoPa
 const MonitorDesenvolvimento = lazy(() => import("./pages/MonitorDesenvolvimento"));
 const Offline = lazy(() => import("./pages/Offline"));
 
-const queryClient = new QueryClient();
-
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
   useAnalytics();
   return <>{children}</>;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <GTMScript />
+const App = () => {
+  // QueryClient como estado para evitar recriação em re-renders
+  const [queryClient] = useState(() => new QueryClient());
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <GTMScript />
       <BrowserRouter>
         <AnalyticsWrapper>
         <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
@@ -118,9 +122,11 @@ const App = () => (
           </Routes>
         </Suspense>
         </AnalyticsWrapper>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
