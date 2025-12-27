@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Trash2 } from "lucide-react";
 import { Post } from "@/hooks/usePosts";
-import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CommentSection } from "./CommentSection";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,22 +26,32 @@ interface PostCardProps {
   onDelete: (postId: string) => void;
 }
 
-export const PostCard = ({ post, onLike, onDelete }: PostCardProps) => {
+const PostCardComponent = ({ post, onLike, onDelete }: PostCardProps) => {
   const [showComments, setShowComments] = useState(false);
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { user } = useAuth();
 
-  useState(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUser(user?.id || null);
-    });
-  });
-
-  const isOwner = currentUser === post.user_id;
+  const isOwner = user?.id === post.user_id;
   const timeAgo = formatDistanceToNow(new Date(post.created_at), {
     addSuffix: true,
     locale: ptBR,
   });
+
+  const handleLike = useCallback(() => {
+    onLike(post.id);
+  }, [onLike, post.id]);
+
+  const handleDelete = useCallback(() => {
+    onDelete(post.id);
+  }, [onDelete, post.id]);
+
+  const toggleComments = useCallback(() => {
+    setShowComments(prev => !prev);
+  }, []);
+
+  const handleImageSelect = useCallback((index: number) => {
+    setCurrentImageIndex(index);
+  }, []);
 
   return (
     <Card className="p-6">
@@ -75,7 +85,7 @@ export const PostCard = ({ post, onLike, onDelete }: PostCardProps) => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(post.id)}>
+                <AlertDialogAction onClick={handleDelete}>
                   Deletar
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -93,13 +103,14 @@ export const PostCard = ({ post, onLike, onDelete }: PostCardProps) => {
               src={post.image_urls[currentImageIndex]}
               alt="Post"
               className="w-full rounded-lg object-cover max-h-96"
+              loading="lazy"
             />
             {post.image_urls.length > 1 && (
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
                 {post.image_urls.map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => setCurrentImageIndex(index)}
+                    onClick={() => handleImageSelect(index)}
                     className={`h-2 w-2 rounded-full transition-colors ${
                       index === currentImageIndex
                         ? "bg-white"
@@ -117,7 +128,7 @@ export const PostCard = ({ post, onLike, onDelete }: PostCardProps) => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => onLike(post.id)}
+          onClick={handleLike}
           className={post.user_has_liked ? "text-red-500" : ""}
         >
           <Heart
@@ -131,7 +142,7 @@ export const PostCard = ({ post, onLike, onDelete }: PostCardProps) => {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => setShowComments(!showComments)}
+          onClick={toggleComments}
         >
           <MessageCircle className="h-5 w-5 mr-1" />
           {post.comments_count}
@@ -142,3 +153,14 @@ export const PostCard = ({ post, onLike, onDelete }: PostCardProps) => {
     </Card>
   );
 };
+
+// Memoização para evitar re-renders desnecessários
+export const PostCard = memo(PostCardComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.post.id === nextProps.post.id &&
+    prevProps.post.likes_count === nextProps.post.likes_count &&
+    prevProps.post.comments_count === nextProps.post.comments_count &&
+    prevProps.post.user_has_liked === nextProps.post.user_has_liked &&
+    prevProps.post.content === nextProps.post.content
+  );
+});

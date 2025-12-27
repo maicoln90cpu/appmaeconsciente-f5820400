@@ -21,23 +21,37 @@ export interface Post {
   tags: string[] | null;
 }
 
+const POSTS_PER_PAGE = 20;
+
 export const usePosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   const { user } = useAuth();
   const { toast } = useToast();
 
   // Cache de profiles para evitar refetch
   const [profileCache, setProfileCache] = useState<Map<string, { email: string; foto_perfil_url: string | null }>>(new Map());
 
-  const loadPosts = useCallback(async () => {
+  const loadPosts = useCallback(async (pageNum: number = 0, append: boolean = false) => {
     if (!user) {
       setLoading(false);
       return;
     }
 
+    if (pageNum > 0) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
+
     try {
-      // Fetch all posts
+      const from = pageNum * POSTS_PER_PAGE;
+      const to = from + POSTS_PER_PAGE - 1;
+
+      // Fetch posts with pagination
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
         .select(`
@@ -50,11 +64,16 @@ export const usePosts = () => {
           categoria,
           tags
         `)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(from, to);
 
       if (postsError) throw postsError;
+      
+      // Check if there are more posts
+      setHasMore((postsData?.length || 0) === POSTS_PER_PAGE);
+
       if (!postsData || postsData.length === 0) {
-        setPosts([]);
+        if (!append) setPosts([]);
         return;
       }
 
@@ -117,7 +136,12 @@ export const usePosts = () => {
         };
       });
 
-      setPosts(enrichedPosts);
+      if (append) {
+        setPosts(prev => [...prev, ...enrichedPosts]);
+      } else {
+        setPosts(enrichedPosts);
+      }
+      setPage(pageNum);
     } catch (error) {
       logger.error("Error loading posts", error);
       toast({
@@ -127,8 +151,16 @@ export const usePosts = () => {
       });
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, [user, toast, profileCache]);
+
+  // Load more posts (infinite scroll)
+  const loadMore = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      loadPosts(page + 1, true);
+    }
+  }, [loadingMore, hasMore, page, loadPosts]);
 
   // Atualização otimista de likes
   const updatePostLike = useCallback((postId: string, liked: boolean) => {
@@ -177,7 +209,7 @@ export const usePosts = () => {
     setPosts(prev => prev.filter(p => p.id !== postId));
   }, []);
 
-  const createPost = async (
+  const createPost = useCallback(async (
     content: string,
     imageUrls: string[],
     displayName?: string | null,
@@ -263,9 +295,9 @@ export const usePosts = () => {
         variant: "destructive",
       });
     }
-  };
+  }, [user, toast, addPostLocally]);
 
-  const deletePost = async (postId: string) => {
+  const deletePost = useCallback(async (postId: string) => {
     try {
       // Otimista - remover localmente primeiro
       removePostLocally(postId);
@@ -274,7 +306,7 @@ export const usePosts = () => {
 
       if (error) {
         // Reverter se falhar
-        await loadPosts();
+        await loadPosts(0, false);
         throw error;
       }
 
@@ -286,20 +318,20 @@ export const usePosts = () => {
         variant: "destructive",
       });
     }
-  };
+  }, [removePostLocally, loadPosts, toast]);
 
-  const toggleLike = async (postId: string) => {
+  const toggleLike = useCallback(async (postId: string) => {
     if (!user) return;
 
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+
+    const willLike = !post.user_has_liked;
+
+    // Atualização otimista
+    updatePostLike(postId, willLike);
+
     try {
-      const post = posts.find((p) => p.id === postId);
-      if (!post) return;
-
-      const willLike = !post.user_has_liked;
-
-      // Atualização otimista
-      updatePostLike(postId, willLike);
-
       if (post.user_has_liked) {
         const { error } = await supabase
           .from("post_likes")
@@ -328,10 +360,10 @@ export const usePosts = () => {
     } catch (error) {
       logger.error("Error toggling like", error);
     }
-  };
+  }, [user, posts, updatePostLike]);
 
   useEffect(() => {
-    loadPosts();
+    loadPosts(0, false);
 
     // Subscribe to realtime changes - processar payload ao invés de refetch
     const channel = supabase
@@ -418,9 +450,12 @@ export const usePosts = () => {
   return {
     posts,
     loading,
+    loadingMore,
+    hasMore,
+    loadMore,
     createPost,
     deletePost,
     toggleLike,
-    reloadPosts: loadPosts,
+    reloadPosts: () => loadPosts(0, false),
   };
 };
