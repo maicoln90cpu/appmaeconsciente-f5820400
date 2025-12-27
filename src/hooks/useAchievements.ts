@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 export const useAchievements = () => {
-  const [checking, setChecking] = useState(false);
   const { toast } = useToast();
+  const isCheckingRef = useRef(false);
 
-  const checkAndUnlockAchievements = async () => {
-    if (checking) return;
+  const checkAndUnlockAchievements = useCallback(async () => {
+    // Prevent concurrent checks
+    if (isCheckingRef.current) return;
     
     try {
-      setChecking(true);
+      isCheckingRef.current = true;
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
@@ -79,19 +80,9 @@ export const useAchievements = () => {
     } catch (error) {
       console.error("Error checking achievements:", error);
     } finally {
-      setChecking(false);
+      isCheckingRef.current = false;
     }
-  };
-
-  useEffect(() => {
-    // Verificar conquistas ao montar o componente
-    checkAndUnlockAchievements();
-
-    // Verificar periodicamente (a cada 30 segundos)
-    const interval = setInterval(checkAndUnlockAchievements, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
+  }, [toast]);
 
   return { checkAchievements: checkAndUnlockAchievements };
 };

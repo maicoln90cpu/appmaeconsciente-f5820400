@@ -45,36 +45,34 @@ export const UserManagement = () => {
         .order("created_at", { ascending: false });
 
       if (error) {
-        console.error('Erro ao carregar usuários:', error);
         throw error;
       }
 
-      console.log('Usuários carregados:', data?.length);
-      
+      if (!data || data.length === 0) return [];
+
+      // Buscar atividades em batch usando a função SQL
+      const userIds = data.map(u => u.id);
+      const { data: activities, error: actError } = await supabase
+        .rpc('get_user_last_activities', { user_ids: userIds });
+
+      if (actError) {
+        console.error('Erro ao buscar atividades:', actError);
+      }
+
+      // Criar mapa para lookup O(1)
+      const activityMap = new Map(
+        (activities || []).map((a: any) => [a.user_id, a])
+      );
+
       // Enriquecer com dados de última atividade
-      const enrichedUsers = await Promise.all((data || []).map(async (user) => {
-        const [feedingLogs, sleepLogs, items] = await Promise.all([
-          supabase.from('baby_feeding_logs').select('created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('baby_sleep_logs').select('created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('itens_enxoval').select('created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-        ]);
-
-        const activities = [
-          feedingLogs.data?.created_at,
-          sleepLogs.data?.created_at,
-          items.data?.created_at,
-        ].filter(Boolean).map(d => new Date(d!));
-
-        const lastActivity = activities.length > 0 
-          ? new Date(Math.max(...activities.map(d => d.getTime())))
-          : null;
-
+      const enrichedUsers = data.map((user) => {
+        const activity = activityMap.get(user.id);
         return {
           ...user,
-          lastActivity,
-          hasUsedTools: activities.length > 0,
+          lastActivity: activity?.last_activity ? new Date(activity.last_activity) : null,
+          hasUsedTools: activity?.has_used_tools || false,
         };
-      }));
+      });
 
       return enrichedUsers;
     },

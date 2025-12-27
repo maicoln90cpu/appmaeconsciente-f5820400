@@ -2821,6 +2821,14 @@ export type Database = {
       }
     }
     Functions: {
+      get_user_last_activities: {
+        Args: { user_ids: string[] }
+        Returns: {
+          has_used_tools: boolean
+          last_activity: string
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
