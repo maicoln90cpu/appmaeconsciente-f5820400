@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/lib/analytics";
+import logger from "@/lib/logger";
 
 export interface Post {
   id: string;
@@ -22,18 +24,19 @@ export interface Post {
 export const usePosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const { user } = useAuth();
   const { toast } = useToast();
 
   // Cache de profiles para evitar refetch
   const [profileCache, setProfileCache] = useState<Map<string, { email: string; foto_perfil_url: string | null }>>(new Map());
 
   const loadPosts = useCallback(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      setCurrentUserId(user.id);
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
+    try {
       // Fetch all posts
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
@@ -116,7 +119,7 @@ export const usePosts = () => {
 
       setPosts(enrichedPosts);
     } catch (error) {
-      console.error("Error loading posts:", error);
+      logger.error("Error loading posts", error);
       toast({
         title: "Erro ao carregar posts",
         description: "Tente novamente mais tarde.",
@@ -125,7 +128,7 @@ export const usePosts = () => {
     } finally {
       setLoading(false);
     }
-  }, [toast, profileCache]);
+  }, [user, toast, profileCache]);
 
   // Atualização otimista de likes
   const updatePostLike = useCallback((postId: string, liked: boolean) => {
@@ -181,10 +184,16 @@ export const usePosts = () => {
     categoria?: string,
     tags?: string[]
   ) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+    if (!user) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar autenticado.",
+        variant: "destructive",
+      });
+      return;
+    }
 
+    try {
       // Validação de conteúdo
       const trimmedContent = content.trim();
       
@@ -247,7 +256,7 @@ export const usePosts = () => {
         addPostLocally(newPostData);
       }
     } catch (error) {
-      console.error("Error creating post:", error);
+      logger.error("Error creating post", error);
       toast({
         title: "Erro ao criar post",
         description: "Tente novamente mais tarde.",
@@ -271,7 +280,7 @@ export const usePosts = () => {
 
       toast({ title: "Post deletado com sucesso!" });
     } catch (error) {
-      console.error("Error deleting post:", error);
+      logger.error("Error deleting post", error);
       toast({
         title: "Erro ao deletar post",
         variant: "destructive",
@@ -280,10 +289,9 @@ export const usePosts = () => {
   };
 
   const toggleLike = async (postId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+    if (!user) return;
 
+    try {
       const post = posts.find((p) => p.id === postId);
       if (!post) return;
 
@@ -318,7 +326,7 @@ export const usePosts = () => {
         analytics.postLiked(postId);
       }
     } catch (error) {
-      console.error("Error toggling like:", error);
+      logger.error("Error toggling like", error);
     }
   };
 
@@ -333,7 +341,7 @@ export const usePosts = () => {
         { event: "INSERT", schema: "public", table: "posts" },
         (payload) => {
           // Só adicionar se não for do usuário atual (já adicionou otimisticamente)
-          if (payload.new && (payload.new as any).user_id !== currentUserId) {
+          if (payload.new && (payload.new as any).user_id !== user?.id) {
             addPostLocally(payload.new);
           }
         }
@@ -354,7 +362,7 @@ export const usePosts = () => {
           if (payload.new) {
             const like = payload.new as any;
             // Só atualizar se não for do usuário atual
-            if (like.user_id !== currentUserId) {
+            if (like.user_id !== user?.id) {
               setPosts(prev => prev.map(post => {
                 if (post.id === like.post_id) {
                   return { ...post, likes_count: post.likes_count + 1 };
@@ -371,7 +379,7 @@ export const usePosts = () => {
         (payload) => {
           if (payload.old) {
             const like = payload.old as any;
-            if (like.user_id !== currentUserId) {
+            if (like.user_id !== user?.id) {
               setPosts(prev => prev.map(post => {
                 if (post.id === like.post_id) {
                   return { ...post, likes_count: Math.max(0, post.likes_count - 1) };
@@ -405,7 +413,7 @@ export const usePosts = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentUserId]);
+  }, [user?.id]);
 
   return {
     posts,

@@ -1,30 +1,9 @@
-import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 
 export const ProtectedRoute = () => {
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
-
-  useEffect(() => {
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setAuthenticated(!!session);
-        setLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    setAuthenticated(!!session);
-    setLoading(false);
-  };
+  const { user, loading } = useAuth();
 
   if (loading) {
     return (
@@ -34,5 +13,5 @@ export const ProtectedRoute = () => {
     );
   }
 
-  return authenticated ? <Outlet /> : <Navigate to="/auth" replace />;
+  return user ? <Outlet /> : <Navigate to="/auth" replace />;
 };
