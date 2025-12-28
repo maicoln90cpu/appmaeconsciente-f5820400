@@ -2,12 +2,14 @@ import { useState, useCallback, memo } from "react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Trash2, MoreVertical, Flag, UserX } from "lucide-react";
 import { Post } from "@/hooks/usePosts";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { CommentSection } from "./CommentSection";
 import { useAuth } from "@/contexts/AuthContext";
+import { useModeration } from "@/hooks/useModeration";
+import { ReportPostDialog } from "./ReportPostDialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,6 +21,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface PostCardProps {
   post: Post;
@@ -29,9 +38,12 @@ interface PostCardProps {
 const PostCardComponent = ({ post, onLike, onDelete }: PostCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showReportDialog, setShowReportDialog] = useState(false);
   const { user } = useAuth();
+  const { blockUser, isUserBlocked } = useModeration();
 
   const isOwner = user?.id === post.user_id;
+  const isBlocked = isUserBlocked(post.user_id);
   const timeAgo = formatDistanceToNow(new Date(post.created_at), {
     addSuffix: true,
     locale: ptBR,
@@ -53,7 +65,20 @@ const PostCardComponent = ({ post, onLike, onDelete }: PostCardProps) => {
     setCurrentImageIndex(index);
   }, []);
 
+  const handleBlock = useCallback(() => {
+    blockUser({ blockedId: post.user_id });
+  }, [blockUser, post.user_id]);
+
+  // Don't render blocked users' posts
+  if (isBlocked) return null;
+
   return (
+    <>
+      <ReportPostDialog 
+        postId={post.id} 
+        open={showReportDialog} 
+        onOpenChange={setShowReportDialog} 
+      />
     <Card className="p-6">
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -69,7 +94,7 @@ const PostCardComponent = ({ post, onLike, onDelete }: PostCardProps) => {
           </div>
         </div>
 
-        {isOwner && (
+        {isOwner ? (
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" aria-label="Deletar post">
@@ -91,6 +116,28 @@ const PostCardComponent = ({ post, onLike, onDelete }: PostCardProps) => {
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Mais opções">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setShowReportDialog(true)}>
+                <Flag className="h-4 w-4 mr-2" />
+                Denunciar
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={handleBlock}
+                className="text-destructive focus:text-destructive"
+              >
+                <UserX className="h-4 w-4 mr-2" />
+                Bloquear usuária
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
 
@@ -150,7 +197,8 @@ const PostCardComponent = ({ post, onLike, onDelete }: PostCardProps) => {
       </div>
 
       {showComments && <CommentSection postId={post.id} />}
-    </Card>
+      </Card>
+    </>
   );
 };
 
