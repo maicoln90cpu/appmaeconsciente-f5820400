@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import { getCorsHeaders, handleCorsOptions } from "../_shared/cors.ts";
+import { getCorsHeaders, handleCorsOptions, logSecurityEvent, getRequestInfo } from "../_shared/cors.ts";
 
 // Lista de todas as tabelas com dados do usuário
 const USER_DATA_TABLES = [
@@ -105,6 +105,18 @@ serve(async (req) => {
 
     console.log(`Iniciando exclusão de dados para usuário: ${user.id}`);
 
+    // Log de segurança para exclusão de conta
+    const requestInfo = getRequestInfo(req);
+    await logSecurityEvent(
+      supabaseAdmin,
+      'account_deletion_requested',
+      `Usuário ${user.email} solicitou exclusão de conta`,
+      user.id,
+      req,
+      'critical',
+      { email: user.email }
+    );
+
     const deletedTables: string[] = [];
     const errors: string[] = [];
 
@@ -114,8 +126,10 @@ serve(async (req) => {
       .insert({
         user_id: user.id,
         user_email: user.email,
-        status: 'in_progress'
-      });
+        status: 'in_progress',
+        ip_address: requestInfo.ipAddress,
+        user_agent: requestInfo.userAgent
+      } as any);
 
     // Excluir dados de cada tabela
     for (const table of USER_DATA_TABLES) {

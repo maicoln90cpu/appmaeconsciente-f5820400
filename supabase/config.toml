@@ -65,3 +65,6 @@ verify_jwt = true
 
 [functions.send-weekly-recovery-email]
 verify_jwt = true
+
+[functions.cleanup-old-logs]
+verify_jwt = true
