@@ -679,6 +679,39 @@ export type Database = {
         }
         Relationships: []
       }
+      data_deletion_logs: {
+        Row: {
+          completed_at: string | null
+          error_message: string | null
+          id: string
+          requested_at: string
+          status: string
+          tables_deleted: string[] | null
+          user_email: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          error_message?: string | null
+          id?: string
+          requested_at?: string
+          status?: string
+          tables_deleted?: string[] | null
+          user_email?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          error_message?: string | null
+          id?: string
+          requested_at?: string
+          status?: string
+          tables_deleted?: string[] | null
+          user_email?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       development_alert_settings: {
         Row: {
           alert_when_passed_max_age: boolean | null
@@ -2453,6 +2486,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_consents: {
+        Row: {
+          accepted: boolean
+          accepted_at: string | null
+          consent_type: string
+          consent_version: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted?: boolean
+          accepted_at?: string | null
+          consent_type: string
+          consent_version?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted?: boolean
+          accepted_at?: string | null
+          consent_type?: string
+          consent_version?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_exercise_logs: {
         Row: {

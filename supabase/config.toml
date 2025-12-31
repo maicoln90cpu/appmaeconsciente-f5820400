@@ -53,3 +53,15 @@ verify_jwt = true
 
 [functions.seed-community]
 verify_jwt = true
+
+[functions.delete-user-data]
+verify_jwt = true
+
+[functions.export-user-data]
+verify_jwt = true
+
+[functions.check-development-alerts]
+verify_jwt = true
+
+[functions.send-weekly-recovery-email]
+verify_jwt = true

@@ -9,8 +9,19 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Baby, Upload, ArrowLeft, Save } from "lucide-react";
+import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const ESTADOS = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
@@ -22,6 +33,9 @@ export default function ProfileSettings() {
   const { profile, updateProfile } = useProfile();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
 
   const [formData, setFormData] = useState({
     idade: profile?.idade?.toString() || "",
@@ -35,6 +49,95 @@ export default function ProfileSettings() {
     idades_filhos: profile?.idades_filhos?.join(", ") || "",
     foto_perfil_url: profile?.foto_perfil_url || "",
   });
+
+  // Exportar dados pessoais (LGPD)
+  const handleExportData = async () => {
+    setExporting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Erro", description: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+        return;
+      }
+
+      const response = await supabase.functions.invoke('export-user-data', {
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (response.error) throw response.error;
+
+      // Baixar o JSON
+      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `meus-dados-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      toast({ 
+        title: "Dados exportados!", 
+        description: "Seu arquivo de dados pessoais foi baixado." 
+      });
+    } catch (error) {
+      console.error('Erro ao exportar dados:', error);
+      toast({ 
+        title: "Erro ao exportar", 
+        description: "Tente novamente mais tarde.", 
+        variant: "destructive" 
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  // Excluir conta (LGPD)
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmEmail !== profile?.email) {
+      toast({ 
+        title: "Email incorreto", 
+        description: "Digite seu email corretamente para confirmar a exclusão.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Erro", description: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+        return;
+      }
+
+      const response = await supabase.functions.invoke('delete-user-data', {
+        body: { confirmEmail: deleteConfirmEmail },
+        headers: { Authorization: `Bearer ${session.access_token}` }
+      });
+
+      if (response.error) throw response.error;
+
+      toast({ 
+        title: "Conta excluída", 
+        description: "Sua conta e todos os dados foram excluídos permanentemente." 
+      });
+
+      // Fazer logout e redirecionar
+      await supabase.auth.signOut();
+      navigate("/", { replace: true });
+    } catch (error) {
+      console.error('Erro ao excluir conta:', error);
+      toast({ 
+        title: "Erro ao excluir conta", 
+        description: "Contate o suporte se o problema persistir.", 
+        variant: "destructive" 
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -316,6 +419,107 @@ export default function ProfileSettings() {
                     />
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Privacidade e Dados (LGPD) */}
+            <Card className="border-destructive/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                  Privacidade e Dados
+                </CardTitle>
+                <CardDescription>
+                  Gerencie seus dados pessoais conforme a LGPD
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Exportar Dados */}
+                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div>
+                    <h4 className="font-medium">Baixar meus dados</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Exporte todos os seus dados pessoais em formato JSON
+                    </p>
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleExportData}
+                    disabled={exporting}
+                    className="gap-2"
+                  >
+                    <Download className="h-4 w-4" />
+                    {exporting ? "Exportando..." : "Exportar"}
+                  </Button>
+                </div>
+
+                <Separator />
+
+                {/* Excluir Conta */}
+                <div className="flex items-center justify-between p-4 bg-destructive/5 rounded-lg border border-destructive/20">
+                  <div>
+                    <h4 className="font-medium text-destructive">Excluir minha conta</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Remove permanentemente sua conta e todos os dados
+                    </p>
+                  </div>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button type="button" variant="destructive" className="gap-2">
+                        <Trash2 className="h-4 w-4" />
+                        Excluir Conta
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5 text-destructive" />
+                          Excluir conta permanentemente?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="space-y-4">
+                          <p>
+                            Esta ação é <strong>irreversível</strong>. Todos os seus dados serão 
+                            permanentemente excluídos, incluindo:
+                          </p>
+                          <ul className="list-disc list-inside text-sm space-y-1">
+                            <li>Perfil e configurações</li>
+                            <li>Itens do enxoval e listas</li>
+                            <li>Registros de amamentação e sono</li>
+                            <li>Dados de vacinação e desenvolvimento</li>
+                            <li>Publicações e comentários</li>
+                            <li>Conquistas e progressos</li>
+                          </ul>
+                          <div className="pt-4">
+                            <Label htmlFor="confirm-email">
+                              Digite seu email para confirmar: <strong>{profile?.email}</strong>
+                            </Label>
+                            <Input
+                              id="confirm-email"
+                              type="email"
+                              placeholder="Digite seu email"
+                              value={deleteConfirmEmail}
+                              onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                              className="mt-2"
+                            />
+                          </div>
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel onClick={() => setDeleteConfirmEmail("")}>
+                          Cancelar
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteAccount}
+                          disabled={deleting || deleteConfirmEmail !== profile?.email}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          {deleting ? "Excluindo..." : "Sim, excluir minha conta"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </CardContent>
             </Card>
 
