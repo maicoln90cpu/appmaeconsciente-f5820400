@@ -2144,6 +2144,42 @@ export type Database = {
         }
         Relationships: []
       }
+      security_audit_logs: {
+        Row: {
+          created_at: string
+          event_description: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          severity: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_description?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          severity?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_description?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          severity?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       shared_enxoval_links: {
         Row: {
           created_at: string
@@ -2393,25 +2429,37 @@ export type Database = {
       user_access_logs: {
         Row: {
           accessed_at: string | null
+          action_type: string | null
           id: string
           ip_address: string | null
+          metadata: Json | null
           product_id: string | null
+          resource_path: string | null
+          session_id: string | null
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
           accessed_at?: string | null
+          action_type?: string | null
           id?: string
           ip_address?: string | null
+          metadata?: Json | null
           product_id?: string | null
+          resource_path?: string | null
+          session_id?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
           accessed_at?: string | null
+          action_type?: string | null
           id?: string
           ip_address?: string | null
+          metadata?: Json | null
           product_id?: string | null
+          resource_path?: string | null
+          session_id?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -3074,6 +3122,7 @@ export type Database = {
       }
     }
     Functions: {
+      cleanup_old_logs: { Args: { days_to_keep?: number }; Returns: number }
       get_user_last_activities: {
         Args: { user_ids: string[] }
         Returns: {

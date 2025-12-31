@@ -70,3 +70,44 @@ export function isOriginAllowed(origin?: string | null): boolean {
   if (!origin) return false;
   return ALLOWED_ORIGINS.includes(origin) || DEV_ORIGINS.includes(origin);
 }
+
+/**
+ * Extrai informações de request para logging
+ */
+export function getRequestInfo(req: Request): { ipAddress: string; userAgent: string } {
+  return {
+    ipAddress: req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               req.headers.get('x-real-ip') || 
+               'unknown',
+    userAgent: req.headers.get('user-agent') || 'unknown'
+  };
+}
+
+/**
+ * Loga evento de segurança no banco
+ */
+export async function logSecurityEvent(
+  supabase: any,
+  eventType: string,
+  description: string,
+  userId?: string,
+  req?: Request,
+  severity: 'info' | 'warning' | 'critical' = 'info',
+  metadata: Record<string, any> = {}
+): Promise<void> {
+  try {
+    const requestInfo = req ? getRequestInfo(req) : { ipAddress: 'system', userAgent: 'system' };
+    
+    await supabase.from('security_audit_logs').insert({
+      user_id: userId || null,
+      event_type: eventType,
+      event_description: description,
+      ip_address: requestInfo.ipAddress,
+      user_agent: requestInfo.userAgent,
+      metadata,
+      severity
+    });
+  } catch (error) {
+    console.error('Error logging security event:', error);
+  }
+}
