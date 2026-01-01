@@ -239,8 +239,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         </div>
       </nav>
 
-      {/* Main Content with bottom padding for mobile nav */}
-      <main className="flex-1 pb-20 md:pb-0">{children}</main>
+      {/* Main Content with bottom padding for mobile nav and skip link target */}
+      <main id="main-content" tabIndex={-1} className="flex-1 pb-20 md:pb-0 outline-none">{children}</main>
 
       {/* Enhanced Footer */}
       <footer className="hidden md:block border-t border-border/50 bg-surface-2">
