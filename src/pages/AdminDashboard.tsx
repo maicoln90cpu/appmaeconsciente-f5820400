@@ -30,6 +30,7 @@ import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
 import { BundleManagement } from "@/components/admin/BundleManagement";
 import { ToolSuggestionManagement } from "@/components/admin/ToolSuggestionManagement";
 import { SiteSettings } from "@/components/admin/SiteSettings";
+import { SecurityAuditPanel } from "@/components/admin/SecurityAuditPanel";
 import {
   BarChart,
   Bar,
@@ -306,8 +307,9 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
-          <TabsList className="grid grid-cols-12 w-full">
+          <TabsList className="flex flex-wrap gap-1 h-auto p-1">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
             <TabsTrigger value="products">Produtos</TabsTrigger>
             <TabsTrigger value="bundles">Bundles</TabsTrigger>
@@ -323,6 +325,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="analytics">
             <AnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="security">
+            <SecurityAuditPanel />
           </TabsContent>
 
           <TabsContent value="charts" className="space-y-4">
