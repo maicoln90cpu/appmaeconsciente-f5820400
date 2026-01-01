@@ -187,10 +187,41 @@
 
 /* === Utility Classes === */
 @layer utilities {
+  /* Page Layout */
+  .page-container {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+  
+  .section {
+    @apply py-section;
+  }
+  
+  .section-lg {
+    @apply py-section-lg;
+  }
+
   .section-padding {
     @apply py-16 md:py-24;
   }
   
+  /* Card Grids */
+  .card-grid {
+    @apply grid gap-4 sm:gap-6;
+  }
+  
+  .card-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
+  }
+  
+  .card-grid-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
+  }
+  
+  .card-grid-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6;
+  }
+
+  /* Spacing */
   .card-padding {
     padding: var(--space-card);
   }
@@ -199,6 +230,7 @@
     padding: var(--space-component);
   }
   
+  /* Gradients */
   .gradient-primary {
     background: var(--gradient-primary);
   }
@@ -215,7 +247,30 @@
     background: var(--gradient-hero);
   }
 
+  /* Typography */
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Interactive Elements */
+  .tap-highlight {
+    @apply transition-transform duration-150 active:scale-[0.97];
+  }
+  
+  .hover-lift {
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:shadow-medium;
+  }
+  
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  /* Backdrop Effects */
+  .glass {
+    @apply bg-background/80 backdrop-blur-xl border border-border/50;
+  }
+  
+  .glass-subtle {
+    @apply bg-background/60 backdrop-blur-md;
   }
 }
