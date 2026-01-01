@@ -162,9 +162,25 @@
     transition: background-color 0.3s ease, color 0.3s ease;
   }
   
+  /* Skip Link for Keyboard Navigation */
+  .skip-link {
+    @apply absolute -top-10 left-4 z-[100] bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium;
+    @apply focus:top-4 transition-all duration-200;
+  }
+  
   /* Typography enhancements */
   h1, h2, h3, h4, h5, h6 {
     @apply font-display tracking-tight;
+  }
+  
+  /* Enhanced focus-visible for all interactive elements */
+  a, button, input, select, textarea, [tabindex]:not([tabindex="-1"]) {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  
+  /* Ensure links have proper contrast */
+  a:not([class]) {
+    @apply text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors;
   }
   
   img {
@@ -184,6 +200,50 @@
     .safe-bottom {
       padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
     }
+  }
+  
+  /* Ripple Effect for Buttons */
+  .ripple-effect {
+    position: absolute;
+    border-radius: 50%;
+    background: hsl(var(--primary-foreground) / 0.3);
+    transform: scale(0);
+    animation: ripple-animation 0.6s ease-out;
+    pointer-events: none;
+    width: 100px;
+    height: 100px;
+    margin-left: -50px;
+    margin-top: -50px;
+  }
+  
+  @keyframes ripple-animation {
+    to {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+  
+  /* Page Transition */
+  .page-transition-enter {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  
+  .page-transition-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  }
+  
+  .page-transition-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .page-transition-exit-active {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.2s ease-in, transform 0.2s ease-in;
   }
 }
 

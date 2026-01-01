@@ -1,15 +1,16 @@
-import { Suspense, lazy, useState } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ProductRoute } from "@/components/ProductRoute";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { GTMScript } from "@/components/GTMScript";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SkipLink } from "@/components/SkipLink";
 
 const Landing = lazy(() => import("./pages/Landing"));
 const Index = lazy(() => import("./pages/Index"));
@@ -36,9 +37,37 @@ const RecuperacaoPosPartoPage = lazy(() => import("./pages/RecuperacaoPosPartoPa
 const MonitorDesenvolvimento = lazy(() => import("./pages/MonitorDesenvolvimento"));
 const Offline = lazy(() => import("./pages/Offline"));
 
+// Prefetch common routes on idle
+const prefetchRoutes = () => {
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(() => {
+      // Prefetch common routes
+      import("./pages/Dashboard");
+      import("./pages/Materiais");
+      import("./pages/Comunidade");
+    });
+  }
+};
+
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
   useAnalytics();
+  
+  useEffect(() => {
+    prefetchRoutes();
+  }, []);
+  
   return <>{children}</>;
+};
+
+// Scroll to top on route change
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [pathname]);
+  
+  return null;
 };
 
 const App = () => {
@@ -49,13 +78,15 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <TooltipProvider>
+          <SkipLink />
           <Toaster />
           <Sonner />
           <GTMScript />
       <BrowserRouter>
+        <ScrollToTop />
         <AnalyticsWrapper>
         <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
-          <div className="animate-pulse">Carregando...</div>
+          <div className="animate-pulse text-muted-foreground">Carregando...</div>
         </div>}>
           <Routes>
             {/* Public Routes */}
