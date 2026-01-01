@@ -2,12 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* ============================================
+   DESIGN SYSTEM - Maternidade Consciente
+   All colors MUST be HSL.
+   ============================================ */
 
 @layer base {
   :root {
+    /* === Core Colors === */
     --background: 0 29% 99%;
     --foreground: 0 0% 20%;
 
@@ -24,7 +26,7 @@ All colors MUST be HSL.
     --secondary-foreground: 0 0% 25%;
 
     --muted: 0 29% 97%;
-    --muted-foreground: 0 0% 25%;
+    --muted-foreground: 0 0% 35%;
 
     --accent: 2 76% 55%;
     --accent-foreground: 0 0% 100%;
@@ -38,47 +40,64 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
     
+    /* === Semantic Status Colors === */
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
     
     --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
+    --warning-foreground: 0 0% 10%;
 
+    --info: 210 92% 45%;
+    --info-foreground: 0 0% 100%;
+
+    /* === Surface Layers (Elevation) === */
+    --surface-1: 0 0% 100%;
+    --surface-2: 0 29% 98%;
+    --surface-3: 0 29% 96%;
+
+    /* === Gradients === */
+    --gradient-primary: linear-gradient(135deg, hsl(2 76% 55%) 0%, hsl(12 85% 60%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(0 100% 98%) 0%, hsl(30 100% 97%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 29% 98%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0 29% 99%) 0%, hsl(0 100% 98%) 50%, hsl(0 29% 99%) 100%);
+
+    /* === Spacing Tokens === */
+    --space-section: 4rem;
+    --space-section-lg: 6rem;
+    --space-card: 1.5rem;
+    --space-component: 1rem;
+    --space-inline: 0.5rem;
+
+    /* === Sidebar === */
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 0 0% 12%;
+    /* === Core Colors (Dark) === */
+    --background: 0 0% 8%;
     --foreground: 0 0% 95%;
 
-    --card: 0 0% 15%;
+    --card: 0 0% 11%;
     --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 15%;
+    --popover: 0 0% 11%;
     --popover-foreground: 0 0% 95%;
 
     --primary: 2 76% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 20%;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 80%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 70%;
 
     --accent: 2 76% 65%;
     --accent-foreground: 0 0% 100%;
@@ -86,22 +105,46 @@ All colors MUST be HSL.
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
     --ring: 2 76% 65%;
     
-    --success: 142 76% 36%;
+    /* === Semantic Status Colors (Dark) === */
+    --success: 142 70% 45%;
     --success-foreground: 0 0% 100%;
     
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 100%;
-    --sidebar-background: 240 5.9% 10%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 0 0% 10%;
+
+    --info: 210 85% 55%;
+    --info-foreground: 0 0% 100%;
+
+    /* === Surface Layers (Dark - Elevation) === */
+    --surface-1: 0 0% 11%;
+    --surface-2: 0 0% 14%;
+    --surface-3: 0 0% 17%;
+
+    /* === Gradients (Dark) === */
+    --gradient-primary: linear-gradient(135deg, hsl(2 76% 50%) 0%, hsl(12 80% 55%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(0 0% 11%) 0%, hsl(0 0% 14%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(0 0% 11%) 0%, hsl(0 0% 14%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 8%) 0%, hsl(0 0% 11%) 50%, hsl(0 0% 8%) 100%);
+
+    /* === Spacing Tokens (same as light) === */
+    --space-section: 4rem;
+    --space-section-lg: 6rem;
+    --space-card: 1.5rem;
+    --space-component: 1rem;
+    --space-inline: 0.5rem;
+
+    /* === Sidebar (Dark) === */
+    --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent: 0 0% 14%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-border: 0 0% 18%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -112,8 +155,14 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Typography enhancements */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
   }
   
   img {
@@ -133,5 +182,40 @@ All colors MUST be HSL.
     .safe-bottom {
       padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
     }
+  }
+}
+
+/* === Utility Classes === */
+@layer utilities {
+  .section-padding {
+    @apply py-16 md:py-24;
+  }
+  
+  .card-padding {
+    padding: var(--space-card);
+  }
+  
+  .component-padding {
+    padding: var(--space-component);
+  }
+  
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-warm {
+    background: var(--gradient-warm);
+  }
+  
+  .gradient-soft {
+    background: var(--gradient-soft);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .text-balance {
+    text-wrap: balance;
   }
 }
