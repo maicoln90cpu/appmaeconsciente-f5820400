@@ -26,7 +26,7 @@
     --secondary-foreground: 0 0% 25%;
 
     --muted: 0 29% 97%;
-    --muted-foreground: 0 0% 35%;
+    --muted-foreground: 0 0% 25%;
 
     --accent: 2 76% 55%;
     --accent-foreground: 0 0% 100%;
@@ -47,7 +47,7 @@
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 10%;
 
-    --info: 210 92% 45%;
+    --info: 210 100% 50%;
     --info-foreground: 0 0% 100%;
 
     /* === Surface Layers (Elevation) === */
@@ -97,7 +97,7 @@
     --secondary-foreground: 0 0% 90%;
 
     --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 70%;
+    --muted-foreground: 0 0% 80%;
 
     --accent: 2 76% 65%;
     --accent-foreground: 0 0% 100%;
@@ -116,7 +116,7 @@
     --warning: 38 92% 55%;
     --warning-foreground: 0 0% 10%;
 
-    --info: 210 85% 55%;
+    --info: 210 100% 55%;
     --info-foreground: 0 0% 100%;
 
     /* === Surface Layers (Dark - Elevation) === */
