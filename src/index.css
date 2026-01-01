@@ -50,10 +50,11 @@
     --info: 210 100% 50%;
     --info-foreground: 0 0% 100%;
 
-    /* === Surface Layers (Elevation) === */
-    --surface-1: 0 0% 100%;
-    --surface-2: 0 29% 98%;
-    --surface-3: 0 29% 96%;
+    /* === Surface Layers (Elevation - 0%, 2%, 5%, 8%) === */
+    --surface-0: 0 0% 100%;
+    --surface-1: 0 29% 98%;
+    --surface-2: 0 29% 96%;
+    --surface-3: 0 29% 94%;
 
     /* === Gradients === */
     --gradient-primary: linear-gradient(135deg, hsl(2 76% 55%) 0%, hsl(12 85% 60%) 100%);
@@ -80,34 +81,34 @@
   }
 
   .dark {
-    /* === Core Colors (Dark) === */
-    --background: 0 0% 8%;
-    --foreground: 0 0% 95%;
+    /* === Core Colors (Dark) - WCAG AA Compliant === */
+    --background: 0 0% 7%;
+    --foreground: 0 0% 93%;
 
-    --card: 0 0% 11%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 9%;
+    --card-foreground: 0 0% 93%;
 
-    --popover: 0 0% 11%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 9%;
+    --popover-foreground: 0 0% 93%;
 
-    --primary: 2 76% 65%;
+    --primary: 2 76% 62%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 0 0% 13%;
+    --secondary-foreground: 0 0% 85%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 80%;
+    --muted: 0 0% 13%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 2 76% 65%;
+    --accent: 2 76% 62%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 50%;
+    --destructive: 0 62% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 2 76% 65%;
+    --border: 0 0% 16%;
+    --input: 0 0% 16%;
+    --ring: 2 76% 62%;
     
     /* === Semantic Status Colors (Dark) === */
     --success: 142 70% 45%;
@@ -116,19 +117,20 @@
     --warning: 38 92% 55%;
     --warning-foreground: 0 0% 10%;
 
-    --info: 210 100% 55%;
+    --info: 210 100% 60%;
     --info-foreground: 0 0% 100%;
 
-    /* === Surface Layers (Dark - Elevation) === */
-    --surface-1: 0 0% 11%;
-    --surface-2: 0 0% 14%;
-    --surface-3: 0 0% 17%;
+    /* === Surface Layers (Dark - 0%, 2%, 5%, 8% elevation) === */
+    --surface-0: 0 0% 7%;
+    --surface-1: 0 0% 9%;
+    --surface-2: 0 0% 12%;
+    --surface-3: 0 0% 15%;
 
     /* === Gradients (Dark) === */
-    --gradient-primary: linear-gradient(135deg, hsl(2 76% 50%) 0%, hsl(12 80% 55%) 100%);
-    --gradient-warm: linear-gradient(135deg, hsl(0 0% 11%) 0%, hsl(0 0% 14%) 100%);
-    --gradient-soft: linear-gradient(180deg, hsl(0 0% 11%) 0%, hsl(0 0% 14%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(0 0% 8%) 0%, hsl(0 0% 11%) 50%, hsl(0 0% 8%) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(2 76% 52%) 0%, hsl(12 80% 58%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(0 0% 9%) 0%, hsl(0 0% 12%) 100%);
+    --gradient-soft: linear-gradient(180deg, hsl(0 0% 9%) 0%, hsl(0 0% 12%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0 0% 7%) 0%, hsl(0 0% 10%) 50%, hsl(0 0% 7%) 100%);
 
     /* === Spacing Tokens (same as light) === */
     --space-section: 4rem;
@@ -138,14 +140,14 @@
     --space-inline: 0.5rem;
 
     /* === Sidebar (Dark) === */
-    --sidebar-background: 0 0% 8%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 93%;
+    --sidebar-primary: 2 76% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 14%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 93%;
+    --sidebar-border: 0 0% 16%;
+    --sidebar-ring: 2 76% 62%;
   }
 }
 
