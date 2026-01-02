@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 export interface Profile {
   id: string;
   email: string;
+  full_name?: string;
+  whatsapp?: string;
   idade?: number;
   sexo?: string;
   foto_perfil_url?: string;

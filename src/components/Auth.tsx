@@ -6,22 +6,71 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Baby, Eye, EyeOff, Loader2 } from "lucide-react";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { PasswordStrength } from "@/components/ui/password-strength";
+import { Baby, Eye, EyeOff, Loader2, Mail, Lock, User, Check, X } from "lucide-react";
 import { checkRateLimit, resetRateLimit } from "@/lib/rate-limiter";
+import { signUpSchema, signInSchema, forgotPasswordSchema } from "@/lib/validators/auth";
+import { cn } from "@/lib/utils";
 
 type AuthMode = 'sign_in' | 'sign_up' | 'forgot_password';
 
+interface FormErrors {
+  fullName?: string;
+  email?: string;
+  whatsapp?: string;
+  password?: string;
+  confirmPassword?: string;
+}
+
 export const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('sign_in');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
   const { toast } = useToast();
+
+  const passwordsMatch = password && confirmPassword && password === confirmPassword;
+  const passwordsDontMatch = password && confirmPassword && password !== confirmPassword;
+
+  const validateForm = (): boolean => {
+    setErrors({});
+    
+    try {
+      if (mode === 'sign_up') {
+        signUpSchema.parse({ fullName, email, whatsapp: whatsapp || undefined, password, confirmPassword });
+      } else if (mode === 'sign_in') {
+        signInSchema.parse({ email, password });
+      } else {
+        forgotPasswordSchema.parse({ email });
+      }
+      return true;
+    } catch (error: any) {
+      if (error.errors) {
+        const newErrors: FormErrors = {};
+        error.errors.forEach((err: any) => {
+          const field = err.path[0] as keyof FormErrors;
+          if (!newErrors[field]) {
+            newErrors[field] = err.message;
+          }
+        });
+        setErrors(newErrors);
+      }
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) return;
 
     // Rate limiting check
     const rateLimitResult = checkRateLimit(`auth:${email}`);
@@ -43,9 +92,7 @@ export const Auth = () => {
           password,
         });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
         resetRateLimit(`auth:${email}`);
         toast({
@@ -66,12 +113,21 @@ export const Auth = () => {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/`,
+          }
         });
 
         if (error) throw error;
 
-        // Registrar consentimento após criar conta
+        // Update profile with full_name and whatsapp after creating account
         if (data.user) {
+          await supabase.from('profiles').update({
+            full_name: fullName.trim(),
+            whatsapp: whatsapp || null,
+          }).eq('id', data.user.id);
+
+          // Register consent
           await supabase.from('user_consents').insert({
             user_id: data.user.id,
             consent_type: 'terms_and_privacy',
@@ -123,17 +179,23 @@ export const Auth = () => {
     }
   };
 
+  const handleModeChange = (newMode: AuthMode) => {
+    setMode(newMode);
+    setErrors({});
+    // Keep email when switching modes for convenience
+  };
+
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md backdrop-blur-sm bg-card/95 shadow-xl border-border/50">
       <CardHeader className="space-y-4">
         <div className="flex items-center gap-3 justify-center">
-          <div className="p-2 bg-primary/10 rounded-lg">
+          <div className="p-2.5 bg-gradient-to-br from-primary/20 to-primary/5 rounded-xl">
             <Baby className="h-8 w-8 text-primary" />
           </div>
           <div className="text-center">
-            <CardTitle className="text-2xl">Controle de Enxoval</CardTitle>
+            <CardTitle className="text-2xl">Maternidade Consciente</CardTitle>
             <CardDescription className="mt-1">
-              {mode === 'sign_in' && "Faça login para gerenciar seu enxoval"}
+              {mode === 'sign_in' && "Faça login para continuar"}
               {mode === 'sign_up' && "Crie sua conta para começar"}
               {mode === 'forgot_password' && "Recupere sua senha"}
             </CardDescription>
@@ -142,23 +204,79 @@ export const Auth = () => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Full Name - Only for sign up */}
+          {mode === 'sign_up' && (
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nome completo</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="Maria Silva"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  required
+                  disabled={loading}
+                  className={cn(
+                    "pl-10",
+                    errors.fullName && "border-destructive focus-visible:ring-destructive"
+                  )}
+                />
+              </div>
+              {errors.fullName && (
+                <p className="text-xs text-destructive">{errors.fullName}</p>
+              )}
+            </div>
+          )}
+
+          {/* Email */}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-            />
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={loading}
+                className={cn(
+                  "pl-10",
+                  errors.email && "border-destructive focus-visible:ring-destructive"
+                )}
+              />
+            </div>
+            {errors.email && (
+              <p className="text-xs text-destructive">{errors.email}</p>
+            )}
           </div>
 
+          {/* WhatsApp - Only for sign up */}
+          {mode === 'sign_up' && (
+            <div className="space-y-2">
+              <Label htmlFor="whatsapp">WhatsApp (opcional)</Label>
+              <PhoneInput
+                id="whatsapp"
+                value={whatsapp}
+                onChange={setWhatsapp}
+                disabled={loading}
+                error={errors.whatsapp}
+              />
+              {errors.whatsapp && (
+                <p className="text-xs text-destructive">{errors.whatsapp}</p>
+              )}
+            </div>
+          )}
+
+          {/* Password */}
           {mode !== 'forgot_password' && (
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
@@ -167,7 +285,11 @@ export const Auth = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  minLength={6}
+                  minLength={8}
+                  className={cn(
+                    "pl-10 pr-10",
+                    errors.password && "border-destructive focus-visible:ring-destructive"
+                  )}
                 />
                 <Button
                   type="button"
@@ -175,6 +297,7 @@ export const Auth = () => {
                   size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4 text-muted-foreground" />
@@ -183,23 +306,91 @@ export const Auth = () => {
                   )}
                 </Button>
               </div>
+              {errors.password && (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              )}
+              {mode === 'sign_up' && password && (
+                <PasswordStrength password={password} />
+              )}
             </div>
           )}
 
+          {/* Confirm Password - Only for sign up */}
           {mode === 'sign_up' && (
-            <div className="flex items-start space-x-2 p-3 bg-muted/50 rounded-lg">
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmar senha</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  minLength={8}
+                  className={cn(
+                    "pl-10 pr-10",
+                    (errors.confirmPassword || passwordsDontMatch) && "border-destructive focus-visible:ring-destructive",
+                    passwordsMatch && "border-green-500 focus-visible:ring-green-500"
+                  )}
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </Button>
+              </div>
+              {errors.confirmPassword && (
+                <p className="text-xs text-destructive">{errors.confirmPassword}</p>
+              )}
+              {confirmPassword && (
+                <div className={cn(
+                  "flex items-center gap-1 text-xs",
+                  passwordsMatch ? "text-green-600" : "text-destructive"
+                )}>
+                  {passwordsMatch ? (
+                    <>
+                      <Check className="h-3 w-3" />
+                      Senhas conferem
+                    </>
+                  ) : passwordsDontMatch ? (
+                    <>
+                      <X className="h-3 w-3" />
+                      Senhas não conferem
+                    </>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* LGPD Consent - Only for sign up */}
+          {mode === 'sign_up' && (
+            <div className="flex items-start space-x-2 p-3 bg-muted/50 rounded-lg border border-border/50">
               <Checkbox
                 id="consent"
                 checked={consentAccepted}
                 onCheckedChange={(checked) => setConsentAccepted(checked as boolean)}
                 disabled={loading}
+                className="mt-0.5"
               />
-              <Label htmlFor="consent" className="text-sm leading-relaxed cursor-pointer">
+              <Label htmlFor="consent" className="text-sm leading-relaxed cursor-pointer text-muted-foreground">
                 Eu li e concordo com os{" "}
                 <a 
                   href="/termos" 
                   target="_blank" 
-                  className="text-primary hover:underline"
+                  className="text-primary hover:underline font-medium"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Termos de Uso
@@ -208,7 +399,7 @@ export const Auth = () => {
                 <a 
                   href="/privacidade" 
                   target="_blank" 
-                  className="text-primary hover:underline"
+                  className="text-primary hover:underline font-medium"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Política de Privacidade
@@ -218,7 +409,11 @@ export const Auth = () => {
             </div>
           )}
 
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button 
+            type="submit" 
+            className="w-full h-11 text-base font-medium" 
+            disabled={loading || (mode === 'sign_up' && !consentAccepted)}
+          >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {mode === 'sign_in' && "Entrar"}
             {mode === 'sign_up' && "Criar conta"}
@@ -226,13 +421,13 @@ export const Auth = () => {
           </Button>
         </form>
 
-        <div className="mt-4 text-center space-y-2">
+        <div className="mt-6 text-center space-y-2">
           {mode === 'sign_in' && (
             <>
               <button
                 type="button"
-                onClick={() => setMode('forgot_password')}
-                className="text-sm text-primary hover:underline"
+                onClick={() => handleModeChange('forgot_password')}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Esqueceu sua senha?
               </button>
@@ -240,8 +435,8 @@ export const Auth = () => {
                 Não tem uma conta?{" "}
                 <button
                   type="button"
-                  onClick={() => setMode('sign_up')}
-                  className="text-primary hover:underline"
+                  onClick={() => handleModeChange('sign_up')}
+                  className="text-primary hover:underline font-medium"
                 >
                   Crie uma
                 </button>
@@ -254,8 +449,8 @@ export const Auth = () => {
               Já tem uma conta?{" "}
               <button
                 type="button"
-                onClick={() => setMode('sign_in')}
-                className="text-primary hover:underline"
+                onClick={() => handleModeChange('sign_in')}
+                className="text-primary hover:underline font-medium"
               >
                 Entre
               </button>
@@ -267,8 +462,8 @@ export const Auth = () => {
               Lembrou a senha?{" "}
               <button
                 type="button"
-                onClick={() => setMode('sign_in')}
-                className="text-primary hover:underline"
+                onClick={() => handleModeChange('sign_in')}
+                className="text-primary hover:underline font-medium"
               >
                 Voltar ao login
               </button>

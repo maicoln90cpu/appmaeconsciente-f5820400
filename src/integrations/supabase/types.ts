@@ -1935,6 +1935,7 @@ export type Database = {
           email: string
           estado: string | null
           foto_perfil_url: string | null
+          full_name: string | null
           id: string
           idade: number | null
           idades_filhos: number[] | null
@@ -1945,6 +1946,7 @@ export type Database = {
           postpartum_notes: string | null
           sexo: string | null
           updated_at: string
+          whatsapp: string | null
         }
         Insert: {
           altura_cm?: number | null
@@ -1957,6 +1959,7 @@ export type Database = {
           email: string
           estado?: string | null
           foto_perfil_url?: string | null
+          full_name?: string | null
           id: string
           idade?: number | null
           idades_filhos?: number[] | null
@@ -1967,6 +1970,7 @@ export type Database = {
           postpartum_notes?: string | null
           sexo?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Update: {
           altura_cm?: number | null
@@ -1979,6 +1983,7 @@ export type Database = {
           email?: string
           estado?: string | null
           foto_perfil_url?: string | null
+          full_name?: string | null
           id?: string
           idade?: number | null
           idades_filhos?: number[] | null
@@ -1989,6 +1994,7 @@ export type Database = {
           postpartum_notes?: string | null
           sexo?: string | null
           updated_at?: string
+          whatsapp?: string | null
         }
         Relationships: []
       }
