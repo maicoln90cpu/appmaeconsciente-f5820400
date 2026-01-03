@@ -1,32 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface PostpartumMedication {
-  id: string;
-  user_id: string;
-  medication_name: string;
-  dosage: string;
-  frequency: string;
-  times_per_day: number;
-  schedule_times: string[];
-  start_date: string;
-  end_date?: string;
-  is_active: boolean;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+type PostpartumMedicationRow = Database['public']['Tables']['postpartum_medications']['Row'];
+type PostpartumMedicationInsert = Database['public']['Tables']['postpartum_medications']['Insert'];
+type MedicationLogRow = Database['public']['Tables']['medication_logs']['Row'];
 
-export interface MedicationLog {
-  id: string;
-  medication_id: string;
-  user_id: string;
-  taken_at: string;
-  scheduled_time?: string;
-  notes?: string;
-  created_at: string;
-}
+export type PostpartumMedication = PostpartumMedicationRow;
+export type MedicationLog = MedicationLogRow;
 
 export const usePostpartumMedications = () => {
   const queryClient = useQueryClient();
@@ -37,9 +19,7 @@ export const usePostpartumMedications = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_medications')
         .select('*')
         .eq('user_id', user.id)
@@ -47,8 +27,7 @@ export const usePostpartumMedications = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      // @ts-ignore
-      return data as PostpartumMedication[];
+      return data;
     },
   });
 
@@ -59,9 +38,7 @@ export const usePostpartumMedications = () => {
       if (!user) throw new Error('Not authenticated');
 
       const today = new Date().toISOString().split('T')[0];
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('medication_logs')
         .select('*')
         .eq('user_id', user.id)
@@ -69,19 +46,16 @@ export const usePostpartumMedications = () => {
         .order('taken_at', { ascending: false });
 
       if (error) throw error;
-      // @ts-ignore
-      return data as MedicationLog[];
+      return data;
     },
   });
 
   const addMedication = useMutation({
-    mutationFn: async (medication: Omit<PostpartumMedication, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (medication: Omit<PostpartumMedicationInsert, 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_medications')
         .insert({ ...medication, user_id: user.id })
         .select()
@@ -101,9 +75,7 @@ export const usePostpartumMedications = () => {
 
   const updateMedication = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<PostpartumMedication> & { id: string }) => {
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_medications')
         .update(updates)
         .eq('id', id)
@@ -124,9 +96,7 @@ export const usePostpartumMedications = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('medication_logs')
         .insert({ ...log, user_id: user.id })
         .select()

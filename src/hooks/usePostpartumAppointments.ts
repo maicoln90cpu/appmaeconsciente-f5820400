@@ -1,22 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface PostpartumAppointment {
-  id: string;
-  user_id: string;
-  appointment_type: 'gynecologist' | 'pediatrician' | 'pelvic_physiotherapist' | 'nutritionist' | 'psychologist' | 'other';
-  title: string;
-  scheduled_date: string;
-  scheduled_time?: string;
-  location?: string;
-  doctor_name?: string;
-  reminder_sent: boolean;
-  completed: boolean;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+type PostpartumAppointmentRow = Database['public']['Tables']['postpartum_appointments']['Row'];
+type PostpartumAppointmentInsert = Database['public']['Tables']['postpartum_appointments']['Insert'];
+
+export type PostpartumAppointment = PostpartumAppointmentRow;
 
 export const usePostpartumAppointments = () => {
   const queryClient = useQueryClient();
@@ -27,28 +17,23 @@ export const usePostpartumAppointments = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_appointments')
         .select('*')
         .eq('user_id', user.id)
         .order('scheduled_date', { ascending: true });
 
       if (error) throw error;
-      // @ts-ignore
-      return data as PostpartumAppointment[];
+      return data;
     },
   });
 
   const addAppointment = useMutation({
-    mutationFn: async (appointment: Omit<PostpartumAppointment, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'reminder_sent' | 'completed'>) => {
+    mutationFn: async (appointment: Omit<PostpartumAppointmentInsert, 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_appointments')
         .insert({ ...appointment, user_id: user.id })
         .select()
@@ -68,9 +53,7 @@ export const usePostpartumAppointments = () => {
 
   const updateAppointment = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<PostpartumAppointment> & { id: string }) => {
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_appointments')
         .update(updates)
         .eq('id', id)
@@ -88,9 +71,7 @@ export const usePostpartumAppointments = () => {
 
   const deleteAppointment = useMutation({
     mutationFn: async (id: string) => {
-      // @ts-ignore - types will be updated after migration
       const { error } = await supabase
-        // @ts-ignore
         .from('postpartum_appointments')
         .delete()
         .eq('id', id);
