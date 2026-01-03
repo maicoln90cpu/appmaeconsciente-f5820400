@@ -108,21 +108,40 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
             return 'react-vendor';
           }
-          // Router
+          // React Router
           if (id.includes('node_modules/react-router')) {
             return 'router';
           }
-          // Radix UI components (large library)
-          if (id.includes('node_modules/@radix-ui')) {
-            return 'radix-ui';
+          // Radix UI - split into smaller chunks
+          if (id.includes('node_modules/@radix-ui/react-dialog') || 
+              id.includes('node_modules/@radix-ui/react-alert-dialog') ||
+              id.includes('node_modules/@radix-ui/react-sheet')) {
+            return 'radix-dialogs';
           }
-          // Charts library (loaded only when needed)
-          if (id.includes('node_modules/recharts')) {
+          if (id.includes('node_modules/@radix-ui/react-dropdown') ||
+              id.includes('node_modules/@radix-ui/react-menu') ||
+              id.includes('node_modules/@radix-ui/react-popover') ||
+              id.includes('node_modules/@radix-ui/react-tooltip')) {
+            return 'radix-popovers';
+          }
+          if (id.includes('node_modules/@radix-ui/react-tabs') ||
+              id.includes('node_modules/@radix-ui/react-accordion') ||
+              id.includes('node_modules/@radix-ui/react-collapsible')) {
+            return 'radix-navigation';
+          }
+          if (id.includes('node_modules/@radix-ui')) {
+            return 'radix-core';
+          }
+          // Charts library - lazy loaded
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
             return 'charts';
           }
-          // Export libraries (XLSX, jsPDF)
-          if (id.includes('node_modules/xlsx') || id.includes('node_modules/jspdf')) {
-            return 'export-libs';
+          // Export libraries - lazy loaded  
+          if (id.includes('node_modules/xlsx')) {
+            return 'xlsx';
+          }
+          if (id.includes('node_modules/jspdf')) {
+            return 'pdf';
           }
           // Supabase
           if (id.includes('node_modules/@supabase')) {
@@ -131,6 +150,18 @@ export default defineConfig(({ mode }) => ({
           // React Query
           if (id.includes('node_modules/@tanstack/react-query')) {
             return 'react-query';
+          }
+          // Date utilities
+          if (id.includes('node_modules/date-fns')) {
+            return 'date-utils';
+          }
+          // Form libraries
+          if (id.includes('node_modules/react-hook-form') || id.includes('node_modules/zod')) {
+            return 'forms';
+          }
+          // Icons - split from main bundle
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons';
           }
         },
       },

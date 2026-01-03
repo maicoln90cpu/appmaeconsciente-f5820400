@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,35 +17,30 @@ import {
   ArrowLeft
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HotmartMappings } from "@/components/admin/HotmartMappings";
-import { HotmartTransactions } from "@/components/admin/HotmartTransactions";
-import { ManualPurchaseResend } from "@/components/admin/ManualPurchaseResend";
-import { PostModeration } from "@/components/admin/PostModeration";
-import { TicketManagement } from "@/components/admin/TicketManagement";
-import { ProductManagement } from "@/components/admin/ProductManagement";
-import { UserManagement } from "@/components/admin/UserManagement";
-import { PromotionManagement } from "@/components/admin/PromotionManagement";
-import { CouponManagement } from "@/components/admin/CouponManagement";
-import { AnalyticsDashboard } from "@/components/admin/AnalyticsDashboard";
-import { BundleManagement } from "@/components/admin/BundleManagement";
-import { ToolSuggestionManagement } from "@/components/admin/ToolSuggestionManagement";
-import { SiteSettings } from "@/components/admin/SiteSettings";
-import { SecurityAuditPanel } from "@/components/admin/SecurityAuditPanel";
-import {
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+
+// Lazy load all admin components
+const HotmartMappings = lazy(() => import("@/components/admin/HotmartMappings").then(m => ({ default: m.HotmartMappings })));
+const HotmartTransactions = lazy(() => import("@/components/admin/HotmartTransactions").then(m => ({ default: m.HotmartTransactions })));
+const ManualPurchaseResend = lazy(() => import("@/components/admin/ManualPurchaseResend").then(m => ({ default: m.ManualPurchaseResend })));
+const PostModeration = lazy(() => import("@/components/admin/PostModeration").then(m => ({ default: m.PostModeration })));
+const TicketManagement = lazy(() => import("@/components/admin/TicketManagement").then(m => ({ default: m.TicketManagement })));
+const ProductManagement = lazy(() => import("@/components/admin/ProductManagement").then(m => ({ default: m.ProductManagement })));
+const UserManagement = lazy(() => import("@/components/admin/UserManagement").then(m => ({ default: m.UserManagement })));
+const PromotionManagement = lazy(() => import("@/components/admin/PromotionManagement").then(m => ({ default: m.PromotionManagement })));
+const CouponManagement = lazy(() => import("@/components/admin/CouponManagement").then(m => ({ default: m.CouponManagement })));
+const AnalyticsDashboard = lazy(() => import("@/components/admin/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
+const BundleManagement = lazy(() => import("@/components/admin/BundleManagement").then(m => ({ default: m.BundleManagement })));
+const ToolSuggestionManagement = lazy(() => import("@/components/admin/ToolSuggestionManagement").then(m => ({ default: m.ToolSuggestionManagement })));
+const SiteSettings = lazy(() => import("@/components/admin/SiteSettings").then(m => ({ default: m.SiteSettings })));
+const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPanel").then(m => ({ default: m.SecurityAuditPanel })));
+const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then(m => ({ default: m.AdminCharts })));
+
+// Loading fallback component
+const TabLoading = () => (
+  <div className="flex items-center justify-center py-12">
+    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+  </div>
+);
 
 interface Stats {
   totalUsers: number;
@@ -55,8 +50,6 @@ interface Stats {
   categoryData: Array<{ name: string; value: number }>;
   weeklyGrowth: Array<{ week: string; items: number; users: number }>;
 }
-
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))', 'hsl(var(--destructive))'];
 
 export default function AdminDashboard() {
   const { isAdmin, loading: roleLoading } = useUserRole();
@@ -324,120 +317,80 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="analytics">
-            <AnalyticsDashboard />
+            <Suspense fallback={<TabLoading />}>
+              <AnalyticsDashboard />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="security">
-            <SecurityAuditPanel />
+            <Suspense fallback={<TabLoading />}>
+              <SecurityAuditPanel />
+            </Suspense>
           </TabsContent>
 
-          <TabsContent value="charts" className="space-y-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Top 5 Categorias</CardTitle>
-                  <CardDescription>Categorias mais utilizadas</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie
-                        data={stats?.categoryData || []}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={(entry) => entry.name}
-                        outerRadius={80}
-                        fill="hsl(var(--primary))"
-                        dataKey="value"
-                      >
-                        {stats?.categoryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Crescimento Semanal</CardTitle>
-                  <CardDescription>Itens e usuários por semana</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={stats?.weeklyGrowth || []}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="week" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="items" stroke="hsl(var(--primary))" name="Itens" />
-                      <Line type="monotone" dataKey="users" stroke="hsl(var(--secondary))" name="Usuários" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribuição de Categorias</CardTitle>
-                <CardDescription>Comparação entre categorias</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={stats?.categoryData || []}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="value" fill="hsl(var(--primary))" name="Quantidade" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+          <TabsContent value="charts">
+            <Suspense fallback={<TabLoading />}>
+              <AdminCharts 
+                categoryData={stats?.categoryData || []}
+                weeklyGrowth={stats?.weeklyGrowth || []}
+              />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="users">
-            <UserManagement />
+            <Suspense fallback={<TabLoading />}>
+              <UserManagement />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="products">
-            <ProductManagement />
+            <Suspense fallback={<TabLoading />}>
+              <ProductManagement />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="bundles">
-            <BundleManagement />
+            <Suspense fallback={<TabLoading />}>
+              <BundleManagement />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="promotions">
-            <PromotionManagement />
+            <Suspense fallback={<TabLoading />}>
+              <PromotionManagement />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="coupons">
-            <CouponManagement />
+            <Suspense fallback={<TabLoading />}>
+              <CouponManagement />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="tickets">
-            <TicketManagement />
+            <Suspense fallback={<TabLoading />}>
+              <TicketManagement />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="suggestions">
-            <ToolSuggestionManagement />
+            <Suspense fallback={<TabLoading />}>
+              <ToolSuggestionManagement />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="posts">
-            <PostModeration />
+            <Suspense fallback={<TabLoading />}>
+              <PostModeration />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="hotmart" className="space-y-4">
-            <ManualPurchaseResend />
-            <HotmartMappings />
-            <HotmartTransactions />
+            <Suspense fallback={<TabLoading />}>
+              <ManualPurchaseResend />
+              <HotmartMappings />
+              <HotmartTransactions />
+            </Suspense>
           </TabsContent>
 
           <TabsContent value="notifications">
@@ -477,7 +430,9 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="settings">
-            <SiteSettings />
+            <Suspense fallback={<TabLoading />}>
+              <SiteSettings />
+            </Suspense>
           </TabsContent>
         </Tabs>
       </div>
