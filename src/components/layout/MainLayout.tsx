@@ -1,6 +1,24 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+import { 
+  Bell,
+  BookOpen, 
+  FileText,
+  HeadphonesIcon, 
+  Heart,
+  LayoutDashboard,
+  Lock,
+  LogOut, 
+  MessageSquare,
+  Package,
+  Settings, 
+  Shield, 
+  Ticket,
+  UserCog,
+  Users, 
+} from "lucide-react";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,29 +27,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { supabase } from "@/integrations/supabase/client";
+
 import { useProfile } from "@/hooks/useProfile";
-import { useUserRole } from "@/hooks/useUserRole";
-import { 
-  Users, 
-  BookOpen, 
-  HeadphonesIcon, 
-  Settings, 
-  LogOut, 
-  Shield, 
-  LayoutDashboard,
-  UserCog,
-  Package,
-  MessageSquare,
-  Ticket,
-  Bell,
-  Heart,
-  FileText,
-  Lock
-} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useUserRole } from "@/hooks/useUserRole";
+
+import { supabase } from "@/integrations/supabase/client";
 
 interface MainLayoutProps {
   children: React.ReactNode;
