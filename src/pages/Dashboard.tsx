@@ -1,20 +1,22 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useProfile } from "@/hooks/useProfile";
 import { 
+  ArrowRight,
+  Award,
   Baby, 
+  BookOpen,
+  Calendar, 
   Heart, 
-  Utensils, 
   Moon, 
   ShoppingBag, 
-  Calendar, 
   TrendingUp,
-  BookOpen,
   Users,
-  Award,
-  ArrowRight
+  Utensils, 
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { useProfile } from "@/hooks/useProfile";
 
 const Dashboard = () => {
   const { profile } = useProfile();

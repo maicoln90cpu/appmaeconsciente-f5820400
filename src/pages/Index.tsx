@@ -1,33 +1,39 @@
 import { useState, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Baby, Info, LogOut, Save, Shield, Star, Trophy, User } from "lucide-react";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ItemDialog } from "@/components/ItemDialog";
-import { EnxovalTable } from "@/components/EnxovalTable";
-import { DashboardTab } from "@/components/DashboardTab";
-import { RNGuideTable } from "@/components/RNGuideTable";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Auth } from "@/components/Auth";
-import { NotificationBell } from "@/components/NotificationBell";
+import { DashboardTab } from "@/components/DashboardTab";
+import { EnxovalTable } from "@/components/EnxovalTable";
 import { ExportEnxoval } from "@/components/ExportEnxoval";
+import { ItemDialog } from "@/components/ItemDialog";
+import { NotificationBell } from "@/components/NotificationBell";
+import { RNGuideTable } from "@/components/RNGuideTable";
 import { ShareEnxoval } from "@/components/ShareEnxoval";
 import { SizeCalculator } from "@/components/SizeCalculator";
-import { EnxovalItem } from "@/types/enxoval";
-import { Baby, LogOut, Save, Shield, User, Star, Info, Trophy } from "lucide-react";
+
 import { useConfig } from "@/hooks/useConfig";
 import { useEnxovalItems } from "@/hooks/useEnxovalItems";
-import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
+import { useToast } from "@/hooks/use-toast";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+
+import { supabase } from "@/integrations/supabase/client";
+
+import type { EnxovalItem } from "@/types/enxoval";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [session, setSession] = useState<any>(null);
+  const [session, setSession] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [editingItem, setEditingItem] = useState<EnxovalItem | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);

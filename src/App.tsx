@@ -1,16 +1,21 @@
-import { Suspense, lazy, useState, useEffect } from "react";
+import React, { Suspense, lazy, useState, useEffect } from "react";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { ProductRoute } from "@/components/ProductRoute";
-import { MainLayout } from "@/components/layout/MainLayout";
-import { useAnalytics } from "@/hooks/useAnalytics";
+
 import { GTMScript } from "@/components/GTMScript";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { MainLayout } from "@/components/layout/MainLayout";
+import { ProductRoute } from "@/components/ProductRoute";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SkipLink } from "@/components/SkipLink";
+
+import { AuthProvider } from "@/contexts/AuthContext";
+
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Landing = lazy(() => import("./pages/Landing"));
 const Index = lazy(() => import("./pages/Index"));
@@ -41,7 +46,6 @@ const Offline = lazy(() => import("./pages/Offline"));
 const prefetchRoutes = () => {
   if ('requestIdleCallback' in window) {
     requestIdleCallback(() => {
-      // Prefetch common routes
       import("./pages/Dashboard");
       import("./pages/Materiais");
       import("./pages/Comunidade");
