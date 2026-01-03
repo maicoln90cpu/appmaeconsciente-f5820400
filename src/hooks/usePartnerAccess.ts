@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
+// Interface local - tabela 'partner_access' não está nos types gerados do Supabase
+// TODO: Verificar se a tabela partner_access existe no banco ou criar migration
 export interface PartnerAccess {
   id: string;
   user_id: string;
@@ -24,16 +26,15 @@ export const usePartnerAccess = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
-      const { data, error } = await supabase
-        // @ts-ignore
+      // Tabela 'partner_access' não está tipada no schema gerado
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('partner_access')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      // @ts-ignore
       return data as PartnerAccess[];
     },
   });
@@ -53,9 +54,8 @@ export const usePartnerAccess = () => {
         ? new Date(Date.now() + expires_in_days * 24 * 60 * 60 * 1000).toISOString()
         : null;
 
-      // @ts-ignore
-      const { data, error } = await supabase
-        // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('partner_access')
         .insert({ 
           user_id: user.id,
@@ -66,23 +66,21 @@ export const usePartnerAccess = () => {
         .single();
 
       if (error) throw error;
-      // @ts-ignore
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['partner-access'] });
       toast.success('Acesso concedido ao parceiro/cuidador 💕');
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error('Erro ao conceder acesso: ' + error.message);
     },
   });
 
   const revokeAccess = useMutation({
     mutationFn: async (accessId: string) => {
-      // @ts-ignore
-      const { error } = await supabase
-        // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
         .from('partner_access')
         .update({ is_active: false })
         .eq('id', accessId);

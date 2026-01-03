@@ -1,28 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface PostpartumSymptom {
-  id: string;
-  user_id: string;
-  date: string;
-  pain_level?: number;
-  bleeding_intensity?: 'light' | 'moderate' | 'heavy' | 'very_heavy';
-  cramps_level?: number;
-  swelling?: string[];
-  healing_status?: 'normal' | 'slow' | 'infected' | 'concerning';
-  energy_level?: number;
-  sleep_quality?: number;
-  appetite?: 'normal' | 'low' | 'high' | 'none';
-  bowel_movement?: 'normal' | 'constipated' | 'diarrhea' | 'painful';
-  urination?: 'normal' | 'painful' | 'frequent' | 'difficult';
-  fever?: boolean;
-  temperature?: number;
-  breast_pain?: boolean;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+type PostpartumSymptomRow = Database['public']['Tables']['postpartum_symptoms']['Row'];
+type PostpartumSymptomInsert = Database['public']['Tables']['postpartum_symptoms']['Insert'];
+
+export type PostpartumSymptom = PostpartumSymptomRow;
 
 export const usePostpartumSymptoms = () => {
   const queryClient = useQueryClient();
@@ -33,40 +17,33 @@ export const usePostpartumSymptoms = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_symptoms')
         .select('*')
         .eq('user_id', user.id)
         .order('date', { ascending: false });
 
       if (error) throw error;
-      // @ts-ignore
-      return data as PostpartumSymptom[];
+      return data;
     },
   });
 
   const addSymptom = useMutation({
-    mutationFn: async (symptom: Omit<PostpartumSymptom, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (symptom: Omit<PostpartumSymptomInsert, 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_symptoms')
         .insert({ ...symptom, user_id: user.id })
         .select()
         .single();
 
       if (error) throw error;
-      // @ts-ignore
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
-      // @ts-ignore
       checkAlerts(data);
       toast.success('Sintomas registrados com sucesso');
     },
@@ -78,9 +55,7 @@ export const usePostpartumSymptoms = () => {
 
   const updateSymptom = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<PostpartumSymptom> & { id: string }) => {
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('postpartum_symptoms')
         .update(updates)
         .eq('id', id)
@@ -88,12 +63,10 @@ export const usePostpartumSymptoms = () => {
         .single();
 
       if (error) throw error;
-      // @ts-ignore
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
-      // @ts-ignore
       checkAlerts(data);
       toast.success('Sintomas atualizados');
     },
@@ -152,7 +125,8 @@ function checkAlerts(symptom: PostpartumSymptom) {
   }
 
   // Energia muito baixa
-  if (symptom.energy_level !== undefined && symptom.energy_level <= 1 && symptom.sleep_quality && symptom.sleep_quality < 4) {
+  if (symptom.energy_level !== undefined && symptom.energy_level !== null && 
+      symptom.energy_level <= 1 && symptom.sleep_quality && symptom.sleep_quality < 4) {
     toast.info('💙 Você está com energia muito baixa. Tente descansar quando o bebê dormir.', {
       duration: 6000,
     });

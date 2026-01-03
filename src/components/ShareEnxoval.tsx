@@ -34,7 +34,6 @@ export const ShareEnxoval = () => {
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
 
-      // @ts-ignore
       const { error } = await supabase
         .from("shared_enxoval_links")
         .insert({
@@ -52,7 +51,7 @@ export const ShareEnxoval = () => {
         title: "Link criado!",
         description: "O link expira em 7 dias.",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Erro ao criar link:", error);
       toast({
         title: "Erro",
@@ -79,7 +78,6 @@ export const ShareEnxoval = () => {
     try {
       const token = shareUrl.split("/").pop();
       
-      // @ts-ignore
       const { error } = await supabase
         .from("shared_enxoval_links")
         .update({ is_active: false })
@@ -92,7 +90,7 @@ export const ShareEnxoval = () => {
         title: "Link revogado",
         description: "O link de compartilhamento foi desativado.",
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: "Erro",
         description: "Não foi possível revogar o link.",

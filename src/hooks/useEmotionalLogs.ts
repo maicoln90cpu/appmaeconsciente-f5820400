@@ -1,17 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface EmotionalLog {
-  id: string;
-  user_id: string;
-  date: string;
-  mood: 'very_happy' | 'happy' | 'neutral' | 'sad' | 'very_sad' | 'angry' | 'anxious' | 'tired';
-  notes?: string;
-  edinburgh_score?: number;
-  created_at: string;
-  updated_at: string;
-}
+type EmotionalLogRow = Database['public']['Tables']['emotional_logs']['Row'];
+type EmotionalLogInsert = Database['public']['Tables']['emotional_logs']['Insert'];
+
+export type EmotionalLog = EmotionalLogRow;
 
 export const useEmotionalLogs = () => {
   const queryClient = useQueryClient();
@@ -22,40 +17,33 @@ export const useEmotionalLogs = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('emotional_logs')
         .select('*')
         .eq('user_id', user.id)
         .order('date', { ascending: false });
 
       if (error) throw error;
-      // @ts-ignore
-      return data as EmotionalLog[];
+      return data;
     },
   });
 
   const addLog = useMutation({
-    mutationFn: async (log: Omit<EmotionalLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (log: Omit<EmotionalLogInsert, 'user_id'>) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('emotional_logs')
         .insert({ ...log, user_id: user.id })
         .select()
         .single();
 
       if (error) throw error;
-      // @ts-ignore
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      // @ts-ignore
       checkEdinburghScore(data);
       toast.success('Registro emocional salvo');
     },
@@ -66,9 +54,7 @@ export const useEmotionalLogs = () => {
 
   const updateLog = useMutation({
     mutationFn: async ({ id, ...updates }: Partial<EmotionalLog> & { id: string }) => {
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('emotional_logs')
         .update(updates)
         .eq('id', id)
@@ -76,12 +62,10 @@ export const useEmotionalLogs = () => {
         .single();
 
       if (error) throw error;
-      // @ts-ignore
       return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      // @ts-ignore
       checkEdinburghScore(data);
       toast.success('Registro atualizado');
     },

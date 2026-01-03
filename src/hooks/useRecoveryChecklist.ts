@@ -1,18 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface RecoveryChecklistItem {
-  id: string;
-  user_id: string;
-  week_number: number;
-  item: string;
-  completed: boolean;
-  completed_at?: string;
-  notes?: string;
-  created_at: string;
-  updated_at: string;
-}
+type RecoveryChecklistRow = Database['public']['Tables']['recovery_checklist']['Row'];
+
+export interface RecoveryChecklistItem extends RecoveryChecklistRow {}
 
 // Template de checklist por semana
 export const RECOVERY_TIMELINE = [
@@ -99,23 +92,18 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // @ts-ignore - types will be updated after migration
       let query = supabase
-        // @ts-ignore
         .from('recovery_checklist')
         .select('*')
         .eq('user_id', user.id);
 
       if (weekNumber) {
-        // @ts-ignore
         query = query.eq('week_number', weekNumber);
       }
 
-      // @ts-ignore
       const { data, error } = await query.order('week_number', { ascending: true });
 
       if (error) throw error;
-      // @ts-ignore
       return data as RecoveryChecklistItem[];
     },
   });
@@ -135,9 +123,7 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
         completed: false,
       }));
 
-      // @ts-ignore - types will be updated after migration
       const { error } = await supabase
-        // @ts-ignore
         .from('recovery_checklist')
         .insert(items);
 
@@ -150,14 +136,10 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
 
   const toggleItem = useMutation({
     mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
-      // @ts-ignore - types will be updated after migration
       const { data, error } = await supabase
-        // @ts-ignore
         .from('recovery_checklist')
         .update({ 
-          // @ts-ignore
           completed,
-          // @ts-ignore
           completed_at: completed ? new Date().toISOString() : null,
         })
         .eq('id', id)
