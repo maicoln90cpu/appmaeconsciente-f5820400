@@ -1488,6 +1488,30 @@ export type Database = {
           },
         ]
       }
+      onboarding_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          step_key: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          step_key: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          step_key?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       post_comments: {
         Row: {
           comment: string
@@ -1940,6 +1964,8 @@ export type Database = {
           idade: number | null
           idades_filhos: number[] | null
           meses_gestacao: number | null
+          onboarding_completed: boolean | null
+          onboarding_completed_at: string | null
           perfil_completo: boolean | null
           peso_atual: number | null
           possui_filhos: boolean | null
@@ -1964,6 +1990,8 @@ export type Database = {
           idade?: number | null
           idades_filhos?: number[] | null
           meses_gestacao?: number | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
           perfil_completo?: boolean | null
           peso_atual?: number | null
           possui_filhos?: boolean | null
@@ -1988,6 +2016,8 @@ export type Database = {
           idade?: number | null
           idades_filhos?: number[] | null
           meses_gestacao?: number | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
           perfil_completo?: boolean | null
           peso_atual?: number | null
           possui_filhos?: boolean | null

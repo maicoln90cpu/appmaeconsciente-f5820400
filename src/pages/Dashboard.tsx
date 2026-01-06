@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { 
   ArrowRight,
@@ -17,8 +18,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 import { useProfile } from "@/hooks/useProfile";
+import { OnboardingWizard, OnboardingChecklist } from "@/components/onboarding";
 
 const Dashboard = () => {
+  const [showWizard, setShowWizard] = useState(false);
   const { profile } = useProfile();
 
   const modules = [
@@ -120,8 +123,27 @@ const Dashboard = () => {
     }
   ];
 
+  // Show onboarding wizard for new users
+  useEffect(() => {
+    if (profile && !profile.onboarding_completed) {
+      // Check if this is the first visit (no onboarding dismissed in localStorage)
+      const dismissed = localStorage.getItem("onboarding_wizard_dismissed");
+      if (!dismissed) {
+        setShowWizard(true);
+      }
+    }
+  }, [profile]);
+
+  const handleCloseWizard = () => {
+    setShowWizard(false);
+    localStorage.setItem("onboarding_wizard_dismissed", "true");
+  };
+
   return (
     <div className="container py-8">
+      {/* Onboarding Wizard Modal */}
+      <OnboardingWizard open={showWizard} onClose={handleCloseWizard} />
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">
           Olá, {profile?.email?.split('@')[0] || 'Mamãe'}! 👋
@@ -130,6 +152,13 @@ const Dashboard = () => {
           Bem-vinda ao seu painel de maternidade consciente
         </p>
       </div>
+
+      {/* Onboarding Checklist */}
+      {profile && !profile.onboarding_completed && (
+        <div className="mb-8">
+          <OnboardingChecklist />
+        </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
         {modules.map((module) => {
