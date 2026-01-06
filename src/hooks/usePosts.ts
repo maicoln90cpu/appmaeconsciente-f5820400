@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/lib/analytics";
 import logger from "@/lib/logger";

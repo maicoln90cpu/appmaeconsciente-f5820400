@@ -24,7 +24,7 @@ import { SizeCalculator } from "@/components/SizeCalculator";
 import { useConfig } from "@/hooks/useConfig";
 import { useEnxovalItems } from "@/hooks/useEnxovalItems";
 import { useProfile } from "@/hooks/useProfile";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 
 import { supabase } from "@/integrations/supabase/client";

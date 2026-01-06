@@ -32,7 +32,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 import { useProfile } from "@/hooks/useProfile";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 
 import { supabase } from "@/integrations/supabase/client";

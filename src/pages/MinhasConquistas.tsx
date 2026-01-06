@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Loader2 } from "lucide-react";
 import { AchievementBadge, Achievement } from "@/components/AchievementBadge";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 
 interface AchievementProgress {
   user_id: string;

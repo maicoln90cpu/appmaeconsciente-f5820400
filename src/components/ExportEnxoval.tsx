@@ -5,7 +5,7 @@ import { formatCurrency } from "@/lib/calculations";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import * as XLSX from "xlsx";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import {
   DropdownMenu,
   DropdownMenuContent,
