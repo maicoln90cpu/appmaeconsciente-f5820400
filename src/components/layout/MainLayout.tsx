@@ -36,6 +36,7 @@ import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 
 import { supabase } from "@/integrations/supabase/client";
+import { preloadComponent, routeImports } from "@/lib/lazy-utils";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -57,10 +58,10 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   };
 
   const navItems = [
-    { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/comunidade", label: "Comunidade", icon: Users },
-    { path: "/materiais", label: "Materiais", icon: BookOpen },
-    { path: "/suporte", label: "Suporte", icon: HeadphonesIcon },
+    { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, preload: routeImports.dashboard },
+    { path: "/comunidade", label: "Comunidade", icon: Users, preload: routeImports.comunidade },
+    { path: "/materiais", label: "Materiais", icon: BookOpen, preload: routeImports.materiais },
+    { path: "/suporte", label: "Suporte", icon: HeadphonesIcon, preload: routeImports.suporte },
   ];
 
   const footerLinks = {
@@ -103,6 +104,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                   <Link
                     key={item.path}
                     to={item.path}
+                    onMouseEnter={() => preloadComponent(item.preload)}
+                    onFocus={() => preloadComponent(item.preload)}
                     className={`relative flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 hover:bg-accent/50 active:scale-[0.98] ${
                       active 
                         ? "text-primary" 
@@ -221,6 +224,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
               <Link
                 key={item.path}
                 to={item.path}
+                onTouchStart={() => preloadComponent(item.preload)}
                 className={`relative flex flex-col items-center gap-1 px-4 py-2 min-h-[56px] text-xs font-medium transition-all duration-200 active:scale-95 ${
                   active ? "text-primary" : "text-muted-foreground"
                 }`}
