@@ -311,4 +311,32 @@ A aplicação é deployada automaticamente via Lovable:
 
 ---
 
+## Otimizações de Bundle
+
+### Code Splitting
+
+- Páginas carregadas sob demanda via `lazyWithRetry`
+- Componentes admin carregados via `lazy()` no AdminDashboard
+- Seções da Landing page separadas em componentes (`src/components/landing/`)
+
+### Tree-Shaking
+
+- Imports de ícones Lucide específicos (não usar `import * from`)
+- Exports nomeados em barrel files para melhor tree-shaking
+
+### Estrutura de Componentes Modulares
+
+```
+src/components/
+├── landing/              # Seções da landing page
+│   ├── index.ts
+│   ├── TestimonialsSection.tsx
+│   └── FeaturesSection.tsx
+├── admin/
+│   └── user-management/  # Sub-componentes
+└── ...
+```
+
+---
+
 *Diagrama de arquitetura atualizado em Janeiro 2026*
