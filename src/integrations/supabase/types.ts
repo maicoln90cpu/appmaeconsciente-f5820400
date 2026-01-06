@@ -368,6 +368,51 @@ export type Database = {
           },
         ]
       }
+      badges: {
+        Row: {
+          category: string
+          code: string
+          created_at: string
+          description: string
+          display_order: number
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          requirement_type: string
+          requirement_value: number
+          xp_reward: number
+        }
+        Insert: {
+          category: string
+          code: string
+          created_at?: string
+          description: string
+          display_order?: number
+          icon: string
+          id?: string
+          is_active?: boolean
+          name: string
+          requirement_type: string
+          requirement_value?: number
+          xp_reward?: number
+        }
+        Update: {
+          category?: string
+          code?: string
+          created_at?: string
+          description?: string
+          display_order?: number
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          requirement_type?: string
+          requirement_value?: number
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       blocked_users: {
         Row: {
           blocked_id: string
@@ -636,6 +681,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_activity: {
+        Row: {
+          activity_date: string
+          comments_count: number
+          created_at: string
+          feeding_logs_count: number
+          id: string
+          likes_count: number
+          posts_count: number
+          sleep_logs_count: number
+          total_xp_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activity_date?: string
+          comments_count?: number
+          created_at?: string
+          feeding_logs_count?: number
+          id?: string
+          likes_count?: number
+          posts_count?: number
+          sleep_logs_count?: number
+          total_xp_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activity_date?: string
+          comments_count?: number
+          created_at?: string
+          feeding_logs_count?: number
+          id?: string
+          likes_count?: number
+          posts_count?: number
+          sleep_logs_count?: number
+          total_xp_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       daily_wellness_score: {
         Row: {
@@ -1135,6 +1222,45 @@ export type Database = {
           tamanho?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      leaderboard_cache: {
+        Row: {
+          badges_count: number | null
+          display_name: string
+          id: string
+          level: number
+          max_streak: number | null
+          rank_position: number | null
+          updated_at: string
+          user_id: string
+          weekly_xp: number | null
+          xp_total: number
+        }
+        Insert: {
+          badges_count?: number | null
+          display_name?: string
+          id?: string
+          level?: number
+          max_streak?: number | null
+          rank_position?: number | null
+          updated_at?: string
+          user_id: string
+          weekly_xp?: number | null
+          xp_total?: number
+        }
+        Update: {
+          badges_count?: number | null
+          display_name?: string
+          id?: string
+          level?: number
+          max_streak?: number | null
+          rank_position?: number | null
+          updated_at?: string
+          user_id?: string
+          weekly_xp?: number | null
+          xp_total?: number
         }
         Relationships: []
       }
@@ -1963,6 +2089,8 @@ export type Database = {
           id: string
           idade: number | null
           idades_filhos: number[] | null
+          leaderboard_opt_in: boolean
+          level: number
           meses_gestacao: number | null
           onboarding_completed: boolean | null
           onboarding_completed_at: string | null
@@ -1973,6 +2101,7 @@ export type Database = {
           sexo: string | null
           updated_at: string
           whatsapp: string | null
+          xp_total: number
         }
         Insert: {
           altura_cm?: number | null
@@ -1989,6 +2118,8 @@ export type Database = {
           id: string
           idade?: number | null
           idades_filhos?: number[] | null
+          leaderboard_opt_in?: boolean
+          level?: number
           meses_gestacao?: number | null
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
@@ -1999,6 +2130,7 @@ export type Database = {
           sexo?: string | null
           updated_at?: string
           whatsapp?: string | null
+          xp_total?: number
         }
         Update: {
           altura_cm?: number | null
@@ -2015,6 +2147,8 @@ export type Database = {
           id?: string
           idade?: number | null
           idades_filhos?: number[] | null
+          leaderboard_opt_in?: boolean
+          level?: number
           meses_gestacao?: number | null
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
@@ -2025,6 +2159,7 @@ export type Database = {
           sexo?: string | null
           updated_at?: string
           whatsapp?: string | null
+          xp_total?: number
         }
         Relationships: []
       }
@@ -2529,6 +2664,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          id: string
+          notified: boolean
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          id?: string
+          notified?: boolean
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          id?: string
+          notified?: boolean
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_challenges: {
         Row: {
@@ -3092,6 +3259,30 @@ export type Database = {
         }
         Relationships: []
       }
+      xp_logs: {
+        Row: {
+          action_type: string | null
+          created_at: string
+          id: string
+          user_id: string
+          xp_amount: number
+        }
+        Insert: {
+          action_type?: string | null
+          created_at?: string
+          id?: string
+          user_id: string
+          xp_amount: number
+        }
+        Update: {
+          action_type?: string | null
+          created_at?: string
+          id?: string
+          user_id?: string
+          xp_amount?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       user_achievement_progress: {
@@ -3158,6 +3349,15 @@ export type Database = {
       }
     }
     Functions: {
+      add_user_xp: {
+        Args: { p_action_type?: string; p_user_id: string; p_xp_amount: number }
+        Returns: {
+          leveled_up: boolean
+          new_level: number
+          new_xp: number
+        }[]
+      }
+      calculate_level: { Args: { xp: number }; Returns: number }
       cleanup_old_logs: { Args: { days_to_keep?: number }; Returns: number }
       get_user_last_activities: {
         Args: { user_ids: string[] }
@@ -3174,6 +3374,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      refresh_leaderboard: { Args: never; Returns: undefined }
+      xp_for_next_level: { Args: { current_level: number }; Returns: number }
     }
     Enums: {
       app_role: "admin" | "user"
