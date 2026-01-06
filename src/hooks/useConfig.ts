@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Config } from "@/types/enxoval";
 import { useToast } from "@/hooks/useToast";
@@ -8,7 +8,7 @@ export const useConfig = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadConfig = async () => {
+  const loadConfig = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -101,7 +101,7 @@ export const useConfig = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   const updateConfig = async (updates: Partial<Config>) => {
     try {
@@ -151,7 +151,7 @@ export const useConfig = () => {
 
   useEffect(() => {
     loadConfig();
-  }, []);
+  }, [loadConfig]);
 
   return { config, loading, updateConfig, reloadConfig: loadConfig };
 };

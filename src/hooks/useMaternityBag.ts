@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 
@@ -33,133 +33,8 @@ export const useMaternityBag = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Load categories and items from database
-  const loadMaternityBag = async () => {
-    try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("Usuário não autenticado");
-      }
-
-      // Load categories
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from("maternity_bag_categories")
-        .select("*")
-        .order("display_order");
-
-      if (categoriesError) throw categoriesError;
-
-      // Load items
-      const { data: itemsData, error: itemsError } = await supabase
-        .from("maternity_bag_items")
-        .select("*");
-
-      if (itemsError) throw itemsError;
-
-      setCategories((categoriesData || []) as MaternityBagCategory[]);
-      setItems((itemsData || []) as MaternityBagItem[]);
-
-      // If no categories exist, migrate from localStorage
-      if (!categoriesData || categoriesData.length === 0) {
-        await migrateFromLocalStorage(user.id);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar mala da maternidade:", error);
-      toast({
-        title: "Erro ao carregar dados",
-        description: "Não foi possível carregar sua mala da maternidade.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Migrate data from localStorage to database
-  const migrateFromLocalStorage = async (userId: string) => {
-    try {
-      const savedMother = localStorage.getItem("motherItems");
-      const savedBaby = localStorage.getItem("babyItems");
-      const savedCompanion = localStorage.getItem("companionItems");
-
-      if (!savedMother && !savedBaby && !savedCompanion) {
-        // Initialize with default categories and items
-        await initializeDefaultMaternityBag(userId);
-        return;
-      }
-
-      const motherItems = savedMother ? JSON.parse(savedMother) : [];
-      const babyItems = savedBaby ? JSON.parse(savedBaby) : [];
-      const companionItems = savedCompanion ? JSON.parse(savedCompanion) : [];
-
-      // Create categories
-      const categoryMap: Record<string, string> = {};
-      const categoriesToCreate = [
-        { name: "Mãe", icon: "👩", display_order: 0 },
-        { name: "Bebê", icon: "👶", display_order: 1 },
-        { name: "Acompanhante", icon: "👨", display_order: 2 },
-      ];
-
-      for (const cat of categoriesToCreate) {
-        const { data, error } = await supabase
-          .from("maternity_bag_categories")
-          .insert({
-            user_id: userId,
-            name: cat.name,
-            icon: cat.icon,
-            display_order: cat.display_order,
-          })
-          .select()
-          .single();
-
-        if (error) throw error;
-        if (data) categoryMap[cat.name] = data.id;
-      }
-
-      // Migrate items
-      const allItems = [
-        ...motherItems.map((item: any) => ({ ...item, category: "Mãe" })),
-        ...babyItems.map((item: any) => ({ ...item, category: "Bebê" })),
-        ...companionItems.map((item: any) => ({ ...item, category: "Acompanhante" })),
-      ];
-
-      for (const item of allItems) {
-        const categoryId = categoryMap[item.category];
-        if (!categoryId) continue;
-
-        await supabase.from("maternity_bag_items").insert({
-          user_id: userId,
-          category_id: categoryId,
-          name: item.name || item.item,
-          quantity: item.quantity || 1,
-          checked: item.checked || false,
-          notes: item.note || item.notes,
-          cesarean_only: item.cesareanOnly || false,
-          normal_only: item.normalOnly || false,
-        });
-      }
-
-      // Clear localStorage after successful migration
-      localStorage.removeItem("motherItems");
-      localStorage.removeItem("babyItems");
-      localStorage.removeItem("companionItems");
-
-      toast({
-        title: "Dados migrados com sucesso!",
-        description: "Sua mala da maternidade agora está salva em nuvem.",
-      });
-
-      // Reload data
-      await loadMaternityBag();
-    } catch (error) {
-      console.error("Erro ao migrar dados:", error);
-    }
-  };
-
   // Initialize default maternity bag
-  const initializeDefaultMaternityBag = async (userId: string) => {
+  const initializeDefaultMaternityBag = useCallback(async (userId: string) => {
     try {
       const defaultCategories = [
         { name: "Mãe", icon: "👩", display_order: 0 },
@@ -240,12 +115,65 @@ export const useMaternityBag = () => {
           checked: false,
         });
       }
-
-      await loadMaternityBag();
     } catch (error) {
       console.error("Erro ao inicializar mala:", error);
     }
-  };
+  }, []);
+
+  // Load categories and items from database
+  const loadMaternityBag = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      // Load categories
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from("maternity_bag_categories")
+        .select("*")
+        .order("display_order");
+
+      if (categoriesError) throw categoriesError;
+
+      // Load items
+      const { data: itemsData, error: itemsError } = await supabase
+        .from("maternity_bag_items")
+        .select("*");
+
+      if (itemsError) throw itemsError;
+
+      setCategories((categoriesData || []) as MaternityBagCategory[]);
+      setItems((itemsData || []) as MaternityBagItem[]);
+
+      // If no categories exist, initialize defaults
+      if (!categoriesData || categoriesData.length === 0) {
+        await initializeDefaultMaternityBag(user.id);
+        // Reload after initialization
+        const { data: newCategoriesData } = await supabase
+          .from("maternity_bag_categories")
+          .select("*")
+          .order("display_order");
+        const { data: newItemsData } = await supabase
+          .from("maternity_bag_items")
+          .select("*");
+        
+        setCategories((newCategoriesData || []) as MaternityBagCategory[]);
+        setItems((newItemsData || []) as MaternityBagItem[]);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar mala da maternidade:", error);
+      toast({
+        title: "Erro ao carregar dados",
+        description: "Não foi possível carregar sua mala da maternidade.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast, initializeDefaultMaternityBag]);
 
   // Add item
   const addItem = async (
@@ -364,7 +292,7 @@ export const useMaternityBag = () => {
 
   useEffect(() => {
     loadMaternityBag();
-  }, []);
+  }, [loadMaternityBag]);
 
   return {
     categories,

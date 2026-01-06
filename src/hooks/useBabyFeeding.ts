@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
 import { useAchievements } from "@/hooks/useAchievements";
 import type { 
   BabyFeedingLog, 
@@ -14,8 +14,9 @@ export const useBabyFeeding = () => {
   const [settings, setSettings] = useState<FeedingSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const { checkAchievements } = useAchievements();
+  const { toast } = useToast();
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Não autenticado");
@@ -48,12 +49,16 @@ export const useBabyFeeding = () => {
     } catch (error: any) {
       if (error.code !== 'PGRST116') {
         console.error("Erro ao carregar dados:", error);
-        toast.error("Erro ao carregar dados de amamentação");
+        toast({
+          title: "Erro",
+          description: "Erro ao carregar dados de amamentação",
+          variant: "destructive",
+        });
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   const saveSettings = async (newSettings: Omit<FeedingSettings, "id" | "user_id" | "created_at" | "updated_at">) => {
     try {
@@ -72,10 +77,17 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setSettings(data as any);
-      toast.success("Configurações salvas com sucesso!");
+      toast({
+        title: "Sucesso",
+        description: "Configurações salvas com sucesso!",
+      });
     } catch (error) {
       console.error("Erro ao salvar configurações:", error);
-      toast.error("Erro ao salvar configurações");
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar configurações",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -106,13 +118,20 @@ export const useBabyFeeding = () => {
           .eq("user_id", user.id);
       }
       
-      toast.success("Mamada registrada com sucesso!");
+      toast({
+        title: "Sucesso",
+        description: "Mamada registrada com sucesso!",
+      });
       
       // Verificar conquistas após adicionar
       setTimeout(() => checkAchievements(), 1000);
     } catch (error) {
       console.error("Erro ao adicionar registro:", error);
-      toast.error("Erro ao registrar mamada");
+      toast({
+        title: "Erro",
+        description: "Erro ao registrar mamada",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -129,10 +148,17 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setFeedingLogs(feedingLogs.map(log => log.id === id ? data as any : log));
-      toast.success("Registro atualizado!");
+      toast({
+        title: "Sucesso",
+        description: "Registro atualizado!",
+      });
     } catch (error) {
       console.error("Erro ao atualizar registro:", error);
-      toast.error("Erro ao atualizar registro");
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar registro",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -147,10 +173,17 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setFeedingLogs(feedingLogs.filter(log => log.id !== id));
-      toast.success("Registro excluído!");
+      toast({
+        title: "Sucesso",
+        description: "Registro excluído!",
+      });
     } catch (error) {
       console.error("Erro ao excluir registro:", error);
-      toast.error("Erro ao excluir registro");
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir registro",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -173,10 +206,17 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setStorage([data as any, ...storage]);
-      toast.success("Leite armazenado com sucesso!");
+      toast({
+        title: "Sucesso",
+        description: "Leite armazenado com sucesso!",
+      });
     } catch (error) {
       console.error("Erro ao adicionar estoque:", error);
-      toast.error("Erro ao armazenar leite");
+      toast({
+        title: "Erro",
+        description: "Erro ao armazenar leite",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -194,22 +234,29 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setStorage(storage.filter(item => item.id !== id));
-      toast.success("Leite marcado como usado!");
+      toast({
+        title: "Sucesso",
+        description: "Leite marcado como usado!",
+      });
     } catch (error) {
       console.error("Erro ao marcar como usado:", error);
-      toast.error("Erro ao atualizar estoque");
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar estoque",
+        variant: "destructive",
+      });
       throw error;
     }
   };
 
-  const reloadData = () => {
+  const reloadData = useCallback(() => {
     setLoading(true);
     loadData();
-  };
+  }, [loadData]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   return {
     feedingLogs,

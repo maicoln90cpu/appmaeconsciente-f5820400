@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BabySleepLog, BabySleepSettings, BabySleepMilestone } from "@/types/babySleep";
-import { toast } from "@/hooks/useToast";
+import { useToast } from "@/hooks/useToast";
 import { useAchievements } from "@/hooks/useAchievements";
 
 export const useBabySleep = () => {
@@ -10,8 +10,9 @@ export const useBabySleep = () => {
   const [milestones, setMilestones] = useState<BabySleepMilestone[]>([]);
   const [loading, setLoading] = useState(true);
   const { checkAchievements } = useAchievements();
+  const { toast } = useToast();
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
@@ -63,7 +64,7 @@ export const useBabySleep = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   const saveSettings = async (newSettings: Omit<BabySleepSettings, "id" | "user_id" | "created_at" | "updated_at">) => {
     try {
@@ -192,7 +193,7 @@ export const useBabySleep = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   return {
     sleepLogs,

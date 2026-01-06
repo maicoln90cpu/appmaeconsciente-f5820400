@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 
@@ -9,13 +9,7 @@ export const useFollows = (userId?: string) => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (userId) {
-      loadFollows();
-    }
-  }, [userId]);
-
-  const loadFollows = async () => {
+  const loadFollows = useCallback(async () => {
     if (!userId) return;
 
     try {
@@ -52,7 +46,13 @@ export const useFollows = (userId?: string) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      loadFollows();
+    }
+  }, [userId, loadFollows]);
 
   const toggleFollow = async (targetUserId: string) => {
     try {
