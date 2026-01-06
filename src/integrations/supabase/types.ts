@@ -1056,6 +1056,112 @@ export type Database = {
         }
         Relationships: []
       }
+      food_introduction_log: {
+        Row: {
+          accepted: boolean | null
+          baby_profile_id: string | null
+          created_at: string
+          food_category: string
+          food_name: string
+          id: string
+          introduction_date: string
+          is_allergenic: boolean | null
+          notes: string | null
+          photo_url: string | null
+          reaction_symptoms: string[] | null
+          reaction_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accepted?: boolean | null
+          baby_profile_id?: string | null
+          created_at?: string
+          food_category?: string
+          food_name: string
+          id?: string
+          introduction_date?: string
+          is_allergenic?: boolean | null
+          notes?: string | null
+          photo_url?: string | null
+          reaction_symptoms?: string[] | null
+          reaction_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accepted?: boolean | null
+          baby_profile_id?: string | null
+          created_at?: string
+          food_category?: string
+          food_name?: string
+          id?: string
+          introduction_date?: string
+          is_allergenic?: boolean | null
+          notes?: string | null
+          photo_url?: string | null
+          reaction_symptoms?: string[] | null
+          reaction_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_introduction_log_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      growth_measurements: {
+        Row: {
+          baby_profile_id: string | null
+          created_at: string
+          head_circumference_cm: number | null
+          height_cm: number | null
+          id: string
+          measurement_date: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          baby_profile_id?: string | null
+          created_at?: string
+          head_circumference_cm?: number | null
+          height_cm?: number | null
+          id?: string
+          measurement_date?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          baby_profile_id?: string | null
+          created_at?: string
+          head_circumference_cm?: number | null
+          height_cm?: number | null
+          id?: string
+          measurement_date?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "growth_measurements_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hotmart_product_mapping: {
         Row: {
           created_at: string
