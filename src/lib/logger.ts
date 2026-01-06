@@ -1,7 +1,10 @@
 /**
  * Logger utility that only logs in development mode
  * Use this instead of console.log/error/warn throughout the app
+ * Integrates with Sentry for production error tracking
  */
+
+import { captureError, addBreadcrumb } from "./sentry";
 
 const isDevelopment = import.meta.env.DEV;
 
@@ -29,30 +32,43 @@ export const logger = {
     if (isDevelopment) {
       console.info(formatMessage('info', message, options), options?.data ?? '');
     }
+    // Add breadcrumb for important info logs
+    if (options?.context) {
+      addBreadcrumb(message, options.context, options?.data as Record<string, unknown>);
+    }
   },
 
   warn: (message: string, options?: LoggerOptions): void => {
     if (isDevelopment) {
       console.warn(formatMessage('warn', message, options), options?.data ?? '');
     }
+    // Add breadcrumb for warnings
+    addBreadcrumb(message, options?.context || 'warning', options?.data as Record<string, unknown>);
   },
 
   error: (message: string, error?: unknown, options?: LoggerOptions): void => {
-    // Errors are logged in both dev and prod for debugging
-    // But in prod, we might want to send to an error tracking service
+    // Always log errors to console in dev
     if (isDevelopment) {
       console.error(formatMessage('error', message, options), error ?? '', options?.data ?? '');
     } else {
-      // In production, log minimal info to avoid exposing sensitive data
+      // In production, log minimal info to console
       console.error(`[ERROR] ${message}`);
     }
+    
+    // Send to Sentry in production
+    captureError(error || new Error(message), {
+      component: options?.context,
+      extra: options?.data as Record<string, unknown>,
+    });
   },
 
-  // For tracking specific user actions (only in dev)
+  // For tracking specific user actions (only in dev, but adds breadcrumb)
   track: (action: string, data?: Record<string, unknown>): void => {
     if (isDevelopment) {
       console.log(`[TRACK] ${action}`, data ?? '');
     }
+    // Add breadcrumb for user actions
+    addBreadcrumb(action, 'user-action', data);
   },
 };
 
