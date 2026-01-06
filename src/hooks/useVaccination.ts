@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
 import type {
   BabyVaccinationProfile,
   VaccinationCalendar,
@@ -15,8 +15,9 @@ export const useVaccination = () => {
   const [vaccinations, setVaccinations] = useState<BabyVaccination[]>([]);
   const [settings, setSettings] = useState<VaccinationReminderSettings | null>(null);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
@@ -74,15 +75,19 @@ export const useVaccination = () => {
       }
     } catch (error) {
       console.error('Error loading vaccination data:', error);
-      toast.error('Erro ao carregar dados de vacinação');
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar dados de vacinação",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const saveProfile = async (profile: Partial<BabyVaccinationProfile>) => {
     try {
@@ -102,12 +107,19 @@ export const useVaccination = () => {
 
       if (error) throw error;
 
-      toast.success('Perfil do bebê salvo com sucesso!');
+      toast({
+        title: "Sucesso",
+        description: "Perfil do bebê salvo com sucesso!",
+      });
       await loadData();
       return { data, error: null };
     } catch (error: any) {
       console.error('Error saving profile:', error);
-      toast.error('Erro ao salvar perfil do bebê');
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar perfil do bebê",
+        variant: "destructive",
+      });
       return { data: null, error: error.message };
     }
   };
@@ -132,12 +144,19 @@ export const useVaccination = () => {
 
       if (error) throw error;
 
-      toast.success('Vacina registrada com sucesso!');
+      toast({
+        title: "Sucesso",
+        description: "Vacina registrada com sucesso!",
+      });
       await loadData();
       return { data, error: null };
     } catch (error: any) {
       console.error('Error adding vaccination:', error);
-      toast.error('Erro ao registrar vacina');
+      toast({
+        title: "Erro",
+        description: "Erro ao registrar vacina",
+        variant: "destructive",
+      });
       return { data: null, error: error.message };
     }
   };
@@ -151,12 +170,19 @@ export const useVaccination = () => {
 
       if (error) throw error;
 
-      toast.success('Vacina atualizada com sucesso!');
+      toast({
+        title: "Sucesso",
+        description: "Vacina atualizada com sucesso!",
+      });
       await loadData();
       return { error: null };
     } catch (error: any) {
       console.error('Error updating vaccination:', error);
-      toast.error('Erro ao atualizar vacina');
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar vacina",
+        variant: "destructive",
+      });
       return { error: error.message };
     }
   };
@@ -170,12 +196,19 @@ export const useVaccination = () => {
 
       if (error) throw error;
 
-      toast.success('Vacina removida com sucesso!');
+      toast({
+        title: "Sucesso",
+        description: "Vacina removida com sucesso!",
+      });
       await loadData();
       return { error: null };
     } catch (error: any) {
       console.error('Error deleting vaccination:', error);
-      toast.error('Erro ao remover vacina');
+      toast({
+        title: "Erro",
+        description: "Erro ao remover vacina",
+        variant: "destructive",
+      });
       return { error: error.message };
     }
   };
@@ -198,12 +231,19 @@ export const useVaccination = () => {
 
       if (error) throw error;
 
-      toast.success('Configurações salvas com sucesso!');
+      toast({
+        title: "Sucesso",
+        description: "Configurações salvas com sucesso!",
+      });
       await loadData();
       return { error: null };
     } catch (error: any) {
       console.error('Error saving settings:', error);
-      toast.error('Erro ao salvar configurações');
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar configurações",
+        variant: "destructive",
+      });
       return { error: error.message };
     }
   };
