@@ -30,6 +30,7 @@ import {
 
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { OfflineBanner } from "@/components/offline";
 
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/useToast";
@@ -249,6 +250,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
       {/* Main Content with bottom padding for mobile nav and skip link target */}
       <main id="main-content" tabIndex={-1} className="flex-1 pb-20 md:pb-0 outline-none">{children}</main>
+
+      {/* Offline Sync Banner */}
+      <OfflineBanner />
 
       {/* Enhanced Footer */}
       <footer className="hidden md:block border-t border-border/50 bg-surface-2">

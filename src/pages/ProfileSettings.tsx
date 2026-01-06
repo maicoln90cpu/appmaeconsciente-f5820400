@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/useToast";
 import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { SyncQueuePanel } from "@/components/offline";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -522,6 +523,9 @@ export default function ProfileSettings() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Sincronização Offline */}
+            <SyncQueuePanel />
 
             {/* Botão Salvar */}
             <div className="flex justify-end gap-2">
