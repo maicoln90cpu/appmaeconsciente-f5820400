@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
+import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
 
 type PostpartumSymptomRow = Database['public']['Tables']['postpartum_symptoms']['Row'];
@@ -10,17 +11,17 @@ export type PostpartumSymptom = PostpartumSymptomRow;
 
 export const usePostpartumSymptoms = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: symptoms, isLoading } = useQuery({
     queryKey: ['postpartum-symptoms'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('postpartum_symptoms')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -30,12 +31,11 @@ export const usePostpartumSymptoms = () => {
 
   const addSymptom = useMutation({
     mutationFn: async (symptom: Omit<PostpartumSymptomInsert, 'user_id'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('postpartum_symptoms')
-        .insert({ ...symptom, user_id: user.id })
+        .insert({ ...symptom, user_id: userId })
         .select()
         .single();
 
@@ -44,11 +44,18 @@ export const usePostpartumSymptoms = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
-      checkAlerts(data);
-      toast.success('Sintomas registrados com sucesso');
+      checkAlerts(data, toast);
+      toast({
+        title: "Sucesso",
+        description: "Sintomas registrados com sucesso",
+      });
     },
     onError: (error) => {
-      toast.error('Erro ao registrar sintomas');
+      toast({
+        title: "Erro",
+        description: "Erro ao registrar sintomas",
+        variant: "destructive",
+      });
       console.error(error);
     },
   });
@@ -67,8 +74,11 @@ export const usePostpartumSymptoms = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
-      checkAlerts(data);
-      toast.success('Sintomas atualizados');
+      checkAlerts(data, toast);
+      toast({
+        title: "Sucesso",
+        description: "Sintomas atualizados",
+      });
     },
   });
 
@@ -82,55 +92,60 @@ export const usePostpartumSymptoms = () => {
 };
 
 // Sistema de alertas inteligentes
-function checkAlerts(symptom: PostpartumSymptom) {
-  const alerts: string[] = [];
-
+function checkAlerts(symptom: PostpartumSymptom, toast: ReturnType<typeof useToast>['toast']) {
   // Sangramento intenso
   if (symptom.bleeding_intensity === 'very_heavy') {
-    toast.error('⚠️ ALERTA: Sangramento muito intenso. Procure atendimento médico imediatamente!', {
-      duration: 10000,
+    toast({
+      title: "⚠️ ALERTA",
+      description: "Sangramento muito intenso. Procure atendimento médico imediatamente!",
+      variant: "destructive",
     });
-    alerts.push('heavy_bleeding');
   } else if (symptom.bleeding_intensity === 'heavy') {
-    toast.warning('⚠️ Sangramento intenso detectado. Monitore de perto e contate seu médico se persistir.', {
-      duration: 8000,
+    toast({
+      title: "⚠️ Atenção",
+      description: "Sangramento intenso detectado. Monitore de perto e contate seu médico se persistir.",
+      variant: "destructive",
     });
   }
 
   // Febre
   if (symptom.fever) {
-    toast.error('⚠️ ALERTA: Febre pode indicar infecção. Entre em contato com seu médico.', {
-      duration: 10000,
+    toast({
+      title: "⚠️ ALERTA",
+      description: "Febre pode indicar infecção. Entre em contato com seu médico.",
+      variant: "destructive",
     });
-    alerts.push('fever');
   }
 
   // Cicatrização preocupante
   if (symptom.healing_status === 'infected') {
-    toast.error('⚠️ ALERTA: Sinais de infecção na cicatrização. Procure atendimento médico!', {
-      duration: 10000,
+    toast({
+      title: "⚠️ ALERTA",
+      description: "Sinais de infecção na cicatrização. Procure atendimento médico!",
+      variant: "destructive",
     });
-    alerts.push('infection');
   } else if (symptom.healing_status === 'concerning') {
-    toast.warning('⚠️ Cicatrização preocupante. Agende consulta com seu médico para avaliação.', {
-      duration: 8000,
+    toast({
+      title: "⚠️ Atenção",
+      description: "Cicatrização preocupante. Agende consulta com seu médico para avaliação.",
+      variant: "destructive",
     });
   }
 
   // Dor alta persistente
   if (symptom.pain_level && symptom.pain_level >= 4) {
-    toast.warning('Dor intensa. Se persistir, consulte seu médico sobre medicação adequada.', {
-      duration: 6000,
+    toast({
+      title: "Dor intensa",
+      description: "Se persistir, consulte seu médico sobre medicação adequada.",
     });
   }
 
   // Energia muito baixa
   if (symptom.energy_level !== undefined && symptom.energy_level !== null && 
       symptom.energy_level <= 1 && symptom.sleep_quality && symptom.sleep_quality < 4) {
-    toast.info('💙 Você está com energia muito baixa. Tente descansar quando o bebê dormir.', {
-      duration: 6000,
+    toast({
+      title: "💙 Cuide-se",
+      description: "Você está com energia muito baixa. Tente descansar quando o bebê dormir.",
     });
   }
-
-  return alerts;
 }

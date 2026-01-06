@@ -1,0 +1,1 @@
+export { createSupabaseCRUD } from "./createSupabaseCRUD";

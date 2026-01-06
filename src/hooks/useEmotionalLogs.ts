@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
+import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
 
 type EmotionalLogRow = Database['public']['Tables']['emotional_logs']['Row'];
@@ -10,17 +11,17 @@ export type EmotionalLog = EmotionalLogRow;
 
 export const useEmotionalLogs = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: logs, isLoading } = useQuery({
     queryKey: ['emotional-logs'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('emotional_logs')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -30,12 +31,11 @@ export const useEmotionalLogs = () => {
 
   const addLog = useMutation({
     mutationFn: async (log: Omit<EmotionalLogInsert, 'user_id'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('emotional_logs')
-        .insert({ ...log, user_id: user.id })
+        .insert({ ...log, user_id: userId })
         .select()
         .single();
 
@@ -44,11 +44,18 @@ export const useEmotionalLogs = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      checkEdinburghScore(data);
-      toast.success('Registro emocional salvo');
+      checkEdinburghScore(data, toast);
+      toast({
+        title: "Sucesso",
+        description: "Registro emocional salvo",
+      });
     },
     onError: () => {
-      toast.error('Erro ao salvar registro');
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar registro",
+        variant: "destructive",
+      });
     },
   });
 
@@ -66,8 +73,11 @@ export const useEmotionalLogs = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      checkEdinburghScore(data);
-      toast.success('Registro atualizado');
+      checkEdinburghScore(data, toast);
+      toast({
+        title: "Sucesso",
+        description: "Registro atualizado",
+      });
     },
   });
 
@@ -80,20 +90,24 @@ export const useEmotionalLogs = () => {
 };
 
 // Sistema de alerta para Edinburgh Depression Scale
-function checkEdinburghScore(log: EmotionalLog) {
+function checkEdinburghScore(log: EmotionalLog, toast: ReturnType<typeof useToast>['toast']) {
   if (!log.edinburgh_score) return;
 
   if (log.edinburgh_score >= 13) {
-    toast.error(
-      '💙 Seu resultado sugere risco de depressão pós-parto. Por favor, converse com um profissional de saúde mental. Você não está sozinha.',
-      { duration: 15000 }
-    );
+    toast({
+      title: "💙 Atenção importante",
+      description: "Seu resultado sugere risco de depressão pós-parto. Por favor, converse com um profissional de saúde mental. Você não está sozinha.",
+      variant: "destructive",
+    });
   } else if (log.edinburgh_score >= 10) {
-    toast.warning(
-      '💙 Alguns sinais de ansiedade ou tristeza foram detectados. Considere conversar com alguém de confiança ou um profissional.',
-      { duration: 10000 }
-    );
+    toast({
+      title: "💙 Cuide-se",
+      description: "Alguns sinais de ansiedade ou tristeza foram detectados. Considere conversar com alguém de confiança ou um profissional.",
+    });
   } else {
-    toast.success('Seu bem-estar emocional está dentro do esperado. Continue cuidando de você! 💕');
+    toast({
+      title: "💕 Tudo bem!",
+      description: "Seu bem-estar emocional está dentro do esperado. Continue cuidando de você!",
+    });
   }
 }

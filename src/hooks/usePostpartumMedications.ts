@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
+import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
 
 type PostpartumMedicationRow = Database['public']['Tables']['postpartum_medications']['Row'];
@@ -12,17 +13,17 @@ export type MedicationLog = MedicationLogRow;
 
 export const usePostpartumMedications = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: medications, isLoading } = useQuery({
     queryKey: ['postpartum-medications'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('postpartum_medications')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -34,14 +35,13 @@ export const usePostpartumMedications = () => {
   const { data: logs } = useQuery({
     queryKey: ['medication-logs'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('medication_logs')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .gte('taken_at', today)
         .order('taken_at', { ascending: false });
 
@@ -52,12 +52,11 @@ export const usePostpartumMedications = () => {
 
   const addMedication = useMutation({
     mutationFn: async (medication: Omit<PostpartumMedicationInsert, 'user_id'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('postpartum_medications')
-        .insert({ ...medication, user_id: user.id })
+        .insert({ ...medication, user_id: userId })
         .select()
         .single();
 
@@ -66,10 +65,17 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-medications'] });
-      toast.success('Medicamento adicionado com sucesso');
+      toast({
+        title: "Sucesso",
+        description: "Medicamento adicionado com sucesso",
+      });
     },
     onError: () => {
-      toast.error('Erro ao adicionar medicamento');
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar medicamento",
+        variant: "destructive",
+      });
     },
   });
 
@@ -87,18 +93,20 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-medications'] });
-      toast.success('Medicamento atualizado');
+      toast({
+        title: "Sucesso",
+        description: "Medicamento atualizado",
+      });
     },
   });
 
   const logMedication = useMutation({
     mutationFn: async (log: { medication_id: string; scheduled_time?: string; notes?: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('medication_logs')
-        .insert({ ...log, user_id: user.id })
+        .insert({ ...log, user_id: userId })
         .select()
         .single();
 
@@ -107,7 +115,10 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['medication-logs'] });
-      toast.success('✅ Medicamento registrado');
+      toast({
+        title: "✅ Sucesso",
+        description: "Medicamento registrado",
+      });
     },
   });
 

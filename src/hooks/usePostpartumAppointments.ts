@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
+import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
 
 type PostpartumAppointmentRow = Database['public']['Tables']['postpartum_appointments']['Row'];
@@ -10,17 +11,17 @@ export type PostpartumAppointment = PostpartumAppointmentRow;
 
 export const usePostpartumAppointments = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: appointments, isLoading } = useQuery({
     queryKey: ['postpartum-appointments'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('postpartum_appointments')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('scheduled_date', { ascending: true });
 
       if (error) throw error;
@@ -30,12 +31,11 @@ export const usePostpartumAppointments = () => {
 
   const addAppointment = useMutation({
     mutationFn: async (appointment: Omit<PostpartumAppointmentInsert, 'user_id'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('postpartum_appointments')
-        .insert({ ...appointment, user_id: user.id })
+        .insert({ ...appointment, user_id: userId })
         .select()
         .single();
 
@@ -44,10 +44,17 @@ export const usePostpartumAppointments = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-appointments'] });
-      toast.success('Consulta agendada com sucesso');
+      toast({
+        title: "Sucesso",
+        description: "Consulta agendada com sucesso",
+      });
     },
     onError: () => {
-      toast.error('Erro ao agendar consulta');
+      toast({
+        title: "Erro",
+        description: "Erro ao agendar consulta",
+        variant: "destructive",
+      });
     },
   });
 
@@ -65,7 +72,10 @@ export const usePostpartumAppointments = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-appointments'] });
-      toast.success('Consulta atualizada');
+      toast({
+        title: "Sucesso",
+        description: "Consulta atualizada",
+      });
     },
   });
 
@@ -80,7 +90,10 @@ export const usePostpartumAppointments = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-appointments'] });
-      toast.success('Consulta removida');
+      toast({
+        title: "Sucesso",
+        description: "Consulta removida",
+      });
     },
   });
 
