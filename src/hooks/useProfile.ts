@@ -54,6 +54,10 @@ export interface Profile {
   postpartum_notes?: string;
   /** Semana de pós-parto (calculada) */
   postpartum_week?: number;
+  /** Se o onboarding foi completado */
+  onboarding_completed?: boolean;
+  /** Data de conclusão do onboarding */
+  onboarding_completed_at?: string;
   /** Data de criação do perfil */
   created_at: string;
   /** Data da última atualização */
