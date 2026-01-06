@@ -115,7 +115,7 @@ export const useOnboarding = () => {
     },
   });
 
-  // Complete entire onboarding
+  // Complete entire onboarding with XP and Badge
   const completeOnboarding = async () => {
     if (!user?.id) return;
     
@@ -128,11 +128,45 @@ export const useOnboarding = () => {
       .eq("id", user.id);
     
     if (!error) {
+      // Award XP for completing onboarding
+      try {
+        await supabase.rpc('add_user_xp', {
+          p_user_id: user.id,
+          p_xp_amount: 50,
+          p_action_type: 'onboarding_completed',
+        });
+      } catch (xpError) {
+        console.error('Failed to add onboarding XP:', xpError);
+      }
+
+      // Unlock "Bem-vinda!" badge
+      try {
+        const { data: badge } = await supabase
+          .from("badges")
+          .select("id")
+          .eq("code", "bem_vinda")
+          .single();
+
+        if (badge) {
+          await supabase
+            .from("user_badges")
+            .upsert({
+              user_id: user.id,
+              badge_id: badge.id,
+            }, { onConflict: "user_id,badge_id" });
+        }
+      } catch (badgeError) {
+        console.error('Failed to unlock badge:', badgeError);
+      }
+
       toast({
         title: "Parabéns! 🏆",
-        description: "Você completou o onboarding! Badge 'Bem-vinda!' desbloqueado!",
+        description: "Você completou o onboarding! +50 XP e Badge 'Bem-vinda!' desbloqueado!",
       });
+      
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["user-level"] });
+      queryClient.invalidateQueries({ queryKey: ["user-badges"] });
     }
   };
 
