@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
+import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 
 export interface BodyImageLog {
   id: string;
@@ -17,17 +18,17 @@ export interface BodyImageLog {
 
 export const useBodyImageLog = () => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: logs, isLoading } = useQuery({
     queryKey: ['body-image-logs'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const { data, error } = await supabase
         .from('body_image_log')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .order('date', { ascending: false });
 
       if (error) throw error;
@@ -44,15 +45,14 @@ export const useBodyImageLog = () => {
       mood?: 'positive' | 'neutral' | 'challenging';
       privacy?: 'private' | 'partner' | 'community';
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       let photo_url = null;
 
       // Upload foto se fornecida
       if (log.photo) {
         const fileExt = log.photo.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        const fileName = `${userId}/${Date.now()}.${fileExt}`;
         
         const { error: uploadError } = await supabase.storage
           .from('body-image-photos')
@@ -70,7 +70,7 @@ export const useBodyImageLog = () => {
       const { data, error } = await supabase
         .from('body_image_log')
         .insert({
-          user_id: user.id,
+          user_id: userId,
           date: log.date,
           title: log.title || null,
           notes: log.notes || null,
@@ -86,10 +86,17 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast.success('Registro de autoestima salvo 💕');
+      toast({
+        title: "💕 Sucesso",
+        description: "Registro de autoestima salvo",
+      });
     },
     onError: () => {
-      toast.error('Erro ao salvar registro');
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar registro",
+        variant: "destructive",
+      });
     },
   });
 
@@ -110,12 +117,17 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast.success('Registro atualizado');
+      toast({
+        title: "Sucesso",
+        description: "Registro atualizado",
+      });
     },
   });
 
   const deleteLog = useMutation({
     mutationFn: async (id: string) => {
+      const userId = await getAuthenticatedUser();
+
       // Buscar log para deletar foto se existir
       const { data: log } = await supabase
         .from('body_image_log')
@@ -125,11 +137,10 @@ export const useBodyImageLog = () => {
 
       if (log?.photo_url) {
         const fileName = log.photo_url.split('/').pop();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user && fileName) {
+        if (fileName) {
           await supabase.storage
             .from('body-image-photos')
-            .remove([`${user.id}/${fileName}`]);
+            .remove([`${userId}/${fileName}`]);
         }
       }
 
@@ -142,7 +153,10 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast.success('Registro removido');
+      toast({
+        title: "Sucesso",
+        description: "Registro removido",
+      });
     },
   });
 

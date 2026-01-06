@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/useToast";
+import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
 
 type RecoveryChecklistRow = Database['public']['Tables']['recovery_checklist']['Row'];
@@ -85,17 +86,17 @@ export const RECOVERY_TIMELINE = [
 
 export const useRecoveryChecklist = (weekNumber?: number) => {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: checklist, isLoading } = useQuery({
     queryKey: ['recovery-checklist', weekNumber],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       let query = supabase
         .from('recovery_checklist')
         .select('*')
-        .eq('user_id', user.id);
+        .eq('user_id', userId);
 
       if (weekNumber) {
         query = query.eq('week_number', weekNumber);
@@ -110,14 +111,13 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
 
   const initializeWeek = useMutation({
     mutationFn: async (week: number) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      const userId = await getAuthenticatedUser();
 
       const weekTemplate = RECOVERY_TIMELINE.find(t => t.week === week);
       if (!weekTemplate) throw new Error('Week not found');
 
       const items = weekTemplate.items.map(itemText => ({
-        user_id: user.id,
+        user_id: userId,
         week_number: week,
         item: itemText,
         completed: false,
@@ -151,7 +151,10 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recovery-checklist'] });
-      toast.success('✅ Item atualizado');
+      toast({
+        title: "✅ Sucesso",
+        description: "Item atualizado",
+      });
     },
   });
 
