@@ -30,9 +30,18 @@ O sistema é uma aplicação web progressiva (PWA) construída com React, focada
 ```
 src/
 ├── components/
-│   ├── ui/           # Componentes base (Button, Input, Card, etc.)
-│   └── [modulo]/     # Componentes específicos de cada módulo
-└── pages/            # Páginas/rotas da aplicação
+│   ├── ui/                   # Componentes base (Button, Input, Card, etc.)
+│   ├── admin/                # Componentes do painel admin
+│   │   ├── user-management/  # Sub-componentes de gestão de usuários
+│   │   │   ├── index.ts      # Barrel export
+│   │   │   ├── types.ts      # Tipos compartilhados
+│   │   │   ├── UserCard.tsx
+│   │   │   ├── UserFilters.tsx
+│   │   │   ├── UserEmptyStates.tsx
+│   │   │   └── UserLoadingError.tsx
+│   │   └── ...
+│   └── [modulo]/             # Componentes específicos de cada módulo
+└── pages/                    # Páginas/rotas da aplicação
 ```
 
 **Responsabilidades:**
@@ -44,11 +53,24 @@ src/
 
 ```
 src/hooks/
-├── useProfile.ts         # Dados do perfil
-├── useEnxovalItems.ts    # Gestão do enxoval
-├── useBabyFeeding.ts     # Amamentação
-├── useBabySleep.ts       # Sono do bebê
-├── useVaccination.ts     # Vacinação
+├── factories/                # Factories para geração de hooks
+│   ├── index.ts
+│   └── createSupabaseCRUD.ts # Factory CRUD genérica
+├── postpartum/               # Hooks de recuperação pós-parto
+│   ├── index.ts              # Barrel export
+│   ├── useSymptoms.ts
+│   ├── useMedications.ts
+│   ├── useAppointments.ts
+│   ├── useAchievements.ts
+│   ├── useEmotionalLogs.ts
+│   ├── useRecoveryChecklist.ts
+│   └── useBodyImageLog.ts
+├── useAuthenticatedAction.ts # Utilitário para ações autenticadas
+├── useProfile.ts             # Dados do perfil
+├── useEnxovalItems.ts        # Gestão do enxoval
+├── useBabyFeeding.ts         # Amamentação
+├── useBabySleep.ts           # Sono do bebê
+├── useVaccination.ts         # Vacinação
 └── ...
 ```
 
@@ -57,6 +79,45 @@ src/hooks/
 - Chamadas à API
 - Transformação de dados
 - Cache e sincronização
+
+### Factories & Abstrações
+
+#### useAuthenticatedAction
+
+Hook centralizado para ações que requerem autenticação:
+
+```typescript
+import { useAuthenticatedAction, getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+// Em componentes
+const { executeAuthenticated, getUserId } = useAuthenticatedAction();
+await executeAuthenticated(async (userId) => {
+  // ação autenticada
+});
+
+// Em queryFn do React Query
+const userId = await getAuthenticatedUser(); // throws se não autenticado
+```
+
+#### createSupabaseCRUD
+
+Factory para criar hooks CRUD com React Query:
+
+```typescript
+import { createSupabaseCRUD } from '@/hooks/factories';
+
+const useNotes = createSupabaseCRUD<Note, NoteInsert>({
+  tableName: 'notes',
+  queryKey: ['notes'],
+  orderBy: 'created_at',
+  messages: {
+    addSuccess: 'Nota criada!',
+  },
+});
+
+// Uso
+const { data, add, update, remove, isLoading } = useNotes();
+```
 
 ### 3. Serviços (Integrations)
 
