@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler } from "lucide-react";
+import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler, Frown, Pill, Calendar, CalendarClock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -14,6 +14,10 @@ import { useVaccination } from "@/hooks/useVaccination";
 import { GrowthChart } from "@/components/crescimento/GrowthChart";
 import { FoodIntroductionDiary } from "@/components/alimentacao-bebe/FoodIntroductionDiary";
 import { BottleCalculator } from "@/components/alimentacao-bebe/BottleCalculator";
+import { ColicTracker } from "@/components/bebe/ColicTracker";
+import { MedicationTimer } from "@/components/bebe/MedicationTimer";
+import { AppointmentOrganizer } from "@/components/bebe/AppointmentOrganizer";
+import { RoutinePlanner } from "@/components/bebe/RoutinePlanner";
 
 interface FeedingLog {
   id: string;

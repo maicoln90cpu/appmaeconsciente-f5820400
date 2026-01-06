@@ -14,6 +14,121 @@ export type Database = {
   }
   public: {
     Tables: {
+      baby_appointments: {
+        Row: {
+          appointment_type: string
+          baby_profile_id: string | null
+          completed: boolean | null
+          created_at: string
+          doctor_name: string | null
+          duration_minutes: number | null
+          id: string
+          location: string | null
+          notes: string | null
+          reminder_sent: boolean | null
+          scheduled_date: string
+          scheduled_time: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          appointment_type?: string
+          baby_profile_id?: string | null
+          completed?: boolean | null
+          created_at?: string
+          doctor_name?: string | null
+          duration_minutes?: number | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          reminder_sent?: boolean | null
+          scheduled_date: string
+          scheduled_time?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          appointment_type?: string
+          baby_profile_id?: string | null
+          completed?: boolean | null
+          created_at?: string
+          doctor_name?: string | null
+          duration_minutes?: number | null
+          id?: string
+          location?: string | null
+          notes?: string | null
+          reminder_sent?: boolean | null
+          scheduled_date?: string
+          scheduled_time?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_appointments_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      baby_colic_logs: {
+        Row: {
+          baby_profile_id: string | null
+          created_at: string
+          duration_minutes: number | null
+          end_time: string | null
+          id: string
+          intensity: number | null
+          notes: string | null
+          relief_methods: string[] | null
+          start_time: string
+          triggers: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baby_profile_id?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          end_time?: string | null
+          id?: string
+          intensity?: number | null
+          notes?: string | null
+          relief_methods?: string[] | null
+          start_time?: string
+          triggers?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baby_profile_id?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          end_time?: string | null
+          id?: string
+          intensity?: number | null
+          notes?: string | null
+          relief_methods?: string[] | null
+          start_time?: string
+          triggers?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_colic_logs_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       baby_feeding_logs: {
         Row: {
           baby_name: string | null
@@ -67,6 +182,103 @@ export type Database = {
           volume_ml?: number | null
         }
         Relationships: []
+      }
+      baby_medication_logs: {
+        Row: {
+          created_at: string
+          dosage_given: string | null
+          given_at: string
+          id: string
+          medication_id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dosage_given?: string | null
+          given_at?: string
+          id?: string
+          medication_id: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dosage_given?: string | null
+          given_at?: string
+          id?: string
+          medication_id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_medication_logs_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "baby_medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      baby_medications: {
+        Row: {
+          baby_profile_id: string | null
+          created_at: string
+          dosage: string
+          end_date: string | null
+          frequency: string
+          id: string
+          is_active: boolean | null
+          medication_name: string
+          notes: string | null
+          start_date: string
+          time_of_day: string[] | null
+          times_per_day: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baby_profile_id?: string | null
+          created_at?: string
+          dosage: string
+          end_date?: string | null
+          frequency: string
+          id?: string
+          is_active?: boolean | null
+          medication_name: string
+          notes?: string | null
+          start_date?: string
+          time_of_day?: string[] | null
+          times_per_day?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baby_profile_id?: string | null
+          created_at?: string
+          dosage?: string
+          end_date?: string | null
+          frequency?: string
+          id?: string
+          is_active?: boolean | null
+          medication_name?: string
+          notes?: string | null
+          start_date?: string
+          time_of_day?: string[] | null
+          times_per_day?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_medications_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       baby_milestone_records: {
         Row: {
@@ -124,6 +336,97 @@ export type Database = {
             columns: ["milestone_type_id"]
             isOneToOne: false
             referencedRelation: "development_milestone_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      baby_routine_logs: {
+        Row: {
+          actual_time: string | null
+          completed_at: string
+          created_at: string
+          id: string
+          notes: string | null
+          routine_id: string
+          user_id: string
+        }
+        Insert: {
+          actual_time?: string | null
+          completed_at?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          routine_id: string
+          user_id: string
+        }
+        Update: {
+          actual_time?: string | null
+          completed_at?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          routine_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_routine_logs_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "baby_routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      baby_routines: {
+        Row: {
+          baby_profile_id: string | null
+          created_at: string
+          days_of_week: number[] | null
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          routine_type: string
+          scheduled_time: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baby_profile_id?: string | null
+          created_at?: string
+          days_of_week?: number[] | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          routine_type: string
+          scheduled_time: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baby_profile_id?: string | null
+          created_at?: string
+          days_of_week?: number[] | null
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          routine_type?: string
+          scheduled_time?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_routines_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
             referencedColumns: ["id"]
           },
         ]
