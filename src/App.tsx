@@ -90,7 +90,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <GTMScript />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollToTop />
         <AnalyticsWrapper>
         <Suspense fallback={<PageLoader />}>
