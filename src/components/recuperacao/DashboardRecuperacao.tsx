@@ -2,10 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { useProfile } from "@/hooks/useProfile";
-import { usePostpartumSymptoms } from "@/hooks/usePostpartumSymptoms";
-import { usePostpartumMedications } from "@/hooks/usePostpartumMedications";
-import { usePostpartumAppointments } from "@/hooks/usePostpartumAppointments";
-import { useEmotionalLogs } from "@/hooks/useEmotionalLogs";
+import { usePostpartumSymptoms, usePostpartumMedications, usePostpartumAppointments, useEmotionalLogs } from "@/hooks/postpartum";
 import { Activity, Heart, Pill, Calendar, Droplet, AlertTriangle } from "lucide-react";
 import { useMemo } from "react";
 

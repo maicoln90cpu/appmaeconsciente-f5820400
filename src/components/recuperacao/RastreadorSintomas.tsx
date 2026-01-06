@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import { usePostpartumSymptoms } from "@/hooks/usePostpartumSymptoms";
+import { usePostpartumSymptoms } from "@/hooks/postpartum";
 import { Loader2 } from "lucide-react";
 
 export const RastreadorSintomas = () => {
