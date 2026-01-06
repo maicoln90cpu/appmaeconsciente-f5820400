@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler, Frown, Pill, Calendar, CalendarClock, FileText, Download, CalendarDays } from "lucide-react";
+import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler, Frown, Pill, Calendar, CalendarClock, FileText, Download, CalendarDays, Users, Bell, LayoutDashboard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -21,6 +21,9 @@ import { RoutinePlanner } from "@/components/bebe/RoutinePlanner";
 import { PediatricReportGenerator } from "@/components/bebe/PediatricReportGenerator";
 import { UnifiedCalendar } from "@/components/bebe/UnifiedCalendar";
 import { DataExporter } from "@/components/bebe/DataExporter";
+import { BabySummaryWidget } from "@/components/bebe/BabySummaryWidget";
+import { PartnerAccessManager } from "@/components/bebe/PartnerAccessManager";
+import { NotificationSettings } from "@/components/bebe/NotificationSettings";
 
 interface FeedingLog {
   id: string;
@@ -268,10 +271,23 @@ const DashboardBebe = () => {
             <span className="hidden sm:inline">Exportar</span>
             <span className="sm:hidden">Exp.</span>
           </TabsTrigger>
+          <TabsTrigger value="partner" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Parceiro</span>
+            <span className="sm:hidden">Parc.</span>
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Notificações</span>
+            <span className="sm:hidden">Notif.</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
+      
+      {/* Widget de Resumo */}
+      <BabySummaryWidget />
 
       {/* KPIs Principais */}
       <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -565,6 +581,16 @@ const DashboardBebe = () => {
         {/* Data Export Tab */}
         <TabsContent value="export">
           <DataExporter babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Partner Access Tab */}
+        <TabsContent value="partner">
+          <PartnerAccessManager />
+        </TabsContent>
+
+        {/* Notification Settings Tab */}
+        <TabsContent value="notifications">
+          <NotificationSettings />
         </TabsContent>
       </Tabs>
     </div>
