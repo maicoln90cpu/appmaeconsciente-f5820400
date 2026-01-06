@@ -209,22 +209,46 @@ const DashboardBebe = () => {
 
       {/* Main Tabs */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
+        <TabsList className="flex flex-wrap h-auto gap-1 p-1">
+          <TabsTrigger value="overview" className="flex items-center gap-1 text-xs sm:text-sm">
+            <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Visão Geral</span>
+            <span className="sm:hidden">Geral</span>
           </TabsTrigger>
-          <TabsTrigger value="growth" className="flex items-center gap-2">
-            <Ruler className="h-4 w-4" />
+          <TabsTrigger value="growth" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Ruler className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Crescimento</span>
+            <span className="sm:hidden">Cresc.</span>
           </TabsTrigger>
-          <TabsTrigger value="food" className="flex items-center gap-2">
-            <Apple className="h-4 w-4" />
+          <TabsTrigger value="food" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Apple className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Alimentação</span>
+            <span className="sm:hidden">Alim.</span>
           </TabsTrigger>
-          <TabsTrigger value="bottle" className="flex items-center gap-2">
-            <Calculator className="h-4 w-4" />
+          <TabsTrigger value="bottle" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Calculator className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Mamadeira</span>
+            <span className="sm:hidden">Mam.</span>
+          </TabsTrigger>
+          <TabsTrigger value="colic" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Frown className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Cólicas</span>
+            <span className="sm:hidden">Cól.</span>
+          </TabsTrigger>
+          <TabsTrigger value="medications" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Pill className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Medicamentos</span>
+            <span className="sm:hidden">Med.</span>
+          </TabsTrigger>
+          <TabsTrigger value="appointments" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Consultas</span>
+            <span className="sm:hidden">Cons.</span>
+          </TabsTrigger>
+          <TabsTrigger value="routine" className="flex items-center gap-1 text-xs sm:text-sm">
+            <CalendarClock className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Rotina</span>
+            <span className="sm:hidden">Rot.</span>
           </TabsTrigger>
         </TabsList>
 
@@ -488,6 +512,26 @@ const DashboardBebe = () => {
         {/* Bottle Calculator Tab */}
         <TabsContent value="bottle">
           <BottleCalculator babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Colic Tracker Tab */}
+        <TabsContent value="colic">
+          <ColicTracker babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Medications Tab */}
+        <TabsContent value="medications">
+          <MedicationTimer babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Appointments Tab */}
+        <TabsContent value="appointments">
+          <AppointmentOrganizer babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Routine Tab */}
+        <TabsContent value="routine">
+          <RoutinePlanner babyProfileId={selectedBabyId} />
         </TabsContent>
       </Tabs>
     </div>
