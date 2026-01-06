@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 import { useProfile } from "@/hooks/useProfile";
 import { OnboardingWizard, OnboardingChecklist } from "@/components/onboarding";
-import { LevelProgress, ActivityCalendar } from "@/components/gamification";
+import { LevelProgress, ActivityCalendar, WeeklyGoalCard, DailyLoginTracker } from "@/components/gamification";
 
 const Dashboard = () => {
   const [showWizard, setShowWizard] = useState(false);
@@ -162,8 +162,10 @@ const Dashboard = () => {
       )}
 
       {/* Gamification Progress */}
-      <div className="grid gap-6 md:grid-cols-2 mb-8">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <LevelProgress />
+        <DailyLoginTracker />
+        <WeeklyGoalCard />
         <ActivityCalendar />
       </div>
 

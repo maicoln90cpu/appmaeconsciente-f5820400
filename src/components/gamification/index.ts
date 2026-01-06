@@ -3,3 +3,5 @@ export { ActivityCalendar } from './ActivityCalendar';
 export { BadgeGrid } from './BadgeGrid';
 export { Leaderboard } from './Leaderboard';
 export { BadgeUnlockAnimation } from './BadgeUnlockAnimation';
+export { WeeklyGoalCard } from './WeeklyGoalCard';
+export { DailyLoginTracker } from './DailyLoginTracker';

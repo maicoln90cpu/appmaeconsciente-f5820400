@@ -41,10 +41,14 @@ export interface UserChallenge {
 }
 
 export const STREAK_TYPES = {
-  sleep_log: { label: 'Diário do Sono', icon: 'Moon' },
-  feeding_log: { label: 'Amamentação', icon: 'Baby' },
-  community: { label: 'Comunidade', icon: 'Users' },
-  wellness: { label: 'Bem-estar', icon: 'Heart' },
+  sleep_log: { label: 'Diário do Sono', icon: 'Moon', xpBonus: 10 },
+  feeding_log: { label: 'Amamentação', icon: 'Baby', xpBonus: 10 },
+  community: { label: 'Comunidade', icon: 'Users', xpBonus: 15 },
+  wellness: { label: 'Bem-estar', icon: 'Heart', xpBonus: 10 },
+  daily_login: { label: 'Login Diário', icon: 'Calendar', xpBonus: 5 },
+  weekly_goal: { label: 'Meta Semanal', icon: 'Target', xpBonus: 100 },
+  exercise: { label: 'Exercícios', icon: 'Dumbbell', xpBonus: 15 },
+  hydration: { label: 'Hidratação', icon: 'Droplet', xpBonus: 5 },
 } as const;
 
 export const useStreaksAndChallenges = () => {
