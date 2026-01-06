@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { PageLoader } from "@/components/ui/page-loader";
 
 import { GTMScript } from "@/components/GTMScript";
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -17,47 +18,40 @@ import { AuthProvider } from "@/contexts/AuthContext";
 
 import { useAnalytics } from "@/hooks/useAnalytics";
 
-const Landing = lazy(() => import("./pages/Landing"));
-const Index = lazy(() => import("./pages/Index"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const CompleteProfile = lazy(() => import("./pages/CompleteProfile"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
-const Materiais = lazy(() => import("./pages/Materiais"));
-const ClubePremium = lazy(() => import("./pages/ClubePremium"));
-const DashboardBebe = lazy(() => import("./pages/DashboardBebe"));
-const MinhasConquistas = lazy(() => import("./pages/MinhasConquistas"));
-const Comunidade = lazy(() => import("./pages/Comunidade"));
-const Suporte = lazy(() => import("./pages/Suporte"));
-const AuthPage = lazy(() => import("./pages/AuthPage"));
-const SharedEnxoval = lazy(() => import("./pages/SharedEnxoval"));
-const CalculadoraFraldas = lazy(() => import("./pages/CalculadoraFraldas"));
-const MalaDaMaternidade = lazy(() => import("./pages/MalaDaMaternidade"));
-const GuiaAlimentacao = lazy(() => import("./pages/GuiaAlimentacao"));
-const DiarioSono = lazy(() => import("./pages/DiarioSono"));
-const RastreadorAmamentacao = lazy(() => import("./pages/RastreadorAmamentacao"));
-const CartaoVacinacao = lazy(() => import("./pages/CartaoVacinacao"));
-const RecuperacaoPosPartoPage = lazy(() => import("./pages/RecuperacaoPosPartoPage"));
-const MonitorDesenvolvimento = lazy(() => import("./pages/MonitorDesenvolvimento"));
-const Offline = lazy(() => import("./pages/Offline"));
+import { lazyWithRetry, prefetchCommonRoutes } from "@/lib/lazy-utils";
 
-// Prefetch common routes on idle
-const prefetchRoutes = () => {
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(() => {
-      import("./pages/Dashboard");
-      import("./pages/Materiais");
-      import("./pages/Comunidade");
-    });
-  }
-};
+// Lazy load com retry automático para resiliência de rede
+const Landing = lazyWithRetry(() => import("./pages/Landing"));
+const Index = lazyWithRetry(() => import("./pages/Index"));
+const Dashboard = lazyWithRetry(() => import("./pages/Dashboard"));
+const NotFound = lazyWithRetry(() => import("./pages/NotFound"));
+const CompleteProfile = lazyWithRetry(() => import("./pages/CompleteProfile"));
+const AdminDashboard = lazyWithRetry(() => import("./pages/AdminDashboard"));
+const ProfileSettings = lazyWithRetry(() => import("./pages/ProfileSettings"));
+const Materiais = lazyWithRetry(() => import("./pages/Materiais"));
+const ClubePremium = lazyWithRetry(() => import("./pages/ClubePremium"));
+const DashboardBebe = lazyWithRetry(() => import("./pages/DashboardBebe"));
+const MinhasConquistas = lazyWithRetry(() => import("./pages/MinhasConquistas"));
+const Comunidade = lazyWithRetry(() => import("./pages/Comunidade"));
+const Suporte = lazyWithRetry(() => import("./pages/Suporte"));
+const AuthPage = lazyWithRetry(() => import("./pages/AuthPage"));
+const SharedEnxoval = lazyWithRetry(() => import("./pages/SharedEnxoval"));
+const CalculadoraFraldas = lazyWithRetry(() => import("./pages/CalculadoraFraldas"));
+const MalaDaMaternidade = lazyWithRetry(() => import("./pages/MalaDaMaternidade"));
+const GuiaAlimentacao = lazyWithRetry(() => import("./pages/GuiaAlimentacao"));
+const DiarioSono = lazyWithRetry(() => import("./pages/DiarioSono"));
+const RastreadorAmamentacao = lazyWithRetry(() => import("./pages/RastreadorAmamentacao"));
+const CartaoVacinacao = lazyWithRetry(() => import("./pages/CartaoVacinacao"));
+const RecuperacaoPosPartoPage = lazyWithRetry(() => import("./pages/RecuperacaoPosPartoPage"));
+const MonitorDesenvolvimento = lazyWithRetry(() => import("./pages/MonitorDesenvolvimento"));
+const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
   useAnalytics();
   
   useEffect(() => {
-    prefetchRoutes();
+    // Prefetch rotas comuns em idle time
+    prefetchCommonRoutes();
   }, []);
   
   return <>{children}</>;
@@ -76,7 +70,17 @@ const ScrollToTop = () => {
 
 const App = () => {
   // QueryClient como estado para evitar recriação em re-renders
-  const [queryClient] = useState(() => new QueryClient());
+  const [queryClient] = useState(() => new QueryClient({
+    defaultOptions: {
+      queries: {
+        // Otimizações de cache
+        staleTime: 1000 * 60 * 5, // 5 minutos
+        gcTime: 1000 * 60 * 30, // 30 minutos (antigo cacheTime)
+        refetchOnWindowFocus: false,
+        retry: 1,
+      },
+    },
+  }));
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -89,9 +93,7 @@ const App = () => {
       <BrowserRouter>
         <ScrollToTop />
         <AnalyticsWrapper>
-        <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
-          <div className="animate-pulse text-muted-foreground">Carregando...</div>
-        </div>}>
+        <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<div className="animate-fade-in"><Landing /></div>} />
