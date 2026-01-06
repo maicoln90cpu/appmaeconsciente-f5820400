@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Mail } from "lucide-react";
 import jsPDF from "jspdf";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 interface ChecklistItem {

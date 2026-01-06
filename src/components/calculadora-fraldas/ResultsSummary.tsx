@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Share2, ShoppingCart, PieChart, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";

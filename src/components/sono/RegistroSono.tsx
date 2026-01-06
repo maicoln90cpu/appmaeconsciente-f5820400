@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Play, Square, Save } from "lucide-react";
 import { BabySleepLog, SleepLocation, WakeupMood, MomMood } from "@/types/babySleep";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/useToast";
 
 interface RegistroSonoProps {
   onSave: (log: Omit<BabySleepLog, "id" | "user_id" | "created_at" | "updated_at">) => Promise<any>;

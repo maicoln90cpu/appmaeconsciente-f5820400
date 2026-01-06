@@ -17,7 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { EnxovalItem, Config } from "@/types/enxoval";
 import { formatCurrency } from "@/lib/calculations";
 import { ExternalLink, Edit, Trash2, Calendar, Package, Tag, TrendingDown } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/useMobile";
 import {
   Tooltip,
   TooltipContent,

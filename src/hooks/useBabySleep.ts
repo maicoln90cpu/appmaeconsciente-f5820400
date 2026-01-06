@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BabySleepLog, BabySleepSettings, BabySleepMilestone } from "@/types/babySleep";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/useToast";
 import { useAchievements } from "@/hooks/useAchievements";
 
 export const useBabySleep = () => {

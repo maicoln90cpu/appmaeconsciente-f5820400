@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Lock, CheckCircle2, Loader2, Tag, Star, Baby, Smartphone, Share, PlusSquare } from "lucide-react";
 import { ToolSuggestionCard } from "@/components/materiais/ToolSuggestionCard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 

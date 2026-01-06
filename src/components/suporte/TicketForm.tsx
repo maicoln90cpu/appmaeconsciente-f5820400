@@ -8,7 +8,7 @@ import { Loader2, Send } from "lucide-react";
 import { useTickets, TicketFormData } from "@/hooks/useTickets";
 import { useProfile } from "@/hooks/useProfile";
 import { backgroundSync } from "@/lib/background-sync";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 
 export const TicketForm = () => {
   const { createTicket } = useTickets();

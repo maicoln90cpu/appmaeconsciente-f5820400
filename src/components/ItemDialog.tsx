@@ -10,7 +10,7 @@ import { EnxovalItem, Category, Necessity, Status, Size, Origin, EtapaMaes, Clas
 import { calculatePriority, calculateSubtotalPlanned, calculateSubtotalPaid, calculateSavings, calculateSavingsPercent } from "@/lib/calculations";
 import { TagsInput } from "@/components/TagsInput";
 import { sanitizeUrl } from "@/lib/url-validator";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/useToast";
 
 interface ItemDialogProps {
   onAdd?: (item: EnxovalItem) => void;
