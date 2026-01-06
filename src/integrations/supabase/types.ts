@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      baby_achievements: {
+        Row: {
+          achieved_at: string
+          achievement_type: string
+          baby_profile_id: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          metadata: Json | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          achieved_at?: string
+          achievement_type: string
+          baby_profile_id?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          metadata?: Json | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          achieved_at?: string
+          achievement_type?: string
+          baby_profile_id?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          metadata?: Json | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_achievements_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       baby_appointments: {
         Row: {
           appointment_type: string
@@ -182,6 +229,71 @@ export type Database = {
           volume_ml?: number | null
         }
         Relationships: []
+      }
+      baby_first_times: {
+        Row: {
+          baby_profile_id: string | null
+          created_at: string
+          description: string | null
+          event_date: string
+          event_type: string
+          id: string
+          is_favorite: boolean | null
+          location: string | null
+          mood: string | null
+          notes: string | null
+          photo_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+          video_url: string | null
+          witnesses: string[] | null
+        }
+        Insert: {
+          baby_profile_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_type: string
+          id?: string
+          is_favorite?: boolean | null
+          location?: string | null
+          mood?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+          video_url?: string | null
+          witnesses?: string[] | null
+        }
+        Update: {
+          baby_profile_id?: string | null
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_type?: string
+          id?: string
+          is_favorite?: boolean | null
+          location?: string | null
+          mood?: string | null
+          notes?: string | null
+          photo_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+          video_url?: string | null
+          witnesses?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_first_times_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       baby_medication_logs: {
         Row: {
@@ -550,6 +662,68 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      baby_timeline_events: {
+        Row: {
+          baby_profile_id: string | null
+          color: string | null
+          created_at: string
+          description: string | null
+          event_date: string
+          event_time: string | null
+          event_type: string
+          icon: string | null
+          id: string
+          is_milestone: boolean | null
+          photo_url: string | null
+          related_record_id: string | null
+          related_record_type: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          baby_profile_id?: string | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_time?: string | null
+          event_type: string
+          icon?: string | null
+          id?: string
+          is_milestone?: boolean | null
+          photo_url?: string | null
+          related_record_id?: string | null
+          related_record_type?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          baby_profile_id?: string | null
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_time?: string | null
+          event_type?: string
+          icon?: string | null
+          id?: string
+          is_milestone?: boolean | null
+          photo_url?: string | null
+          related_record_id?: string | null
+          related_record_type?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_timeline_events_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       baby_vaccination_profiles: {
         Row: {

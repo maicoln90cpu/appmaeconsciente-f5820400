@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler, Frown, Pill, Calendar, CalendarClock, FileText, Download, CalendarDays, Users, Bell, LayoutDashboard } from "lucide-react";
+import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler, Frown, Pill, Calendar, CalendarClock, FileText, Download, CalendarDays, Users, Bell, LayoutDashboard, Trophy, Camera, History } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -24,6 +24,9 @@ import { DataExporter } from "@/components/bebe/DataExporter";
 import { BabySummaryWidget } from "@/components/bebe/BabySummaryWidget";
 import { PartnerAccessManager } from "@/components/bebe/PartnerAccessManager";
 import { NotificationSettings } from "@/components/bebe/NotificationSettings";
+import { BabyAchievements } from "@/components/bebe/BabyAchievements";
+import { FirstTimesAlbum } from "@/components/bebe/FirstTimesAlbum";
+import { VisualTimeline } from "@/components/bebe/VisualTimeline";
 
 interface FeedingLog {
   id: string;
@@ -280,6 +283,21 @@ const DashboardBebe = () => {
             <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Notificações</span>
             <span className="sm:hidden">Notif.</span>
+          </TabsTrigger>
+          <TabsTrigger value="achievements" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Trophy className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Conquistas</span>
+            <span className="sm:hidden">Conq.</span>
+          </TabsTrigger>
+          <TabsTrigger value="firsts" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Camera className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Primeiras Vezes</span>
+            <span className="sm:hidden">1ªs</span>
+          </TabsTrigger>
+          <TabsTrigger value="timeline" className="flex items-center gap-1 text-xs sm:text-sm">
+            <History className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Linha do Tempo</span>
+            <span className="sm:hidden">Tempo</span>
           </TabsTrigger>
         </TabsList>
 
@@ -591,6 +609,21 @@ const DashboardBebe = () => {
         {/* Notification Settings Tab */}
         <TabsContent value="notifications">
           <NotificationSettings />
+        </TabsContent>
+
+        {/* Achievements Tab */}
+        <TabsContent value="achievements">
+          <BabyAchievements babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* First Times Album Tab */}
+        <TabsContent value="firsts">
+          <FirstTimesAlbum babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Visual Timeline Tab */}
+        <TabsContent value="timeline">
+          <VisualTimeline babyProfileId={selectedBabyId} />
         </TabsContent>
       </Tabs>
     </div>
