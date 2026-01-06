@@ -4,10 +4,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { useVaccination } from "@/hooks/useVaccination";
+import { GrowthChart } from "@/components/crescimento/GrowthChart";
+import { FoodIntroductionDiary } from "@/components/alimentacao-bebe/FoodIntroductionDiary";
+import { BottleCalculator } from "@/components/alimentacao-bebe/BottleCalculator";
 
 interface FeedingLog {
   id: string;
@@ -34,11 +40,20 @@ const DashboardBebe = () => {
   const [feedingLogs24h, setFeedingLogs24h] = useState<FeedingLog[]>([]);
   const [sleepLogs24h, setSleepLogs24h] = useState<SleepLog[]>([]);
   const [alerts, setAlerts] = useState<string[]>([]);
+  const [selectedBabyId, setSelectedBabyId] = useState<string>("");
   const navigate = useNavigate();
+  const { profiles: babyProfiles } = useVaccination();
 
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  // Auto-select first baby profile
+  useEffect(() => {
+    if (babyProfiles.length > 0 && !selectedBabyId) {
+      setSelectedBabyId(babyProfiles[0].id);
+    }
+  }, [babyProfiles, selectedBabyId]);
 
   const loadDashboardData = async () => {
     try {
@@ -148,14 +163,30 @@ const DashboardBebe = () => {
   return (
     <div className="container py-8 max-w-6xl">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
-          <Baby className="h-10 w-10 text-primary" />
-          Minha Rotina do Bebê
-        </h1>
-        <p className="text-muted-foreground">
-          Visão 360° da rotina: mamadas, sono e alertas inteligentes
-        </p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+            <Baby className="h-10 w-10 text-primary" />
+            Minha Rotina do Bebê
+          </h1>
+          <p className="text-muted-foreground">
+            Visão 360° da rotina: mamadas, sono, crescimento e alimentação
+          </p>
+        </div>
+        {babyProfiles.length > 0 && (
+          <Select value={selectedBabyId} onValueChange={setSelectedBabyId}>
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Selecione o bebê" />
+            </SelectTrigger>
+            <SelectContent>
+              {babyProfiles.map((baby) => (
+                <SelectItem key={baby.id} value={baby.id}>
+                  {baby.baby_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Alertas Inteligentes */}
@@ -171,6 +202,30 @@ const DashboardBebe = () => {
           ))}
         </div>
       )}
+
+      {/* Main Tabs */}
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            <span className="hidden sm:inline">Visão Geral</span>
+          </TabsTrigger>
+          <TabsTrigger value="growth" className="flex items-center gap-2">
+            <Ruler className="h-4 w-4" />
+            <span className="hidden sm:inline">Crescimento</span>
+          </TabsTrigger>
+          <TabsTrigger value="food" className="flex items-center gap-2">
+            <Apple className="h-4 w-4" />
+            <span className="hidden sm:inline">Alimentação</span>
+          </TabsTrigger>
+          <TabsTrigger value="bottle" className="flex items-center gap-2">
+            <Calculator className="h-4 w-4" />
+            <span className="hidden sm:inline">Mamadeira</span>
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab */}
+        <TabsContent value="overview" className="space-y-6">
 
       {/* KPIs Principais */}
       <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -414,6 +469,23 @@ const DashboardBebe = () => {
           </Button>
         </CardContent>
       </Card>
+        </TabsContent>
+
+        {/* Growth Tab */}
+        <TabsContent value="growth">
+          <GrowthChart babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Food Introduction Tab */}
+        <TabsContent value="food">
+          <FoodIntroductionDiary babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Bottle Calculator Tab */}
+        <TabsContent value="bottle">
+          <BottleCalculator babyProfileId={selectedBabyId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
