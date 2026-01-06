@@ -6,7 +6,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler, Frown, Pill, Calendar, CalendarClock } from "lucide-react";
+import { Baby, Milk, Moon, Clock, TrendingUp, AlertTriangle, Plus, Apple, Calculator, Ruler, Frown, Pill, Calendar, CalendarClock, FileText, Download, CalendarDays } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -18,6 +18,9 @@ import { ColicTracker } from "@/components/bebe/ColicTracker";
 import { MedicationTimer } from "@/components/bebe/MedicationTimer";
 import { AppointmentOrganizer } from "@/components/bebe/AppointmentOrganizer";
 import { RoutinePlanner } from "@/components/bebe/RoutinePlanner";
+import { PediatricReportGenerator } from "@/components/bebe/PediatricReportGenerator";
+import { UnifiedCalendar } from "@/components/bebe/UnifiedCalendar";
+import { DataExporter } from "@/components/bebe/DataExporter";
 
 interface FeedingLog {
   id: string;
@@ -249,6 +252,21 @@ const DashboardBebe = () => {
             <CalendarClock className="h-3 w-3 sm:h-4 sm:w-4" />
             <span className="hidden sm:inline">Rotina</span>
             <span className="sm:hidden">Rot.</span>
+          </TabsTrigger>
+          <TabsTrigger value="calendar" className="flex items-center gap-1 text-xs sm:text-sm">
+            <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Calendário</span>
+            <span className="sm:hidden">Cal.</span>
+          </TabsTrigger>
+          <TabsTrigger value="report" className="flex items-center gap-1 text-xs sm:text-sm">
+            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Relatório</span>
+            <span className="sm:hidden">Rel.</span>
+          </TabsTrigger>
+          <TabsTrigger value="export" className="flex items-center gap-1 text-xs sm:text-sm">
+            <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+            <span className="hidden sm:inline">Exportar</span>
+            <span className="sm:hidden">Exp.</span>
           </TabsTrigger>
         </TabsList>
 
@@ -532,6 +550,21 @@ const DashboardBebe = () => {
         {/* Routine Tab */}
         <TabsContent value="routine">
           <RoutinePlanner babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Unified Calendar Tab */}
+        <TabsContent value="calendar">
+          <UnifiedCalendar babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Pediatric Report Tab */}
+        <TabsContent value="report">
+          <PediatricReportGenerator babyProfileId={selectedBabyId} />
+        </TabsContent>
+
+        {/* Data Export Tab */}
+        <TabsContent value="export">
+          <DataExporter babyProfileId={selectedBabyId} />
         </TabsContent>
       </Tabs>
     </div>
