@@ -1,4 +1,13 @@
+/**
+ * @fileoverview Hook para gerenciamento de itens do enxoval
+ * @module hooks/useEnxovalItems
+ * 
+ * Provê operações CRUD com atualização otimista e paginação
+ * para a lista de itens do enxoval do usuário.
+ */
+
 import { useState, useEffect, useCallback } from "react";
+
 import { supabase } from "@/integrations/supabase/client";
 import { EnxovalItem, Config } from "@/types/enxoval";
 import { useToast } from "@/hooks/useToast";
@@ -12,8 +21,30 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import logger from "@/lib/logger";
 
+/** Quantidade de itens carregados por página */
 const ITEMS_PER_PAGE = 50;
 
+/**
+ * Hook para gerenciar itens do enxoval com paginação e CRUD
+ * 
+ * Implementa:
+ * - Carregamento paginado (infinite scroll)
+ * - Atualizações otimistas para melhor UX
+ * - Cálculos automáticos de totais e alertas
+ * - Verificação de limites RN e prazos de troca
+ * 
+ * @param config - Configuração do usuário (limites RN, dias alerta)
+ * @returns Objeto com items, estados e funções de manipulação
+ * 
+ * @example
+ * ```tsx
+ * const { items, loading, addItem, deleteItem } = useEnxovalItems(config);
+ * 
+ * const handleAdd = async () => {
+ *   await addItem({ item: 'Body', category: 'Roupas', ... });
+ * };
+ * ```
+ */
 export const useEnxovalItems = (config: Config | null) => {
   const [items, setItems] = useState<EnxovalItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +54,14 @@ export const useEnxovalItems = (config: Config | null) => {
   const { toast } = useToast();
   const { user } = useAuth();
 
+  /**
+   * Processa um item do banco de dados para o formato do frontend
+   * Calcula subtotais, economia e verifica alertas/limites
+   * 
+   * @param dbItem - Item raw do Supabase
+   * @param config - Configuração com limites RN
+   * @returns Item processado com cálculos e alertas
+   */
   const processItem = useCallback((dbItem: any, config: Config | null): EnxovalItem => {
     const subtotalPlanned = calculateSubtotalPlanned(dbItem.qtd_planejada, dbItem.preco_planejado);
     const subtotalPaid = calculateSubtotalPaid(
@@ -34,14 +73,14 @@ export const useEnxovalItems = (config: Config | null) => {
     const savings = calculateSavings(subtotalPlanned, subtotalPaid);
     const savingsPercent = calculateSavingsPercent(subtotalPlanned, subtotalPaid);
 
-    // Verificar excesso RN
+    // Verificar se excede limite RN (itens tamanho recém-nascido)
     const limite = config?.limites_rn.find((l) => l.item.toLowerCase() === dbItem.item.toLowerCase());
     const excessoRN = dbItem.tamanho === "RN" && limite && dbItem.qtd_comprada > limite.limite;
 
-    // Verificar supérfluo comprado
+    // Verificar se é item supérfluo que foi comprado (possível arrependimento)
     const superfluoComprado = dbItem.necessidade === "Não" && dbItem.status === "Comprado";
 
-    // Verificar alerta de troca
+    // Verificar proximidade do prazo de troca
     let alertaTroca = false;
     if (dbItem.data_limite_troca && config) {
       const today = new Date();
@@ -85,6 +124,12 @@ export const useEnxovalItems = (config: Config | null) => {
     };
   }, []);
 
+  /**
+   * Carrega itens do banco de dados com paginação
+   * 
+   * @param pageNum - Número da página (0-indexed)
+   * @param append - Se true, adiciona aos itens existentes (infinite scroll)
+   */
   const loadItems = useCallback(async (pageNum: number = 0, append: boolean = false) => {
     if (!user) {
       setLoading(false);
@@ -110,7 +155,7 @@ export const useEnxovalItems = (config: Config | null) => {
 
       if (error) throw error;
 
-      // Check if there are more items
+      // Verifica se há mais itens para carregar
       setHasMore((data?.length || 0) === ITEMS_PER_PAGE);
 
       const processedItems = (data || []).map((item) => processItem(item, config));
@@ -134,13 +179,22 @@ export const useEnxovalItems = (config: Config | null) => {
     }
   }, [user, config, processItem, toast]);
 
-  // Load more items (infinite scroll)
+  /**
+   * Carrega mais itens (próxima página)
+   * Usado para implementar infinite scroll
+   */
   const loadMore = useCallback(() => {
     if (!loadingMore && hasMore) {
       loadItems(page + 1, true);
     }
   }, [loadingMore, hasMore, page, loadItems]);
 
+  /**
+   * Adiciona um novo item ao enxoval
+   * Usa atualização otimista - adiciona à UI antes de confirmar no servidor
+   * 
+   * @param item - Dados do item (sem ID, será gerado pelo banco)
+   */
   const addItem = useCallback(async (item: Omit<EnxovalItem, "id">) => {
     if (!user) return;
 
@@ -180,7 +234,7 @@ export const useEnxovalItems = (config: Config | null) => {
 
       if (error) throw error;
 
-      // Atualização otimista - adicionar ao início da lista
+      // Atualização otimista - adiciona ao início da lista
       if (newItem) {
         const processedItem = processItem(newItem, config);
         setItems(prev => [processedItem, ...prev]);
@@ -200,6 +254,12 @@ export const useEnxovalItems = (config: Config | null) => {
     }
   }, [user, config, processItem, toast]);
 
+  /**
+   * Atualiza um item existente
+   * Usa atualização otimista para feedback imediato
+   * 
+   * @param item - Item completo com as alterações
+   */
   const updateItem = useCallback(async (item: EnxovalItem) => {
     try {
       const priority = calculatePriority(item.necessity);
@@ -270,15 +330,21 @@ export const useEnxovalItems = (config: Config | null) => {
     }
   }, [config, processItem, toast]);
 
+  /**
+   * Remove um item do enxoval
+   * Usa atualização otimista com rollback em caso de erro
+   * 
+   * @param id - ID do item a ser removido
+   */
   const deleteItem = useCallback(async (id: string) => {
     try {
-      // Atualização otimista
+      // Atualização otimista - remove da UI imediatamente
       setItems(prev => prev.filter(i => i.id !== id));
 
       const { error } = await supabase.from("itens_enxoval").delete().eq("id", id);
 
       if (error) {
-        // Reverter se falhar
+        // Rollback: recarrega lista se falhar
         await loadItems(0, false);
         throw error;
       }
@@ -297,6 +363,7 @@ export const useEnxovalItems = (config: Config | null) => {
     }
   }, [loadItems, toast]);
 
+  // Carrega itens quando config estiver disponível
   useEffect(() => {
     if (config) {
       loadItems(0, false);
@@ -304,14 +371,23 @@ export const useEnxovalItems = (config: Config | null) => {
   }, [config]);
 
   return { 
+    /** Lista de itens processados */
     items, 
+    /** Carregamento inicial */
     loading, 
+    /** Carregando mais itens */
     loadingMore,
+    /** Se há mais itens para carregar */
     hasMore,
+    /** Função para carregar próxima página */
     loadMore,
+    /** Adicionar novo item */
     addItem, 
+    /** Atualizar item existente */
     updateItem, 
+    /** Remover item */
     deleteItem, 
+    /** Recarregar lista do início */
     reloadItems: () => loadItems(0, false) 
   };
 };
