@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { usePosts } from "@/hooks/usePosts";
 import { CreatePostDialog } from "@/components/comunidade/CreatePostDialog";
 import { PostCard } from "@/components/comunidade/PostCard";
@@ -13,15 +13,18 @@ const Comunidade = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const filteredPosts = posts.filter((post) => {
-    const matchesSearch = searchQuery
-      ? post.content.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
-    const matchesCategory = selectedCategory
-      ? post.categoria === selectedCategory
-      : true;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredPosts = useMemo(() => {
+    const searchLower = searchQuery.toLowerCase();
+    return posts.filter((post) => {
+      const matchesSearch = searchQuery
+        ? post.content.toLowerCase().includes(searchLower)
+        : true;
+      const matchesCategory = selectedCategory
+        ? post.categoria === selectedCategory
+        : true;
+      return matchesSearch && matchesCategory;
+    });
+  }, [posts, searchQuery, selectedCategory]);
 
   return (
     <div className="min-h-screen bg-background">

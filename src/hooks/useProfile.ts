@@ -3,9 +3,9 @@
  * @module hooks/useProfile
  */
 
-import { useState, useEffect } from "react";
-
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Interface que representa o perfil completo do usuário
@@ -60,8 +60,32 @@ export interface Profile {
   updated_at: string;
 }
 
+const PROFILE_QUERY_KEY = ["profile"] as const;
+const STALE_TIME = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Fetches profile data from Supabase
+ */
+const fetchProfile = async (userId: string | undefined): Promise<Profile | null> => {
+  if (!userId) return null;
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error loading profile:", error);
+    return null;
+  }
+
+  return data;
+};
+
 /**
  * Hook para carregar e atualizar o perfil do usuário autenticado
+ * Usa React Query para caching e gerenciamento de estado
  * 
  * @returns Objeto contendo:
  * - `profile`: Dados do perfil ou null se não carregado
@@ -82,46 +106,37 @@ export interface Profile {
  * ```
  */
 export const useProfile = () => {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  /**
-   * Carrega o perfil do usuário autenticado do banco de dados
-   * @internal
-   */
-  const loadProfile = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
+  const { data: profile, isLoading: loading, refetch } = useQuery({
+    queryKey: [...PROFILE_QUERY_KEY, user?.id],
+    queryFn: () => fetchProfile(user?.id),
+    enabled: !!user?.id,
+    staleTime: STALE_TIME,
+    gcTime: 10 * 60 * 1000, // 10 minutes cache
+  });
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
+  const updateMutation = useMutation({
+    mutationFn: async (updates: Partial<Profile>) => {
+      if (!user?.id) throw new Error("Not authenticated");
 
-      if (error) {
-        console.error('Error loading profile:', error);
-        setProfile(null);
-      } else {
-        setProfile(data);
-      }
-    } catch (error) {
-      console.error('Error in useProfile:', error);
-      setProfile(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+      const { error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", user.id);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+      if (error) throw error;
+      return updates;
+    },
+    onSuccess: (updates) => {
+      // Optimistically update the cache
+      queryClient.setQueryData([...PROFILE_QUERY_KEY, user?.id], (old: Profile | null) => {
+        if (!old) return old;
+        return { ...old, ...updates };
+      });
+    },
+  });
 
   /**
    * Atualiza parcialmente o perfil do usuário
@@ -131,27 +146,22 @@ export const useProfile = () => {
    */
   const updateProfile = async (updates: Partial<Profile>) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) return { error: 'Not authenticated' };
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) {
-        console.error('Error updating profile:', error);
-        return { error: error.message };
-      }
-
-      await loadProfile();
+      await updateMutation.mutateAsync(updates);
       return { error: null };
     } catch (error) {
-      console.error('Error in updateProfile:', error);
-      return { error: 'Failed to update profile' };
+      console.error("Error in updateProfile:", error);
+      return { error: error instanceof Error ? error.message : "Failed to update profile" };
     }
   };
 
-  return { profile, loading, updateProfile, reloadProfile: loadProfile };
+  const reloadProfile = () => {
+    refetch();
+  };
+
+  return { 
+    profile: profile ?? null, 
+    loading, 
+    updateProfile, 
+    reloadProfile 
+  };
 };
