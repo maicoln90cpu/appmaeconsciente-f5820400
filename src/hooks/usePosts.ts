@@ -81,11 +81,25 @@ export const usePosts = () => {
       const userIds = [...new Set(postsData.map(p => p.user_id))];
       const postIds = postsData.map(p => p.id);
 
-      // Batch fetch profiles
-      const { data: profiles } = await supabase
-        .from("profiles")
-        .select("id, email, foto_perfil_url")
-        .in("id", userIds);
+      // Parallel fetch profiles, likes, and comments using Promise.all
+      const [profilesResult, likesResult, commentsResult] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("id, email, foto_perfil_url")
+          .in("id", userIds),
+        supabase
+          .from("post_likes")
+          .select("post_id, user_id")
+          .in("post_id", postIds),
+        supabase
+          .from("post_comments")
+          .select("post_id")
+          .in("post_id", postIds),
+      ]);
+
+      const profiles = profilesResult.data;
+      const allLikes = likesResult.data;
+      const allComments = commentsResult.data;
 
       // Atualizar cache de profiles
       const newProfileCache = new Map(profileCache);
@@ -93,18 +107,6 @@ export const usePosts = () => {
         newProfileCache.set(p.id, { email: p.email, foto_perfil_url: p.foto_perfil_url });
       });
       setProfileCache(newProfileCache);
-
-      // Batch fetch likes counts and user likes
-      const { data: allLikes } = await supabase
-        .from("post_likes")
-        .select("post_id, user_id")
-        .in("post_id", postIds);
-
-      // Batch fetch comments counts
-      const { data: allComments } = await supabase
-        .from("post_comments")
-        .select("post_id")
-        .in("post_id", postIds);
 
       // Create lookup maps for O(1) access
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
