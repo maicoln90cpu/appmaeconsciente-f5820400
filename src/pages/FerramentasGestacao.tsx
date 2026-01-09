@@ -5,7 +5,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ContractionDiary } from "@/components/gestacao/ContractionDiary";
 import { DueDateCalculator } from "@/components/gestacao/DueDateCalculator";
-import { Timer, Calculator, Baby } from "lucide-react";
+import { UltrasoundAlbum } from "@/components/gestacao/UltrasoundAlbum";
+import { Timer, Calculator, Image } from "lucide-react";
 
 const FerramentasGestacao = () => {
   return (
@@ -17,8 +18,13 @@ const FerramentasGestacao = () => {
         </p>
       </div>
 
-      <Tabs defaultValue="dpp" className="space-y-6">
-        <TabsList className="grid grid-cols-2 w-full max-w-md">
+      <Tabs defaultValue="ultrassons" className="space-y-6">
+        <TabsList className="grid grid-cols-3 w-full max-w-lg">
+          <TabsTrigger value="ultrassons" className="flex items-center gap-2">
+            <Image className="h-4 w-4" />
+            <span className="hidden sm:inline">Ultrassons</span>
+            <span className="sm:hidden">📸</span>
+          </TabsTrigger>
           <TabsTrigger value="dpp" className="flex items-center gap-2">
             <Calculator className="h-4 w-4" />
             <span className="hidden sm:inline">Calculadora DPP</span>
@@ -30,6 +36,10 @@ const FerramentasGestacao = () => {
             <span className="sm:hidden">Timer</span>
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="ultrassons">
+          <UltrasoundAlbum />
+        </TabsContent>
 
         <TabsContent value="dpp">
           <DueDateCalculator />

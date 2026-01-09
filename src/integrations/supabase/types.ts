@@ -3410,6 +3410,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ultrasound_images: {
+        Row: {
+          baby_length_cm: number | null
+          baby_weight_grams: number | null
+          created_at: string
+          gestational_week: number
+          id: string
+          image_url: string
+          is_favorite: boolean | null
+          notes: string | null
+          ultrasound_date: string
+          ultrasound_type: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          baby_length_cm?: number | null
+          baby_weight_grams?: number | null
+          created_at?: string
+          gestational_week: number
+          id?: string
+          image_url: string
+          is_favorite?: boolean | null
+          notes?: string | null
+          ultrasound_date: string
+          ultrasound_type?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          baby_length_cm?: number | null
+          baby_weight_grams?: number | null
+          created_at?: string
+          gestational_week?: number
+          id?: string
+          image_url?: string
+          is_favorite?: boolean | null
+          notes?: string | null
+          ultrasound_date?: string
+          ultrasound_type?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_access_logs: {
         Row: {
           accessed_at: string | null
