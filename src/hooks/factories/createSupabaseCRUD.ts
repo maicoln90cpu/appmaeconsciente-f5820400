@@ -40,6 +40,19 @@ interface CRUDOptions<T> {
  * Factory para criar hooks de CRUD genéricos com React Query.
  * Elimina código duplicado em hooks que seguem o padrão query + add + update + delete.
  * 
+ * ## Hooks Migrados para esta Factory:
+ * - useBabyAppointments (consultas/agendamentos)
+ * - useBabyColic (registros de cólica)
+ * - useGrowthMeasurements (medições de crescimento)
+ * 
+ * ## Hooks que NÃO devem ser migrados (lógica complexa):
+ * - useBabyMedications (múltiplas queries, lógica de logs)
+ * - useBabyRoutines (múltiplas queries, filtragem por dia)
+ * - useContractions (timer, lógica de sessão)
+ * - useFoodIntroduction (auto-detect alérgenos)
+ * - useTickets (validação Zod, rate limiting)
+ * - useToolSuggestions (criação de ticket vinculado)
+ * 
  * @example
  * // Definir o tipo da entidade
  * type EmotionalLog = Database['public']['Tables']['emotional_logs']['Row'];
