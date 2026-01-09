@@ -3,7 +3,8 @@ import { RegistroSono } from "@/components/sono/RegistroSono";
 import { DashboardSono } from "@/components/sono/DashboardSono";
 import { HistoricoSono } from "@/components/sono/HistoricoSono";
 import { ConfiguracoesSono } from "@/components/sono/ConfiguracoesSono";
-import { ExportSonoPDF } from "@/components/sono/ExportSonoPDF";
+import { SleepAIInsights } from "@/components/sono/SleepAIInsights";
+import { SleepPatternChart } from "@/components/sono/SleepPatternChart";
 import { useBabySleep } from "@/hooks/useBabySleep";
 import { Loader2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -62,13 +63,24 @@ export default function DiarioSono() {
         </p>
       </div>
 
-      <Tabs defaultValue="registro" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs defaultValue="insights" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+          <TabsTrigger value="insights">🧠 Insights IA</TabsTrigger>
           <TabsTrigger value="registro">📝 Registro</TabsTrigger>
           <TabsTrigger value="dashboard">📊 Dashboard</TabsTrigger>
+          <TabsTrigger value="padroes">📈 Padrões</TabsTrigger>
           <TabsTrigger value="historico">📅 Histórico</TabsTrigger>
-          <TabsTrigger value="configuracoes">⚙️ Configurações</TabsTrigger>
+          <TabsTrigger value="configuracoes">⚙️ Config</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="insights">
+          <SleepAIInsights
+            sleepLogs={sleepLogs}
+            milestones={milestones}
+            babyName={settings.baby_name}
+            babyAgeMonths={babyAgeMonths}
+          />
+        </TabsContent>
 
         <TabsContent value="registro">
           <RegistroSono
@@ -84,6 +96,10 @@ export default function DiarioSono() {
             milestones={milestones}
             babyAgeMonths={babyAgeMonths}
           />
+        </TabsContent>
+
+        <TabsContent value="padroes">
+          <SleepPatternChart sleepLogs={sleepLogs} period={14} />
         </TabsContent>
 
         <TabsContent value="historico">
