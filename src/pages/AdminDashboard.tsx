@@ -35,6 +35,7 @@ const ToolSuggestionManagement = lazy(() => import("@/components/admin/ToolSugge
 const SiteSettings = lazy(() => import("@/components/admin/SiteSettings").then(m => ({ default: m.SiteSettings })));
 const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPanel").then(m => ({ default: m.SecurityAuditPanel })));
 const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then(m => ({ default: m.AdminCharts })));
+const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then(m => ({ default: m.AppHealthDashboard })));
 
 // Loading fallback component
 const TabLoading = () => (
@@ -303,6 +304,7 @@ export default function AdminDashboard() {
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
           <TabsList className="flex flex-wrap gap-1 h-auto p-1">
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="health">Saúde do App</TabsTrigger>
             <TabsTrigger value="security">Segurança</TabsTrigger>
             <TabsTrigger value="users">Usuários</TabsTrigger>
             <TabsTrigger value="products">Produtos</TabsTrigger>
@@ -320,6 +322,12 @@ export default function AdminDashboard() {
           <TabsContent value="analytics">
             <Suspense fallback={<TabLoading />}>
               <AnalyticsDashboard />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="health">
+            <Suspense fallback={<TabLoading />}>
+              <AppHealthDashboard />
             </Suspense>
           </TabsContent>
 
