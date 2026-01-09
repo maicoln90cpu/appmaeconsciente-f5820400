@@ -6,8 +6,9 @@ import { ChecklistBag } from "@/components/mala-maternidade/ChecklistBag";
 import { ProgressTracker } from "@/components/mala-maternidade/ProgressTracker";
 import { HospitalSettings } from "@/components/mala-maternidade/HospitalSettings";
 import { ExportPDF } from "@/components/mala-maternidade/ExportPDF";
+import { WeeklyMilestones } from "@/components/mala-maternidade/WeeklyMilestones";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, Calendar } from "lucide-react";
+import { Info, Calendar, ListChecks, Package } from "lucide-react";
 import { useMaternityBag } from "@/hooks/useMaternityBag";
 import { useProfile } from "@/hooks/useProfile";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -163,9 +164,9 @@ const MalaDaMaternidade = () => {
         </div>
 
         {weeksPregnant < 37 && daysUntilReady > 0 && (
-          <Alert className="mb-6 bg-blue-50 border-blue-200">
-            <Calendar className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-800">
+          <Alert className="mb-6 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
+            <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <AlertDescription className="text-blue-800 dark:text-blue-300">
               {daysUntilDueDate > 0 
                 ? `Faltam aproximadamente ${daysUntilDueDate} dias para a data prevista do parto. Organize sua mala com antecedência!`
                 : "Sua data prevista do parto está próxima ou já passou. Certifique-se de que está tudo pronto!"}
@@ -173,93 +174,113 @@ const MalaDaMaternidade = () => {
           </Alert>
         )}
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle>Progresso</CardTitle>
-              <CardDescription>
-                {checkedItems} de {totalItems} itens completos
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ProgressTracker
-                motherItems={motherItems}
-                babyItems={babyItems}
-                companionItems={companionItems}
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Configurações</CardTitle>
-              <CardDescription>
-                Personalize sua lista de acordo com o seu hospital
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <HospitalSettings
-                selectedHospital={selectedHospital}
-                deliveryType={deliveryType}
-                weeksPregnant={weeksPregnant}
-                onHospitalChange={handleHospitalChange}
-                onDeliveryTypeChange={handleDeliveryTypeChange}
-                onWeeksChange={handleWeeksChange}
-              />
-              <div className="mt-4">
-                <ExportPDF
-                  motherItems={motherItems}
-                  babyItems={babyItems}
-                  companionItems={companionItems}
-                  hospital={selectedHospital}
-                  deliveryType={deliveryType}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="mother" className="mb-8">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="mother">
-              Mãe ({motherItems.filter(i => i.checked).length}/{motherItems.length})
+        {/* Main Tabs: Timeline vs Checklist */}
+        <Tabs defaultValue="timeline" className="mb-8">
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="timeline" className="gap-2">
+              <Calendar className="h-4 w-4" />
+              Cronograma Semanal
             </TabsTrigger>
-            <TabsTrigger value="baby">
-              Bebê ({babyItems.filter(i => i.checked).length}/{babyItems.length})
-            </TabsTrigger>
-            <TabsTrigger value="companion">
-              Acompanhante ({companionItems.filter(i => i.checked).length}/{companionItems.length})
+            <TabsTrigger value="checklist" className="gap-2">
+              <ListChecks className="h-4 w-4" />
+              Checklist por Categoria
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="mother">
-            <ChecklistBag
-              title="Mala da Mãe"
-              icon="👩"
-              items={motherItems}
-              onUpdate={handleMotherUpdate}
-              deliveryType={deliveryType}
-            />
+          <TabsContent value="timeline">
+            <WeeklyMilestones currentWeek={weeksPregnant} />
           </TabsContent>
 
-          <TabsContent value="baby">
-            <ChecklistBag
-              title="Mala do Bebê"
-              icon="👶"
-              items={babyItems}
-              onUpdate={handleBabyUpdate}
-              deliveryType={deliveryType}
-            />
-          </TabsContent>
+          <TabsContent value="checklist" className="space-y-6">
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Progresso</CardTitle>
+                  <CardDescription>
+                    {checkedItems} de {totalItems} itens completos
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ProgressTracker
+                    motherItems={motherItems}
+                    babyItems={babyItems}
+                    companionItems={companionItems}
+                  />
+                </CardContent>
+              </Card>
 
-          <TabsContent value="companion">
-            <ChecklistBag
-              title="Mala do Acompanhante"
-              icon="👨"
-              items={companionItems}
-              onUpdate={handleCompanionUpdate}
-              deliveryType={deliveryType}
-            />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Configurações</CardTitle>
+                  <CardDescription>
+                    Personalize sua lista de acordo com o seu hospital
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <HospitalSettings
+                    selectedHospital={selectedHospital}
+                    deliveryType={deliveryType}
+                    weeksPregnant={weeksPregnant}
+                    onHospitalChange={handleHospitalChange}
+                    onDeliveryTypeChange={handleDeliveryTypeChange}
+                    onWeeksChange={handleWeeksChange}
+                  />
+                  <div className="mt-4">
+                    <ExportPDF
+                      motherItems={motherItems}
+                      babyItems={babyItems}
+                      companionItems={companionItems}
+                      hospital={selectedHospital}
+                      deliveryType={deliveryType}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Tabs defaultValue="mother">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="mother">
+                  Mãe ({motherItems.filter(i => i.checked).length}/{motherItems.length})
+                </TabsTrigger>
+                <TabsTrigger value="baby">
+                  Bebê ({babyItems.filter(i => i.checked).length}/{babyItems.length})
+                </TabsTrigger>
+                <TabsTrigger value="companion">
+                  Acompanhante ({companionItems.filter(i => i.checked).length}/{companionItems.length})
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="mother">
+                <ChecklistBag
+                  title="Mala da Mãe"
+                  icon="👩"
+                  items={motherItems}
+                  onUpdate={handleMotherUpdate}
+                  deliveryType={deliveryType}
+                />
+              </TabsContent>
+
+              <TabsContent value="baby">
+                <ChecklistBag
+                  title="Mala do Bebê"
+                  icon="👶"
+                  items={babyItems}
+                  onUpdate={handleBabyUpdate}
+                  deliveryType={deliveryType}
+                />
+              </TabsContent>
+
+              <TabsContent value="companion">
+                <ChecklistBag
+                  title="Mala do Acompanhante"
+                  icon="👨"
+                  items={companionItems}
+                  onUpdate={handleCompanionUpdate}
+                  deliveryType={deliveryType}
+                />
+              </TabsContent>
+            </Tabs>
           </TabsContent>
         </Tabs>
 
