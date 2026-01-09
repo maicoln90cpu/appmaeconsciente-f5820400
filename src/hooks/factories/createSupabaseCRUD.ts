@@ -41,9 +41,10 @@ interface CRUDOptions<T> {
  * Elimina código duplicado em hooks que seguem o padrão query + add + update + delete.
  * 
  * ## Hooks Migrados para esta Factory:
- * - useBabyAppointments (consultas/agendamentos)
+ * - useBabyAppointments (consultas/agendamentos do bebê)
  * - useBabyColic (registros de cólica)
  * - useGrowthMeasurements (medições de crescimento)
+ * - usePostpartumAppointments (consultas pós-parto)
  * 
  * ## Hooks que NÃO devem ser migrados (lógica complexa):
  * - useBabyMedications (múltiplas queries, lógica de logs)
@@ -52,6 +53,11 @@ interface CRUDOptions<T> {
  * - useFoodIntroduction (auto-detect alérgenos)
  * - useTickets (validação Zod, rate limiting)
  * - useToolSuggestions (criação de ticket vinculado)
+ * - useEmotionalLogs (alertas de Edinburgh Scale)
+ * - usePostpartumSymptoms (alertas de sintomas)
+ * - useBodyImageLog (upload de arquivos)
+ * - useRecoveryChecklist (template de semanas)
+ * - useDevelopmentMilestones (cálculos complexos, upsert)
  * 
  * @example
  * // Definir o tipo da entidade

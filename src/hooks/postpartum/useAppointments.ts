@@ -1,7 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
+/**
+ * @fileoverview Hook para gerenciar consultas pós-parto
+ * Migrado para usar createSupabaseCRUD factory
+ */
+
+import { useMemo } from "react";
+import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
 import type { Database } from "@/integrations/supabase/types";
 
 type PostpartumAppointmentRow = Database['public']['Tables']['postpartum_appointments']['Row'];
@@ -9,99 +12,54 @@ type PostpartumAppointmentInsert = Database['public']['Tables']['postpartum_appo
 
 export type PostpartumAppointment = PostpartumAppointmentRow;
 
+// Cria o hook base usando a factory
+const useAppointmentsBase = createSupabaseCRUD<PostpartumAppointment, PostpartumAppointmentInsert>({
+  tableName: 'postpartum_appointments',
+  queryKey: ['postpartum-appointments'],
+  orderBy: 'scheduled_date',
+  orderDirection: 'asc',
+  messages: {
+    addSuccess: 'Consulta agendada com sucesso',
+    addError: 'Erro ao agendar consulta',
+    updateSuccess: 'Consulta atualizada',
+    updateError: 'Erro ao atualizar consulta',
+    deleteSuccess: 'Consulta removida',
+    deleteError: 'Erro ao remover consulta',
+  },
+});
+
+/**
+ * Hook para gerenciar consultas pós-parto
+ * Mantém a mesma API do hook original para compatibilidade
+ */
 export const usePostpartumAppointments = () => {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
+  const {
+    data: appointments,
+    isLoading,
+    add,
+    update,
+    remove,
+  } = useAppointmentsBase();
 
-  const { data: appointments, isLoading } = useQuery({
-    queryKey: ['postpartum-appointments'],
-    queryFn: async () => {
-      const userId = await getAuthenticatedUser();
+  // Consultas futuras
+  const upcomingAppointments = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return appointments.filter(apt => apt.scheduled_date >= today && !apt.completed);
+  }, [appointments]);
 
-      const { data, error } = await supabase
-        .from('postpartum_appointments')
-        .select('*')
-        .eq('user_id', userId)
-        .order('scheduled_date', { ascending: true });
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const addAppointment = useMutation({
-    mutationFn: async (appointment: Omit<PostpartumAppointmentInsert, 'user_id'>) => {
-      const userId = await getAuthenticatedUser();
-
-      const { data, error } = await supabase
-        .from('postpartum_appointments')
-        .insert({ ...appointment, user_id: userId })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['postpartum-appointments'] });
-      toast({
-        title: "Sucesso",
-        description: "Consulta agendada com sucesso",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao agendar consulta",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateAppointment = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<PostpartumAppointment> & { id: string }) => {
-      const { data, error } = await supabase
-        .from('postpartum_appointments')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['postpartum-appointments'] });
-      toast({
-        title: "Sucesso",
-        description: "Consulta atualizada",
-      });
-    },
-  });
-
-  const deleteAppointment = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('postpartum_appointments')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['postpartum-appointments'] });
-      toast({
-        title: "Sucesso",
-        description: "Consulta removida",
-      });
-    },
-  });
+  // Consultas passadas
+  const pastAppointments = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    return appointments.filter(apt => apt.scheduled_date < today || apt.completed);
+  }, [appointments]);
 
   return {
     appointments,
+    upcomingAppointments,
+    pastAppointments,
     isLoading,
-    addAppointment: addAppointment.mutate,
-    updateAppointment: updateAppointment.mutate,
-    deleteAppointment: deleteAppointment.mutate,
+    addAppointment: add,
+    updateAppointment: update,
+    deleteAppointment: remove,
   };
 };
