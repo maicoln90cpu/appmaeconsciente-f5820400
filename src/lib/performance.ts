@@ -334,3 +334,96 @@ export const instrumentFetch = (): void => {
 
 // Export store for debugging
 export const getMetricsStore = () => ({ ...metricsStore });
+
+/**
+ * Resource hints - preload/prefetch critical resources
+ */
+export const addResourceHint = (
+  url: string,
+  type: 'preload' | 'prefetch' | 'preconnect' | 'dns-prefetch',
+  as?: 'script' | 'style' | 'font' | 'image' | 'fetch'
+): void => {
+  // Avoid duplicates
+  const existing = document.querySelector(`link[href="${url}"][rel="${type}"]`);
+  if (existing) return;
+  
+  const link = document.createElement('link');
+  link.rel = type;
+  link.href = url;
+  
+  if (as && (type === 'preload' || type === 'prefetch')) {
+    link.as = as;
+  }
+  
+  if (type === 'preconnect' || type === 'dns-prefetch') {
+    link.crossOrigin = 'anonymous';
+  }
+  
+  document.head.appendChild(link);
+};
+
+/**
+ * Preconnect to critical origins
+ */
+export const preconnectCriticalOrigins = (): void => {
+  const origins = [
+    'https://fonts.googleapis.com',
+    'https://fonts.gstatic.com',
+  ];
+  
+  // Add Supabase URL if available
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  if (supabaseUrl) {
+    origins.push(supabaseUrl);
+  }
+  
+  origins.forEach(origin => {
+    addResourceHint(origin, 'preconnect');
+    addResourceHint(origin, 'dns-prefetch');
+  });
+};
+
+/**
+ * Measure and log component render time
+ */
+export const measureRender = (componentName: string): { start: () => void; end: () => void } => {
+  let startTime: number;
+  
+  return {
+    start: () => {
+      startTime = performance.now();
+    },
+    end: () => {
+      const duration = performance.now() - startTime;
+      if (import.meta.env.DEV && duration > 16) {
+        console.warn(`[Performance] Slow render: ${componentName} took ${duration.toFixed(1)}ms`);
+      }
+    },
+  };
+};
+
+/**
+ * Batch DOM reads and writes to avoid layout thrashing
+ */
+export const scheduleDOMUpdate = (callback: () => void): void => {
+  requestAnimationFrame(() => {
+    callback();
+  });
+};
+
+/**
+ * Defer non-critical work to idle time
+ */
+export const scheduleIdleWork = (
+  callback: () => void,
+  timeout = 2000
+): void => {
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(
+      () => callback(),
+      { timeout }
+    );
+  } else {
+    setTimeout(callback, 1);
+  }
+};
