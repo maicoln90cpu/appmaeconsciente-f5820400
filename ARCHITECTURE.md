@@ -11,6 +11,11 @@ O sistema é uma aplicação web progressiva (PWA) construída com React, focada
 │  │   React     │  │  TanStack   │  │    Tailwind CSS     │  │
 │  │   + Vite    │  │   Query     │  │    + shadcn/ui      │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
+│  │   Vitest    │  │  Playwright │  │      Sentry         │  │
+│  │   Tests     │  │    E2E      │  │    Monitoring       │  │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
@@ -18,8 +23,13 @@ O sistema é uma aplicação web progressiva (PWA) construída com React, focada
 │                    Lovable Cloud (Supabase)                  │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
 │  │  PostgreSQL │  │    Auth     │  │   Edge Functions    │  │
-│  │  + RLS      │  │             │  │                     │  │
+│  │  + RLS      │  │             │  │      (28+)          │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘  │
+│                                                              │
+│  ┌─────────────┐  ┌─────────────┐                           │
+│  │   Storage   │  │  Realtime   │                           │
+│  │             │  │             │                           │
+│  └─────────────┘  └─────────────┘                           │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -31,15 +41,33 @@ O sistema é uma aplicação web progressiva (PWA) construída com React, focada
 src/
 ├── components/
 │   ├── ui/                   # Componentes base (Button, Input, Card, etc.)
+│   │   ├── virtualized-list.tsx    # Lista virtualizada para grandes volumes
+│   │   ├── optimized-components.tsx # Componentes com memoização
+│   │   └── ...
 │   ├── admin/                # Componentes do painel admin
 │   │   ├── user-management/  # Sub-componentes de gestão de usuários
 │   │   │   ├── index.ts      # Barrel export
 │   │   │   ├── types.ts      # Tipos compartilhados
-│   │   │   ├── UserCard.tsx
-│   │   │   ├── UserFilters.tsx
-│   │   │   ├── UserEmptyStates.tsx
-│   │   │   └── UserLoadingError.tsx
+│   │   │   └── ...
 │   │   └── ...
+│   ├── dashboard-bebe/       # Dashboard unificado do bebê
+│   │   ├── index.ts          # Barrel export
+│   │   ├── DashboardBebeHeader.tsx
+│   │   ├── DashboardBebeKPIs.tsx
+│   │   ├── DashboardBebeTabs.tsx
+│   │   └── ...
+│   ├── gamification/         # Sistema de gamificação
+│   │   ├── index.ts
+│   │   ├── BadgeGrid.tsx
+│   │   ├── LevelProgress.tsx
+│   │   └── ...
+│   ├── insights/             # Insights cross-module
+│   │   ├── index.ts
+│   │   ├── ActionableInsights.tsx
+│   │   └── CrossModuleInsights.tsx
+│   ├── onboarding/           # Onboarding do usuário
+│   ├── offline/              # Componentes offline/sync
+│   ├── pwa/                  # Componentes PWA
 │   └── [modulo]/             # Componentes específicos de cada módulo
 └── pages/                    # Páginas/rotas da aplicação
 ```
@@ -48,6 +76,7 @@ src/
 - Renderização de interfaces
 - Interação com usuário
 - Feedback visual (loading, erros, sucesso)
+- Virtualização de listas grandes
 
 ### 2. Lógica de Negócio (Hooks)
 
@@ -66,6 +95,11 @@ src/hooks/
 │   ├── useRecoveryChecklist.ts
 │   └── useBodyImageLog.ts
 ├── useAuthenticatedAction.ts # Utilitário para ações autenticadas
+├── useMemoizedCallback.ts    # Memoização avançada
+├── useVirtualizedList.ts     # Hook para listas virtualizadas
+├── useCrossModuleAnalytics.ts# Analytics cross-module
+├── useDashboardBebe.ts       # Dashboard unificado
+├── useGamification.ts        # Sistema de gamificação
 ├── useProfile.ts             # Dados do perfil
 ├── useEnxovalItems.ts        # Gestão do enxoval
 ├── useBabyFeeding.ts         # Amamentação
@@ -79,6 +113,7 @@ src/hooks/
 - Chamadas à API
 - Transformação de dados
 - Cache e sincronização
+- Memoização e otimização
 
 ### Factories & Abstrações
 
@@ -119,13 +154,25 @@ const useNotes = createSupabaseCRUD<Note, NoteInsert>({
 const { data, add, update, remove, isLoading } = useNotes();
 ```
 
+#### useMemoizedCallback
+
+Hook para memoização avançada:
+
+```typescript
+import { useMemoizedCallback } from '@/hooks/useMemoizedCallback';
+
+const handleClick = useMemoizedCallback((id: string) => {
+  // função memoizada que não muda referência
+}, []);
+```
+
 ### 3. Serviços (Integrations)
 
 ```
 src/integrations/
 └── supabase/
     ├── client.ts         # Cliente Supabase
-    └── types.ts          # Tipos gerados
+    └── types.ts          # Tipos gerados automaticamente
 ```
 
 **Responsabilidades:**
@@ -137,10 +184,59 @@ src/integrations/
 
 ```
 src/lib/
-├── utils.ts              # Funções gerais
+├── utils.ts              # Funções gerais (cn, formatters)
 ├── calculations.ts       # Cálculos financeiros
-├── validators/           # Schemas Zod
-└── logger.ts             # Sistema de logging
+├── lazy-utils.ts         # Lazy loading com retry e prefetch
+├── performance.ts        # Monitoramento de performance
+├── logger.ts             # Sistema de logging estruturado
+├── sentry.ts             # Configuração Sentry
+├── offline-cache.ts      # Cache offline
+├── offline-sync.ts       # Sincronização offline
+├── background-sync.ts    # Background sync
+├── push-notifications.ts # Push notifications
+├── rate-limiter.ts       # Rate limiting
+├── url-validator.ts      # Validação de URLs
+├── accessibility.tsx     # Utilitários de acessibilidade
+├── analytics.ts          # Analytics
+├── bundle-analyzer.ts    # Análise de bundle
+├── size-predictions.ts   # Predições de tamanho
+└── validators/           # Schemas Zod
+    └── auth.ts           # Validação de auth
+```
+
+### 5. Testes
+
+```
+src/test/
+├── setup.ts              # Configuração global Vitest
+├── test-utils.tsx        # Helpers de teste
+├── components/
+│   └── ui/               # Testes de componentes UI
+│       ├── alert.test.tsx
+│       ├── button.test.tsx
+│       ├── card.test.tsx
+│       ├── dialog.test.tsx
+│       ├── form.test.tsx
+│       ├── input.test.tsx
+│       └── tabs.test.tsx
+├── hooks/
+│   ├── factories/
+│   │   └── createSupabaseCRUD.test.ts
+│   └── ...               # Testes de hooks
+└── lib/
+    ├── calculations.test.ts
+    ├── utils.test.ts
+    └── validators/
+        └── auth.test.ts
+
+e2e/                      # Testes E2E Playwright
+├── fixtures/
+│   └── auth.ts           # Fixtures de autenticação
+├── global.setup.ts       # Setup global
+├── auth.spec.ts
+├── navigation.spec.ts
+├── accessibility.spec.ts
+└── [modulo].spec.ts      # Specs por módulo
 ```
 
 ## Fluxo de Dados
@@ -196,6 +292,17 @@ const {
 } = useEnxovalItems();
 ```
 
+### Dashboard Bebê
+
+```typescript
+const {
+  todayStats,
+  alerts,
+  recentActivities,
+  isLoading
+} = useDashboardBebe();
+```
+
 ## Segurança
 
 ### Row Level Security (RLS)
@@ -218,16 +325,22 @@ const schema = z.object({
 });
 ```
 
+### Proteções Adicionais
+- ✅ Leaked password protection habilitado
+- ✅ Rate limiting em edge functions
+- ✅ CORS configurado
+- ✅ Validação de input com Zod
+
 ## Performance
 
 ### Lazy Loading
 
 ```typescript
-// Páginas carregadas sob demanda
-const Dashboard = lazy(() => import('./pages/Dashboard'));
+// Páginas carregadas sob demanda com retry
+const Dashboard = lazyWithRetry(() => import('./pages/Dashboard'));
 
-// Com retry automático
-const Page = lazyWithRetry(() => import('./pages/Page'));
+// Componentes pesados com lazy
+const GrowthChart = lazy(() => import('./components/crescimento/GrowthChart'));
 ```
 
 ### Prefetch
@@ -235,6 +348,22 @@ const Page = lazyWithRetry(() => import('./pages/Page'));
 ```typescript
 // Rotas pré-carregadas no hover
 onMouseEnter={() => preloadComponent(routeImports.dashboard)}
+
+// Prefetch durante idle time
+requestIdleCallback(() => {
+  prefetchCommonRoutes();
+});
+```
+
+### Virtualização
+
+```typescript
+// Listas virtualizadas para grandes volumes
+<VirtualizedList
+  items={items}
+  itemHeight={60}
+  renderItem={(item) => <ItemCard item={item} />}
+/>
 ```
 
 ### Caching
@@ -269,6 +398,13 @@ import { logger } from '@/lib/logger';
 logger.error('Falha ao carregar dados', { userId, error });
 ```
 
+### Sentry Integration
+
+```typescript
+// Erros capturados automaticamente
+Sentry.captureException(error);
+```
+
 ## Testes
 
 ### Estrutura
@@ -278,14 +414,23 @@ src/test/
 ├── setup.ts              # Configuração global
 ├── test-utils.tsx        # Helpers de teste
 ├── lib/                  # Testes de utilitários
+├── hooks/                # Testes de hooks
 └── components/           # Testes de componentes
+
+e2e/                      # Testes E2E
 ```
 
 ### Executando
 
 ```bash
-npm run test              # Executa todos os testes
+# Testes unitários
+npm run test              # Executa todos
 npm run test -- --watch   # Watch mode
+npm run test -- --coverage # Com cobertura
+
+# Testes E2E
+npm run test:e2e          # Executa todos
+npx playwright test --ui  # Interface visual
 ```
 
 ## Deploy
@@ -295,7 +440,7 @@ A aplicação é deployada automaticamente via Lovable:
 1. Push para branch principal
 2. Build automático
 3. Deploy para CDN
-4. Edge functions deployadas
+4. Edge functions deployadas automaticamente
 
 ## Monitoramento
 
@@ -303,11 +448,13 @@ A aplicação é deployada automaticamente via Lovable:
 
 - Console logs em desenvolvimento
 - Logger estruturado em produção
+- Sentry para erros em produção
 
 ### Analytics
 
 - Google Tag Manager configurável
 - Eventos de usuário rastreados
+- Métricas de performance
 
 ---
 
@@ -317,7 +464,14 @@ A aplicação é deployada automaticamente via Lovable:
 
 - Páginas carregadas sob demanda via `lazyWithRetry`
 - Componentes admin carregados via `lazy()` no AdminDashboard
+- Componentes do DashboardBebe carregados sob demanda (16 componentes)
 - Seções da Landing page separadas em componentes (`src/components/landing/`)
+
+### Prefetch Strategies
+
+- Prefetch on hover para navegação
+- Prefetch durante idle time para rotas comuns
+- Preload de assets críticos
 
 ### Tree-Shaking
 
@@ -332,6 +486,12 @@ src/components/
 │   ├── index.ts
 │   ├── TestimonialsSection.tsx
 │   └── FeaturesSection.tsx
+├── dashboard-bebe/       # Dashboard do bebê
+│   ├── index.ts
+│   └── ...
+├── gamification/         # Gamificação
+│   ├── index.ts
+│   └── ...
 ├── admin/
 │   └── user-management/  # Sub-componentes
 └── ...
@@ -339,4 +499,26 @@ src/components/
 
 ---
 
-*Diagrama de arquitetura atualizado em Janeiro 2026*
+## Edge Functions
+
+O projeto possui 28+ edge functions para lógica de backend:
+
+```
+supabase/functions/
+├── _shared/
+│   ├── cors.ts           # CORS headers
+│   └── rate-limiter.ts   # Rate limiting
+├── generate-meal-plan/   # IA para planos alimentares
+├── generate-nutrition-plan/
+├── generate-exercises/
+├── generate-recipes/
+├── nutrition-chat/       # Chat nutricional com IA
+├── hotmart-webhook/      # Integração Hotmart
+├── send-resend-email/    # Envio de emails
+│   └── templates/        # Templates de email
+└── ...
+```
+
+---
+
+*Diagrama de arquitetura atualizado em Janeiro 2026 (Sprint 4)*
