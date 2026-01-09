@@ -14,8 +14,8 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "robots.txt"],
+      registerType: "prompt",
+      includeAssets: ["favicon.ico", "robots.txt", "icon-192.png", "icon-512.png"],
       manifest: {
         name: "Maternidade Consciente",
         short_name: "MaternidadeApp",
@@ -24,31 +24,73 @@ export default defineConfig(({ mode }) => ({
         background_color: "#FFFDF9",
         display: "standalone",
         orientation: "portrait",
+        start_url: "/",
+        scope: "/",
+        categories: ["lifestyle", "health", "parenting"],
         icons: [
           {
             src: "/icon-192.png",
             sizes: "192x192",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "any",
+          },
+          {
+            src: "/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable",
           },
           {
             src: "/icon-512.png",
             sizes: "512x512",
             type: "image/png",
-            purpose: "any maskable",
+            purpose: "any",
+          },
+          {
+            src: "/icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
+        shortcuts: [
+          {
+            name: "Diário do Sono",
+            short_name: "Sono",
+            description: "Registrar sono do bebê",
+            url: "/diario-sono",
+            icons: [{ src: "/icon-192.png", sizes: "192x192" }],
+          },
+          {
+            name: "Amamentação",
+            short_name: "Amamentar",
+            description: "Registrar mamada",
+            url: "/amamentacao",
+            icons: [{ src: "/icon-192.png", sizes: "192x192" }],
+          },
+          {
+            name: "Dashboard Bebê",
+            short_name: "Bebê",
+            description: "Ver resumo do bebê",
+            url: "/dashboard-bebe",
+            icons: [{ src: "/icon-192.png", sizes: "192x192" }],
           },
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,webp,jpg,jpeg}"],
         navigateFallback: "/offline",
-        navigateFallbackDenylist: [/^\/api/],
+        navigateFallbackDenylist: [/^\/api/, /^\/auth/],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: false,
         runtimeCaching: [
+          // Google Fonts - Cache first (static)
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
             options: {
-              cacheName: "google-fonts-cache",
+              cacheName: "google-fonts-stylesheets",
               expiration: {
                 maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
@@ -59,28 +101,93 @@ export default defineConfig(({ mode }) => ({
             },
           },
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
-            handler: "NetworkFirst",
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+            handler: "CacheFirst",
             options: {
-              cacheName: "supabase-api-cache",
-              networkTimeoutSeconds: 10,
+              cacheName: "google-fonts-webfonts",
               expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 5, // 5 minutes
+                maxEntries: 30,
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
               },
               cacheableResponse: {
                 statuses: [0, 200],
               },
             },
           },
+          // Supabase API - Stale while revalidate for better UX
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/.*/i,
-            handler: "CacheFirst",
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
+            handler: "StaleWhileRevalidate",
             options: {
-              cacheName: "supabase-storage-cache",
+              cacheName: "supabase-api-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+                maxAgeSeconds: 60 * 10, // 10 minutes
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+              backgroundSync: {
+                name: "supabase-api-sync",
+                options: {
+                  maxRetentionTime: 24 * 60, // 24 hours
+                },
+              },
+            },
+          },
+          // Supabase Storage - Cache first for images
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-storage-public",
+              expiration: {
+                maxEntries: 200,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          // Supabase Storage - Network first for private
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/sign\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "supabase-storage-private",
+              networkTimeoutSeconds: 10,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60, // 1 hour
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          // Supabase Edge Functions - Network only with fallback
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/functions\/v1\/.*/i,
+            handler: "NetworkOnly",
+            options: {
+              backgroundSync: {
+                name: "edge-functions-sync",
+                options: {
+                  maxRetentionTime: 24 * 60,
+                },
+              },
+            },
+          },
+          // External images (CDN)
+          {
+            urlPattern: /^https:\/\/.*\.(cloudflare|cloudinary|imgix|fastly)\..*\.(png|jpg|jpeg|webp|gif|svg)$/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "external-images",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -88,6 +195,9 @@ export default defineConfig(({ mode }) => ({
             },
           },
         ],
+      },
+      devOptions: {
+        enabled: false,
       },
     }),
   ].filter(Boolean),

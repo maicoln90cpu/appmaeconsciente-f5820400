@@ -13,6 +13,8 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { ProductRoute } from "@/components/ProductRoute";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SkipLink } from "@/components/SkipLink";
+import { InstallPrompt } from "@/components/install/InstallPrompt";
+import { UpdatePrompt } from "@/components/pwa/UpdatePrompt";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 
@@ -90,6 +92,8 @@ const App = () => {
           <Toaster />
           <Sonner />
           <GTMScript />
+          <InstallPrompt />
+          <UpdatePrompt />
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <ScrollToTop />
         <AnalyticsWrapper>
