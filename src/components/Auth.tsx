@@ -12,6 +12,7 @@ import { Baby, Eye, EyeOff, Loader2, Mail, Lock, User, Check, X } from "lucide-r
 import { checkRateLimit, resetRateLimit } from "@/lib/rate-limiter";
 import { signUpSchema, signInSchema, forgotPasswordSchema } from "@/lib/validators/auth";
 import { cn } from "@/lib/utils";
+import { logger } from "@/lib/logger";
 
 type AuthMode = 'sign_in' | 'sign_up' | 'forgot_password';
 
@@ -156,7 +157,7 @@ export const Auth = () => {
         setMode('sign_in');
       }
     } catch (error: any) {
-      console.error('Auth error:', error);
+      logger.error("Auth error", error, { context: "Auth", data: { mode } });
       let message = "Ocorreu um erro. Tente novamente.";
       
       if (error.message?.includes('Invalid login credentials')) {

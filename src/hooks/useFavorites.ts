@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 type FavoriteType = 'recipe' | 'exercise';
 
@@ -48,7 +49,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
       setFavorites(new Set(items.map(f => f.item_id)));
       setFavoriteNotes(new Map(items.map(f => [f.item_id, f.notes])));
     } catch (error) {
-      console.error('Erro ao carregar favoritos:', error);
+      logger.error("Erro ao carregar favoritos", error, { context: "useFavorites" });
     } finally {
       setLoading(false);
     }
@@ -97,7 +98,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
         toast.success('Adicionado aos favoritos');
       }
     } catch (error) {
-      console.error('Erro ao favoritar:', error);
+      logger.error("Erro ao favoritar", error, { context: "useFavorites" });
       toast.error('Erro ao atualizar favoritos');
     }
   };
@@ -124,7 +125,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
       setFavoriteNotes(prev => new Map(prev).set(itemId, notes));
       toast.success('Nota atualizada com sucesso');
     } catch (error) {
-      console.error('Erro ao atualizar nota:', error);
+      logger.error("Erro ao atualizar nota", error, { context: "useFavorites" });
       toast.error('Erro ao atualizar nota');
     }
   };

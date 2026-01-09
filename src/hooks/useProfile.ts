@@ -6,6 +6,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { logger } from "@/lib/logger";
 
 /**
  * Interface que representa o perfil completo do usuário
@@ -80,7 +81,7 @@ const fetchProfile = async (userId: string | undefined): Promise<Profile | null>
     .maybeSingle();
 
   if (error) {
-    console.error("Error loading profile:", error);
+    logger.error("Error loading profile", error, { context: "useProfile" });
     return null;
   }
 
@@ -153,7 +154,7 @@ export const useProfile = () => {
       await updateMutation.mutateAsync(updates);
       return { error: null };
     } catch (error) {
-      console.error("Error in updateProfile:", error);
+      logger.error("Error in updateProfile", error, { context: "useProfile" });
       return { error: error instanceof Error ? error.message : "Failed to update profile" };
     }
   };
