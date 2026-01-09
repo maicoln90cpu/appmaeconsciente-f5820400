@@ -57,15 +57,25 @@
 - [x] Comunidade
 - [x] PWA completo
 - [x] Performance optimization
-- [x] Documentação técnica
+- [x] Documentação técnica base
+
+### Sprint 4: Quality & Testing
+- [x] Sentry error monitoring
+- [x] Testes E2E com Playwright (15+ specs)
+- [x] Testes unitários expandidos
+- [x] Code splitting avançado
+- [x] Virtualização e memoização
+- [x] Documentação técnica completa
 
 ### Resultados
 | Métrica | Antes | Depois |
 |---------|-------|--------|
 | Bundle Size | ~1.2MB | ~400KB |
 | @ts-ignore | 115+ | <30 |
-| Test Coverage | 0% | Core utils |
+| Test Coverage | 0% | Core + UI + E2E |
 | A11y Coverage | Parcial | Completa |
+| Error Monitoring | Nenhum | Sentry |
+| E2E Tests | 0 | 15+ specs |
 
 ---
 

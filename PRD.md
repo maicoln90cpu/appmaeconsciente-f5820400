@@ -164,7 +164,9 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | First Contentful Paint | < 1.5s | ✅ |
 | Time to Interactive | < 3s | ✅ |
 | Bundle size inicial | < 500KB | ✅ |
-| Lighthouse Performance | > 90 | 🔄 |
+| Lighthouse Performance | > 90 | ✅ |
+| Code Splitting | Lazy loading | ✅ |
+| Virtualização | Listas grandes | ✅ |
 
 ### 4.2 Segurança
 | Requisito | Status |
@@ -174,6 +176,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Rate limiting | ✅ |
 | CORS configurado | ✅ |
 | Leaked password protection | ✅ |
+| Error monitoring (Sentry) | ✅ |
 
 ### 4.3 Acessibilidade
 | Requisito | Status |
@@ -182,6 +185,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Skip links | ✅ |
 | Contraste adequado | ✅ |
 | Navegação por teclado | ✅ |
+| Focus management | ✅ |
 
 ### 4.4 PWA
 | Requisito | Status |
@@ -190,6 +194,14 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Offline-first | ✅ |
 | Background sync | ✅ |
 | Push notifications | 🔄 |
+
+### 4.5 Testes
+| Requisito | Status |
+|-----------|--------|
+| Testes unitários (Vitest) | ✅ |
+| Testes E2E (Playwright) | ✅ |
+| Cobertura core utils | ✅ |
+| Cobertura UI components | ✅ |
 
 ---
 
