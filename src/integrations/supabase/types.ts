@@ -771,6 +771,7 @@ export type Database = {
           created_at: string
           development_monitoring_enabled: boolean | null
           development_notes: string | null
+          gender: string | null
           id: string
           nickname: string | null
           updated_at: string
@@ -786,6 +787,7 @@ export type Database = {
           created_at?: string
           development_monitoring_enabled?: boolean | null
           development_notes?: string | null
+          gender?: string | null
           id?: string
           nickname?: string | null
           updated_at?: string
@@ -801,6 +803,7 @@ export type Database = {
           created_at?: string
           development_monitoring_enabled?: boolean | null
           development_notes?: string | null
+          gender?: string | null
           id?: string
           nickname?: string | null
           updated_at?: string
@@ -1098,6 +1101,42 @@ export type Database = {
           mensagem_motivacao?: string | null
           orcamento_total?: number | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      contraction_logs: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          end_time: string | null
+          id: string
+          intensity: number | null
+          notes: string | null
+          session_id: string | null
+          start_time: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          id?: string
+          intensity?: number | null
+          notes?: string | null
+          session_id?: string | null
+          start_time?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          end_time?: string | null
+          id?: string
+          intensity?: number | null
+          notes?: string | null
+          session_id?: string | null
+          start_time?: string
           user_id?: string
         }
         Relationships: []
@@ -2617,6 +2656,60 @@ export type Database = {
           id?: string
           image_urls?: string[] | null
           tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pregnancy_info: {
+        Row: {
+          conception_date: string | null
+          created_at: string
+          due_date: string | null
+          due_date_source: string | null
+          gestational_days: number | null
+          gestational_weeks: number | null
+          hospital_name: string | null
+          id: string
+          is_high_risk: boolean | null
+          last_menstrual_period: string | null
+          notes: string | null
+          ob_doctor_name: string | null
+          ultrasound_due_date: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conception_date?: string | null
+          created_at?: string
+          due_date?: string | null
+          due_date_source?: string | null
+          gestational_days?: number | null
+          gestational_weeks?: number | null
+          hospital_name?: string | null
+          id?: string
+          is_high_risk?: boolean | null
+          last_menstrual_period?: string | null
+          notes?: string | null
+          ob_doctor_name?: string | null
+          ultrasound_due_date?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conception_date?: string | null
+          created_at?: string
+          due_date?: string | null
+          due_date_source?: string | null
+          gestational_days?: number | null
+          gestational_weeks?: number | null
+          hospital_name?: string | null
+          id?: string
+          is_high_risk?: boolean | null
+          last_menstrual_period?: string | null
+          notes?: string | null
+          ob_doctor_name?: string | null
+          ultrasound_due_date?: string | null
           updated_at?: string
           user_id?: string
         }
