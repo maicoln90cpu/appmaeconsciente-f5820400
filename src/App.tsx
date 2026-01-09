@@ -19,6 +19,7 @@ import { UpdatePrompt } from "@/components/pwa/UpdatePrompt";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 import { useAnalytics } from "@/hooks/useAnalytics";
+import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 
 import { lazyWithRetry, prefetchCommonRoutes } from "@/lib/lazy-utils";
 
@@ -50,6 +51,7 @@ const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
   useAnalytics();
+  usePerformanceMonitoring();
   
   useEffect(() => {
     // Prefetch rotas comuns em idle time

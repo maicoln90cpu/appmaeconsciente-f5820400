@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react";
+import { trackError } from "./performance";
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
@@ -13,12 +14,26 @@ export const initSentry = () => {
     environment: import.meta.env.MODE,
     enabled: import.meta.env.PROD,
     
-    // Performance monitoring
-    tracesSampleRate: 0.1, // 10% of transactions
+    // Performance monitoring - increased for better visibility
+    tracesSampleRate: 0.2, // 20% of transactions
+    profilesSampleRate: 0.1, // 10% of transactions for profiling
     
-    // Session replay for debugging (optional, low sample rate)
-    replaysSessionSampleRate: 0.01,
-    replaysOnErrorSampleRate: 0.1,
+    // Session replay for debugging
+    replaysSessionSampleRate: 0.02, // 2% of sessions
+    replaysOnErrorSampleRate: 0.2, // 20% of error sessions
+    
+    // Enable integrations
+    integrations: [
+      Sentry.browserTracingIntegration({
+        // Track navigation performance
+        enableLongTask: true,
+        enableInp: true,
+      }),
+      Sentry.replayIntegration({
+        maskAllText: false,
+        blockAllMedia: false,
+      }),
+    ],
     
     // Filter out known non-critical errors
     ignoreErrors: [
@@ -26,19 +41,45 @@ export const initSentry = () => {
       "Failed to fetch",
       "NetworkError",
       "Load failed",
+      "net::ERR_",
+      "TypeError: Failed to fetch",
       // User-cancelled actions
       "AbortError",
+      "The operation was aborted",
       // Browser extensions
       /^chrome-extension:\/\//,
       /^moz-extension:\/\//,
+      // React hydration
+      "Minified React error",
+      "Hydration failed",
+      // Service worker
+      "ServiceWorker",
+      // ResizeObserver
+      "ResizeObserver loop",
+    ],
+    
+    // Deny URLs from noisy sources
+    denyUrls: [
+      /extensions\//i,
+      /^chrome:\/\//i,
+      /^moz-extension:\/\//i,
+      /googletagmanager\.com/i,
+      /google-analytics\.com/i,
     ],
     
     // Add extra context
     beforeSend(event, hint) {
       // Don't send events in development
       if (import.meta.env.DEV) {
-        console.log("[Sentry] Event captured (dev mode, not sent):", event);
+        console.info("[Sentry] Event captured (dev mode, not sent):", event);
         return null;
+      }
+      
+      // Track error for local dashboard
+      if (event.message) {
+        trackError(event.message);
+      } else if (hint.originalException instanceof Error) {
+        trackError(hint.originalException.message);
       }
       
       // Add user context if available
@@ -46,6 +87,12 @@ export const initSentry = () => {
       if (userId) {
         event.user = { ...event.user, id: userId };
       }
+      
+      // Add app version
+      event.tags = {
+        ...event.tags,
+        app_version: import.meta.env.VITE_APP_VERSION || 'unknown',
+      };
       
       return event;
     },
@@ -56,9 +103,24 @@ export const initSentry = () => {
       if (breadcrumb.category === "console" && breadcrumb.level === "log") {
         return null;
       }
+      
+      // Limit breadcrumb data size
+      if (breadcrumb.data && typeof breadcrumb.data === 'object') {
+        const data = breadcrumb.data as Record<string, unknown>;
+        Object.keys(data).forEach(key => {
+          if (typeof data[key] === 'string' && data[key].length > 500) {
+            data[key] = (data[key] as string).substring(0, 500) + '...';
+          }
+        });
+      }
+      
       return breadcrumb;
     },
   });
+  
+  // Set initial tags
+  Sentry.setTag('platform', 'web');
+  Sentry.setTag('pwa', 'serviceWorker' in navigator ? 'true' : 'false');
 };
 
 // Helper to capture exceptions with extra context

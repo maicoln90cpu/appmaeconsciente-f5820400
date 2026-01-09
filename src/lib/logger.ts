@@ -5,6 +5,7 @@
  */
 
 import { captureError, addBreadcrumb } from "./sentry";
+import { trackError } from "./performance";
 
 const isDevelopment = import.meta.env.DEV;
 
@@ -54,6 +55,9 @@ export const logger = {
       // In production, log minimal info to console
       console.error(`[ERROR] ${message}`);
     }
+    
+    // Track for local dashboard
+    trackError(message);
     
     // Send to Sentry in production
     captureError(error || new Error(message), {
