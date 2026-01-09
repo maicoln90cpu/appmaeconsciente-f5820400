@@ -6,8 +6,9 @@ import { DiarioAutoestima } from "@/components/recuperacao/DiarioAutoestima";
 import { AcessoParceiro } from "@/components/recuperacao/AcessoParceiro";
 import { ConquistasRecuperacao } from "@/components/recuperacao/ConquistasRecuperacao";
 import { EdinburghScale } from "@/components/recuperacao/EdinburghScale";
+import { DeliveryTypeContent } from "@/components/recuperacao/DeliveryTypeContent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, Pill, Calendar, Heart, FileText, Camera, Users, Trophy } from "lucide-react";
+import { Activity, Pill, Calendar, Heart, FileText, Camera, Users, Trophy, Baby } from "lucide-react";
 
 const RecuperacaoPosPartoPage = () => {
   return (
@@ -20,8 +21,12 @@ const RecuperacaoPosPartoPage = () => {
           </p>
         </div>
 
-        <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid grid-cols-4 sm:grid-cols-8 w-full">
+        <Tabs defaultValue="recuperacao" className="space-y-6">
+          <TabsList className="grid grid-cols-4 sm:grid-cols-9 w-full">
+            <TabsTrigger value="recuperacao" className="flex items-center gap-2">
+              <Baby className="h-4 w-4" />
+              <span className="hidden sm:inline">Recuperação</span>
+            </TabsTrigger>
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -55,6 +60,10 @@ const RecuperacaoPosPartoPage = () => {
               <span className="hidden sm:inline">Conquistas</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="recuperacao">
+            <DeliveryTypeContent />
+          </TabsContent>
 
           <TabsContent value="dashboard">
             <DashboardRecuperacao />
