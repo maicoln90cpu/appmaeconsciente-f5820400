@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_engagement_logs: {
+        Row: {
+          action_type: string
+          content: string | null
+          created_at: string
+          id: string
+          post_id: string
+          virtual_user_id: string
+        }
+        Insert: {
+          action_type: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          post_id: string
+          virtual_user_id: string
+        }
+        Update: {
+          action_type?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          post_id?: string
+          virtual_user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_engagement_logs_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       baby_achievements: {
         Row: {
           achieved_at: string
