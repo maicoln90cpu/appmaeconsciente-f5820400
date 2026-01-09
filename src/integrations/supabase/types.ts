@@ -3643,6 +3643,13 @@ export type Database = {
             foreignKeyName: "user_roles_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "user_achievement_progress"
             referencedColumns: ["user_id"]
           },
@@ -3940,6 +3947,36 @@ export type Database = {
       }
     }
     Views: {
+      public_profiles: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          foto_perfil_url: string | null
+          id: string | null
+          leaderboard_opt_in: boolean | null
+          level: number | null
+          xp_total: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: never
+          foto_perfil_url?: string | null
+          id?: string | null
+          leaderboard_opt_in?: boolean | null
+          level?: number | null
+          xp_total?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: never
+          foto_perfil_url?: string | null
+          id?: string | null
+          leaderboard_opt_in?: boolean | null
+          level?: number | null
+          xp_total?: number | null
+        }
+        Relationships: []
+      }
       user_achievement_progress: {
         Row: {
           days_using_app: number | null
