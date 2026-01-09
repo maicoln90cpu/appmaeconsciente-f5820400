@@ -191,7 +191,7 @@ describe("useMaternityBag", () => {
     expect(typeof result.current.addItem).toBe("function");
     expect(typeof result.current.updateItem).toBe("function");
     expect(typeof result.current.deleteItem).toBe("function");
-    expect(typeof result.current.toggleItemCheck).toBe("function");
+    expect(typeof result.current.toggleItemChecked).toBe("function");
   });
 });
 
@@ -229,10 +229,10 @@ describe("Progress Calculation", () => {
 
 describe("Delivery Type Filtering", () => {
   it("should filter cesarean-only items for cesarean delivery", () => {
-    const deliveryType = "cesarean";
+    const deliveryType = "cesarean" as const;
     const filteredItems = mockItems.filter(item => {
-      if (item.cesarean_only && deliveryType !== "cesarean") return false;
-      if (item.normal_only && deliveryType !== "normal") return false;
+      if (item.cesarean_only && deliveryType !== ("cesarean" as string)) return false;
+      if (item.normal_only && deliveryType !== ("normal" as string)) return false;
       return true;
     });
     
@@ -240,10 +240,10 @@ describe("Delivery Type Filtering", () => {
   });
 
   it("should hide cesarean-only items for normal delivery", () => {
-    const deliveryType = "normal";
+    const deliveryType = "normal" as const;
     const filteredItems = mockItems.filter(item => {
-      if (item.cesarean_only && deliveryType === "normal") return false;
-      if (item.normal_only && deliveryType === "cesarean") return false;
+      if (item.cesarean_only && deliveryType !== ("cesarean" as string)) return false;
+      if (item.normal_only && deliveryType !== ("normal" as string)) return false;
       return true;
     });
     

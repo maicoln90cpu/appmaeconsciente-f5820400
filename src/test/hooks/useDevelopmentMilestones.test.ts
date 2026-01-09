@@ -182,7 +182,7 @@ describe("useDevelopmentMilestones", () => {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.markAchieved).toBe("function");
+    expect(typeof result.current.markAsAchieved).toBe("function");
     expect(typeof result.current.updateRecord).toBe("function");
   });
 });
