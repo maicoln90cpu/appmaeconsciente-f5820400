@@ -42,6 +42,7 @@ const SiteSettings = lazy(() => import("@/components/admin/SiteSettings").then(m
 const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPanel").then(m => ({ default: m.SecurityAuditPanel })));
 const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then(m => ({ default: m.AdminCharts })));
 const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then(m => ({ default: m.AppHealthDashboard })));
+const AIEngagementPanel = lazy(() => import("@/components/admin/AIEngagementPanel").then(m => ({ default: m.AIEngagementPanel })));
 
 // Loading fallback component
 const TabLoading = () => (
@@ -450,6 +451,11 @@ export default function AdminDashboard() {
                     value: "posts",
                     label: "Moderação de Posts",
                     content: <PostModeration />,
+                  },
+                  {
+                    value: "ai-engagement",
+                    label: "Automação IA",
+                    content: <AIEngagementPanel />,
                   },
                   {
                     value: "suggestions",

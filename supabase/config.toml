@@ -68,3 +68,6 @@ verify_jwt = true
 
 [functions.cleanup-old-logs]
 verify_jwt = true
+
+[functions.auto-engage-community]
+verify_jwt = true
