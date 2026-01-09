@@ -1,24 +1,16 @@
 /**
  * @fileoverview Hook para gerenciar medições de crescimento do bebê
+ * Migrado para usar createSupabaseCRUD
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useMemo } from "react";
+import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
+import type { Database } from "@/integrations/supabase/types";
 
-export interface GrowthMeasurement {
-  id: string;
-  user_id: string;
-  baby_profile_id: string | null;
-  measurement_date: string;
-  weight_kg: number | null;
-  height_cm: number | null;
-  head_circumference_cm: number | null;
-  notes: string | null;
-  created_at: string;
-  updated_at: string;
-}
+type GrowthMeasurementRow = Database['public']['Tables']['growth_measurements']['Row'];
+type GrowthMeasurementInsert = Database['public']['Tables']['growth_measurements']['Insert'];
+
+export type GrowthMeasurement = GrowthMeasurementRow;
 
 export interface GrowthMeasurementInput {
   baby_profile_id?: string;
@@ -102,99 +94,34 @@ export const WHO_HEIGHT_GIRLS = [
   { month: 24, p3: 80.0, p15: 83.2, p50: 86.4, p85: 89.6, p97: 92.9 },
 ];
 
+// Base hook using factory
+const useGrowthBase = createSupabaseCRUD<GrowthMeasurementRow, GrowthMeasurementInsert>({
+  tableName: 'growth_measurements',
+  queryKey: ['growth-measurements'],
+  orderBy: 'measurement_date',
+  orderDirection: 'asc',
+  messages: {
+    addSuccess: 'Medição registrada com sucesso!',
+    addError: 'Erro ao registrar medição',
+    updateSuccess: 'Medição atualizada!',
+    deleteSuccess: 'Medição removida!',
+  },
+});
+
 export const useGrowthMeasurements = (babyProfileId?: string) => {
-  const queryClient = useQueryClient();
-  const { user } = useAuth();
+  const base = useGrowthBase();
 
-  // Fetch measurements
-  const { data: measurements = [], isLoading } = useQuery({
-    queryKey: ["growth-measurements", user?.id, babyProfileId],
-    queryFn: async () => {
-      if (!user) return [];
+  // Filter by baby profile if provided
+  const measurements = useMemo(() => {
+    if (!babyProfileId) return base.data;
+    return base.data.filter(m => m.baby_profile_id === babyProfileId);
+  }, [base.data, babyProfileId]);
 
-      let query = supabase
-        .from("growth_measurements")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("measurement_date", { ascending: true });
-
-      if (babyProfileId) {
-        query = query.eq("baby_profile_id", babyProfileId);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as GrowthMeasurement[];
-    },
-    enabled: !!user,
-  });
-
-  // Add measurement
-  const addMeasurement = useMutation({
-    mutationFn: async (input: GrowthMeasurementInput) => {
-      if (!user) throw new Error("Not authenticated");
-
-      const { data, error } = await supabase
-        .from("growth_measurements")
-        .insert({
-          user_id: user.id,
-          ...input,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["growth-measurements"] });
-      toast.success("Medição registrada com sucesso!");
-    },
-    onError: () => {
-      toast.error("Erro ao registrar medição");
-    },
-  });
-
-  // Update measurement
-  const updateMeasurement = useMutation({
-    mutationFn: async ({ id, ...input }: GrowthMeasurementInput & { id: string }) => {
-      if (!user) throw new Error("Not authenticated");
-
-      const { data, error } = await supabase
-        .from("growth_measurements")
-        .update(input)
-        .eq("id", id)
-        .eq("user_id", user.id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["growth-measurements"] });
-      toast.success("Medição atualizada!");
-    },
-  });
-
-  // Delete measurement
-  const deleteMeasurement = useMutation({
-    mutationFn: async (id: string) => {
-      if (!user) throw new Error("Not authenticated");
-
-      const { error } = await supabase
-        .from("growth_measurements")
-        .delete()
-        .eq("id", id)
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["growth-measurements"] });
-      toast.success("Medição removida!");
-    },
-  });
+  // Get latest measurement
+  const latestMeasurement = useMemo(() => 
+    measurements[measurements.length - 1] || null,
+    [measurements]
+  );
 
   // Calculate percentile
   const calculatePercentile = (
@@ -225,17 +152,14 @@ export const useGrowthMeasurements = (babyProfileId?: string) => {
     return ">97";
   };
 
-  // Get latest measurement
-  const latestMeasurement = measurements[measurements.length - 1] || null;
-
   return {
     measurements,
     latestMeasurement,
-    isLoading,
-    addMeasurement: addMeasurement.mutate,
-    updateMeasurement: updateMeasurement.mutate,
-    deleteMeasurement: deleteMeasurement.mutate,
-    isAdding: addMeasurement.isPending,
+    isLoading: base.isLoading,
+    addMeasurement: base.add,
+    updateMeasurement: base.update,
+    deleteMeasurement: base.remove,
+    isAdding: base.isAdding,
     calculatePercentile,
     WHO_WEIGHT_BOYS,
     WHO_WEIGHT_GIRLS,

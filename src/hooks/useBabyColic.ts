@@ -1,7 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
+/**
+ * @fileoverview Hook para gerenciar registros de cólica do bebê
+ * Migrado para usar createSupabaseCRUD
+ */
+
+import { useMemo } from "react";
+import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
 import type { Database } from "@/integrations/supabase/types";
 
 type BabyColicsRow = Database['public']['Tables']['baby_colic_logs']['Row'];
@@ -32,123 +35,19 @@ export const RELIEF_METHODS = [
   'Posição de avião',
 ] as const;
 
-export const useBabyColic = (babyProfileId?: string) => {
-  const queryClient = useQueryClient();
-  const { toast } = useToast();
-
-  const { data: colicLogs, isLoading } = useQuery({
-    queryKey: ['baby-colic-logs', babyProfileId],
-    queryFn: async () => {
-      const userId = await getAuthenticatedUser();
-
-      let query = supabase
-        .from('baby_colic_logs')
-        .select('*')
-        .eq('user_id', userId)
-        .order('start_time', { ascending: false });
-
-      if (babyProfileId) {
-        query = query.eq('baby_profile_id', babyProfileId);
-      }
-
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    },
-    enabled: true,
-  });
-
-  const addColicLog = useMutation({
-    mutationFn: async (log: Omit<BabyColicsInsert, 'user_id'>) => {
-      const userId = await getAuthenticatedUser();
-
-      const { data, error } = await supabase
-        .from('baby_colic_logs')
-        .insert({ ...log, user_id: userId })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['baby-colic-logs'] });
-      toast({
-        title: "Sucesso",
-        description: "Episódio de cólica registrado",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao registrar episódio",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateColicLog = useMutation({
-    mutationFn: async ({ id, ...updates }: Partial<BabyColicLog> & { id: string }) => {
-      const { data, error } = await supabase
-        .from('baby_colic_logs')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['baby-colic-logs'] });
-      toast({
-        title: "Sucesso",
-        description: "Episódio atualizado",
-      });
-    },
-  });
-
-  const deleteColicLog = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('baby_colic_logs')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['baby-colic-logs'] });
-      toast({
-        title: "Sucesso",
-        description: "Episódio removido",
-      });
-    },
-  });
-
-  // Calculate statistics
-  const stats = colicLogs ? {
-    totalEpisodes: colicLogs.length,
-    averageDuration: colicLogs.filter(l => l.duration_minutes).reduce((acc, l) => acc + (l.duration_minutes || 0), 0) / (colicLogs.filter(l => l.duration_minutes).length || 1),
-    mostCommonTrigger: getMostCommon(colicLogs.flatMap(l => l.triggers || [])),
-    mostEffectiveRelief: getMostCommon(colicLogs.flatMap(l => l.relief_methods || [])),
-    episodesThisWeek: colicLogs.filter(l => {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      return new Date(l.start_time) >= weekAgo;
-    }).length,
-  } : null;
-
-  return {
-    colicLogs,
-    stats,
-    isLoading,
-    addColicLog: addColicLog.mutate,
-    updateColicLog: updateColicLog.mutate,
-    deleteColicLog: deleteColicLog.mutate,
-    isAdding: addColicLog.isPending,
-  };
-};
+// Base hook using factory
+const useColicBase = createSupabaseCRUD<BabyColicsRow, BabyColicsInsert>({
+  tableName: 'baby_colic_logs',
+  queryKey: ['baby-colic-logs'],
+  orderBy: 'start_time',
+  orderDirection: 'desc',
+  messages: {
+    addSuccess: 'Episódio de cólica registrado',
+    addError: 'Erro ao registrar episódio',
+    updateSuccess: 'Episódio atualizado',
+    deleteSuccess: 'Episódio removido',
+  },
+});
 
 function getMostCommon(arr: string[]): string | null {
   if (arr.length === 0) return null;
@@ -158,3 +57,44 @@ function getMostCommon(arr: string[]): string | null {
   }, {} as Record<string, number>);
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 }
+
+export const useBabyColic = (babyProfileId?: string) => {
+  const base = useColicBase();
+
+  // Filter by baby profile if provided
+  const colicLogs = useMemo(() => {
+    if (!babyProfileId) return base.data;
+    return base.data.filter(log => log.baby_profile_id === babyProfileId);
+  }, [base.data, babyProfileId]);
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    if (!colicLogs || colicLogs.length === 0) return null;
+
+    const logsWithDuration = colicLogs.filter(l => l.duration_minutes);
+    const avgDuration = logsWithDuration.length > 0 
+      ? logsWithDuration.reduce((acc, l) => acc + (l.duration_minutes || 0), 0) / logsWithDuration.length
+      : 0;
+
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+
+    return {
+      totalEpisodes: colicLogs.length,
+      averageDuration: avgDuration,
+      mostCommonTrigger: getMostCommon(colicLogs.flatMap(l => l.triggers || [])),
+      mostEffectiveRelief: getMostCommon(colicLogs.flatMap(l => l.relief_methods || [])),
+      episodesThisWeek: colicLogs.filter(l => new Date(l.start_time) >= weekAgo).length,
+    };
+  }, [colicLogs]);
+
+  return {
+    colicLogs,
+    stats,
+    isLoading: base.isLoading,
+    addColicLog: base.add,
+    updateColicLog: base.update,
+    deleteColicLog: base.remove,
+    isAdding: base.isAdding,
+  };
+};
