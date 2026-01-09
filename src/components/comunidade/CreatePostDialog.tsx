@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { z } from "zod";
+import { logger } from "@/lib/logger";
 
 const postSchema = z.object({
   content: z.string()
@@ -176,7 +177,7 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
       setPreviews([]);
       setOpen(false);
     } catch (error) {
-      console.error("Error creating post:", error);
+      logger.error("Error creating post", error, { context: "CreatePostDialog" });
       toast({
         title: "Erro ao criar post",
         description: "Tente novamente mais tarde.",

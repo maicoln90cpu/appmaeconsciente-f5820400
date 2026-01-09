@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/useToast";
+import { logger } from "@/lib/logger";
 import { 
   Users, 
   Package, 
@@ -126,7 +127,7 @@ export default function AdminDashboard() {
         weeklyGrowth,
       });
     } catch (error) {
-      console.error('Error loading stats:', error);
+      logger.error("Error loading stats", error, { context: "AdminDashboard" });
       toast({
         title: "Erro ao carregar estatísticas",
         description: "Tente novamente mais tarde.",
@@ -167,7 +168,7 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
-      console.log('Notificação criada:', notificationData.id);
+      logger.debug("Notificação criada", { context: "AdminDashboard", data: { id: notificationData.id } });
 
       // Passo 2: Buscar todos os usuários (exceto criador)
       const { data: allUsers, error: usersError } = await supabase
@@ -177,7 +178,7 @@ export default function AdminDashboard() {
 
       if (usersError) throw usersError;
 
-      console.log('Total de usuários a notificar:', allUsers?.length);
+      logger.debug("Total de usuários a notificar", { context: "AdminDashboard", data: { count: allUsers?.length } });
 
       // Passo 3: Criar user_notifications para cada usuário
       if (allUsers && allUsers.length > 0) {
@@ -191,11 +192,11 @@ export default function AdminDashboard() {
           .insert(userNotifications);
 
         if (insertError) {
-          console.error('Erro ao criar user_notifications:', insertError);
+          logger.error("Erro ao criar user_notifications", insertError, { context: "AdminDashboard" });
           throw insertError;
         }
 
-        console.log('User notifications criadas com sucesso!');
+        logger.debug("User notifications criadas com sucesso", { context: "AdminDashboard" });
       }
 
       toast({
@@ -205,7 +206,7 @@ export default function AdminDashboard() {
 
       setNotification({ title: "", message: "" });
     } catch (error) {
-      console.error('Error sending notification:', error);
+      logger.error("Error sending notification", error, { context: "AdminDashboard" });
       toast({
         title: "Erro ao enviar notificação",
         description: "Tente novamente mais tarde.",

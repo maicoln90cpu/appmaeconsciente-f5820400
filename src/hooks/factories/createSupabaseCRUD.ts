@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, QueryKey } from "@tanstack/react
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
+import { logger } from "@/lib/logger";
 
 type OrderDirection = "asc" | "desc";
 
@@ -120,7 +121,7 @@ export function createSupabaseCRUD<
         onAddSuccess?.(data);
       },
       onError: (error) => {
-        console.error("Add error:", error);
+        logger.error("Add error", error, { context: "createSupabaseCRUD", data: { tableName } });
         toast({
           title: "Erro",
           description: messages.addError ?? "Erro ao adicionar item",
@@ -151,7 +152,7 @@ export function createSupabaseCRUD<
         onUpdateSuccess?.(data);
       },
       onError: (error) => {
-        console.error("Update error:", error);
+        logger.error("Update error", error, { context: "createSupabaseCRUD", data: { tableName } });
         toast({
           title: "Erro",
           description: messages.updateError ?? "Erro ao atualizar item",
@@ -180,7 +181,7 @@ export function createSupabaseCRUD<
         onDeleteSuccess?.(id);
       },
       onError: (error) => {
-        console.error("Delete error:", error);
+        logger.error("Delete error", error, { context: "createSupabaseCRUD", data: { tableName } });
         toast({
           title: "Erro",
           description: messages.deleteError ?? "Erro ao remover item",

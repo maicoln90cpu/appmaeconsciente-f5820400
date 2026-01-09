@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
+import { logger } from "@/lib/logger";
 
 /**
  * Hook centralizado para ações autenticadas.
@@ -58,7 +59,7 @@ export const useAuthenticatedAction = () => {
       
       return await action(user.id);
     } catch (error) {
-      console.error("Error in authenticated action:", error);
+      logger.error("Error in authenticated action", error, { context: "useAuthenticatedAction" });
       throw error;
     }
   }, [toast]);

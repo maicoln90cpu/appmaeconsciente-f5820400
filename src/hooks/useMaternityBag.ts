@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
+import { logger } from "@/lib/logger";
 
 export interface MaternityBagCategory {
   id: string;
@@ -116,7 +117,7 @@ export const useMaternityBag = () => {
         });
       }
     } catch (error) {
-      console.error("Erro ao inicializar mala:", error);
+      logger.error("Erro ao inicializar mala", error, { context: "useMaternityBag" });
     }
   }, []);
 
@@ -164,7 +165,7 @@ export const useMaternityBag = () => {
         setItems((newItemsData || []) as MaternityBagItem[]);
       }
     } catch (error) {
-      console.error("Erro ao carregar mala da maternidade:", error);
+      logger.error("Erro ao carregar mala da maternidade", error, { context: "useMaternityBag" });
       toast({
         title: "Erro ao carregar dados",
         description: "Não foi possível carregar sua mala da maternidade.",
