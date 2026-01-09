@@ -32,9 +32,9 @@
 | ID | Descrição | Módulo | Status | ETA |
 |----|-----------|--------|--------|-----|
 | P1-001 | Push notifications nativas | Core | 📋 Planejado | Mar/2026 |
-| P1-002 | Internacionalização (i18n) | Core | 📋 Planejado | Mar/2026 |
-| P1-003 | Error monitoring (Sentry) | DevOps | 📋 Planejado | Mar/2026 |
-| P1-004 | E2E tests com Playwright | Quality | 📋 Planejado | Mar/2026 |
+| P1-002 | Internacionalização (i18n) | Core | 📋 Sob demanda | - |
+| P1-003 | Error monitoring (Sentry) | DevOps | ✅ Completo | Jan/2026 |
+| P1-004 | E2E tests com Playwright | Quality | ✅ Completo | Jan/2026 |
 | P1-005 | Onboarding guiado para novos usuários | UX | 📋 Planejado | Abr/2026 |
 
 ---
@@ -121,6 +121,15 @@
 ---
 
 ## 📜 Histórico de Mudanças
+
+### Janeiro 2026 (Sprint 4)
+- ✅ Sentry error monitoring configurado
+- ✅ Testes E2E expandidos (+6 specs)
+- ✅ Migração de hooks para createSupabaseCRUD
+- ✅ Bundle optimization com lazy loading
+- ✅ Testes unitários para UI components
+- ✅ Componentes otimizados (VirtualizedList, OptimizedSelect)
+- ✅ Hooks de memoização avançados
 
 ### Janeiro 2026 (Sprint 3)
 - ✅ Documentação técnica completa
