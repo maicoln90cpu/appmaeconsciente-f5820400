@@ -47,6 +47,7 @@ const RastreadorAmamentacao = lazyWithRetry(() => import("./pages/RastreadorAmam
 const CartaoVacinacao = lazyWithRetry(() => import("./pages/CartaoVacinacao"));
 const RecuperacaoPosPartoPage = lazyWithRetry(() => import("./pages/RecuperacaoPosPartoPage"));
 const MonitorDesenvolvimento = lazyWithRetry(() => import("./pages/MonitorDesenvolvimento"));
+const FerramentasGestacao = lazyWithRetry(() => import("./pages/FerramentasGestacao"));
 const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -154,6 +155,10 @@ const App = () => {
 
               <Route element={<ProductRoute productSlug="monitor-desenvolvimento" />}>
                 <Route path="/materiais/monitor-desenvolvimento" element={<MainLayout><div className="animate-scale-in"><MonitorDesenvolvimento /></div></MainLayout>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="ferramentas-gestacao" />}>
+                <Route path="/materiais/ferramentas-gestacao" element={<MainLayout><div className="animate-scale-in"><FerramentasGestacao /></div></MainLayout>} />
               </Route>
             </Route>
 

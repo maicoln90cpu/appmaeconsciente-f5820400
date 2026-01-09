@@ -5,6 +5,7 @@ import { ControleMedicamentos } from "@/components/recuperacao/ControleMedicamen
 import { DiarioAutoestima } from "@/components/recuperacao/DiarioAutoestima";
 import { AcessoParceiro } from "@/components/recuperacao/AcessoParceiro";
 import { ConquistasRecuperacao } from "@/components/recuperacao/ConquistasRecuperacao";
+import { EdinburghScale } from "@/components/recuperacao/EdinburghScale";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Activity, Pill, Calendar, Heart, FileText, Camera, Users, Trophy } from "lucide-react";
 
@@ -74,9 +75,7 @@ const RecuperacaoPosPartoPage = () => {
           </TabsContent>
 
           <TabsContent value="emocional">
-            <div className="text-center text-muted-foreground py-12">
-              Rastreador Emocional (em desenvolvimento)
-            </div>
+            <EdinburghScale />
           </TabsContent>
 
           <TabsContent value="autoestima">
