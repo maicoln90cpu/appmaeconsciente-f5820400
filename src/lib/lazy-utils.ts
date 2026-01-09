@@ -116,11 +116,13 @@ export function preloadComponent(
  */
 export const routeImports = {
   dashboard: () => import("@/pages/Dashboard"),
+  dashboardBebe: () => import("@/pages/DashboardBebe"),
   materiais: () => import("@/pages/Materiais"),
   comunidade: () => import("@/pages/Comunidade"),
   suporte: () => import("@/pages/Suporte"),
   profile: () => import("@/pages/ProfileSettings"),
   admin: () => import("@/pages/AdminDashboard"),
+  conquistas: () => import("@/pages/MinhasConquistas"),
   controleEnxoval: () => import("@/pages/Index"),
   calculadoraFraldas: () => import("@/pages/CalculadoraFraldas"),
   malaMaternidade: () => import("@/pages/MalaDaMaternidade"),
@@ -128,6 +130,7 @@ export const routeImports = {
   diarioSono: () => import("@/pages/DiarioSono"),
   rastreadorAmamentacao: () => import("@/pages/RastreadorAmamentacao"),
   cartaoVacinacao: () => import("@/pages/CartaoVacinacao"),
+  ferramentasGestacao: () => import("@/pages/FerramentasGestacao"),
   recuperacaoPosParto: () => import("@/pages/RecuperacaoPosPartoPage"),
   monitorDesenvolvimento: () => import("@/pages/MonitorDesenvolvimento"),
 } as const;
