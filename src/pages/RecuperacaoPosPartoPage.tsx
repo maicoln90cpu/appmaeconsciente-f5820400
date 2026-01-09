@@ -1,4 +1,4 @@
-import { MainLayout } from "@/components/layout/MainLayout";
+// NOTA: MainLayout é aplicado globalmente no App.tsx - NÃO adicionar aqui
 import { DashboardRecuperacao } from "@/components/recuperacao/DashboardRecuperacao";
 import { RastreadorSintomas } from "@/components/recuperacao/RastreadorSintomas";
 import { ControleMedicamentos } from "@/components/recuperacao/ControleMedicamentos";
@@ -10,7 +10,7 @@ import { Activity, Pill, Calendar, Heart, FileText, Camera, Users, Trophy } from
 
 const RecuperacaoPosPartoPage = () => {
   return (
-    <MainLayout>
+    <>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">Guia de Recuperação Pós-Parto</h1>
@@ -92,7 +92,7 @@ const RecuperacaoPosPartoPage = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </MainLayout>
+    </>
   );
 };
 

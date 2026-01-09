@@ -69,7 +69,7 @@ export const PostModeration = () => {
 
       toast.dismiss();
       toast.success(
-        `Comunidade povoada! ${data.stats.profiles} perfis, ${data.stats.posts} posts, ${data.stats.likes} curtidas, ${data.stats.comments} comentários`
+        `Comunidade povoada! ${data.profiles_created || 0} perfis, ${data.posts_created || 0} posts, ${data.comments_created || 0} comentários`
       );
       queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
     } catch (error: any) {

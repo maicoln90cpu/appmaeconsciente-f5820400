@@ -15,9 +15,15 @@ import {
   TrendingUp, 
   Calendar,
   Send,
-  ArrowLeft
+  ArrowLeft,
+  LayoutDashboard,
+  ShoppingBag,
+  MessageSquare,
+  Headphones,
+  Settings
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AdminSubTabs } from "@/components/admin/AdminSubTabs";
 
 // Lazy load all admin components
 const HotmartMappings = lazy(() => import("@/components/admin/HotmartMappings").then(m => ({ default: m.HotmartMappings })));
@@ -63,7 +69,7 @@ export default function AdminDashboard() {
   const [notification, setNotification] = useState({ title: "", message: "" });
   const [sending, setSending] = useState(false);
   
-  const activeTab = searchParams.get("tab") || "charts";
+  const activeTab = searchParams.get("tab") || "dashboard";
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
@@ -111,7 +117,7 @@ export default function AdminDashboard() {
         .sort((a, b) => b.value - a.value)
         .slice(0, 5);
 
-      // Mock weekly growth data (you can implement actual weekly queries)
+      // Mock weekly growth data
       const weeklyGrowth = [
         { week: 'Sem 1', items: 12, users: 3 },
         { week: 'Sem 2', items: 18, users: 5 },
@@ -123,7 +129,7 @@ export default function AdminDashboard() {
         totalUsers: totalUsers || 0,
         totalItems: totalItems || 0,
         itemsThisMonth: itemsThisMonth || 0,
-        activeUsers: Math.floor((totalUsers || 0) * 0.7), // Mock: 70% active
+        activeUsers: Math.floor((totalUsers || 0) * 0.7),
         categoryData: topCategories,
         weeklyGrowth,
       });
@@ -155,7 +161,6 @@ export default function AdminDashboard() {
       
       if (!user) return;
 
-      // Passo 1: Criar notificação
       const { data: notificationData, error } = await supabase
         .from('notifications')
         .insert({
@@ -171,7 +176,6 @@ export default function AdminDashboard() {
 
       logger.debug("Notificação criada", { context: "AdminDashboard", data: { id: notificationData.id } });
 
-      // Passo 2: Buscar todos os usuários (exceto criador)
       const { data: allUsers, error: usersError } = await supabase
         .from('profiles')
         .select('id')
@@ -181,7 +185,6 @@ export default function AdminDashboard() {
 
       logger.debug("Total de usuários a notificar", { context: "AdminDashboard", data: { count: allUsers?.length } });
 
-      // Passo 3: Criar user_notifications para cada usuário
       if (allUsers && allUsers.length > 0) {
         const userNotifications = allUsers.map(u => ({
           user_id: u.id,
@@ -231,6 +234,43 @@ export default function AdminDashboard() {
 
   if (!isAdmin) return null;
 
+  // Notification content for reuse
+  const NotificationContent = (
+    <Card>
+      <CardHeader>
+        <CardTitle>Enviar Notificação</CardTitle>
+        <CardDescription>
+          Envie uma mensagem para todos os usuários do sistema
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Título</Label>
+          <Input
+            id="title"
+            value={notification.title}
+            onChange={(e) => setNotification({ ...notification, title: e.target.value })}
+            placeholder="Título da notificação"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="message">Mensagem</Label>
+          <Textarea
+            id="message"
+            value={notification.message}
+            onChange={(e) => setNotification({ ...notification, message: e.target.value })}
+            placeholder="Conteúdo da mensagem..."
+            rows={5}
+          />
+        </div>
+        <Button onClick={handleSendNotification} disabled={sending} className="w-full">
+          <Send className="w-4 h-4 mr-2" />
+          {sending ? "Enviando..." : "Enviar para Todos"}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -245,6 +285,7 @@ export default function AdminDashboard() {
           </Button>
         </div>
 
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -301,146 +342,169 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        {/* Main Tabs - 5 Categories */}
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
-          <TabsList className="flex flex-wrap gap-1 h-auto p-1">
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="health">Saúde do App</TabsTrigger>
-            <TabsTrigger value="security">Segurança</TabsTrigger>
-            <TabsTrigger value="users">Usuários</TabsTrigger>
-            <TabsTrigger value="products">Produtos</TabsTrigger>
-            <TabsTrigger value="bundles">Bundles</TabsTrigger>
-            <TabsTrigger value="promotions">Promoções</TabsTrigger>
-            <TabsTrigger value="coupons">Cupons</TabsTrigger>
-            <TabsTrigger value="tickets">Tickets</TabsTrigger>
-            <TabsTrigger value="suggestions">Sugestões</TabsTrigger>
-            <TabsTrigger value="posts">Posts</TabsTrigger>
-            <TabsTrigger value="hotmart">Hotmart</TabsTrigger>
-            <TabsTrigger value="notifications">Notificações</TabsTrigger>
-            <TabsTrigger value="settings">Configurações</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+            <TabsTrigger value="dashboard" className="flex items-center gap-2 py-3">
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="hidden sm:inline">Dashboard</span>
+            </TabsTrigger>
+            <TabsTrigger value="comercial" className="flex items-center gap-2 py-3">
+              <ShoppingBag className="h-4 w-4" />
+              <span className="hidden sm:inline">Comercial</span>
+            </TabsTrigger>
+            <TabsTrigger value="comunidade" className="flex items-center gap-2 py-3">
+              <MessageSquare className="h-4 w-4" />
+              <span className="hidden sm:inline">Comunidade</span>
+            </TabsTrigger>
+            <TabsTrigger value="atendimento" className="flex items-center gap-2 py-3">
+              <Headphones className="h-4 w-4" />
+              <span className="hidden sm:inline">Atendimento</span>
+            </TabsTrigger>
+            <TabsTrigger value="sistema" className="flex items-center gap-2 py-3">
+              <Settings className="h-4 w-4" />
+              <span className="hidden sm:inline">Sistema</span>
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="analytics">
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard">
             <Suspense fallback={<TabLoading />}>
-              <AnalyticsDashboard />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="health">
-            <Suspense fallback={<TabLoading />}>
-              <AppHealthDashboard />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="security">
-            <Suspense fallback={<TabLoading />}>
-              <SecurityAuditPanel />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="charts">
-            <Suspense fallback={<TabLoading />}>
-              <AdminCharts 
-                categoryData={stats?.categoryData || []}
-                weeklyGrowth={stats?.weeklyGrowth || []}
+              <AdminSubTabs
+                defaultValue="analytics"
+                tabs={[
+                  {
+                    value: "analytics",
+                    label: "Analytics",
+                    content: <AnalyticsDashboard />,
+                  },
+                  {
+                    value: "charts",
+                    label: "Gráficos",
+                    content: (
+                      <AdminCharts 
+                        categoryData={stats?.categoryData || []}
+                        weeklyGrowth={stats?.weeklyGrowth || []}
+                      />
+                    ),
+                  },
+                  {
+                    value: "health",
+                    label: "Saúde do App",
+                    content: <AppHealthDashboard />,
+                  },
+                ]}
               />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="users">
+          {/* Comercial Tab */}
+          <TabsContent value="comercial">
             <Suspense fallback={<TabLoading />}>
-              <UserManagement />
+              <AdminSubTabs
+                defaultValue="products"
+                tabs={[
+                  {
+                    value: "products",
+                    label: "Produtos",
+                    content: <ProductManagement />,
+                  },
+                  {
+                    value: "bundles",
+                    label: "Bundles",
+                    content: <BundleManagement />,
+                  },
+                  {
+                    value: "promotions",
+                    label: "Promoções",
+                    content: <PromotionManagement />,
+                  },
+                  {
+                    value: "coupons",
+                    label: "Cupons",
+                    content: <CouponManagement />,
+                  },
+                  {
+                    value: "hotmart",
+                    label: "Hotmart",
+                    content: (
+                      <div className="space-y-4">
+                        <ManualPurchaseResend />
+                        <HotmartMappings />
+                        <HotmartTransactions />
+                      </div>
+                    ),
+                  },
+                ]}
+              />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="products">
+          {/* Comunidade Tab */}
+          <TabsContent value="comunidade">
             <Suspense fallback={<TabLoading />}>
-              <ProductManagement />
+              <AdminSubTabs
+                defaultValue="posts"
+                tabs={[
+                  {
+                    value: "posts",
+                    label: "Moderação de Posts",
+                    content: <PostModeration />,
+                  },
+                  {
+                    value: "suggestions",
+                    label: "Sugestões",
+                    content: <ToolSuggestionManagement />,
+                  },
+                ]}
+              />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="bundles">
+          {/* Atendimento Tab */}
+          <TabsContent value="atendimento">
             <Suspense fallback={<TabLoading />}>
-              <BundleManagement />
+              <AdminSubTabs
+                defaultValue="tickets"
+                tabs={[
+                  {
+                    value: "tickets",
+                    label: "Tickets",
+                    content: <TicketManagement />,
+                  },
+                  {
+                    value: "notifications",
+                    label: "Notificações",
+                    content: NotificationContent,
+                  },
+                ]}
+              />
             </Suspense>
           </TabsContent>
 
-          <TabsContent value="promotions">
+          {/* Sistema Tab */}
+          <TabsContent value="sistema">
             <Suspense fallback={<TabLoading />}>
-              <PromotionManagement />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="coupons">
-            <Suspense fallback={<TabLoading />}>
-              <CouponManagement />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="tickets">
-            <Suspense fallback={<TabLoading />}>
-              <TicketManagement />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="suggestions">
-            <Suspense fallback={<TabLoading />}>
-              <ToolSuggestionManagement />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="posts">
-            <Suspense fallback={<TabLoading />}>
-              <PostModeration />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="hotmart" className="space-y-4">
-            <Suspense fallback={<TabLoading />}>
-              <ManualPurchaseResend />
-              <HotmartMappings />
-              <HotmartTransactions />
-            </Suspense>
-          </TabsContent>
-
-          <TabsContent value="notifications">
-            <Card>
-              <CardHeader>
-                <CardTitle>Enviar Notificação</CardTitle>
-                <CardDescription>
-                  Envie uma mensagem para todos os usuários do sistema
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Título</Label>
-                  <Input
-                    id="title"
-                    value={notification.title}
-                    onChange={(e) => setNotification({ ...notification, title: e.target.value })}
-                    placeholder="Título da notificação"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="message">Mensagem</Label>
-                  <Textarea
-                    id="message"
-                    value={notification.message}
-                    onChange={(e) => setNotification({ ...notification, message: e.target.value })}
-                    placeholder="Conteúdo da mensagem..."
-                    rows={5}
-                  />
-                </div>
-                <Button onClick={handleSendNotification} disabled={sending} className="w-full">
-                  <Send className="w-4 h-4 mr-2" />
-                  {sending ? "Enviando..." : "Enviar para Todos"}
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <Suspense fallback={<TabLoading />}>
-              <SiteSettings />
+              <AdminSubTabs
+                defaultValue="users"
+                tabs={[
+                  {
+                    value: "users",
+                    label: "Usuários",
+                    content: <UserManagement />,
+                  },
+                  {
+                    value: "security",
+                    label: "Segurança",
+                    content: <SecurityAuditPanel />,
+                  },
+                  {
+                    value: "settings",
+                    label: "Configurações",
+                    content: <SiteSettings />,
+                  },
+                ]}
+              />
             </Suspense>
           </TabsContent>
         </Tabs>

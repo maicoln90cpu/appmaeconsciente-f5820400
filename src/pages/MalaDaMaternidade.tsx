@@ -1,5 +1,5 @@
+// NOTA: MainLayout é aplicado globalmente no App.tsx - NÃO adicionar aqui
 import { useState, useEffect } from "react";
-import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChecklistBag } from "@/components/mala-maternidade/ChecklistBag";
@@ -140,22 +140,20 @@ const MalaDaMaternidade = () => {
 
   if (loading) {
     return (
-      <MainLayout>
-        <div className="container mx-auto p-6 space-y-8">
-          <Skeleton className="h-12 w-3/4" />
-          <Skeleton className="h-24 w-full" />
-          <div className="grid md:grid-cols-2 gap-6">
-            <Skeleton className="h-48" />
-            <Skeleton className="h-48" />
-          </div>
-          <Skeleton className="h-96 w-full" />
+      <div className="container mx-auto p-6 space-y-8">
+        <Skeleton className="h-12 w-3/4" />
+        <Skeleton className="h-24 w-full" />
+        <div className="grid md:grid-cols-2 gap-6">
+          <Skeleton className="h-48" />
+          <Skeleton className="h-48" />
         </div>
-      </MainLayout>
+        <Skeleton className="h-96 w-full" />
+      </div>
     );
   }
 
   return (
-    <MainLayout>
+    <>
       <div className="container mx-auto py-8 px-4 max-w-6xl">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Checklist de Mala da Maternidade</h1>
@@ -278,7 +276,7 @@ const MalaDaMaternidade = () => {
           </AlertDescription>
         </Alert>
       </div>
-    </MainLayout>
+    </>
   );
 };
 
