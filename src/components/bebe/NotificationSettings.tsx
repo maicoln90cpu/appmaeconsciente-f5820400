@@ -5,6 +5,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { PushNotificationToggle } from "@/components/pwa/PushNotificationToggle";
 import { toast } from "sonner";
 
 interface NotificationPreferences {
@@ -89,15 +91,20 @@ export const NotificationSettings = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Enable Notifications */}
+        {/* Push Notifications Toggle */}
+        <PushNotificationToggle className="p-4 rounded-lg bg-muted/50" />
+        
+        <Separator />
+        
+        {/* Enable Browser Notifications */}
         {!notificationsEnabled && (
           <div className="flex items-center justify-between p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
             <div className="flex items-center gap-3">
               <BellOff className="h-5 w-5 text-amber-500" />
               <div>
-                <p className="font-medium">Notificações desativadas</p>
+                <p className="font-medium">Notificações do navegador desativadas</p>
                 <p className="text-sm text-muted-foreground">
-                  Ative para receber lembretes importantes
+                  Ative para receber lembretes locais
                 </p>
               </div>
             </div>
