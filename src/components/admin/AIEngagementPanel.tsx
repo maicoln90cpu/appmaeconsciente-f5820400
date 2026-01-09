@@ -42,13 +42,13 @@ export const AIEngagementPanel = () => {
     queryKey: ["ai-engagement-logs"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("ai_engagement_logs" as any)
+        .from("ai_engagement_logs")
         .select("*")
         .order("created_at", { ascending: false })
         .limit(20);
 
       if (error) throw error;
-      return (data || []) as EngagementLog[];
+      return (data || []) as unknown as EngagementLog[];
     },
   });
 
