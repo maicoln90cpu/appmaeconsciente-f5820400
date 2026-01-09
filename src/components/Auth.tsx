@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/useToast";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { Baby, Eye, EyeOff, Loader2, Mail, Lock, User, Check, X } from "lucide-react";
-import { checkRateLimit, resetRateLimit } from "@/lib/rate-limiter";
+import { checkRateLimit, resetRateLimit, getRateLimitStatus } from "@/lib/rate-limiter";
 import { signUpSchema, signInSchema, forgotPasswordSchema } from "@/lib/validators/auth";
 import { cn } from "@/lib/utils";
 import { logger } from "@/lib/logger";
@@ -24,6 +24,16 @@ interface FormErrors {
   confirmPassword?: string;
 }
 
+// Rate limit config específico para reset de senha (mais restritivo)
+const RESET_PASSWORD_RATE_LIMIT = {
+  maxAttempts: 3,           // Máximo 3 tentativas
+  windowMs: 15 * 60 * 1000, // Janela de 15 minutos
+  lockoutMs: 60 * 60 * 1000 // Bloqueio de 1 hora
+};
+
+// Chave para persistência do "Lembrar-me"
+const REMEMBER_ME_KEY = 'maternidade_remember_email';
+
 export const Auth = () => {
   const [mode, setMode] = useState<AuthMode>('sign_in');
   const [fullName, setFullName] = useState('');
@@ -35,8 +45,40 @@ export const Auth = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [consentAccepted, setConsentAccepted] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [resetCooldown, setResetCooldown] = useState<number | null>(null);
   const { toast } = useToast();
+
+  // Carregar email salvo do "Lembrar-me"
+  useEffect(() => {
+    const savedEmail = localStorage.getItem(REMEMBER_ME_KEY);
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  // Verificar cooldown do reset de senha
+  useEffect(() => {
+    if (mode === 'forgot_password') {
+      const status = getRateLimitStatus(`reset:${email}`, RESET_PASSWORD_RATE_LIMIT);
+      if (status.lockedUntil) {
+        const remaining = Math.ceil((status.lockedUntil.getTime() - Date.now()) / 1000);
+        setResetCooldown(remaining > 0 ? remaining : null);
+      }
+    }
+  }, [mode, email]);
+
+  // Countdown timer para cooldown
+  useEffect(() => {
+    if (resetCooldown && resetCooldown > 0) {
+      const timer = setTimeout(() => {
+        setResetCooldown(prev => prev && prev > 1 ? prev - 1 : null);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resetCooldown]);
 
   const passwordsMatch = password && confirmPassword && password === confirmPassword;
   const passwordsDontMatch = password && confirmPassword && password !== confirmPassword;
@@ -95,6 +137,13 @@ export const Auth = () => {
 
         if (error) throw error;
 
+        // Salvar ou remover email baseado no "Lembrar-me"
+        if (rememberMe) {
+          localStorage.setItem(REMEMBER_ME_KEY, email);
+        } else {
+          localStorage.removeItem(REMEMBER_ME_KEY);
+        }
+
         resetRateLimit(`auth:${email}`);
         toast({
           title: "Bem-vindo(a)!",
@@ -144,6 +193,22 @@ export const Auth = () => {
           description: "Sua conta foi criada com sucesso.",
         });
       } else if (mode === 'forgot_password') {
+        // Rate limiting específico para reset de senha (mais restritivo)
+        const resetRateLimitResult = checkRateLimit(`reset:${email}`, RESET_PASSWORD_RATE_LIMIT);
+        if (!resetRateLimitResult.allowed) {
+          const cooldownSeconds = resetRateLimitResult.lockedUntil 
+            ? Math.ceil((resetRateLimitResult.lockedUntil.getTime() - Date.now()) / 1000)
+            : 60;
+          setResetCooldown(cooldownSeconds);
+          toast({
+            title: "Limite de tentativas atingido",
+            description: `Por segurança, aguarde ${Math.ceil(cooldownSeconds / 60)} minuto(s) antes de tentar novamente.`,
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
+        }
+
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo: `${window.location.origin}/auth`,
         });
@@ -152,7 +217,7 @@ export const Auth = () => {
 
         toast({
           title: "Email enviado!",
-          description: "Verifique sua caixa de entrada para redefinir a senha.",
+          description: "Verifique sua caixa de entrada para redefinir a senha. O link expira em 24 horas.",
         });
         setMode('sign_in');
       }
@@ -410,15 +475,37 @@ export const Auth = () => {
             </div>
           )}
 
+          {/* Lembrar-me - Only for sign in */}
+          {mode === 'sign_in' && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="rememberMe"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                disabled={loading}
+              />
+              <Label 
+                htmlFor="rememberMe" 
+                className="text-sm text-muted-foreground cursor-pointer"
+              >
+                Lembrar meu email
+              </Label>
+            </div>
+          )}
+
           <Button 
             type="submit" 
             className="w-full h-11 text-base font-medium" 
-            disabled={loading || (mode === 'sign_up' && !consentAccepted)}
+            disabled={loading || (mode === 'sign_up' && !consentAccepted) || (mode === 'forgot_password' && resetCooldown !== null && resetCooldown > 0)}
           >
             {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {mode === 'sign_in' && "Entrar"}
             {mode === 'sign_up' && "Criar conta"}
-            {mode === 'forgot_password' && "Enviar instruções"}
+            {mode === 'forgot_password' && (
+              resetCooldown && resetCooldown > 0 
+                ? `Aguarde ${Math.ceil(resetCooldown / 60)}min` 
+                : "Enviar instruções"
+            )}
           </Button>
         </form>
 
