@@ -8,13 +8,20 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['html', { open: 'never' }],
-    ['list']
+    ['list'],
+    ['json', { outputFile: 'test-results/results.json' }],
   ],
+  timeout: 30000,
+  expect: {
+    timeout: 10000,
+  },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    actionTimeout: 10000,
+    navigationTimeout: 15000,
   },
   projects: [
     {
@@ -35,6 +42,11 @@ export default defineConfig({
       name: 'mobile-chrome',
       use: { ...devices['Pixel 5'] },
       dependencies: ['setup'],
+    },
+    {
+      name: 'accessibility',
+      testMatch: /accessibility\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
   webServer: {
