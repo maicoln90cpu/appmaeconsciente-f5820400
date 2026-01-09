@@ -6,8 +6,8 @@
  * - Conflict resolution strategies
  * - Real-time sync status updates
  */
-
 import { analytics } from "./analytics";
+import { logger } from "./logger";
 
 export type SyncStatus = "pending" | "syncing" | "synced" | "failed" | "conflict";
 export type ConflictStrategy = "client-wins" | "server-wins" | "merge" | "manual";
@@ -91,12 +91,12 @@ class OfflineSyncManager {
   private setupListeners(): void {
     // Listen for online/offline events
     window.addEventListener("online", () => {
-      console.log("🔄 Connection restored, syncing...");
+      logger.info("🔄 Connection restored, syncing...");
       this.processQueue();
     });
 
     window.addEventListener("offline", () => {
-      console.log("📴 Offline mode activated");
+      logger.info("📴 Offline mode activated");
     });
 
     // Periodic sync check (every 30 seconds when online)

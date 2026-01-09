@@ -1,19 +1,7 @@
 import { useState, useEffect } from "react";
-import { useVaccination } from "@/hooks/useVaccination";
-import { useDevelopmentMilestones } from "@/hooks/useDevelopmentMilestones";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { DashboardDesenvolvimento } from "@/components/desenvolvimento/DashboardDesenvolvimento";
-import { LinhaTempoMarcos } from "@/components/desenvolvimento/LinhaTempoMarcos";
-import { MilestoneDetailDialog } from "@/components/desenvolvimento/MilestoneDetailDialog";
-import { RegistroRapidoMarcos } from "@/components/desenvolvimento/RegistroRapidoMarcos";
-import { RelatorioPediatraDialog } from "@/components/desenvolvimento/RelatorioPediatraDialog";
-import { ConfiguracoesAlertas } from "@/components/desenvolvimento/ConfiguracoesAlertas";
-import { MarcosAtencao } from "@/components/desenvolvimento/MarcosAtencao";
-import { OnboardingMonitor } from "@/components/desenvolvimento/OnboardingMonitor";
-import { BabyMilestoneRecord, DevelopmentAlertSettings } from "@/types/development";
-import { Plus, Baby, AlertCircle, HelpCircle } from "lucide-react";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Tooltip,
@@ -21,6 +9,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ConfiguracoesAlertas } from "@/components/desenvolvimento/ConfiguracoesAlertas";
+import { DashboardDesenvolvimento } from "@/components/desenvolvimento/DashboardDesenvolvimento";
+import { LinhaTempoMarcos } from "@/components/desenvolvimento/LinhaTempoMarcos";
+import { MarcosAtencao } from "@/components/desenvolvimento/MarcosAtencao";
+import { MilestoneDetailDialog } from "@/components/desenvolvimento/MilestoneDetailDialog";
+import { OnboardingMonitor } from "@/components/desenvolvimento/OnboardingMonitor";
+import { RegistroRapidoMarcos } from "@/components/desenvolvimento/RegistroRapidoMarcos";
+
+import { useDevelopmentMilestones } from "@/hooks/useDevelopmentMilestones";
+import { useVaccination } from "@/hooks/useVaccination";
+
+import { logger } from "@/lib/logger";
+
+import { Plus, Baby, AlertCircle, HelpCircle } from "lucide-react";
+
+import type { BabyMilestoneRecord, DevelopmentAlertSettings } from "@/types/development";
 
 const MonitorDesenvolvimento = () => {
   const { profiles, currentProfile } = useVaccination();
@@ -71,7 +75,7 @@ const MonitorDesenvolvimento = () => {
 
   const handleSaveAlertSettings = (settings: Partial<DevelopmentAlertSettings>) => {
     // TODO: Implement save to database
-    console.log('Saving alert settings:', settings);
+    logger.debug('Saving alert settings', { data: settings });
   };
 
   if (!currentProfile) {
@@ -212,7 +216,7 @@ const MonitorDesenvolvimento = () => {
                 onMarkAsAchieved={(milestoneTypeId) => markAsAchieved(milestoneTypeId, new Date())}
                 onMarkAsDoubt={handleMarkAsDoubt}
                 onGenerateReport={() => {
-                  console.log('Generate report');
+                  logger.debug('Generate report requested');
                 }}
               />
             </TabsContent>

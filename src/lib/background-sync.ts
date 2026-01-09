@@ -1,5 +1,6 @@
 // Background Sync utility for offline form submissions
 import { analytics } from "./analytics";
+import { logger } from "./logger";
 
 interface SyncTask {
   id: string;
@@ -43,7 +44,7 @@ class BackgroundSyncManager {
 
   private setupOnlineListener() {
     window.addEventListener("online", () => {
-      console.log("Connection restored, processing sync queue...");
+      logger.info("Connection restored, processing sync queue...");
       this.processQueue();
     });
   }

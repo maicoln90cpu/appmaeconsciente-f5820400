@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
+
 import { Navigate, Outlet, useParams } from "react-router-dom";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Lock } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
+
 import { analytics } from "@/lib/analytics";
+import { logger } from "@/lib/logger";
+
+import { Loader2, Lock } from "lucide-react";
 
 interface ProductRouteProps {
   productSlug: string;
@@ -37,7 +43,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
         .maybeSingle();
 
       if (userRole) {
-        console.log('Admin detectado - acesso liberado');
+        logger.debug('Admin detectado - acesso liberado');
         setHasAccess(true);
         setLoading(false);
         return;
@@ -51,7 +57,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
         .maybeSingle();
 
       if (clubAccess?.has_active_access) {
-        console.log('Clube Premium ativo - acesso liberado a todos os materiais');
+        logger.debug('Clube Premium ativo - acesso liberado a todos os materiais');
         setHasAccess(true);
         setLoading(false);
         return;
@@ -107,7 +113,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
             if (now > expirationDate) {
               setHasAccess(false);
               setProduct({ ...productData, access_data: accessData });
-              console.log('Access expired on:', expirationDate);
+              logger.debug('Access expired on:', { data: { expirationDate } });
             } else {
               setHasAccess(true);
             }
@@ -130,7 +136,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
               product_id: productData.id,
             });
           } catch (err) {
-            console.log('Log access error (non-critical):', err);
+            logger.debug('Log access error (non-critical)', { data: err });
           }
         }
       }
