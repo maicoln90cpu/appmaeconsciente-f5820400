@@ -7,6 +7,7 @@
  */
 
 import { lazy, ComponentType } from "react";
+import { trackChunkLoad } from "./bundle-analyzer";
 
 /**
  * Opções para lazy loading com retry
@@ -40,10 +41,17 @@ export function lazyWithRetry<T extends ComponentType<any>>(
 
   return lazy(async () => {
     let lastError: Error | undefined;
+    const startTime = performance.now();
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        return await importFn();
+        const module = await importFn();
+        
+        // Track successful chunk load
+        const chunkName = importFn.toString().match(/import\("(.+)"\)/)?.[1] || 'unknown';
+        trackChunkLoad(chunkName, startTime);
+        
+        return module;
       } catch (error) {
         lastError = error as Error;
         
