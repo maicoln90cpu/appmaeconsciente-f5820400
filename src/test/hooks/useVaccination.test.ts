@@ -141,9 +141,9 @@ describe("useVaccination", () => {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.createProfile).toBe("function");
-    expect(typeof result.current.updateProfile).toBe("function");
-    expect(typeof result.current.deleteProfile).toBe("function");
+    expect(typeof result.current.saveProfile).toBe("function");
+    expect(typeof result.current.switchProfile).toBe("function");
+    expect(typeof result.current.reloadData).toBe("function");
   });
 
   it("should provide vaccine record functions", async () => {
