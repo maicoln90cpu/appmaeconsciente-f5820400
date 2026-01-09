@@ -2,15 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EnxovalItem, Category } from "@/types/enxoval";
 import { calculateTotals, formatCurrency } from "@/lib/calculations";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { TrendingDown, TrendingUp, ShoppingCart, CheckCircle2, Package, Sparkles } from "lucide-react";
+import { TrendingDown, TrendingUp, ShoppingCart, CheckCircle2, Package, Sparkles, Ruler } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ClothingSizeCalculator } from "@/components/enxoval/ClothingSizeCalculator";
 
 interface DashboardTabProps {
   items: EnxovalItem[];
   budget: number;
 }
 
-const COLORS = ['#F28C8C', '#F5B5B5', '#F8D0D0', '#FBE5E5', '#FFF5F5'];
+const COLORS = ['hsl(var(--primary))', 'hsl(var(--primary) / 0.8)', 'hsl(var(--primary) / 0.6)', 'hsl(var(--primary) / 0.4)', 'hsl(var(--primary) / 0.2)'];
 
 export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
   const totals = calculateTotals(items);
@@ -38,13 +39,16 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Mensagem Motivacional */}
-      <Alert className="border-primary/30 bg-primary/5">
-        <Sparkles className="h-4 w-4 text-primary" />
-        <AlertDescription className="text-base">
-          Cada escolha consciente é um passo rumo a uma maternidade mais leve 💕
-        </AlertDescription>
-      </Alert>
+      {/* Mensagem Motivacional + Size Calculator */}
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <Alert className="border-primary/30 bg-primary/5 flex-1">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <AlertDescription className="text-base">
+            Cada escolha consciente é um passo rumo a uma maternidade mais leve 💕
+          </AlertDescription>
+        </Alert>
+        <ClothingSizeCalculator />
+      </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
