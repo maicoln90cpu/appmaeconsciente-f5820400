@@ -7,7 +7,6 @@ import {
   Bell,
   Calendar, 
   Heart,
-  Lightbulb,
   Moon,
   Sparkles,
   Syringe,
@@ -16,15 +15,15 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 
 import { useProfile } from "@/hooks/useProfile";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { OnboardingWizard, OnboardingChecklist } from "@/components/onboarding";
 import { LevelProgress, ActivityCalendar, WeeklyGoalCard, DailyLoginTracker } from "@/components/gamification";
+import { ActionableInsights, CrossModuleInsights } from "@/components/insights";
 import { format, differenceInDays, isToday, isTomorrow, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -429,18 +428,11 @@ const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Tip of the Day */}
-      <Card className="bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Lightbulb className="h-5 w-5 text-amber-500" />
-            Dica do Dia
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground">{dailyTip}</p>
-        </CardContent>
-      </Card>
+      {/* Cross-Module Insights Section */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <ActionableInsights maxItems={4} />
+        <CrossModuleInsights />
+      </div>
 
       {/* Quick Links */}
       <div className="grid gap-4 md:grid-cols-3">
