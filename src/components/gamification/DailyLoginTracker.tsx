@@ -38,56 +38,56 @@ export const DailyLoginTracker = () => {
   };
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Calendar className="h-5 w-5 text-primary" />
+    <Card className="overflow-hidden min-w-0">
+      <CardHeader className="pb-2 px-3 sm:px-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
           Login Diário
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between">
+      <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+        <div className="flex items-center justify-between gap-2">
           {/* Current Streak */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div
               className={cn(
-                "flex h-12 w-12 items-center justify-center rounded-full bg-muted",
+                "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-muted shrink-0",
                 currentStreak >= 7 && "animate-pulse"
               )}
             >
-              <Flame className={cn("h-6 w-6", getFlameColor())} />
+              <Flame className={cn("h-5 w-5 sm:h-6 sm:w-6", getFlameColor())} />
             </div>
-            <div>
-              <p className="text-2xl font-bold">{currentStreak}</p>
-              <p className="text-xs text-muted-foreground">dias seguidos</p>
+            <div className="min-w-0">
+              <p className="text-xl sm:text-2xl font-bold">{currentStreak}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">dias seguidos</p>
             </div>
           </div>
 
           {/* Streak Message */}
-          <div className="text-right">
-            <p className="text-sm font-medium">{getStreakMessage()}</p>
-            <div className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
-              <Trophy className="h-3 w-3" />
-              <span>Recorde: {longestStreak} dias</span>
+          <div className="text-right min-w-0 flex-1">
+            <p className="text-xs sm:text-sm font-medium truncate">{getStreakMessage()}</p>
+            <div className="flex items-center justify-end gap-1 text-[10px] sm:text-xs text-muted-foreground">
+              <Trophy className="h-3 w-3 shrink-0" />
+              <span className="truncate">Recorde: {longestStreak}</span>
             </div>
           </div>
         </div>
 
         {/* Streak milestones */}
         {currentStreak > 0 && (
-          <div className="mt-4 flex gap-2">
+          <div className="mt-3 sm:mt-4 flex gap-1.5 sm:gap-2">
             {[7, 14, 30].map((milestone) => (
               <div
                 key={milestone}
                 className={cn(
-                  "flex-1 rounded-lg p-2 text-center transition-colors",
+                  "flex-1 rounded-lg p-1.5 sm:p-2 text-center transition-colors min-w-0",
                   currentStreak >= milestone
                     ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground"
                 )}
               >
-                <p className="text-xs font-medium">{milestone} dias</p>
-                <p className="text-[10px]">
+                <p className="text-[10px] sm:text-xs font-medium">{milestone} dias</p>
+                <p className="text-[8px] sm:text-[10px] truncate">
                   {currentStreak >= milestone
                     ? "✓ Alcançado"
                     : `${milestone - currentStreak} restantes`}

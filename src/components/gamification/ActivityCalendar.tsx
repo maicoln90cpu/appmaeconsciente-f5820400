@@ -93,50 +93,50 @@ export const ActivityCalendar = memo(({ showLegend = true }: ActivityCalendarPro
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          Calendário de Atividade
+    <Card className="overflow-hidden min-w-0">
+      <CardHeader className="pb-2 px-3 sm:px-6">
+        <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+          <Calendar className="h-4 w-4 sm:h-5 sm:w-5" />
+          <span className="truncate">Calendário</span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4">
-        {/* Estatísticas */}
-        <div className="flex gap-4 mb-4 text-sm">
+      <CardContent className="p-3 sm:p-4">
+        {/* Estatísticas - layout vertical em mobile */}
+        <div className="flex flex-col xs:flex-row gap-2 xs:gap-3 mb-3 sm:mb-4 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-emerald-500" />
-            <span className="text-muted-foreground">{stats.activeDays} dias ativos</span>
+            <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-emerald-500 shrink-0" />
+            <span className="text-muted-foreground">{stats.activeDays} ativos</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Flame className="h-4 w-4 text-orange-500" />
-            <span className="text-muted-foreground">{stats.currentStreak} dias seguidos</span>
+            <Flame className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500 shrink-0" />
+            <span className="text-muted-foreground">{stats.currentStreak} seguidos</span>
           </div>
-          <div className="text-muted-foreground">
-            {stats.totalXP} XP nos últimos 90 dias
+          <div className="text-muted-foreground hidden sm:block">
+            {stats.totalXP} XP
           </div>
         </div>
 
         {/* Calendário */}
         <TooltipProvider delayDuration={100}>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0">
             <div className="flex gap-0.5 min-w-max">
-              {/* Labels dos dias */}
-              <div className="flex flex-col gap-0.5 text-[10px] text-muted-foreground pr-1">
-                <div className="h-3" /> {/* Espaço para mês */}
-                <span className="h-3 leading-3">Dom</span>
-                <span className="h-3 leading-3">Seg</span>
-                <span className="h-3 leading-3">Ter</span>
-                <span className="h-3 leading-3">Qua</span>
-                <span className="h-3 leading-3">Qui</span>
-                <span className="h-3 leading-3">Sex</span>
-                <span className="h-3 leading-3">Sáb</span>
+              {/* Labels dos dias - escondidos em mobile pequeno */}
+              <div className="hidden xs:flex flex-col gap-0.5 text-[8px] sm:text-[10px] text-muted-foreground pr-1">
+                <div className="h-2.5 sm:h-3" /> {/* Espaço para mês */}
+                <span className="h-2.5 sm:h-3 leading-3">D</span>
+                <span className="h-2.5 sm:h-3 leading-3">S</span>
+                <span className="h-2.5 sm:h-3 leading-3">T</span>
+                <span className="h-2.5 sm:h-3 leading-3">Q</span>
+                <span className="h-2.5 sm:h-3 leading-3">Q</span>
+                <span className="h-2.5 sm:h-3 leading-3">S</span>
+                <span className="h-2.5 sm:h-3 leading-3">S</span>
               </div>
               
               {/* Semanas */}
               {weeks.map((week, weekIdx) => (
                 <div key={weekIdx} className="flex flex-col gap-0.5">
                   {/* Label do mês */}
-                  <div className="h-3 text-[10px] text-muted-foreground">
+                  <div className="h-2.5 sm:h-3 text-[8px] sm:text-[10px] text-muted-foreground">
                     {weekIdx === 0 || format(week.weekStart, 'MM') !== format(weeks[weekIdx - 1]?.weekStart || week.weekStart, 'MM')
                       ? format(week.weekStart, 'MMM', { locale: ptBR })
                       : ''
@@ -148,14 +148,14 @@ export const ActivityCalendar = memo(({ showLegend = true }: ActivityCalendarPro
                     const day = week.days.find(d => d.dayOfWeek === dayIdx);
                     
                     if (!day) {
-                      return <div key={dayIdx} className="w-3 h-3" />;
+                      return <div key={dayIdx} className="w-2.5 h-2.5 sm:w-3 sm:h-3" />;
                     }
                     
                     return (
                       <Tooltip key={dayIdx}>
                         <TooltipTrigger asChild>
                           <div
-                            className={`w-3 h-3 rounded-sm ${LEVEL_COLORS[day.level]} cursor-pointer transition-transform hover:scale-125`}
+                            className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-sm ${LEVEL_COLORS[day.level]} cursor-pointer transition-transform hover:scale-125`}
                           />
                         </TooltipTrigger>
                         <TooltipContent side="top" className="text-xs">
@@ -175,12 +175,12 @@ export const ActivityCalendar = memo(({ showLegend = true }: ActivityCalendarPro
           </div>
         </TooltipProvider>
 
-        {/* Legenda */}
+        {/* Legenda - simplificada em mobile */}
         {showLegend && (
-          <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-3 sm:mt-4 text-[10px] sm:text-xs text-muted-foreground">
             <span>Menos</span>
             {LEVEL_COLORS.map((color, idx) => (
-              <div key={idx} className={`w-3 h-3 rounded-sm ${color}`} />
+              <div key={idx} className={`w-2 h-2 sm:w-3 sm:h-3 rounded-sm ${color}`} />
             ))}
             <span>Mais</span>
           </div>
