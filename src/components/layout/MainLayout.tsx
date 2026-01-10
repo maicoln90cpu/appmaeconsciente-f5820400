@@ -84,15 +84,16 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Header with enhanced backdrop blur */}
-      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-8">
+      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 overflow-x-hidden">
+        <div className="container flex h-16 items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 md:gap-8 min-w-0 flex-1">
             <Link 
               to="/materiais" 
-              className="group flex items-center gap-2 text-xl font-display font-bold"
+              className="group flex items-center gap-2 text-base sm:text-lg md:text-xl font-display font-bold shrink-0"
             >
-              <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent transition-all group-hover:to-primary/50">
-                Maternidade Consciente
+              <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent transition-all group-hover:to-primary/50 truncate">
+                <span className="hidden xs:inline">Maternidade Consciente</span>
+                <span className="xs:hidden">M.C.</span>
               </span>
             </Link>
 
@@ -216,8 +217,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
       </header>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-xl safe-bottom">
-        <div className="container flex items-center justify-around py-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-xl safe-bottom overflow-x-hidden">
+        <div className="flex items-center justify-around py-1 px-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
@@ -226,20 +227,19 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                 key={item.path}
                 to={item.path}
                 onTouchStart={() => preloadComponent(item.preload)}
-                className={`relative flex flex-col items-center gap-1 px-4 py-2 min-h-[56px] text-xs font-medium transition-all duration-200 active:scale-95 ${
+                className={`relative flex flex-col items-center gap-0.5 px-2 py-1.5 min-h-[52px] min-w-0 flex-1 text-[10px] xs:text-xs font-medium transition-all duration-200 active:scale-95 ${
                   active ? "text-primary" : "text-muted-foreground"
                 }`}
               >
-                <div className={`relative p-1.5 rounded-xl transition-all duration-200 ${
+                <div className={`relative p-1 xs:p-1.5 rounded-xl transition-all duration-200 ${
                   active ? "bg-primary/10" : ""
                 }`}>
-                  <Icon className={`h-5 w-5 transition-transform duration-200 ${active ? "scale-110" : ""}`} />
-                  {/* Active dot indicator */}
+                  <Icon className={`h-4 w-4 xs:h-5 xs:w-5 transition-transform duration-200 ${active ? "scale-110" : ""}`} />
                   {active && (
                     <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full animate-scale-in" />
                   )}
                 </div>
-                <span className={`transition-all duration-200 ${active ? "font-semibold" : ""}`}>
+                <span className={`truncate max-w-full transition-all duration-200 ${active ? "font-semibold" : ""}`}>
                   {item.label}
                 </span>
               </Link>

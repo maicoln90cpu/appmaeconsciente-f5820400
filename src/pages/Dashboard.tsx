@@ -254,7 +254,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="container py-6 md:py-8 space-y-6">
+    <div className="container py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 overflow-x-hidden">
       {/* Onboarding Wizard Modal */}
       <OnboardingWizard open={showWizard} onClose={handleCloseWizard} />
 
@@ -284,26 +284,26 @@ const Dashboard = () => {
       )}
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
         {quickActions.map((action) => (
           <Button
             key={action.label}
             variant="outline"
-            className="h-auto py-4 flex flex-col gap-2 hover:bg-muted"
+            className="h-auto py-3 sm:py-4 flex flex-col gap-1.5 sm:gap-2 hover:bg-muted min-w-0"
             asChild
           >
             <Link to={action.path}>
-              <div className={`w-10 h-10 rounded-full ${action.color} flex items-center justify-center`}>
-                <action.icon className="h-5 w-5 text-white" />
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full ${action.color} flex items-center justify-center shrink-0`}>
+                <action.icon className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-              <span className="text-sm font-medium">{action.label}</span>
+              <span className="text-[10px] xs:text-xs sm:text-sm font-medium text-center line-clamp-2 min-w-0">{action.label}</span>
             </Link>
           </Button>
         ))}
       </div>
 
       {/* Gamification Progress */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4">
         <LevelProgress />
         <DailyLoginTracker />
         <WeeklyGoalCard />
