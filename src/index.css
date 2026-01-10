@@ -249,6 +249,27 @@
 
 /* === Utility Classes === */
 @layer utilities {
+  /* Prevent horizontal overflow globally */
+  .overflow-x-safe {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Responsive text truncation */
+  .text-truncate-responsive {
+    @apply min-w-0 overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Page Layout */
   .page-container {
     @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;

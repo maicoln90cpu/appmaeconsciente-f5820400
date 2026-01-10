@@ -421,55 +421,50 @@ const Materiais = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {filteredProducts.map((product) => {
             const userHasAccess = hasAccess(product.id);
             const canAccess = product.is_free || userHasAccess || isAdmin;
 
             return (
-              <Card key={product.id} className="flex flex-col">
-                <CardHeader>
-                  <div className="flex items-start justify-between mb-2">
-                    <CardTitle>{product.title}</CardTitle>
-                    <div className="flex flex-col gap-1 items-end">
+              <Card key={product.id} className="flex flex-col min-w-0">
+                <CardHeader className="p-3 sm:p-4 lg:p-6 pb-2 sm:pb-3">
+                  <div className="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-1 mb-1 sm:mb-2">
+                    <CardTitle className="text-sm sm:text-base lg:text-lg line-clamp-2 min-w-0">{product.title}</CardTitle>
+                    <div className="flex flex-wrap gap-1 shrink-0">
                       {product.is_free ? (
-                        <Badge variant="secondary">Gratuito</Badge>
+                        <Badge variant="secondary" className="text-[10px] xs:text-xs">Gratuito</Badge>
                       ) : userHasAccess ? (
-                        <Badge className="bg-green-500">Seu</Badge>
+                        <Badge className="bg-green-500 text-[10px] xs:text-xs">Seu</Badge>
                       ) : (
-                        <Badge variant="outline">Premium</Badge>
-                      )}
-                      {product.category && (
-                        <Badge variant="outline" className="text-xs">
-                          {product.category}
-                        </Badge>
+                        <Badge variant="outline" className="text-[10px] xs:text-xs">Premium</Badge>
                       )}
                     </div>
                   </div>
-                  <CardDescription>
-                    {product.short_description || product.description.substring(0, 100) + "..."}
+                  <CardDescription className="text-xs sm:text-sm line-clamp-2 sm:line-clamp-3 min-w-0">
+                    {product.short_description || product.description.substring(0, 80) + "..."}
                   </CardDescription>
                   {!product.is_free && product.price && !userHasAccess && (
-                    <p className="text-lg font-bold text-primary mt-2">
+                    <p className="text-sm sm:text-lg font-bold text-primary mt-1 sm:mt-2">
                       R$ {product.price.toFixed(2)}
                     </p>
                   )}
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col justify-end">
+                <CardContent className="flex-1 flex flex-col justify-end p-3 sm:p-4 lg:p-6 pt-0">
                   <Button
-                    className="w-full"
+                    className="w-full text-xs sm:text-sm h-8 sm:h-9 lg:h-10"
                     onClick={() => handleAccessProduct(product)}
                     variant={canAccess ? "default" : "outline"}
                   >
                     {canAccess ? (
                       <>
-                        <CheckCircle2 className="mr-2 h-4 w-4" />
-                        Acessar
+                        <CheckCircle2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 shrink-0" />
+                        <span className="truncate">Acessar</span>
                       </>
                     ) : (
                       <>
-                        <Lock className="mr-2 h-4 w-4" />
-                        Ver Detalhes
+                        <Lock className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 shrink-0" />
+                        <span className="truncate">Ver</span>
                       </>
                     )}
                   </Button>
