@@ -180,17 +180,20 @@ const Landing = () => {
     <div className="min-h-screen overflow-x-hidden">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 glass">
-        <div className="container flex h-16 items-center justify-between">
-          <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Maternidade Consciente
+        <div className="container flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
+          <h1 className="text-lg xs:text-xl sm:text-2xl font-display font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent truncate min-w-0 flex-1">
+            <span className="hidden xs:inline">Maternidade Consciente</span>
+            <span className="xs:hidden">M.C.</span>
           </h1>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 sm:gap-2 shrink-0">
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
               <Link to="/auth">Entrar</Link>
             </Button>
-            <Button asChild className="gap-2 shadow-glow">
+            <Button asChild className="gap-1 sm:gap-2 shadow-glow text-xs sm:text-sm px-2.5 sm:px-4 h-8 sm:h-10">
               <Link to="/auth">
-                Começar Agora <ArrowRight className="h-4 w-4" />
+                <span className="hidden xs:inline">Começar Agora</span>
+                <span className="xs:hidden">Começar</span>
+                <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Link>
             </Button>
           </div>

@@ -33,38 +33,38 @@ export const LevelProgress = memo(({ compact = false }: LevelProgressProps) => {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-primary/20">
-      <CardContent className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-lg shadow-lg">
+    <Card className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-primary/20 overflow-hidden min-w-0">
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-center justify-between gap-2 mb-2 sm:mb-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+            <div className="relative shrink-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground font-bold text-base sm:text-lg shadow-lg">
                 {level}
               </div>
-              <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500 animate-pulse" />
+              <Sparkles className="absolute -top-1 -right-1 h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 animate-pulse" />
             </div>
-            <div>
-              <p className="font-semibold">Nível {level}</p>
-              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                <TrendingUp className="h-3 w-3" />
-                {xp_total} XP total
+            <div className="min-w-0">
+              <p className="font-semibold text-sm sm:text-base">Nível {level}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1 truncate">
+                <TrendingUp className="h-3 w-3 shrink-0" />
+                <span className="truncate">{xp_total} XP total</span>
               </p>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground">Próximo nível</p>
-            <p className="font-medium">{xp_for_next_level} XP</p>
+          <div className="text-right shrink-0">
+            <p className="text-[10px] sm:text-xs text-muted-foreground">Próximo</p>
+            <p className="font-medium text-xs sm:text-sm">{xp_for_next_level} XP</p>
           </div>
         </div>
         
         <div className="space-y-1">
-          <div className="flex justify-between text-xs text-muted-foreground">
+          <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground">
             <span>{Math.round(progress_percentage)}%</span>
-            <span>{xp_for_next_level - xp_total} XP restantes</span>
+            <span className="truncate ml-2">{xp_for_next_level - xp_total} XP restantes</span>
           </div>
           <Progress 
             value={progress_percentage} 
-            className="h-2 bg-primary/20"
+            className="h-1.5 sm:h-2 bg-primary/20"
           />
         </div>
       </CardContent>
