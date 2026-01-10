@@ -242,9 +242,13 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/@radix-ui')) {
             return 'radix-core';
           }
-          // Charts library - lazy loaded
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3')) {
-            return 'charts';
+          // Charts library - keep together to avoid circular deps
+          if (id.includes('node_modules/recharts')) {
+            return 'recharts';
+          }
+          // D3 core dependencies - separate chunk
+          if (id.includes('node_modules/d3-')) {
+            return 'd3-utils';
           }
           // Export libraries - lazy loaded  
           if (id.includes('node_modules/xlsx')) {
