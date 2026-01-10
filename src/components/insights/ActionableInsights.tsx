@@ -87,25 +87,25 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
       <Card>
         {showTitle && (
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-amber-500" />
-              Insights Inteligentes
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 shrink-0" />
+              <span className="truncate">Insights Inteligentes</span>
             </CardTitle>
           </CardHeader>
         )}
         <CardContent>
-          <div className="text-center py-6">
-            <Sparkles className="h-10 w-10 mx-auto text-muted-foreground/30 mb-3" />
-            <p className="text-sm text-muted-foreground">
-              Continue registrando atividades para receber insights personalizados!
+          <div className="text-center py-4 sm:py-6">
+            <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 mx-auto text-muted-foreground/30 mb-2 sm:mb-3" />
+            <p className="text-xs sm:text-sm text-muted-foreground px-2">
+              Continue registrando para receber insights!
             </p>
-            <div className="flex gap-2 justify-center mt-4">
-              <Button variant="outline" size="sm" asChild>
+            <div className="flex flex-col xs:flex-row gap-2 justify-center mt-3 sm:mt-4">
+              <Button variant="outline" size="sm" className="text-xs h-8" asChild>
                 <Link to="/materiais/rastreador-amamentacao">
                   Registrar Mamada
                 </Link>
               </Button>
-              <Button variant="outline" size="sm" asChild>
+              <Button variant="outline" size="sm" className="text-xs h-8" asChild>
                 <Link to="/materiais/diario-sono">
                   Registrar Sono
                 </Link>
@@ -121,51 +121,51 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
     <Card>
       {showTitle && (
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-amber-500" />
-            Insights Inteligentes
+          <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+            <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-amber-500 shrink-0" />
+            <span className="truncate">Insights Inteligentes</span>
             {insights.length > 0 && (
-              <Badge variant="secondary" className="ml-auto">
+              <Badge variant="secondary" className="ml-auto text-xs shrink-0">
                 {insights.length}
               </Badge>
             )}
           </CardTitle>
         </CardHeader>
       )}
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2 sm:space-y-3">
         {displayInsights.map((insight) => (
           <div
             key={insight.id}
             className={cn(
-              "p-3 rounded-lg border transition-all hover:shadow-sm",
+              "p-2.5 sm:p-3 rounded-lg border transition-all hover:shadow-sm",
               getTypeStyles(insight.type, insight.priority)
             )}
           >
-            <div className="flex items-start gap-3">
-              <span className="text-2xl flex-shrink-0">{insight.icon}</span>
+            <div className="flex items-start gap-2 sm:gap-3">
+              <span className="text-xl sm:text-2xl shrink-0">{insight.icon}</span>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="font-medium text-sm truncate">{insight.title}</p>
+                <div className="flex items-center gap-1.5 sm:gap-2 mb-0.5 sm:mb-1 flex-wrap">
+                  <p className="font-medium text-xs sm:text-sm truncate">{insight.title}</p>
                   {getPriorityBadge(insight.priority)}
                 </div>
-                <p className="text-sm opacity-80 line-clamp-2">
+                <p className="text-xs sm:text-sm opacity-80 line-clamp-2">
                   {insight.description}
                 </p>
                 {insight.action && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="mt-2 h-7 px-2 -ml-2"
+                    className="mt-1.5 sm:mt-2 h-6 sm:h-7 px-2 -ml-2 text-xs"
                     asChild
                   >
                     <Link to={insight.action.path}>
-                      {insight.action.label}
-                      <ArrowRight className="h-3 w-3 ml-1" />
+                      <span className="truncate">{insight.action.label}</span>
+                      <ArrowRight className="h-3 w-3 ml-1 shrink-0" />
                     </Link>
                   </Button>
                 )}
               </div>
-              <div className="flex-shrink-0 opacity-60">
+              <div className="shrink-0 opacity-60">
                 {getTypeIcon(insight.type)}
               </div>
             </div>
@@ -173,10 +173,10 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
         ))}
 
         {insights.length > maxItems && (
-          <Button variant="ghost" className="w-full" asChild>
+          <Button variant="ghost" className="w-full text-xs sm:text-sm" asChild>
             <Link to="/dashboard-bebe">
               Ver todos os {insights.length} insights
-              <ArrowRight className="h-4 w-4 ml-2" />
+              <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 ml-1.5 sm:ml-2 shrink-0" />
             </Link>
           </Button>
         )}

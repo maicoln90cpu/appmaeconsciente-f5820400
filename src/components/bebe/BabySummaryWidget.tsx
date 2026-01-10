@@ -91,57 +91,57 @@ export const BabySummaryWidget = () => {
 
   return (
     <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-primary/20">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Baby className="h-5 w-5 text-primary" />
-          Resumo de Hoje
+      <CardHeader className="pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Baby className="h-4 w-4 sm:h-5 sm:w-5 text-primary shrink-0" />
+          <span className="truncate">Resumo de Hoje</span>
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
           {/* Sleep */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20">
-            <div className="p-2 rounded-full bg-indigo-500/20">
-              <Moon className="h-4 w-4 text-indigo-500" />
+          <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-indigo-500/10 dark:bg-indigo-500/20 min-w-0">
+            <div className="p-1.5 sm:p-2 rounded-full bg-indigo-500/20 shrink-0">
+              <Moon className="h-3 w-3 sm:h-4 sm:w-4 text-indigo-500" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Sono</p>
-              <p className="font-semibold text-sm">
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Sono</p>
+              <p className="font-semibold text-xs sm:text-sm truncate">
                 {todayStats.sleepHours}h {todayStats.sleepMins}m
               </p>
             </div>
           </div>
 
           {/* Feedings */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-pink-500/10 dark:bg-pink-500/20">
-            <div className="p-2 rounded-full bg-pink-500/20">
-              <TrendingUp className="h-4 w-4 text-pink-500" />
+          <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-pink-500/10 dark:bg-pink-500/20 min-w-0">
+            <div className="p-1.5 sm:p-2 rounded-full bg-pink-500/20 shrink-0">
+              <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-pink-500" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Mamadas</p>
-              <p className="font-semibold text-sm">{todayStats.feedingCount}x</p>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Mamadas</p>
+              <p className="font-semibold text-xs sm:text-sm">{todayStats.feedingCount}x</p>
             </div>
           </div>
 
           {/* Medications */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 dark:bg-green-500/20">
-            <div className="p-2 rounded-full bg-green-500/20">
-              <Pill className="h-4 w-4 text-green-500" />
+          <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-green-500/10 dark:bg-green-500/20 min-w-0">
+            <div className="p-1.5 sm:p-2 rounded-full bg-green-500/20 shrink-0">
+              <Pill className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Medicamentos</p>
-              <p className="font-semibold text-sm">{todayStats.activeMeds} ativos</p>
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Remédios</p>
+              <p className="font-semibold text-xs sm:text-sm truncate">{todayStats.activeMeds} ativos</p>
             </div>
           </div>
 
           {/* Last feeding */}
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-orange-500/10 dark:bg-orange-500/20">
-            <div className="p-2 rounded-full bg-orange-500/20">
-              <Clock className="h-4 w-4 text-orange-500" />
+          <div className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-orange-500/10 dark:bg-orange-500/20 min-w-0">
+            <div className="p-1.5 sm:p-2 rounded-full bg-orange-500/20 shrink-0">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
             </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Última Mamada</p>
-              <p className="font-semibold text-sm">
+            <div className="min-w-0">
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Última</p>
+              <p className="font-semibold text-xs sm:text-sm truncate">
                 {todayStats.hoursSinceFeeding !== null 
                   ? `${todayStats.hoursSinceFeeding}h atrás`
                   : "—"
