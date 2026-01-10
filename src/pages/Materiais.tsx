@@ -133,13 +133,23 @@ const Materiais = () => {
       return;
     }
 
+    // Helper para navegar - rotas internas na mesma aba, URLs externas em nova aba
+    const navigateToProduct = (url: string | null, slug: string) => {
+      if (url) {
+        // Verifica se é uma rota interna (começa com /)
+        if (url.startsWith('/')) {
+          navigate(url);
+        } else {
+          window.open(url, '_blank');
+        }
+      } else {
+        navigate(`/materiais/${slug}`);
+      }
+    };
+
     // ✅ VERIFICAR ADMIN PRIMEIRO (antes de qualquer outra lógica)
     if (isAdmin) {
-      if (product.destination_url) {
-        window.open(product.destination_url, '_blank');
-      } else {
-        navigate(`/materiais/${product.slug}`);
-      }
+      navigateToProduct(product.destination_url, product.slug);
       return;
     }
 
@@ -152,13 +162,7 @@ const Materiais = () => {
           product_id: product.id,
         });
       }
-
-      // Acessar
-      if (product.destination_url) {
-        window.open(product.destination_url, '_blank');
-      } else {
-        navigate(`/materiais/${product.slug}`);
-      }
+      navigateToProduct(product.destination_url, product.slug);
       return;
     }
 
@@ -166,12 +170,7 @@ const Materiais = () => {
     const userHasValidAccess = hasAccess(product.id);
 
     if (userHasValidAccess) {
-      // Tem acesso válido
-      if (product.destination_url) {
-        window.open(product.destination_url, '_blank');
-      } else {
-        navigate(`/materiais/${product.slug}`);
-      }
+      navigateToProduct(product.destination_url, product.slug);
     } else {
       // Não tem acesso ou expirou - redirecionar para pagamento
       if (product.payment_url) {
@@ -430,7 +429,7 @@ const Materiais = () => {
               <Card key={product.id} className="flex flex-col min-w-0">
                 <CardHeader className="p-3 sm:p-4 lg:p-6 pb-2 sm:pb-3">
                   <div className="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-1 mb-1 sm:mb-2">
-                    <CardTitle className="text-sm sm:text-base lg:text-lg line-clamp-2 min-w-0">{product.title}</CardTitle>
+                    <CardTitle className="text-sm sm:text-base lg:text-lg min-w-0 break-words">{product.title}</CardTitle>
                     <div className="flex flex-wrap gap-1 shrink-0">
                       {product.is_free ? (
                         <Badge variant="secondary" className="text-[10px] xs:text-xs">Gratuito</Badge>
