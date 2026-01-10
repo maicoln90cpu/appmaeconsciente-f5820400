@@ -101,61 +101,63 @@ const MonitorDesenvolvimento = () => {
 
   return (
     <TooltipProvider>
-      <div className="container max-w-6xl py-8 space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div>
-                <h1 className="text-3xl font-bold">Monitor de Desenvolvimento</h1>
-                <p className="text-muted-foreground mt-1">
-                  Acompanhe as conquistas do seu bebê com carinho e sem paranoia
-                </p>
-              </div>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowOnboarding(true)}
-                    className="h-8 w-8"
-                    aria-label="Abrir ajuda"
-                  >
-                    <HelpCircle className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Ver tutorial novamente</p>
-                </TooltipContent>
-              </Tooltip>
+      <div className="container max-w-6xl py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 overflow-x-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">Monitor de Desenvolvimento</h1>
+              <p className="text-muted-foreground text-xs sm:text-sm mt-0.5 sm:mt-1 line-clamp-2">
+                Acompanhe as conquistas do seu bebê com carinho
+              </p>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button onClick={() => setShowQuickRegister(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Registrar Conquistas
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowOnboarding(true)}
+                  className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
+                  aria-label="Abrir ajuda"
+                >
+                  <HelpCircle className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Registre múltiplas conquistas de uma vez</p>
+                <p>Ver tutorial novamente</p>
               </TooltipContent>
             </Tooltip>
           </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button onClick={() => setShowQuickRegister(true)} className="w-full sm:w-auto text-sm">
+                <Plus className="h-4 w-4 mr-1.5 sm:mr-2 shrink-0" />
+                <span className="truncate">Registrar Conquistas</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Registre múltiplas conquistas de uma vez</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
 
         {/* Mensagem contextual motivacional */}
-        <Alert className="bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200">
-          <AlertCircle className="h-4 w-4 text-pink-600" />
-          <AlertTitle className="text-pink-800">💕 Cada bebê tem seu próprio ritmo</AlertTitle>
-          <AlertDescription className="text-pink-700">
-            Este monitor é uma ferramenta de acompanhamento com amor, não de comparação. 
-            Observe, celebre e confie no desenvolvimento único do seu bebê.
+        <Alert className="bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200 dark:from-pink-950/30 dark:to-purple-950/30 dark:border-pink-800">
+          <AlertCircle className="h-4 w-4 text-pink-600 dark:text-pink-400 shrink-0" />
+          <AlertTitle className="text-pink-800 dark:text-pink-300 text-sm">💕 Cada bebê tem seu ritmo</AlertTitle>
+          <AlertDescription className="text-pink-700 dark:text-pink-400 text-xs sm:text-sm">
+            Este monitor é para acompanhamento com amor, não comparação.
           </AlertDescription>
         </Alert>
 
         {summary && (
-          <Tabs defaultValue="dashboard" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+          <Tabs defaultValue="dashboard" className="space-y-4 sm:space-y-6">
+            <TabsList className="w-full grid grid-cols-4 h-auto p-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                  <TabsTrigger value="dashboard" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2">
+                    <span className="hidden xs:inline">Dashboard</span>
+                    <span className="xs:hidden">Dash</span>
+                  </TabsTrigger>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Visão geral do desenvolvimento por área</p>
@@ -164,7 +166,10 @@ const MonitorDesenvolvimento = () => {
               
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="timeline">Linha do Tempo</TabsTrigger>
+                  <TabsTrigger value="timeline" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2">
+                    <span className="hidden xs:inline">Linha do Tempo</span>
+                    <span className="xs:hidden">Tempo</span>
+                  </TabsTrigger>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Veja todos os marcos organizados por faixa etária</p>
@@ -173,10 +178,11 @@ const MonitorDesenvolvimento = () => {
               
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="attention">
-                    Atenção 
+                  <TabsTrigger value="attention" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2 relative">
+                    <span className="hidden xs:inline">Atenção</span>
+                    <span className="xs:hidden">Alerta</span>
                     {attentionMilestones.length > 0 && (
-                      <span className="ml-2 px-2 py-0.5 text-xs bg-amber-100 text-amber-800 rounded-full">
+                      <span className="ml-1 px-1 py-0.5 text-[8px] sm:text-xs bg-amber-100 text-amber-800 rounded-full">
                         {attentionMilestones.length}
                       </span>
                     )}
@@ -189,7 +195,10 @@ const MonitorDesenvolvimento = () => {
               
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="settings">Alertas</TabsTrigger>
+                  <TabsTrigger value="settings" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2">
+                    <span className="hidden xs:inline">Alertas</span>
+                    <span className="xs:hidden">Config</span>
+                  </TabsTrigger>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Configure lembretes e notificações</p>
