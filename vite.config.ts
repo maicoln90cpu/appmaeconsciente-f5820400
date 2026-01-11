@@ -85,6 +85,22 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         skipWaiting: false,
         runtimeCaching: [
+          // JS Assets - NetworkFirst para evitar cache desatualizado após deploy
+          {
+            urlPattern: /\/assets\/.*\.js$/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "js-assets",
+              networkTimeoutSeconds: 5,
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24, // 24 horas
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
           // Google Fonts - Cache first (static)
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
