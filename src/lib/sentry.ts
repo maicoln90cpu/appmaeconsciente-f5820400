@@ -1,3 +1,10 @@
+/**
+ * Sentry integration for error tracking
+ * 
+ * NOTE: This file must NOT import from logger.ts to avoid circular dependencies
+ * Use console.log/warn/error directly for debugging within this file
+ */
+
 import * as Sentry from "@sentry/react";
 import { trackError } from "./performance";
 
@@ -5,7 +12,9 @@ const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
 export const initSentry = () => {
   if (!SENTRY_DSN) {
-    console.warn("[Sentry] DSN not configured. Error tracking disabled.");
+    if (import.meta.env.DEV) {
+      console.warn("[Sentry] DSN not configured. Error tracking disabled.");
+    }
     return;
   }
 

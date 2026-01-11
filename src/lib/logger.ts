@@ -2,6 +2,11 @@
  * Logger utility that only logs in development mode
  * Use this instead of console.log/error/warn throughout the app
  * Integrates with Sentry for production error tracking
+ * 
+ * NOTE: This file imports from sentry and performance.
+ * To avoid circular dependencies:
+ * - performance.ts must NOT import from logger.ts
+ * - sentry.ts must NOT import from logger.ts
  */
 
 import { captureError, addBreadcrumb } from "./sentry";
