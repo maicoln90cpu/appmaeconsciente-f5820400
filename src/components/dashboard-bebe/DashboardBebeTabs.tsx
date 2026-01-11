@@ -33,16 +33,15 @@ const tabs: TabConfig[] = [
 
 export const DashboardBebeTabs = () => {
   return (
-    <TabsList className="w-full overflow-x-auto scrollbar-hide flex flex-nowrap h-auto gap-0.5 p-1 justify-start">
+    <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8 lg:flex lg:flex-wrap gap-1 h-auto p-1">
       {tabs.map(({ value, icon: Icon, label, shortLabel }) => (
         <TabsTrigger 
           key={value}
           value={value} 
-          className="flex items-center gap-1 text-[10px] xs:text-xs sm:text-sm px-2 py-1.5 shrink-0 min-w-0"
+          className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-1 text-[9px] sm:text-xs px-1 sm:px-2 py-1.5 min-w-0"
         >
-          <Icon className="h-3 w-3 xs:h-3.5 xs:w-3.5 sm:h-4 sm:w-4 shrink-0" />
-          <span className="hidden xs:inline truncate">{shortLabel}</span>
-          <span className="xs:hidden">{shortLabel.substring(0, 3)}</span>
+          <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+          <span className="truncate max-w-[40px] sm:max-w-none">{shortLabel.substring(0, 4)}</span>
         </TabsTrigger>
       ))}
     </TabsList>

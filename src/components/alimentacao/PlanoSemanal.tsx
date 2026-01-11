@@ -146,18 +146,19 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2 overflow-x-auto pb-4 mb-6">
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 pb-4 mb-6">
             {DAYS_OF_WEEK.map((day, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedDay(index)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
+                className={`px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                   selectedDay === index
-                    ? "bg-primary text-primary-foreground"
+                    ? "bg-primary text-primary-foreground shadow-md"
                     : "bg-muted hover:bg-muted/80"
                 }`}
               >
-                {day}
+                <span className="sm:hidden">{day.substring(0, 3)}</span>
+                <span className="hidden sm:inline">{day}</span>
               </button>
             ))}
           </div>

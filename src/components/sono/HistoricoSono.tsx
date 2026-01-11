@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { BabySleepLog } from "@/types/babySleep";
 import { format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { Trash2, FileDown, Filter } from "lucide-react";
+import { Trash2, Filter } from "lucide-react";
 import { ExportSonoPDF } from "./ExportSonoPDF";
 
 interface HistoricoSonoProps {
@@ -64,13 +64,13 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <CardTitle className="flex items-center gap-2">
-                <Filter className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
                 Histórico de Sono
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 {filteredLogs.length} registro(s) encontrado(s)
               </CardDescription>
             </div>
@@ -78,36 +78,87 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[200px]">
-              <Select value={period} onValueChange={setPeriod}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="7">Últimos 7 dias</SelectItem>
-                  <SelectItem value="14">Últimos 14 dias</SelectItem>
-                  <SelectItem value="30">Últimos 30 dias</SelectItem>
-                  <SelectItem value="0">Todos os registros</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-4">
+            <Select value={period} onValueChange={setPeriod}>
+              <SelectTrigger className="text-xs sm:text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7">Últimos 7 dias</SelectItem>
+                <SelectItem value="14">Últimos 14 dias</SelectItem>
+                <SelectItem value="30">Últimos 30 dias</SelectItem>
+                <SelectItem value="0">Todos</SelectItem>
+              </SelectContent>
+            </Select>
 
-            <div className="flex-1 min-w-[200px]">
-              <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="todos">Todos os tipos</SelectItem>
-                  <SelectItem value="diurno">🌞 Diurno</SelectItem>
-                  <SelectItem value="noturno">🌙 Noturno</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="text-xs sm:text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="todos">Todos</SelectItem>
+                <SelectItem value="diurno">🌞 Diurno</SelectItem>
+                <SelectItem value="noturno">🌙 Noturno</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <div className="rounded-md border overflow-x-auto">
+          {/* Mobile: Cards */}
+          <div className="sm:hidden space-y-3">
+            {filteredLogs.length === 0 ? (
+              <p className="text-center text-muted-foreground py-8 text-sm">
+                Nenhum registro encontrado
+              </p>
+            ) : (
+              filteredLogs.map(log => (
+                <Card key={log.id} className="p-3">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className="font-medium text-sm">
+                        {format(new Date(log.sleep_start), "dd/MM HH:mm", { locale: ptBR })}
+                      </p>
+                      <Badge variant={log.sleep_type === 'noturno' ? 'default' : 'secondary'} className="mt-1">
+                        {log.sleep_type === 'noturno' ? '🌙 Noturno' : '🌞 Diurno'}
+                      </Badge>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(log.id)}
+                      className="text-destructive hover:text-destructive h-8 w-8 p-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                    <div>
+                      <span className="font-medium">Duração:</span>{" "}
+                      {log.duration_minutes 
+                        ? `${Math.floor(log.duration_minutes / 60)}h ${log.duration_minutes % 60}m`
+                        : "Em andamento"}
+                    </div>
+                    <div>
+                      <span className="font-medium">Local:</span> {getLocationEmoji(log.location)}
+                    </div>
+                    <div>
+                      <span className="font-medium">Bebê:</span> {getMoodEmoji(log.wakeup_mood)}
+                    </div>
+                    <div>
+                      <span className="font-medium">Você:</span> {getMoodEmoji(log.mom_mood)}
+                    </div>
+                  </div>
+                  {log.notes && (
+                    <p className="mt-2 text-xs text-muted-foreground bg-muted p-2 rounded">
+                      {log.notes}
+                    </p>
+                  )}
+                </Card>
+              ))
+            )}
+          </div>
+
+          {/* Desktop: Table */}
+          <div className="hidden sm:block rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -168,7 +219,7 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
           </div>
 
           {filteredLogs.some(log => log.notes) && (
-            <div className="mt-4 space-y-2">
+            <div className="hidden sm:block mt-4 space-y-2">
               <h4 className="text-sm font-semibold">📝 Observações Recentes</h4>
               {filteredLogs
                 .filter(log => log.notes)

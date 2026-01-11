@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Trash2, Baby, Milk, Droplets } from "lucide-react";
 import { format, subDays, startOfDay } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -66,30 +67,43 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
     }
   };
 
+  const getFeedingBadgeVariant = (type: string) => {
+    switch (type) {
+      case "breastfeeding":
+        return "default";
+      case "bottle":
+        return "secondary";
+      case "pumping":
+        return "outline";
+      default:
+        return "default";
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Filtros */}
-      <Card className="p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Período</label>
+      <Card className="p-4">
+        <div className="grid grid-cols-2 gap-2 sm:gap-4">
+          <div className="space-y-1">
+            <label className="text-xs sm:text-sm font-medium">Período</label>
             <Select value={periodFilter} onValueChange={(value: any) => setPeriodFilter(value)}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs sm:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
                 <SelectItem value="today">Hoje</SelectItem>
-                <SelectItem value="week">Última Semana</SelectItem>
-                <SelectItem value="month">Último Mês</SelectItem>
+                <SelectItem value="week">Semana</SelectItem>
+                <SelectItem value="month">Mês</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Tipo</label>
+          <div className="space-y-1">
+            <label className="text-xs sm:text-sm font-medium">Tipo</label>
             <Select value={typeFilter} onValueChange={(value: any) => setTypeFilter(value)}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs sm:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -103,8 +117,66 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
         </div>
       </Card>
 
-      {/* Tabela */}
-      <Card>
+      {/* Mobile: Cards */}
+      <div className="sm:hidden space-y-3">
+        {filteredLogs.length === 0 ? (
+          <Card className="p-6">
+            <p className="text-center text-muted-foreground text-sm">
+              Nenhum registro encontrado
+            </p>
+          </Card>
+        ) : (
+          filteredLogs.map((log) => (
+            <Card key={log.id} className="p-3">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  {getFeedingIcon(log.feeding_type)}
+                  <Badge variant={getFeedingBadgeVariant(log.feeding_type) as any}>
+                    {getFeedingLabel(log.feeding_type)}
+                  </Badge>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDelete(log.id)}
+                  className="h-8 w-8 p-0"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
+                <div>
+                  <span className="font-medium">Data:</span>{" "}
+                  {format(new Date(log.start_time), "dd/MM HH:mm", { locale: ptBR })}
+                </div>
+                <div>
+                  <span className="font-medium">Duração:</span>{" "}
+                  {log.duration_minutes ? `${log.duration_minutes} min` : "-"}
+                </div>
+                {log.breast_side && (
+                  <div>
+                    <span className="font-medium">Seio:</span>{" "}
+                    {log.breast_side === "left" ? "Esq" : log.breast_side === "right" ? "Dir" : "Ambos"}
+                  </div>
+                )}
+                {log.volume_ml && (
+                  <div>
+                    <span className="font-medium">Volume:</span> {log.volume_ml}ml
+                  </div>
+                )}
+              </div>
+              {log.notes && (
+                <p className="mt-2 text-xs text-muted-foreground bg-muted p-2 rounded line-clamp-2">
+                  {log.notes}
+                </p>
+              )}
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* Desktop: Table */}
+      <Card className="hidden sm:block">
         <Table>
           <TableHeader>
             <TableRow>

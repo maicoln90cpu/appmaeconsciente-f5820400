@@ -420,7 +420,7 @@ const Materiais = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {filteredProducts.map((product) => {
             const userHasAccess = hasAccess(product.id);
             const canAccess = product.is_free || userHasAccess || isAdmin;
@@ -431,12 +431,17 @@ const Materiais = () => {
                   <div className="flex flex-col xs:flex-row xs:items-start xs:justify-between gap-1 mb-1 sm:mb-2">
                     <CardTitle className="text-sm sm:text-base lg:text-lg min-w-0 break-words">{product.title}</CardTitle>
                     <div className="flex flex-wrap gap-1 shrink-0">
+                      {product.category && (
+                        <Badge variant="outline" className="text-[10px] xs:text-xs bg-muted/50">
+                          {product.category}
+                        </Badge>
+                      )}
                       {product.is_free ? (
                         <Badge variant="secondary" className="text-[10px] xs:text-xs">Gratuito</Badge>
                       ) : userHasAccess ? (
                         <Badge className="bg-green-500 text-[10px] xs:text-xs">Seu</Badge>
                       ) : (
-                        <Badge variant="outline" className="text-[10px] xs:text-xs">Premium</Badge>
+                        <Badge variant="outline" className="text-[10px] xs:text-xs border-primary text-primary">Premium</Badge>
                       )}
                     </div>
                   </div>
