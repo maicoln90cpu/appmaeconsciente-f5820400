@@ -152,19 +152,19 @@ export const GrowthChart = ({ babyProfileId }: GrowthChartProps) => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Gráfico de Crescimento
+              <TrendingUp className="h-5 w-5 text-primary shrink-0" />
+              <span className="truncate">Gráfico de Crescimento</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="line-clamp-2">
               Acompanhe o desenvolvimento com curvas OMS
             </CardDescription>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <Select value={gender} onValueChange={(v) => setGender(v as "male" | "female")}>
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-24 sm:w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -174,9 +174,10 @@ export const GrowthChart = ({ babyProfileId }: GrowthChartProps) => {
             </Select>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nova Medição
+                <Button size="sm" className="gap-1.5 flex-1 sm:flex-none">
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden xs:inline">Nova Medição</span>
+                  <span className="xs:hidden">Medir</span>
                 </Button>
               </DialogTrigger>
               <DialogContent>
@@ -301,19 +302,19 @@ export const GrowthChart = ({ babyProfileId }: GrowthChartProps) => {
             <TabsTrigger value="weight">Peso</TabsTrigger>
             <TabsTrigger value="height">Altura</TabsTrigger>
           </TabsList>
-          <TabsContent value="weight" className="h-80">
+          <TabsContent value="weight" className="h-80 [&_.recharts-legend-wrapper]:hidden sm:[&_.recharts-legend-wrapper]:block">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={prepareChartData("weight")}>
+              <ComposedChart data={prepareChartData("weight")} margin={{ left: 0, right: 10, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" label={{ value: "Meses", position: "bottom" }} />
-                <YAxis label={{ value: "kg", angle: -90, position: "insideLeft" }} />
+                <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} width={35} />
                 <Tooltip
                   formatter={(value: number, name: string) => [
                     value?.toFixed(2),
                     name === "value" ? "Medição" : `Percentil ${name.replace("p", "")}`,
                   ]}
                 />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: '10px' }} />
                 <Area
                   type="monotone"
                   dataKey="p97"
@@ -361,19 +362,19 @@ export const GrowthChart = ({ babyProfileId }: GrowthChartProps) => {
               </ComposedChart>
             </ResponsiveContainer>
           </TabsContent>
-          <TabsContent value="height" className="h-80">
+          <TabsContent value="height" className="h-80 [&_.recharts-legend-wrapper]:hidden sm:[&_.recharts-legend-wrapper]:block">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={prepareChartData("height")}>
+              <ComposedChart data={prepareChartData("height")} margin={{ left: 0, right: 10, bottom: 20 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" label={{ value: "Meses", position: "bottom" }} />
-                <YAxis label={{ value: "cm", angle: -90, position: "insideLeft" }} />
+                <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} width={35} />
                 <Tooltip
                   formatter={(value: number, name: string) => [
                     value?.toFixed(1),
                     name === "value" ? "Medição" : `Percentil ${name.replace("p", "")}`,
                   ]}
                 />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: '10px' }} />
                 <Area type="monotone" dataKey="p97" fill="#f0fdf4" stroke="#bbf7d0" name="p97" />
                 <Area type="monotone" dataKey="p85" fill="#dcfce7" stroke="#86efac" name="p85" />
                 <Area type="monotone" dataKey="p50" fill="#bbf7d0" stroke="#4ade80" name="p50" />

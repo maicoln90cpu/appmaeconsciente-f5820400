@@ -105,21 +105,22 @@ export const FirstTimesAlbum = ({ babyProfileId }: FirstTimesAlbumProps) => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <CardTitle className="flex items-center gap-2">
-              <Camera className="h-5 w-5 text-pink-500" />
-              Álbum de Primeiras Vezes
+              <Camera className="h-5 w-5 text-pink-500 shrink-0" />
+              <span className="truncate">Álbum de Primeiras Vezes</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="line-clamp-2">
               Eternize os momentos especiais do seu bebê
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Novo Momento
+              <Button size="sm" className="gap-1.5 shrink-0 w-full sm:w-auto">
+                <Plus className="h-4 w-4" />
+                <span className="hidden xs:inline">Novo Momento</span>
+                <span className="xs:hidden">Novo</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-lg">

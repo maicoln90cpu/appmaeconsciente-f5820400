@@ -112,21 +112,22 @@ export const PartnerAccessManager = () => {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Modo Parceiro
+              <Users className="h-5 w-5 shrink-0" />
+              <span className="truncate">Modo Parceiro</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="line-clamp-2">
               Compartilhe acesso ao dashboard com parceiro ou cuidadores
             </CardDescription>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button>
-                <Link2 className="h-4 w-4 mr-2" />
-                Novo Acesso
+              <Button size="sm" className="gap-1.5 shrink-0 w-full sm:w-auto">
+                <Link2 className="h-4 w-4" />
+                <span className="hidden xs:inline">Novo Acesso</span>
+                <span className="xs:hidden">Novo</span>
               </Button>
             </DialogTrigger>
             <DialogContent>

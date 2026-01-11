@@ -378,4 +378,29 @@
   .animate-bounce-slow {
     animation: bounce-slow 2s ease-in-out infinite;
   }
+
+  /* Text that adapts to container - prevents overflow */
+  .text-adaptive {
+    font-size: clamp(0.5rem, 2vw, 0.75rem);
+  }
+
+  /* Container that prevents text overflow */
+  .no-overflow-text {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap max-w-full;
+  }
+
+  /* Button that adapts to available space */
+  .btn-adaptive {
+    @apply min-w-fit max-w-full;
+  }
+
+  /* Responsive text sizing for badges and small elements */
+  .text-responsive-xs {
+    @apply text-[9px] xs:text-[10px] sm:text-xs;
+  }
+
+  /* Ensure content doesn't overflow cards */
+  .card-content-safe {
+    @apply overflow-hidden break-words;
+  }
 }
