@@ -1,7 +1,7 @@
 # 📋 PENDÊNCIAS - Maternidade Consciente
 
 **Última atualização:** Janeiro 2026  
-**Status geral:** MVP Completo | Growth em planejamento
+**Status geral:** MVP Completo | Mobile UX Otimizado | Growth em planejamento
 
 ---
 
@@ -36,6 +36,7 @@
 | P1-003 | Error monitoring (Sentry) | DevOps | ✅ Completo | Jan/2026 |
 | P1-004 | E2E tests com Playwright | Quality | ✅ Completo | Jan/2026 |
 | P1-005 | Onboarding guiado para novos usuários | UX | 📋 Planejado | Abr/2026 |
+| P1-006 | Layout mobile responsivo | UX | ✅ Completo | Jan/2026 |
 
 ---
 
@@ -74,14 +75,14 @@
 |---------|-----------|-------------|------------|
 | **Calculadora de Mamadeira** | Calcular quantidade de leite por idade/peso | Amamentação | P2 |
 | **Rastreador de Cólicas** | Registrar episódios e correlacionar com alimentação | Baby Care | P2 |
-| **Diário de Introdução Alimentar** | Registrar novos alimentos e reações | Alimentação | P1 |
-| **Timer de Medicamentos** | Alarmes para próxima dose | Recuperação | P2 |
+| **Diário de Introdução Alimentar** | Registrar novos alimentos e reações | Alimentação | ✅ Completo |
+| **Timer de Medicamentos** | Alarmes para próxima dose | Recuperação | ✅ Completo |
 | **Calculadora de Idade Gestacional** | Converter semanas/meses de gestação | Materiais | P3 |
-| **Gráfico de Crescimento** | Curvas de peso/altura do bebê | Desenvolvimento | P1 |
-| **Organizador de Consultas** | Agenda de pediatra/obstetra | Core | P2 |
+| **Gráfico de Crescimento** | Curvas de peso/altura do bebê | Desenvolvimento | ✅ Completo |
+| **Organizador de Consultas** | Agenda de pediatra/obstetra | Core | ✅ Completo |
 | **Lista de Contatos de Emergência** | Pediatra, hospital, família | Core | P3 |
 | **Rastreador de Fraldas** | Registrar trocas e padrões | Baby Care | P3 |
-| **Álbum do Primeiro Ano** | Fotos mensais com marcos | Development | P2 |
+| **Álbum do Primeiro Ano** | Fotos mensais com marcos | Development | ✅ Completo |
 
 ### Novas Ferramentas Complementares
 
@@ -89,8 +90,8 @@
 |---------|-----------|---------------|------------|
 | **Checklist de Consultas** | Perguntas para levar ao pediatra | Complementa Vacinação | P2 |
 | **Banco de Leite Pessoal** | Gestão avançada de estoque | Complementa Ordenha | P2 |
-| **Planner de Rotina** | Criar rotinas diárias do bebê | Complementa Sono | P2 |
-| **Histórico de Crescimento** | Gráficos OMS integrados | Complementa Desenvolvimento | P1 |
+| **Planner de Rotina** | Criar rotinas diárias do bebê | Complementa Sono | ✅ Completo |
+| **Histórico de Crescimento** | Gráficos OMS integrados | Complementa Desenvolvimento | ✅ Completo |
 | **Gestor de Babá/Cuidador** | Compartilhar info com cuidadores | Novo módulo | P2 |
 | **Biblioteca de White Noise** | Sons para acalmar bebê | Complementa Sono | P3 |
 | **Diário de Gratidão da Mãe** | Bem-estar emocional | Complementa Recuperação | P3 |
@@ -114,7 +115,7 @@
 |----|-----------|---------|---------|--------|
 | DT-006 | Setup de staging environment | Alto | Médio | 📋 |
 | DT-007 | Implementar database migrations CI | Alto | Médio | 📋 |
-| DT-008 | Configurar Playwright para E2E | Alto | Alto | 📋 |
+| DT-008 | Configurar Playwright para E2E | Alto | Alto | ✅ Completo |
 | DT-009 | Setup de monitoramento APM | Médio | Médio | 📋 |
 | DT-010 | Backup automatizado de dados | Alto | Baixo | 📋 |
 
@@ -122,9 +123,19 @@
 
 ## 📜 Histórico de Mudanças
 
+### Janeiro 2026 (Sprint 5 - Mobile UX)
+- ✅ Layout responsivo para badges (texto adaptativo)
+- ✅ Botões com texto abreviado em mobile
+- ✅ Tabs em grid responsivo (2 colunas em mobile)
+- ✅ Tabelas convertidas em cards para mobile
+- ✅ Legendas de gráficos ocultas em mobile
+- ✅ CSS utilities globais (`.text-adaptive`, `.no-overflow-text`, `.btn-adaptive`)
+- ✅ Melhorias em 15+ componentes mobile
+- ✅ Documentação técnica atualizada
+
 ### Janeiro 2026 (Sprint 4)
 - ✅ Sentry error monitoring configurado
-- ✅ Testes E2E expandidos (+15 specs)
+- ✅ Testes E2E expandidos (+20 specs)
 - ✅ Migração de hooks para createSupabaseCRUD
 - ✅ Bundle optimization com lazy loading avançado
 - ✅ Testes unitários para UI components (Card, Alert, Tabs, Dialog, Input)
@@ -200,4 +211,4 @@
 ---
 
 *Documento mantido por: Development Team*  
-*Última atualização: Janeiro 2026*
+*Última atualização: Janeiro 2026 (Sprint 5)*

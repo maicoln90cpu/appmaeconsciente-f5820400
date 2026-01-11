@@ -12,7 +12,7 @@
 │                         2025-2026                                │
 ├──────────────┬──────────────┬──────────────┬──────────────────────┤
 │   Q4/2025    │   Q1/2026    │   Q2/2026    │      Q3-Q4/2026      │
-│  Foundation  │     MVP      │   Growth     │      Scale           │
+│  Foundation  │  MVP + UX    │   Growth     │      Scale           │
 │      ✅      │      ✅      │     🔄       │        📋            │
 └──────────────┴──────────────┴──────────────┴──────────────────────┘
 ```
@@ -61,11 +61,19 @@
 
 ### Sprint 4: Quality & Testing
 - [x] Sentry error monitoring
-- [x] Testes E2E com Playwright (15+ specs)
+- [x] Testes E2E com Playwright (20+ specs)
 - [x] Testes unitários expandidos
 - [x] Code splitting avançado
 - [x] Virtualização e memoização
 - [x] Documentação técnica completa
+
+### Sprint 5: Mobile UX Improvements
+- [x] Layout responsivo para badges
+- [x] Texto adaptativo em botões
+- [x] Grids responsivos para tabs
+- [x] Tabelas convertidas em cards mobile
+- [x] Legendas de gráficos otimizadas
+- [x] CSS utilities globais para responsividade
 
 ### Resultados
 | Métrica | Antes | Depois |
@@ -75,7 +83,8 @@
 | Test Coverage | 0% | Core + UI + E2E |
 | A11y Coverage | Parcial | Completa |
 | Error Monitoring | Nenhum | Sentry |
-| E2E Tests | 0 | 15+ specs |
+| E2E Tests | 0 | 20+ specs |
+| Mobile UX | Básico | Otimizado |
 
 ---
 
@@ -100,10 +109,9 @@
 ### Melhorias Técnicas
 | Item | Status | ETA |
 |------|--------|-----|
-| E2E tests (Playwright) | 📋 Planejado | Março |
-| Error monitoring (Sentry) | 📋 Planejado | Março |
 | Performance monitoring | 📋 Planejado | Abril |
 | Database optimization | 📋 Planejado | Abril |
+| Test coverage expansion | 📋 Planejado | Maio |
 
 ---
 
@@ -179,14 +187,14 @@ Utilizamos o framework **RICE** para priorização:
 ## Próximos Passos Imediatos
 
 ### Semana 1-2 (Janeiro 2026)
-1. ~~Finalizar documentação técnica~~
-2. Revisar pendências críticas
-3. Planejar sprint Q2
+1. ~~Finalizar melhorias mobile~~ ✅
+2. ~~Atualizar documentação técnica~~ ✅
+3. Revisar pendências críticas
 
 ### Semana 3-4 (Janeiro 2026)
-1. Setup error monitoring
-2. Iniciar i18n
-3. Prototipar push notifications
+1. Iniciar i18n
+2. Prototipar push notifications
+3. Planejar sprint Q2
 
 ---
 
@@ -197,8 +205,9 @@ Utilizamos o framework **RICE** para priorização:
 - [PENDENCIAS.md](PENDENCIAS.md) - Lista de pendências
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura técnica
 - [SPRINT_REVIEW.md](SPRINT_REVIEW.md) - Histórico de sprints
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Guia de contribuição
 
 ---
 
-*Roadmap atualizado em: Janeiro 2026*  
+*Roadmap atualizado em: Janeiro 2026 (Sprint 5)*  
 *Responsável: Product Team*

@@ -1,7 +1,7 @@
 # 🎯 Complete Sprint Review & Status
 
 ## Overview
-This document tracks all improvements from the comprehensive audit across 4 sprints.
+This document tracks all improvements from the comprehensive audit across 5 sprints.
 
 ---
 
@@ -103,7 +103,7 @@ This document tracks all improvements from the comprehensive audit across 4 spri
 
 ### Fase 2: Testes E2E ✅
 - Playwright configurado e funcionando
-- 15+ specs cobrindo todos os módulos
+- 20+ specs cobrindo todos os módulos
 - Fixtures de autenticação
 - Testes de acessibilidade
 
@@ -140,6 +140,55 @@ This document tracks all improvements from the comprehensive audit across 4 spri
 
 ---
 
+## ✅ SPRINT 5: Mobile UX Improvements (COMPLETE)
+
+### Fase 1: Badge Responsivo ✅
+- Texto adaptativo com `text-[9px] sm:text-xs`
+- Overflow handling com `whitespace-nowrap max-w-full overflow-hidden text-ellipsis`
+- Padding responsivo `px-1.5 sm:px-2`
+
+### Fase 2: Botões Adaptativos ✅
+- Texto abreviado em mobile (`hidden xs:inline` / `xs:hidden`)
+- Componentes atualizados:
+  - MedicationTimer.tsx
+  - PartnerAccessManager.tsx
+  - FirstTimesAlbum.tsx
+  - FoodIntroductionDiary.tsx
+  - AppointmentOrganizer.tsx
+
+### Fase 3: Tabs Responsivos ✅
+- Vacinação: `grid-cols-2 sm:grid-cols-4`
+- Dashboard Bebê: `grid-cols-4 sm:grid-cols-8`
+- Alimentação: Grid de dias `grid-cols-4 sm:grid-cols-7`
+- Amamentação: `grid-cols-3 sm:grid-cols-5`
+
+### Fase 4: Tabelas → Cards Mobile ✅
+- HistoricoSono.tsx: Cards em mobile, tabela em desktop
+- HistoricoMamadas.tsx: Cards em mobile, tabela em desktop
+
+### Fase 5: Gráficos Otimizados ✅
+- Legendas ocultas em mobile
+- Margens e fontes de eixos reduzidas
+- CSS: `[&_.recharts-legend-wrapper]:hidden sm:[&_.recharts-legend-wrapper]:block`
+
+### Fase 6: CSS Utilities Globais ✅
+```css
+.text-adaptive { font-size: clamp(0.5rem, 2vw, 0.75rem); }
+.no-overflow-text { @apply overflow-hidden text-ellipsis whitespace-nowrap max-w-full; }
+.btn-adaptive { @apply min-w-fit max-w-full; }
+.text-responsive-xs { @apply text-[9px] xs:text-[10px] sm:text-xs; }
+.card-content-safe { @apply overflow-hidden break-words; }
+```
+
+### Fase 7: Card Headers Responsivos ✅
+- Layout `flex-col sm:flex-row` para headers com botões
+- Botões `w-full sm:w-auto` em mobile
+- `CardDescription` com `line-clamp-2`
+
+**Status**: 🟢 **100% Complete**
+
+---
+
 ## 📊 Overall Results
 
 | Metric | Before | After | Improvement |
@@ -152,7 +201,8 @@ This document tracks all improvements from the comprehensive audit across 4 spri
 | Code Documentation | Minimal | JSDoc + Guides | ✅ Complete |
 | Test Coverage | 0% | Core + UI + E2E | ✅ Expanded |
 | Error Monitoring | None | Sentry | ✅ Complete |
-| E2E Tests | 0 | 15+ specs | ✅ Complete |
+| E2E Tests | 0 | 20+ specs | ✅ Complete |
+| Mobile UX | Basic | Optimized | ✅ Complete |
 
 ---
 
@@ -231,20 +281,22 @@ This document tracks all improvements from the comprehensive audit across 4 spri
 
 ## 🎉 Summary
 
-**Todas as 4 sprints concluídas com sucesso!**
+**Todas as 5 sprints concluídas com sucesso!**
 
 A aplicação agora possui:
 - 🔒 Segurança production-grade com RLS
 - ⚡ 60%+ melhoria de performance
 - ♿ Conformidade completa de acessibilidade
+- 📱 Experiência mobile otimizada
 - 📱 Funcionalidade PWA completa
 - 📊 Analytics privacy-friendly
 - 💪 Suporte offline com background sync
 - 📝 Documentação completa
-- 🧪 Testes unitários e E2E
+- 🧪 Testes unitários e E2E (20+ specs)
 - 🔍 Error monitoring com Sentry
 - 🎯 Virtualização e memoização
+- 📐 Layout responsivo adaptativo
 
 **Pronta para deploy em produção!**
 
-*Atualizado em: Janeiro 2026 (Sprint 4)*
+*Atualizado em: Janeiro 2026 (Sprint 5 - Mobile UX)*

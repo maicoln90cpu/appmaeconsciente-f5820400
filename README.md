@@ -49,7 +49,6 @@ Maternidade Consciente é uma aplicação web progressiva (PWA) que oferece ferr
 | React Hook Form | 7.x | Formulários |
 | Zod | 3.x | Validação |
 | Recharts | 2.x | Gráficos |
-| Framer Motion | - | Animações |
 
 ### Backend (Lovable Cloud)
 | Serviço | Descrição |
@@ -64,7 +63,7 @@ Maternidade Consciente é uma aplicação web progressiva (PWA) que oferece ferr
 | Ferramenta | Descrição |
 |------------|-----------|
 | Vitest | Testes unitários |
-| Playwright | Testes E2E |
+| Playwright | Testes E2E (20+ specs) |
 | ESLint | Linting |
 | Prettier | Formatação |
 | Sentry | Error monitoring |
@@ -114,7 +113,7 @@ npm run format       # Formata código
 ```
 src/
 ├── components/           # Componentes React
-│   ├── ui/              # Componentes base (shadcn)
+│   ├── ui/              # Componentes base (shadcn) + responsivos
 │   ├── admin/           # Painel administrativo
 │   ├── alimentacao/     # Módulo de nutrição
 │   ├── alimentacao-bebe/# Alimentação do bebê
@@ -159,7 +158,7 @@ supabase/
 
 e2e/                     # Testes E2E Playwright
 ├── fixtures/            # Fixtures de autenticação
-└── *.spec.ts            # Specs de teste
+└── *.spec.ts            # Specs de teste (20+)
 ```
 
 ## ✨ Funcionalidades
@@ -190,7 +189,7 @@ e2e/                     # Testes E2E Playwright
 - ✅ **Prefetch** - Pré-carregamento de rotas (hover + idle)
 - ✅ **Dark Mode** - Tema escuro
 - ✅ **Acessibilidade** - ARIA labels, skip links, focus management
-- ✅ **Responsivo** - Mobile-first
+- ✅ **Responsivo** - Mobile-first com layout adaptativo
 - ✅ **Error Monitoring** - Sentry integrado
 - ✅ **Virtualização** - Listas otimizadas para grandes volumes
 
@@ -222,7 +221,7 @@ Cobertura E2E:
 - ✅ Autenticação
 - ✅ Navegação
 - ✅ Acessibilidade
-- ✅ Todos os módulos principais (15+ specs)
+- ✅ Todos os módulos principais (20+ specs)
 
 ## ⚡ Performance
 
@@ -237,6 +236,7 @@ Cobertura E2E:
 | Memoização avançada | Menos re-renders |
 | Query optimization | N+1 queries eliminados |
 | 15+ índices DB | Queries 90%+ mais rápidas |
+| Mobile-first CSS | Layout adaptativo |
 
 ### Métricas Target
 
@@ -288,4 +288,4 @@ Este projeto é proprietário. Todos os direitos reservados.
 
 **Desenvolvido com 💜 por Lovable**
 
-*Última atualização: Janeiro 2026 (Sprint 4)*
+*Última atualização: Janeiro 2026 (Sprint 5 - Mobile Improvements)*

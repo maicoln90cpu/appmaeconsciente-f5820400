@@ -521,4 +521,25 @@ supabase/functions/
 
 ---
 
-*Diagrama de arquitetura atualizado em Janeiro 2026 (Sprint 4)*
+## Responsividade Mobile
+
+### Estratégias Implementadas
+
+- **Texto Adaptativo**: Classes CSS globais (`.text-adaptive`, `.no-overflow-text`)
+- **Grids Responsivos**: `grid-cols-2 sm:grid-cols-4` para tabs e cards
+- **Tabelas → Cards**: Exibição condicional `sm:hidden` / `hidden sm:block`
+- **Legendas de Gráficos**: Ocultas em mobile com CSS seletores
+- **Botões Adaptativos**: Texto abreviado com `hidden xs:inline` / `xs:hidden`
+
+### Breakpoints
+
+```css
+xs: 475px   /* Smartphones pequenos */
+sm: 640px   /* Smartphones */
+md: 768px   /* Tablets */
+lg: 1024px  /* Desktop */
+```
+
+---
+
+*Diagrama de arquitetura atualizado em Janeiro 2026 (Sprint 5 - Mobile UX)*
