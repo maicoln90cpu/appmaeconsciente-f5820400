@@ -198,22 +198,23 @@ export const AppointmentOrganizer = ({ babyProfileId }: AppointmentOrganizerProp
       )}
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-blue-500" />
-              Organizador de Consultas
+              <Calendar className="h-5 w-5 text-blue-500 shrink-0" />
+              <span className="truncate">Organizador de Consultas</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="line-clamp-2">
               Gerencie as consultas e exames do bebê
             </CardDescription>
           </div>
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2">
+              <Button size="sm" className="gap-1.5 shrink-0 w-full sm:w-auto">
                 <Plus className="h-4 w-4" />
-                Agendar
+                <span className="hidden xs:inline">Agendar</span>
+                <span className="xs:hidden">+</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">

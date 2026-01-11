@@ -173,21 +173,22 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
       {/* Main Card */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex-1 min-w-0">
               <CardTitle className="flex items-center gap-2">
-                <Apple className="h-5 w-5 text-primary" />
-                Diário de Introdução Alimentar
+                <Apple className="h-5 w-5 text-primary shrink-0" />
+                <span className="truncate">Diário de Introdução Alimentar</span>
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="line-clamp-2">
                 Registre e acompanhe os alimentos introduzidos
               </CardDescription>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Novo Alimento
+                <Button size="sm" className="gap-1.5 shrink-0 w-full sm:w-auto">
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden xs:inline">Novo Alimento</span>
+                  <span className="xs:hidden">Novo</span>
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-md">

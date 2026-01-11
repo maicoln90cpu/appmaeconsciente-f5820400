@@ -333,28 +333,28 @@ export const PediatricReportGenerator = ({ babyProfileId }: PediatricReportGener
         {/* Section Selection */}
         <div>
           <Label className="text-sm font-medium mb-3 block">Seções do Relatório</Label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
             {[
-              { key: 'basicInfo', label: 'Dados Básicos', icon: Baby },
+              { key: 'basicInfo', label: 'Dados', icon: Baby },
               { key: 'growth', label: 'Crescimento', icon: Ruler },
-              { key: 'medications', label: 'Medicamentos', icon: Pill },
+              { key: 'medications', label: 'Remédios', icon: Pill },
               { key: 'colic', label: 'Cólicas', icon: Activity },
-              { key: 'development', label: 'Desenvolvimento', icon: Activity },
-              { key: 'foodIntroduction', label: 'Introdução Alimentar', icon: Apple },
+              { key: 'development', label: 'Desenv.', icon: Activity },
+              { key: 'foodIntroduction', label: 'Alimentar', icon: Apple },
               { key: 'appointments', label: 'Consultas', icon: Calendar },
             ].map(({ key, label, icon: Icon }) => (
               <div
                 key={key}
-                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${
+                className={`flex items-center gap-1.5 sm:gap-2 p-2 sm:p-3 rounded-lg border cursor-pointer transition-colors ${
                   sections[key as keyof typeof sections]
                     ? 'bg-primary/10 border-primary'
                     : 'bg-muted/50 border-muted'
                 }`}
                 onClick={() => toggleSection(key as keyof typeof sections)}
               >
-                <Checkbox checked={sections[key as keyof typeof sections]} />
-                <Icon className="h-4 w-4" />
-                <span className="text-sm">{label}</span>
+                <Checkbox checked={sections[key as keyof typeof sections]} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span className="text-[10px] sm:text-sm truncate">{label}</span>
               </div>
             ))}
           </div>

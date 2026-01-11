@@ -85,11 +85,23 @@ const CartaoVacinacao = () => {
       </div>
 
       <Tabs defaultValue="dashboard" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-          <TabsTrigger value="calendario">Calendário</TabsTrigger>
-          <TabsTrigger value="lembretes">Lembretes</TabsTrigger>
-          <TabsTrigger value="dados">Dados do Bebê</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-1 p-1">
+          <TabsTrigger value="dashboard" className="text-xs sm:text-sm py-2">
+            <span className="hidden sm:inline">Dashboard</span>
+            <span className="sm:hidden">Dash</span>
+          </TabsTrigger>
+          <TabsTrigger value="calendario" className="text-xs sm:text-sm py-2">
+            <span className="hidden sm:inline">Calendário</span>
+            <span className="sm:hidden">Calend.</span>
+          </TabsTrigger>
+          <TabsTrigger value="lembretes" className="text-xs sm:text-sm py-2">
+            <span className="hidden sm:inline">Lembretes</span>
+            <span className="sm:hidden">Lembr.</span>
+          </TabsTrigger>
+          <TabsTrigger value="dados" className="text-xs sm:text-sm py-2">
+            <span className="hidden sm:inline">Dados do Bebê</span>
+            <span className="sm:hidden">Dados</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="dashboard" className="space-y-6">

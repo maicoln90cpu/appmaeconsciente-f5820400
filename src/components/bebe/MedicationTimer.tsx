@@ -107,22 +107,23 @@ export const MedicationTimer = ({ babyProfileId }: MedicationTimerProps) => {
   return (
     <div className="space-y-4">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex-1 min-w-0">
             <CardTitle className="flex items-center gap-2">
-              <Pill className="h-5 w-5 text-blue-500" />
-              Timer de Medicamentos
+              <Pill className="h-5 w-5 text-blue-500 shrink-0" />
+              <span className="truncate">Timer de Medicamentos</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="line-clamp-2">
               Controle os horários e doses dos medicamentos
             </CardDescription>
           </div>
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2">
+              <Button size="sm" className="gap-1.5 shrink-0 w-full sm:w-auto">
                 <Plus className="h-4 w-4" />
-                Adicionar
+                <span className="hidden xs:inline">Adicionar</span>
+                <span className="xs:hidden">Add</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
