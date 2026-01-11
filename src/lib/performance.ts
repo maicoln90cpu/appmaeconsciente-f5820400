@@ -1,10 +1,11 @@
 /**
  * Performance monitoring utilities
  * Tracks page load times, API response times, and Core Web Vitals
+ * 
+ * NOTE: This file must NOT import from logger.ts to avoid circular dependencies
  */
 
 import * as Sentry from "@sentry/react";
-import { logger } from "./logger";
 
 interface PerformanceMetric {
   name: string;
@@ -71,7 +72,9 @@ export const trackWebVital = (name: string, value: number): void => {
   
   // Log poor metrics
   if (metric.rating === 'poor') {
-    logger.warn(`Poor Web Vital: ${name} = ${value}ms`, { context: 'Performance' });
+    if (import.meta.env.DEV) {
+      console.warn(`[Performance] Poor Web Vital: ${name} = ${value}ms`);
+    }
     
     // Send to Sentry as measurement
     Sentry.addBreadcrumb({
@@ -83,7 +86,7 @@ export const trackWebVital = (name: string, value: number): void => {
   }
   
   if (import.meta.env.DEV) {
-    logger.debug(`Web Vital: ${name} = ${value}ms (${metric.rating})`, { context: 'Performance' });
+    console.debug(`[Performance] Web Vital: ${name} = ${value}ms (${metric.rating})`);
   }
 };
 
@@ -111,7 +114,9 @@ export const trackApiCall = (
   
   // Track slow API calls
   if (duration > 3000) {
-    logger.warn(`Slow API call: ${method} ${endpoint} took ${duration}ms`, { context: 'Performance' });
+    if (import.meta.env.DEV) {
+      console.warn(`[Performance] Slow API call: ${method} ${endpoint} took ${duration}ms`);
+    }
     
     Sentry.addBreadcrumb({
       category: 'api',
@@ -297,7 +302,9 @@ export const initPerformanceObserver = (): void => {
     navObserver.observe({ type: 'navigation', buffered: true });
     
   } catch (error) {
-    logger.debug('Performance Observer not fully supported', { context: 'Performance' });
+    if (import.meta.env.DEV) {
+      console.debug('[Performance] Performance Observer not fully supported');
+    }
   }
 };
 
