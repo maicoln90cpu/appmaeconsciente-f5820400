@@ -79,26 +79,26 @@ const RastreadorAmamentacao = () => {
 
           {/* Tabs */}
           <Tabs defaultValue="registro" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="registro" className="gap-2">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-1 h-auto p-1">
+              <TabsTrigger value="registro" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
                 <Baby className="h-4 w-4" />
-                Registro
+                <span className="text-[10px] sm:text-xs">Registro</span>
               </TabsTrigger>
-              <TabsTrigger value="dashboard" className="gap-2">
+              <TabsTrigger value="dashboard" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
                 <BarChart3 className="h-4 w-4" />
-                Dashboard
+                <span className="text-[10px] sm:text-xs">Dashboard</span>
               </TabsTrigger>
-              <TabsTrigger value="historico" className="gap-2">
+              <TabsTrigger value="historico" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
                 <History className="h-4 w-4" />
-                Histórico
+                <span className="text-[10px] sm:text-xs">Histórico</span>
               </TabsTrigger>
-              <TabsTrigger value="ordenha" className="gap-2">
+              <TabsTrigger value="ordenha" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
                 <Droplets className="h-4 w-4" />
-                Ordenha
+                <span className="text-[10px] sm:text-xs">Ordenha</span>
               </TabsTrigger>
-              <TabsTrigger value="configuracoes" className="gap-2">
+              <TabsTrigger value="configuracoes" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
                 <Settings className="h-4 w-4" />
-                Configurações
+                <span className="text-[10px] sm:text-xs">Config</span>
               </TabsTrigger>
             </TabsList>
 

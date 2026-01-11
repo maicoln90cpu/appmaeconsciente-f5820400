@@ -84,46 +84,46 @@ export default function GuiaAlimentacao() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 lg:grid-cols-10">
-            <TabsTrigger value="dashboard" className="flex items-center gap-2">
+          <TabsList className="grid w-full grid-cols-5 gap-1 h-auto p-1">
+            <TabsTrigger value="dashboard" className="flex flex-col items-center gap-1 py-2 px-1">
               <BarChart3 className="h-4 w-4" />
-              <span className="hidden sm:inline">Dashboard</span>
+              <span className="text-[10px] sm:text-xs">Dash</span>
             </TabsTrigger>
-            <TabsTrigger value="ia" className="flex items-center gap-2">
+            <TabsTrigger value="ia" className="flex flex-col items-center gap-1 py-2 px-1">
               <Bot className="h-4 w-4" />
-              <span className="hidden sm:inline">IA</span>
+              <span className="text-[10px] sm:text-xs">IA</span>
             </TabsTrigger>
-            <TabsTrigger value="plano" className="flex items-center gap-2">
+            <TabsTrigger value="plano" className="flex flex-col items-center gap-1 py-2 px-1">
               <Utensils className="h-4 w-4" />
-              <span className="hidden sm:inline">Plano</span>
+              <span className="text-[10px] sm:text-xs">Plano</span>
             </TabsTrigger>
-            <TabsTrigger value="receitas" className="flex items-center gap-2">
+            <TabsTrigger value="receitas" className="flex flex-col items-center gap-1 py-2 px-1">
               <BookOpen className="h-4 w-4" />
-              <span className="hidden sm:inline">Receitas</span>
+              <span className="text-[10px] sm:text-xs">Receitas</span>
             </TabsTrigger>
-            <TabsTrigger value="suplementos" className="flex items-center gap-2">
+            <TabsTrigger value="suplementos" className="flex flex-col items-center gap-1 py-2 px-1">
               <Pill className="h-4 w-4" />
-              <span className="hidden sm:inline">Suplementos</span>
+              <span className="text-[10px] sm:text-xs">Suplem.</span>
             </TabsTrigger>
-            <TabsTrigger value="hidratacao" className="flex items-center gap-2">
+            <TabsTrigger value="hidratacao" className="flex flex-col items-center gap-1 py-2 px-1">
               <Droplets className="h-4 w-4" />
-              <span className="hidden sm:inline">Água</span>
+              <span className="text-[10px] sm:text-xs">Água</span>
             </TabsTrigger>
-            <TabsTrigger value="exercicios" className="flex items-center gap-2">
+            <TabsTrigger value="exercicios" className="flex flex-col items-center gap-1 py-2 px-1">
               <Dumbbell className="h-4 w-4" />
-              <span className="hidden sm:inline">Exercícios</span>
+              <span className="text-[10px] sm:text-xs">Exerc.</span>
             </TabsTrigger>
-            <TabsTrigger value="peso" className="flex items-center gap-2">
+            <TabsTrigger value="peso" className="flex flex-col items-center gap-1 py-2 px-1">
               <Scale className="h-4 w-4" />
-              <span className="hidden sm:inline">Peso</span>
+              <span className="text-[10px] sm:text-xs">Peso</span>
             </TabsTrigger>
-            <TabsTrigger value="compras" className="flex items-center gap-2">
+            <TabsTrigger value="compras" className="flex flex-col items-center gap-1 py-2 px-1">
               <ShoppingCart className="h-4 w-4" />
-              <span className="hidden sm:inline">Compras</span>
+              <span className="text-[10px] sm:text-xs">Compras</span>
             </TabsTrigger>
-            <TabsTrigger value="alertas" className="flex items-center gap-2">
+            <TabsTrigger value="alertas" className="flex flex-col items-center gap-1 py-2 px-1">
               <AlertTriangle className="h-4 w-4" />
-              <span className="hidden sm:inline">Alertas</span>
+              <span className="text-[10px] sm:text-xs">Alertas</span>
             </TabsTrigger>
           </TabsList>
 
