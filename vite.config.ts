@@ -79,11 +79,13 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,webp,jpg,jpeg}"],
-        navigateFallback: "/offline",
+        // CORREÇÃO CRÍTICA: Usar index.html (arquivo real pré-cacheado) ao invés de /offline (rota React)
+        navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api/, /^\/auth/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
-        skipWaiting: false,
+        // CORREÇÃO: Forçar ativação imediata do novo SW para aplicar mudanças
+        skipWaiting: true,
         runtimeCaching: [
           // JS Assets - NetworkFirst para evitar cache desatualizado após deploy
           {

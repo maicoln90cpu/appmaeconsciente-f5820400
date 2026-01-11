@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offline - Maternidade Consciente</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #FFFDF9 0%, #F8EDEE 100%);
+      color: #3D3D3D;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+      max-width: 400px;
+    }
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      color: #D4878D;
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      color: #6B6B6B;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+    button {
+      background: linear-gradient(135deg, #D4878D 0%, #E8A5AA 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(212, 135, 141, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 135, 141, 0.4);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    .tips {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(212, 135, 141, 0.2);
+      font-size: 0.875rem;
+      color: #8B8B8B;
+    }
+    .tips ul {
+      list-style: none;
+      margin-top: 0.5rem;
+    }
+    .tips li {
+      padding: 0.25rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>Sem Conexão</h1>
+    <p>Parece que você está offline. Verifique sua conexão com a internet e tente novamente.</p>
+    <button onclick="location.reload()">Tentar Novamente</button>
+    <div class="tips">
+      <strong>Dicas:</strong>
+      <ul>
+        <li>✓ Verifique se o Wi-Fi está conectado</li>
+        <li>✓ Tente desativar e reativar os dados móveis</li>
+        <li>✓ Reinicie o roteador se necessário</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>
