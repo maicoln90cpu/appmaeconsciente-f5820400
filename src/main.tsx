@@ -29,6 +29,44 @@ observeLongTasks((task) => {
   }
 });
 
+// Handler global para erros de chunk/módulo dinâmico
+window.addEventListener('error', (event) => {
+  if (event.message && (
+    event.message.includes('Loading chunk') ||
+    event.message.includes('Failed to fetch dynamically imported module')
+  )) {
+    const lastReload = sessionStorage.getItem('chunk-error-reload');
+    const now = Date.now();
+    
+    if (!lastReload || now - parseInt(lastReload) > 30000) {
+      sessionStorage.setItem('chunk-error-reload', now.toString());
+      // Atualizar Service Worker se existir
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          registrations.forEach(registration => registration.update());
+        });
+      }
+      window.location.reload();
+    }
+  }
+});
+
+// Handler para promessas não tratadas (lazy loading)
+window.addEventListener('unhandledrejection', (event) => {
+  if (event.reason?.message && (
+    event.reason.message.includes('Loading chunk') ||
+    event.reason.message.includes('Failed to fetch dynamically imported module')
+  )) {
+    const lastReload = sessionStorage.getItem('chunk-error-reload');
+    const now = Date.now();
+    
+    if (!lastReload || now - parseInt(lastReload) > 30000) {
+      sessionStorage.setItem('chunk-error-reload', now.toString());
+      window.location.reload();
+    }
+  }
+});
+
 // Prefetch common routes during idle time
 if (typeof window !== 'undefined') {
   window.addEventListener('load', () => {

@@ -67,7 +67,21 @@ export function lazyWithRetry<T extends ComponentType<any>>(
       }
     }
 
-    // Todas as tentativas falharam
+    // Todas as tentativas falharam - pode ser cache desatualizado
+    const isChunkError = lastError && isChunkLoadError(lastError);
+    if (isChunkError) {
+      // Verificar se já tentamos reload recentemente (evitar loop)
+      const lastReload = sessionStorage.getItem('chunk-reload-timestamp');
+      const now = Date.now();
+      
+      if (!lastReload || now - parseInt(lastReload) > 30000) { // 30 segundos
+        sessionStorage.setItem('chunk-reload-timestamp', now.toString());
+        window.location.reload();
+        // Retornar uma Promise que nunca resolve para evitar render
+        return new Promise(() => {});
+      }
+    }
+
     throw lastError;
   });
 }
@@ -82,7 +96,8 @@ function isChunkLoadError(error: unknown): boolean {
       message.includes("loading chunk") ||
       message.includes("failed to fetch") ||
       message.includes("network error") ||
-      message.includes("load failed")
+      message.includes("load failed") ||
+      message.includes("dynamically imported module")
     );
   }
   return false;
