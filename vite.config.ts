@@ -229,65 +229,15 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
+        // ABORDAGEM MINIMALISTA: Evita problemas de ordem de carregamento
+        // Mantém React, Radix, e dependências críticas no mesmo chunk
         manualChunks: (id) => {
-          // Core React dependencies
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-vendor';
-          }
-          // React Router
-          if (id.includes('node_modules/react-router')) {
-            return 'router';
-          }
-          // Radix UI - split into smaller chunks
-          if (id.includes('node_modules/@radix-ui/react-dialog') || 
-              id.includes('node_modules/@radix-ui/react-alert-dialog') ||
-              id.includes('node_modules/@radix-ui/react-sheet')) {
-            return 'radix-dialogs';
-          }
-          if (id.includes('node_modules/@radix-ui/react-dropdown') ||
-              id.includes('node_modules/@radix-ui/react-menu') ||
-              id.includes('node_modules/@radix-ui/react-popover') ||
-              id.includes('node_modules/@radix-ui/react-tooltip')) {
-            return 'radix-popovers';
-          }
-          if (id.includes('node_modules/@radix-ui/react-tabs') ||
-              id.includes('node_modules/@radix-ui/react-accordion') ||
-              id.includes('node_modules/@radix-ui/react-collapsible')) {
-            return 'radix-navigation';
-          }
-          if (id.includes('node_modules/@radix-ui')) {
-            return 'radix-core';
-          }
-          // Charts library - MUST be in same chunk as d3-* to avoid initialization errors
-          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-')) {
-            return 'charts';
-          }
-          // Export libraries - lazy loaded  
-          if (id.includes('node_modules/xlsx')) {
-            return 'xlsx';
-          }
-          if (id.includes('node_modules/jspdf')) {
-            return 'pdf';
-          }
-          // Supabase
-          if (id.includes('node_modules/@supabase')) {
-            return 'supabase';
-          }
-          // React Query
-          if (id.includes('node_modules/@tanstack/react-query')) {
-            return 'react-query';
-          }
-          // Date utilities
-          if (id.includes('node_modules/date-fns')) {
-            return 'date-utils';
-          }
-          // Form libraries
-          if (id.includes('node_modules/react-hook-form') || id.includes('node_modules/zod')) {
-            return 'forms';
-          }
-          // Icons - split from main bundle
-          if (id.includes('node_modules/lucide-react')) {
-            return 'icons';
+          if (id.includes('node_modules')) {
+            // Apenas separar bibliotecas pesadas que são lazy loaded
+            if (id.includes('xlsx')) return 'xlsx';
+            if (id.includes('jspdf')) return 'pdf';
+            // Todo o resto fica em vendor (React, Radix, Recharts, etc)
+            return 'vendor';
           }
         },
       },
