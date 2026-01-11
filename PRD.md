@@ -2,9 +2,9 @@
 
 ## Maternidade Consciente
 
-**Versão:** 1.0  
+**Versão:** 1.1  
 **Data:** Janeiro 2026  
-**Status:** MVP Completo
+**Status:** MVP Completo + Melhorias Mobile
 
 ---
 
@@ -38,6 +38,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 - ✅ Reduzir ansiedade através de organização e informação
 - ✅ Criar comunidade de suporte entre mães
 - ✅ Disponibilizar versão offline (PWA)
+- ✅ Experiência mobile otimizada
 - 🔄 Integrar com profissionais de saúde
 
 ---
@@ -66,6 +67,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Dashboard com estatísticas | P1 | ✅ Completo |
 | Gestão de ordenha | P1 | ✅ Completo |
 | Exportação PDF | P2 | ✅ Completo |
+| Layout mobile responsivo | P1 | ✅ Completo |
 
 ### 3.3 Sono do Bebê
 **Objetivo:** Monitorar padrões de sono e identificar melhorias
@@ -77,6 +79,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Dashboard analítico | P1 | ✅ Completo |
 | Comparação com marcos | P2 | ✅ Completo |
 | Exportação PDF | P2 | ✅ Completo |
+| Cards mobile responsivos | P1 | ✅ Completo |
 
 ### 3.4 Cartão de Vacinação
 **Objetivo:** Manter registro completo e lembretes de vacinas
@@ -88,6 +91,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Multi-bebês | P1 | ✅ Completo |
 | Lembretes automáticos | P2 | ✅ Completo |
 | Exportação PDF | P2 | ✅ Completo |
+| Tabs responsivas (2 colunas mobile) | P1 | ✅ Completo |
 
 ### 3.5 Monitor de Desenvolvimento
 **Objetivo:** Acompanhar marcos de desenvolvimento do bebê
@@ -99,6 +103,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Alertas de atenção | P1 | ✅ Completo |
 | Relatório para pediatra | P1 | ✅ Completo |
 | Timeline visual | P2 | ✅ Completo |
+| Grid mobile adaptativo | P1 | ✅ Completo |
 
 ### 3.6 Guia de Alimentação
 **Objetivo:** Orientar nutrição durante gestação e amamentação
@@ -111,6 +116,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | IA Nutricional (chat) | P1 | ✅ Completo |
 | Geração com IA | P2 | ✅ Completo |
 | Lista de compras | P2 | ✅ Completo |
+| Grid dias responsivo | P1 | ✅ Completo |
 
 ### 3.7 Recuperação Pós-Parto
 **Objetivo:** Monitorar recuperação física e emocional
@@ -153,6 +159,18 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Comparador de marcas | P2 | ✅ Completo |
 | Simulador fralda de pano | P2 | ✅ Completo |
 | Sugestões de ferramentas | P2 | ✅ Completo |
+| Grid responsivo | P1 | ✅ Completo |
+
+### 3.11 Dashboard do Bebê
+**Objetivo:** Visão unificada de métricas e atividades
+
+| Feature | Prioridade | Status |
+|---------|------------|--------|
+| KPIs 24h | P0 | ✅ Completo |
+| Timeline de atividades | P1 | ✅ Completo |
+| Alertas inteligentes | P1 | ✅ Completo |
+| Quick actions | P1 | ✅ Completo |
+| Tabs responsivas (grid mobile) | P1 | ✅ Completo |
 
 ---
 
@@ -202,6 +220,18 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Testes E2E (Playwright) | ✅ |
 | Cobertura core utils | ✅ |
 | Cobertura UI components | ✅ |
+| 20+ specs E2E | ✅ |
+
+### 4.6 Responsividade Mobile
+| Requisito | Status |
+|-----------|--------|
+| Mobile-first design | ✅ |
+| Texto adaptativo em badges | ✅ |
+| Botões com texto abreviado | ✅ |
+| Grids responsivos | ✅ |
+| Tabs em múltiplas linhas | ✅ |
+| Tabelas → Cards em mobile | ✅ |
+| Legendas de gráficos ocultas em mobile | ✅ |
 
 ---
 
@@ -253,7 +283,8 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 - [ROADMAP.md](ROADMAP.md) - Fases e timeline
 - [PENDENCIAS.md](PENDENCIAS.md) - Status de pendências
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Guia de contribuição
+- [SPRINT_REVIEW.md](SPRINT_REVIEW.md) - Histórico de sprints
 
 ---
 
-*Documento atualizado em: Janeiro 2026*
+*Documento atualizado em: Janeiro 2026 (Sprint 5)*
