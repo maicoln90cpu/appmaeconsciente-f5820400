@@ -6,7 +6,6 @@
  */
 
 import * as Sentry from "@sentry/react";
-import { trackError } from "./performance";
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
@@ -82,13 +81,6 @@ export const initSentry = () => {
       if (import.meta.env.DEV) {
         console.info("[Sentry] Event captured (dev mode, not sent):", event);
         return null;
-      }
-      
-      // Track error for local dashboard
-      if (event.message) {
-        trackError(event.message);
-      } else if (hint.originalException instanceof Error) {
-        trackError(hint.originalException.message);
       }
       
       // Add user context if available
