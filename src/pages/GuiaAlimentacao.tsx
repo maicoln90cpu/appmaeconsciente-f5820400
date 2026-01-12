@@ -1,14 +1,6 @@
-import { useState } from "react";
+import { useState, lazy } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PlanoSemanal } from "@/components/alimentacao/PlanoSemanal";
-import { ControleSuplemento } from "@/components/alimentacao/ControleSuplemento";
-import { Receitas } from "@/components/alimentacao/Receitas";
-import { MonitoramentoPeso } from "@/components/alimentacao/MonitoramentoPeso";
-import { AlertasAlimentos } from "@/components/alimentacao/AlertasAlimentos";
-import { IANutricional } from "@/components/alimentacao/IANutricional";
-import { RastreadorHidratacao } from "@/components/alimentacao/RastreadorHidratacao";
-import { ExerciciosTrimestre } from "@/components/alimentacao/ExerciciosTrimestre";
-import { ListaCompras } from "@/components/alimentacao/ListaCompras";
+import { LazyTabContent } from "@/components/ui/lazy-tab-content";
 import { DashboardSaude } from "@/components/alimentacao/DashboardSaude";
 import { GenerateMealPlanButton } from "@/components/alimentacao/GenerateMealPlanButton";
 import { GenerateRecipesButton } from "@/components/alimentacao/GenerateRecipesButton";
@@ -20,18 +12,26 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+// Lazy load tab components for better initial bundle size
+const PlanoSemanal = lazy(() => import("@/components/alimentacao/PlanoSemanal").then(m => ({ default: m.PlanoSemanal })));
+const Receitas = lazy(() => import("@/components/alimentacao/Receitas").then(m => ({ default: m.Receitas })));
+const ControleSuplemento = lazy(() => import("@/components/alimentacao/ControleSuplemento").then(m => ({ default: m.ControleSuplemento })));
+const RastreadorHidratacao = lazy(() => import("@/components/alimentacao/RastreadorHidratacao").then(m => ({ default: m.RastreadorHidratacao })));
+const ExerciciosTrimestre = lazy(() => import("@/components/alimentacao/ExerciciosTrimestre").then(m => ({ default: m.ExerciciosTrimestre })));
+const MonitoramentoPeso = lazy(() => import("@/components/alimentacao/MonitoramentoPeso").then(m => ({ default: m.MonitoramentoPeso })));
+const ListaCompras = lazy(() => import("@/components/alimentacao/ListaCompras").then(m => ({ default: m.ListaCompras })));
+const AlertasAlimentos = lazy(() => import("@/components/alimentacao/AlertasAlimentos").then(m => ({ default: m.AlertasAlimentos })));
+const IANutricional = lazy(() => import("@/components/alimentacao/IANutricional").then(m => ({ default: m.IANutricional })));
+
 export default function GuiaAlimentacao() {
   const { profile, loading } = useProfile();
   const [activeTab, setActiveTab] = useState("plano");
   const [showProfileDialog, setShowProfileDialog] = useState(false);
 
   const needsProfileData = !profile?.peso_atual || !profile?.altura_cm;
-  const trimester = profile?.meses_gestacao 
-    ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
-    : 1;
 
   // Check if user has any nutrition content
-  const { data: hasContent, refetch: refetchContent } = useQuery({
+  const { refetch: refetchContent } = useQuery({
     queryKey: ['nutrition-content', profile?.id],
     queryFn: async () => {
       if (!profile?.id) return false;
@@ -132,7 +132,9 @@ export default function GuiaAlimentacao() {
           </TabsContent>
 
           <TabsContent value="ia">
-            <IANutricional />
+            <LazyTabContent fallbackHeight="h-64">
+              <IANutricional />
+            </LazyTabContent>
           </TabsContent>
 
           <TabsContent value="plano">
@@ -142,7 +144,9 @@ export default function GuiaAlimentacao() {
                 onNeedsProfile={() => setShowProfileDialog(true)}
                 needsProfile={needsProfileData}
               />
-              <PlanoSemanal profile={profile} />
+              <LazyTabContent>
+                <PlanoSemanal profile={profile} />
+              </LazyTabContent>
             </div>
           </TabsContent>
 
@@ -153,16 +157,22 @@ export default function GuiaAlimentacao() {
                 onNeedsProfile={() => setShowProfileDialog(true)}
                 needsProfile={needsProfileData}
               />
-              <Receitas />
+              <LazyTabContent>
+                <Receitas />
+              </LazyTabContent>
             </div>
           </TabsContent>
 
           <TabsContent value="suplementos">
-            <ControleSuplemento />
+            <LazyTabContent>
+              <ControleSuplemento />
+            </LazyTabContent>
           </TabsContent>
 
           <TabsContent value="hidratacao">
-            <RastreadorHidratacao />
+            <LazyTabContent>
+              <RastreadorHidratacao />
+            </LazyTabContent>
           </TabsContent>
 
           <TabsContent value="exercicios">
@@ -172,20 +182,28 @@ export default function GuiaAlimentacao() {
                 onNeedsProfile={() => setShowProfileDialog(true)}
                 needsProfile={needsProfileData}
               />
-              <ExerciciosTrimestre />
+              <LazyTabContent>
+                <ExerciciosTrimestre />
+              </LazyTabContent>
             </div>
           </TabsContent>
 
           <TabsContent value="peso">
-            <MonitoramentoPeso profile={profile} />
+            <LazyTabContent>
+              <MonitoramentoPeso profile={profile} />
+            </LazyTabContent>
           </TabsContent>
 
           <TabsContent value="compras">
-            <ListaCompras />
+            <LazyTabContent>
+              <ListaCompras />
+            </LazyTabContent>
           </TabsContent>
 
           <TabsContent value="alertas">
-            <AlertasAlimentos />
+            <LazyTabContent>
+              <AlertasAlimentos />
+            </LazyTabContent>
           </TabsContent>
         </Tabs>
       </div>
