@@ -238,6 +238,37 @@ export const getMetricsSummary = () => {
   };
 };
 
+// Track long tasks that block the main thread
+export const trackLongTask = (duration: number, attribution?: string): void => {
+  if (duration > 50) { // Tasks > 50ms are considered "long"
+    if (import.meta.env.DEV) {
+      console.warn(`[Performance] Long task detected: ${duration.toFixed(0)}ms`, attribution);
+    }
+    
+    Sentry.addBreadcrumb({
+      category: 'performance',
+      message: `Long task: ${duration.toFixed(0)}ms`,
+      level: duration > 100 ? 'warning' : 'info',
+      data: { attribution },
+    });
+  }
+};
+
+// Track Interaction to Next Paint (INP)
+let maxINP = 0;
+export const trackInteraction = (duration: number, interactionType?: string): void => {
+  if (duration > maxINP) {
+    maxINP = duration;
+    trackWebVital('INP', duration);
+  }
+  
+  if (duration > 200) { // Poor INP threshold
+    if (import.meta.env.DEV) {
+      console.warn(`[Performance] Slow interaction: ${duration.toFixed(0)}ms (${interactionType})`);
+    }
+  }
+};
+
 // Initialize performance observer for Web Vitals
 export const initPerformanceObserver = (): void => {
   if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
@@ -300,6 +331,56 @@ export const initPerformanceObserver = (): void => {
       });
     });
     navObserver.observe({ type: 'navigation', buffered: true });
+    
+    // Observe long tasks (blocks main thread > 50ms)
+    try {
+      const longTaskObserver = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          const attribution = (entry as unknown as { attribution?: Array<{ name?: string }> }).attribution?.[0]?.name;
+          trackLongTask(entry.duration, attribution);
+        });
+      });
+      longTaskObserver.observe({ type: 'longtask', buffered: true });
+    } catch {
+      // Long tasks not supported in all browsers
+    }
+    
+    // Observe Event Timing for INP
+    try {
+      const eventTimingObserver = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          const eventEntry = entry as PerformanceEntry & { 
+            processingStart?: number; 
+            processingEnd?: number;
+            interactionId?: number;
+          };
+          
+          if (eventEntry.interactionId && eventEntry.interactionId > 0) {
+            const duration = entry.duration;
+            trackInteraction(duration, entry.name);
+          }
+        });
+      });
+      eventTimingObserver.observe({ type: 'event', buffered: true, durationThreshold: 16 } as PerformanceObserverInit);
+    } catch {
+      // Event timing not supported in all browsers
+    }
+    
+    // Observe First Input Delay (FID)
+    try {
+      const fidObserver = new PerformanceObserver((list) => {
+        list.getEntries().forEach((entry) => {
+          const fidEntry = entry as PerformanceEntry & { processingStart?: number };
+          if (fidEntry.processingStart) {
+            const fid = fidEntry.processingStart - entry.startTime;
+            trackWebVital('FID', fid);
+          }
+        });
+      });
+      fidObserver.observe({ type: 'first-input', buffered: true });
+    } catch {
+      // FID not supported in all browsers
+    }
     
   } catch (error) {
     if (import.meta.env.DEV) {
