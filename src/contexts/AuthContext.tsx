@@ -6,11 +6,12 @@
  * Deve envolver toda a aplicação para disponibilizar o hook useAuth.
  */
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 
 import { User, Session } from '@supabase/supabase-js';
 
 import { supabase } from '@/integrations/supabase/client';
+import logger from '@/lib/logger';
 
 /**
  * Interface do contexto de autenticação
@@ -56,9 +57,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * Útil após operações que podem ter alterado a sessão
    */
   const refreshSession = useCallback(async () => {
-    const { data: { session: currentSession } } = await supabase.auth.getSession();
-    setSession(currentSession);
-    setUser(currentSession?.user ?? null);
+    try {
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      setSession(currentSession);
+      setUser(currentSession?.user ?? null);
+      logger.debug('Session refreshed', { context: 'AuthContext' });
+    } catch (error) {
+      logger.error('Failed to refresh session', error, { context: 'AuthContext' });
+    }
   }, []);
 
   /**
@@ -66,9 +72,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * Limpa sessão local e remove tokens do Supabase
    */
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
-    setSession(null);
-    setUser(null);
+    try {
+      await supabase.auth.signOut();
+      setSession(null);
+      setUser(null);
+      logger.info('User signed out', { context: 'AuthContext' });
+    } catch (error) {
+      logger.error('Failed to sign out', error, { context: 'AuthContext' });
+    }
   }, []);
 
   useEffect(() => {
@@ -80,6 +91,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setLoading(false);
+        logger.debug(`Auth state changed: ${event}`, { context: 'AuthContext' });
       }
     );
 
@@ -88,13 +100,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(existingSession);
       setUser(existingSession?.user ?? null);
       setLoading(false);
+      logger.debug('Initial session loaded', { context: 'AuthContext' });
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  // Memoiza o valor do contexto para evitar re-renders desnecessários
+  const contextValue = useMemo<AuthContextType>(() => ({
+    user,
+    session,
+    loading,
+    signOut,
+    refreshSession,
+  }), [user, session, loading, signOut, refreshSession]);
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut, refreshSession }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
