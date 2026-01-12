@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/lib/analytics";
 import logger from "@/lib/logger";
+import { createMultiTableSubscription } from "@/lib/realtime-utils";
 
 export interface Post {
   id: string;
@@ -367,85 +368,82 @@ export const usePosts = () => {
   useEffect(() => {
     loadPosts(0, false);
 
-    // Subscribe to realtime changes - processar payload ao invés de refetch
-    const channel = supabase
-      .channel("posts-changes")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "posts" },
-        (payload) => {
-          // Só adicionar se não for do usuário atual (já adicionou otimisticamente)
-          if (payload.new && (payload.new as any).user_id !== user?.id) {
-            addPostLocally(payload.new);
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "posts" },
-        (payload) => {
-          if (payload.old) {
-            removePostLocally((payload.old as any).id);
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "post_likes" },
-        (payload) => {
-          if (payload.new) {
-            const like = payload.new as any;
-            // Só atualizar se não for do usuário atual
-            if (like.user_id !== user?.id) {
+    if (!user?.id) return;
+
+    // Subscribe to realtime changes usando utilitário padronizado
+    const subscription = createMultiTableSubscription(
+      `posts-changes-${user.id}`,
+      [
+        {
+          table: "posts",
+          event: "INSERT",
+          onPayload: (payload: any) => {
+            // Só adicionar se não for do usuário atual (já adicionou otimisticamente)
+            if (payload.new && payload.new.user_id !== user.id) {
+              addPostLocally(payload.new);
+            }
+          },
+        },
+        {
+          table: "posts",
+          event: "DELETE",
+          onPayload: (payload: any) => {
+            if (payload.old) {
+              removePostLocally(payload.old.id);
+            }
+          },
+        },
+        {
+          table: "post_likes",
+          event: "INSERT",
+          onPayload: (payload: any) => {
+            if (payload.new && payload.new.user_id !== user.id) {
               setPosts(prev => prev.map(post => {
-                if (post.id === like.post_id) {
+                if (post.id === payload.new.post_id) {
                   return { ...post, likes_count: post.likes_count + 1 };
                 }
                 return post;
               }));
             }
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "post_likes" },
-        (payload) => {
-          if (payload.old) {
-            const like = payload.old as any;
-            if (like.user_id !== user?.id) {
+          },
+        },
+        {
+          table: "post_likes",
+          event: "DELETE",
+          onPayload: (payload: any) => {
+            if (payload.old && payload.old.user_id !== user.id) {
               setPosts(prev => prev.map(post => {
-                if (post.id === like.post_id) {
+                if (post.id === payload.old.post_id) {
                   return { ...post, likes_count: Math.max(0, post.likes_count - 1) };
                 }
                 return post;
               }));
             }
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "post_comments" },
-        (payload) => {
-          if (payload.new) {
-            updatePostCommentCount((payload.new as any).post_id, 1);
-          }
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "post_comments" },
-        (payload) => {
-          if (payload.old) {
-            updatePostCommentCount((payload.old as any).post_id, -1);
-          }
-        }
-      )
-      .subscribe();
+          },
+        },
+        {
+          table: "post_comments",
+          event: "INSERT",
+          onPayload: (payload: any) => {
+            if (payload.new) {
+              updatePostCommentCount(payload.new.post_id, 1);
+            }
+          },
+        },
+        {
+          table: "post_comments",
+          event: "DELETE",
+          onPayload: (payload: any) => {
+            if (payload.old) {
+              updatePostCommentCount(payload.old.post_id, -1);
+            }
+          },
+        },
+      ]
+    );
 
     return () => {
-      supabase.removeChannel(channel);
+      subscription.unsubscribe();
     };
   }, [user?.id]);
 
