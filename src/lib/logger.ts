@@ -27,13 +27,31 @@ const formatMessage = (level: LogLevel, message: string, options?: LoggerOptions
   return `${timestamp} ${level.toUpperCase()} ${context} ${message}`;
 };
 
+/**
+ * Standardized logger with consistent API across the app.
+ * 
+ * Usage patterns:
+ * - logger.debug('message', { context: 'ComponentName' })
+ * - logger.info('message', { context: 'HookName', data: { ... } })
+ * - logger.warn('message', { context: 'Service' })
+ * - logger.error('message', error, { context: 'Handler' })
+ * - logger.track('action_name', { key: 'value' })
+ */
 export const logger = {
+  /**
+   * Debug logs - only shown in development
+   * Use for verbose debugging information
+   */
   debug: (message: string, options?: LoggerOptions): void => {
     if (isDevelopment) {
       console.log(formatMessage('debug', message, options), options?.data ?? '');
     }
   },
 
+  /**
+   * Info logs - development only but adds breadcrumbs
+   * Use for important state changes and flow tracking
+   */
   info: (message: string, options?: LoggerOptions): void => {
     if (isDevelopment) {
       console.info(formatMessage('info', message, options), options?.data ?? '');
@@ -44,6 +62,10 @@ export const logger = {
     }
   },
 
+  /**
+   * Warning logs - always adds breadcrumbs
+   * Use for recoverable issues and deprecation notices
+   */
   warn: (message: string, options?: LoggerOptions): void => {
     if (isDevelopment) {
       console.warn(formatMessage('warn', message, options), options?.data ?? '');
@@ -52,6 +74,14 @@ export const logger = {
     addBreadcrumb(message, options?.context || 'warning', options?.data as Record<string, unknown>);
   },
 
+  /**
+   * Error logs - always tracked in Sentry
+   * Use for unrecoverable errors and exceptions
+   * 
+   * @param message - Human-readable error description
+   * @param error - The error object (optional)
+   * @param options - Context and additional data
+   */
   error: (message: string, error?: unknown, options?: LoggerOptions): void => {
     // Always log errors to console in dev
     if (isDevelopment) {
@@ -71,7 +101,10 @@ export const logger = {
     });
   },
 
-  // For tracking specific user actions (only in dev, but adds breadcrumb)
+  /**
+   * Track user actions - adds breadcrumbs for debugging
+   * Use for analytics-worthy events
+   */
   track: (action: string, data?: Record<string, unknown>): void => {
     if (isDevelopment) {
       console.log(`[TRACK] ${action}`, data ?? '');
@@ -79,6 +112,24 @@ export const logger = {
     // Add breadcrumb for user actions
     addBreadcrumb(action, 'user-action', data);
   },
+
+  /**
+   * Create a scoped logger for a specific context
+   * Use to avoid repeating context in every call
+   * 
+   * @example
+   * const log = logger.scoped('MyComponent');
+   * log.info('Mounted');
+   * log.error('Failed to load', error);
+   */
+  scoped: (context: string) => ({
+    debug: (message: string, data?: unknown) => logger.debug(message, { context, data }),
+    info: (message: string, data?: unknown) => logger.info(message, { context, data }),
+    warn: (message: string, data?: unknown) => logger.warn(message, { context, data }),
+    error: (message: string, error?: unknown, data?: unknown) => 
+      logger.error(message, error, { context, data }),
+    track: (action: string, data?: Record<string, unknown>) => logger.track(action, data),
+  }),
 };
 
 export default logger;
