@@ -269,3 +269,197 @@ export function formatDurationForSR(minutes: number): string {
   
   return result;
 }
+
+/**
+ * Hook for reduced motion preference
+ */
+export function useReducedMotion(): boolean {
+  const mediaQuery = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)') 
+    : null;
+    
+  const [reducedMotion, setReducedMotion] = React.useState(
+    mediaQuery?.matches ?? false
+  );
+
+  useEffect(() => {
+    if (!mediaQuery) return;
+    
+    const handler = (e: MediaQueryListEvent) => {
+      setReducedMotion(e.matches);
+    };
+    
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, [mediaQuery]);
+
+  return reducedMotion;
+}
+
+/**
+ * Hook for managing roving tabindex in composite widgets
+ */
+export function useRovingTabIndex<T extends HTMLElement>(
+  itemsCount: number,
+  initialIndex = 0
+) {
+  const [activeIndex, setActiveIndex] = React.useState(initialIndex);
+  const itemRefs = useRef<(T | null)[]>([]);
+
+  const setItemRef = useCallback((index: number) => (el: T | null) => {
+    itemRefs.current[index] = el;
+  }, []);
+
+  const getTabIndex = useCallback((index: number) => {
+    return index === activeIndex ? 0 : -1;
+  }, [activeIndex]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, index: number) => {
+    let newIndex = index;
+    let handled = false;
+
+    switch (e.key) {
+      case 'ArrowDown':
+      case 'ArrowRight':
+        newIndex = (index + 1) % itemsCount;
+        handled = true;
+        break;
+      case 'ArrowUp':
+      case 'ArrowLeft':
+        newIndex = (index - 1 + itemsCount) % itemsCount;
+        handled = true;
+        break;
+      case 'Home':
+        newIndex = 0;
+        handled = true;
+        break;
+      case 'End':
+        newIndex = itemsCount - 1;
+        handled = true;
+        break;
+    }
+
+    if (handled) {
+      e.preventDefault();
+      setActiveIndex(newIndex);
+      itemRefs.current[newIndex]?.focus();
+    }
+  }, [itemsCount]);
+
+  return { setItemRef, getTabIndex, handleKeyDown, activeIndex, setActiveIndex };
+}
+
+/**
+ * Visually Hidden component for screen readers only
+ */
+export function VisuallyHidden({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="sr-only">
+      {children}
+    </span>
+  );
+}
+
+/**
+ * Component to manage document title for screen readers
+ */
+export function useDocumentTitle(title: string, announceChange = true) {
+  const { announce } = useAnnounce();
+  const prevTitle = useRef(document.title);
+
+  useEffect(() => {
+    const fullTitle = `${title} | Meu Enxoval`;
+    document.title = fullTitle;
+    
+    if (announceChange && prevTitle.current !== fullTitle) {
+      announce(`Navegou para ${title}`);
+    }
+    
+    prevTitle.current = fullTitle;
+
+    return () => {
+      document.title = prevTitle.current;
+    };
+  }, [title, announce, announceChange]);
+}
+
+/**
+ * Hook to detect and respect high contrast mode
+ */
+export function useHighContrast(): boolean {
+  const mediaQuery = typeof window !== 'undefined'
+    ? window.matchMedia('(forced-colors: active)')
+    : null;
+
+  const [highContrast, setHighContrast] = React.useState(
+    mediaQuery?.matches ?? false
+  );
+
+  useEffect(() => {
+    if (!mediaQuery) return;
+
+    const handler = (e: MediaQueryListEvent) => {
+      setHighContrast(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, [mediaQuery]);
+
+  return highContrast;
+}
+
+/**
+ * Focus management for modal dialogs and panels
+ */
+export function useFocusReturn() {
+  const returnFocusRef = useRef<HTMLElement | null>(null);
+
+  const saveFocus = useCallback(() => {
+    returnFocusRef.current = document.activeElement as HTMLElement;
+  }, []);
+
+  const restoreFocus = useCallback(() => {
+    returnFocusRef.current?.focus();
+    returnFocusRef.current = null;
+  }, []);
+
+  return { saveFocus, restoreFocus };
+}
+
+/**
+ * Accessible error message for form fields
+ */
+export interface FieldErrorProps {
+  id: string;
+  error?: string;
+}
+
+export function FieldError({ id, error }: FieldErrorProps) {
+  if (!error) return null;
+
+  return (
+    <p
+      id={`${id}-error`}
+      role="alert"
+      aria-live="polite"
+      className="text-sm text-destructive mt-1"
+    >
+      {error}
+    </p>
+  );
+}
+
+/**
+ * Generate accessible description IDs
+ */
+export function useFieldDescriptions(fieldId: string) {
+  return {
+    describedBy: `${fieldId}-description ${fieldId}-error`,
+    descriptionId: `${fieldId}-description`,
+    errorId: `${fieldId}-error`,
+  };
+}
+
+// Import React for hooks
+import React from "react";
