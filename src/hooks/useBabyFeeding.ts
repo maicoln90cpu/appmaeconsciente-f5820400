@@ -1,32 +1,57 @@
-import { useEffect, useState, useCallback } from "react";
+/**
+ * @fileoverview Hook para gerenciamento de dados de amamentação do bebê
+ * Utiliza useBabyLogs como base para operações CRUD
+ * @module hooks/useBabyFeeding
+ */
+
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
-import { useAchievements } from "@/hooks/useAchievements";
+import { useBabyLogs } from "@/hooks/useBabyLogs";
+import logger from "@/lib/logger";
 import type { 
   BabyFeedingLog, 
   BreastMilkStorage, 
   FeedingSettings 
 } from "@/types/babyFeeding";
 
+const log = logger.scoped("useBabyFeeding");
+
 export const useBabyFeeding = () => {
-  const [feedingLogs, setFeedingLogs] = useState<BabyFeedingLog[]>([]);
   const [storage, setStorage] = useState<BreastMilkStorage[]>([]);
   const [settings, setSettings] = useState<FeedingSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { checkAchievements } = useAchievements();
+  const [settingsLoading, setSettingsLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadData = useCallback(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Não autenticado");
+  // Usar hook base para logs de amamentação
+  const {
+    data: feedingLogs,
+    loading: logsLoading,
+    add: addLog,
+    update: updateLog,
+    remove: removeLog,
+    reload: reloadLogs,
+  } = useBabyLogs<BabyFeedingLog>({
+    tableName: "baby_feeding_logs",
+    orderBy: { column: "start_time", ascending: false },
+    entityName: "Mamada",
+    checkAchievementsOnAdd: true,
+  });
 
-      const [logsResponse, storageResponse, settingsResponse] = await Promise.all([
-        supabase
-          .from("baby_feeding_logs")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("start_time", { ascending: false }),
+  // Carregar configurações e estoque separadamente
+  const loadSettingsAndStorage = useCallback(async () => {
+    try {
+      setSettingsLoading(true);
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
+      
+      if (!user) {
+        setStorage([]);
+        setSettings(null);
+        return;
+      }
+
+      const [storageResponse, settingsResponse] = await Promise.all([
         supabase
           .from("breast_milk_storage")
           .select("*")
@@ -37,18 +62,17 @@ export const useBabyFeeding = () => {
           .from("feeding_settings")
           .select("*")
           .eq("user_id", user.id)
-          .single()
+          .maybeSingle()
       ]);
 
-      if (logsResponse.error) throw logsResponse.error;
       if (storageResponse.error) throw storageResponse.error;
       
-      setFeedingLogs(logsResponse.data as any || []);
-      setStorage(storageResponse.data as any || []);
-      setSettings(settingsResponse.data as any || null);
-    } catch (error: any) {
-      if (error.code !== 'PGRST116') {
-        console.error("Erro ao carregar dados:", error);
+      setStorage(storageResponse.data as BreastMilkStorage[] || []);
+      setSettings(settingsResponse.data as FeedingSettings || null);
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      if (err.code !== 'PGRST116') {
+        log.error("Erro ao carregar configurações e estoque", error);
         toast({
           title: "Erro",
           description: "Erro ao carregar dados de amamentação",
@@ -56,13 +80,16 @@ export const useBabyFeeding = () => {
         });
       }
     } finally {
-      setLoading(false);
+      setSettingsLoading(false);
     }
   }, [toast]);
 
-  const saveSettings = async (newSettings: Omit<FeedingSettings, "id" | "user_id" | "created_at" | "updated_at">) => {
+  const saveSettings = useCallback(async (
+    newSettings: Omit<FeedingSettings, "id" | "user_id" | "created_at" | "updated_at">
+  ) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
       if (!user) throw new Error("Não autenticado");
 
       const { data, error } = await supabase
@@ -76,13 +103,15 @@ export const useBabyFeeding = () => {
 
       if (error) throw error;
       
-      setSettings(data as any);
+      setSettings(data as FeedingSettings);
       toast({
         title: "Sucesso",
         description: "Configurações salvas com sucesso!",
       });
+      
+      return data;
     } catch (error) {
-      console.error("Erro ao salvar configurações:", error);
+      log.error("Erro ao salvar configurações", error);
       toast({
         title: "Erro",
         description: "Erro ao salvar configurações",
@@ -90,107 +119,45 @@ export const useBabyFeeding = () => {
       });
       throw error;
     }
-  };
+  }, [toast]);
 
-  const addFeedingLog = async (log: Omit<BabyFeedingLog, "id" | "user_id" | "created_at" | "updated_at">) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Não autenticado");
-
-      const { data, error } = await supabase
-        .from("baby_feeding_logs")
-        .insert({
-          user_id: user.id,
-          ...log
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setFeedingLogs([data as any, ...feedingLogs]);
-      
-      // Update last breast side if breastfeeding
-      if (log.feeding_type === 'breastfeeding' && log.breast_side && log.breast_side !== 'both') {
-        await supabase
-          .from("feeding_settings")
-          .update({ last_breast_side: log.breast_side })
-          .eq("user_id", user.id);
+  const addFeedingLog = useCallback(async (
+    logData: Omit<BabyFeedingLog, "id" | "user_id" | "created_at" | "updated_at">
+  ) => {
+    const result = await addLog(logData as Record<string, unknown>);
+    
+    // Update last breast side if breastfeeding
+    if (logData.feeding_type === 'breastfeeding' && logData.breast_side && logData.breast_side !== 'both') {
+      try {
+        const { data: userData } = await supabase.auth.getUser();
+        if (userData?.user) {
+          await supabase
+            .from("feeding_settings")
+            .update({ last_breast_side: logData.breast_side })
+            .eq("user_id", userData.user.id);
+        }
+      } catch (error) {
+        log.warn("Erro ao atualizar último lado", error);
       }
-      
-      toast({
-        title: "Sucesso",
-        description: "Mamada registrada com sucesso!",
-      });
-      
-      // Verificar conquistas após adicionar
-      setTimeout(() => checkAchievements(), 1000);
-    } catch (error) {
-      console.error("Erro ao adicionar registro:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao registrar mamada",
-        variant: "destructive",
-      });
-      throw error;
     }
-  };
+    
+    return result;
+  }, [addLog]);
 
-  const updateFeedingLog = async (id: string, updates: Partial<BabyFeedingLog>) => {
+  const updateFeedingLog = useCallback(async (id: string, updates: Partial<BabyFeedingLog>) => {
+    return await updateLog(id, updates as Record<string, unknown>);
+  }, [updateLog]);
+
+  const deleteFeedingLog = useCallback(async (id: string) => {
+    await removeLog(id);
+  }, [removeLog]);
+
+  const addStorage = useCallback(async (
+    item: Omit<BreastMilkStorage, "id" | "user_id" | "created_at" | "updated_at" | "is_used" | "used_at">
+  ) => {
     try {
-      const { data, error } = await supabase
-        .from("baby_feeding_logs")
-        .update(updates)
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setFeedingLogs(feedingLogs.map(log => log.id === id ? data as any : log));
-      toast({
-        title: "Sucesso",
-        description: "Registro atualizado!",
-      });
-    } catch (error) {
-      console.error("Erro ao atualizar registro:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar registro",
-        variant: "destructive",
-      });
-      throw error;
-    }
-  };
-
-  const deleteFeedingLog = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("baby_feeding_logs")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-      
-      setFeedingLogs(feedingLogs.filter(log => log.id !== id));
-      toast({
-        title: "Sucesso",
-        description: "Registro excluído!",
-      });
-    } catch (error) {
-      console.error("Erro ao excluir registro:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao excluir registro",
-        variant: "destructive",
-      });
-      throw error;
-    }
-  };
-
-  const addStorage = async (item: Omit<BreastMilkStorage, "id" | "user_id" | "created_at" | "updated_at" | "is_used" | "used_at">) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
       if (!user) throw new Error("Não autenticado");
 
       const { data, error } = await supabase
@@ -205,13 +172,15 @@ export const useBabyFeeding = () => {
 
       if (error) throw error;
       
-      setStorage([data as any, ...storage]);
+      setStorage(prev => [data as BreastMilkStorage, ...prev]);
       toast({
         title: "Sucesso",
         description: "Leite armazenado com sucesso!",
       });
+      
+      return data;
     } catch (error) {
-      console.error("Erro ao adicionar estoque:", error);
+      log.error("Erro ao adicionar estoque", error);
       toast({
         title: "Erro",
         description: "Erro ao armazenar leite",
@@ -219,9 +188,9 @@ export const useBabyFeeding = () => {
       });
       throw error;
     }
-  };
+  }, [toast]);
 
-  const markStorageAsUsed = async (id: string) => {
+  const markStorageAsUsed = useCallback(async (id: string) => {
     try {
       const { error } = await supabase
         .from("breast_milk_storage")
@@ -233,13 +202,13 @@ export const useBabyFeeding = () => {
 
       if (error) throw error;
       
-      setStorage(storage.filter(item => item.id !== id));
+      setStorage(prev => prev.filter(item => item.id !== id));
       toast({
         title: "Sucesso",
         description: "Leite marcado como usado!",
       });
     } catch (error) {
-      console.error("Erro ao marcar como usado:", error);
+      log.error("Erro ao marcar como usado", error);
       toast({
         title: "Erro",
         description: "Erro ao atualizar estoque",
@@ -247,22 +216,21 @@ export const useBabyFeeding = () => {
       });
       throw error;
     }
-  };
+  }, [toast]);
 
-  const reloadData = useCallback(() => {
-    setLoading(true);
-    loadData();
-  }, [loadData]);
+  const reloadData = useCallback(async () => {
+    await Promise.all([reloadLogs(), loadSettingsAndStorage()]);
+  }, [reloadLogs, loadSettingsAndStorage]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadSettingsAndStorage();
+  }, [loadSettingsAndStorage]);
 
   return {
     feedingLogs,
     storage,
     settings,
-    loading,
+    loading: logsLoading || settingsLoading,
     saveSettings,
     addFeedingLog,
     updateFeedingLog,

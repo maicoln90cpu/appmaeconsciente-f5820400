@@ -8,7 +8,7 @@ import type { FeedingSettings } from "@/types/babyFeeding";
 
 interface ConfiguracoesAmamentacaoProps {
   settings: FeedingSettings | null;
-  onSave: (settings: Omit<FeedingSettings, "id" | "user_id" | "created_at" | "updated_at">) => Promise<void>;
+  onSave: (settings: Omit<FeedingSettings, "id" | "user_id" | "created_at" | "updated_at">) => Promise<unknown>;
 }
 
 export const ConfiguracoesAmamentacao = ({ settings, onSave }: ConfiguracoesAmamentacaoProps) => {
