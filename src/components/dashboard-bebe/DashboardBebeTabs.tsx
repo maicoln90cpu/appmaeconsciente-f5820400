@@ -33,7 +33,7 @@ const tabs: TabConfig[] = [
 
 export const DashboardBebeTabs = () => {
   return (
-    <TabsList className="grid grid-cols-3 md:flex md:flex-wrap gap-1.5 h-auto p-2 bg-muted/50 overflow-visible">
+    <TabsList className="grid grid-cols-3 md:flex md:flex-wrap gap-1.5 h-auto p-2 mb-4 bg-muted/50 overflow-visible">
       {tabs.map(({ value, icon: Icon, label }) => (
         <TabsTrigger 
           key={value}
