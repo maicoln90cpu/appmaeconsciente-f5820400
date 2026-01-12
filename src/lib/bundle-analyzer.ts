@@ -256,3 +256,122 @@ export function exportBundleReport(): string {
   
   return JSON.stringify(report, null, 2);
 }
+
+/**
+ * Prefetch configuration for routes
+ */
+interface PrefetchConfig {
+  path: string;
+  priority: 'high' | 'low';
+  loader: () => Promise<unknown>;
+}
+
+// Track prefetched routes
+const prefetchedRoutes = new Set<string>();
+
+/**
+ * Prefetch a route's chunk during idle time
+ */
+export function prefetchRoute(config: PrefetchConfig): void {
+  if (prefetchedRoutes.has(config.path)) return;
+  
+  const prefetch = () => {
+    const startTime = performance.now();
+    
+    config.loader()
+      .then(() => {
+        prefetchedRoutes.add(config.path);
+        trackChunkLoad(config.path, startTime);
+        
+        if (import.meta.env.DEV) {
+          console.debug(`[Bundle] Prefetched ${config.path}`);
+        }
+      })
+      .catch(() => {
+        // Silently fail - prefetch is optimization only
+      });
+  };
+
+  if (config.priority === 'high') {
+    // Prefetch immediately after current task
+    setTimeout(prefetch, 0);
+  } else {
+    // Prefetch during idle time
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => prefetch(), { timeout: 5000 });
+    } else {
+      setTimeout(prefetch, 2000);
+    }
+  }
+}
+
+/**
+ * Prefetch routes based on user navigation patterns
+ */
+export function setupSmartPrefetch(routes: PrefetchConfig[]): void {
+  // Don't prefetch on slow connections
+  const connection = (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection;
+  
+  if (connection?.saveData) {
+    if (import.meta.env.DEV) {
+      console.debug('[Bundle] Save-Data enabled, skipping prefetch');
+    }
+    return;
+  }
+  
+  const isSlowConnection = connection?.effectiveType === '2g' || connection?.effectiveType === 'slow-2g';
+  
+  if (isSlowConnection) {
+    if (import.meta.env.DEV) {
+      console.debug('[Bundle] Slow connection detected, limiting prefetch');
+    }
+    // Only prefetch high priority routes on slow connections
+    routes.filter(r => r.priority === 'high').forEach(prefetchRoute);
+    return;
+  }
+  
+  // Prefetch high priority first, then low priority
+  const highPriority = routes.filter(r => r.priority === 'high');
+  const lowPriority = routes.filter(r => r.priority === 'low');
+  
+  highPriority.forEach(prefetchRoute);
+  
+  // Delay low priority prefetching
+  setTimeout(() => {
+    lowPriority.forEach(prefetchRoute);
+  }, 3000);
+}
+
+/**
+ * Observe which routes users navigate to for analytics
+ */
+const routeFrequency = new Map<string, number>();
+
+export function trackRouteVisit(path: string): void {
+  const count = routeFrequency.get(path) || 0;
+  routeFrequency.set(path, count + 1);
+}
+
+export function getMostVisitedRoutes(limit = 5): { path: string; visits: number }[] {
+  return Array.from(routeFrequency.entries())
+    .map(([path, visits]) => ({ path, visits }))
+    .sort((a, b) => b.visits - a.visits)
+    .slice(0, limit);
+}
+
+/**
+ * Check if a route has been prefetched
+ */
+export function isRoutePrefetched(path: string): boolean {
+  return prefetchedRoutes.has(path);
+}
+
+/**
+ * Get prefetch status for debugging
+ */
+export function getPrefetchStatus(): { prefetched: string[]; pending: number } {
+  return {
+    prefetched: Array.from(prefetchedRoutes),
+    pending: 0, // Would need to track pending prefetches
+  };
+}
