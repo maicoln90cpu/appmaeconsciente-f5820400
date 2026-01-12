@@ -1,5 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import logger from "@/lib/logger";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface Notification {
   id: string;
@@ -11,20 +14,14 @@ export interface Notification {
 }
 
 export const useNotifications = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
 
-  const loadNotifications = useCallback(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        setNotifications([]);
-        setUnreadCount(0);
-        setLoading(false);
-        return;
-      }
+  // Query principal para notificações
+  const { data: notifications = [], isLoading: loading } = useQuery({
+    queryKey: ['user-notifications', user?.id],
+    queryFn: async (): Promise<Notification[]> => {
+      if (!user) return [];
 
       const { data, error } = await supabase
         .from('user_notifications')
@@ -43,60 +40,33 @@ export const useNotifications = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error loading notifications:', error);
-        setNotifications([]);
-        setUnreadCount(0);
-      } else if (data) {
-        const formattedNotifications = data.map((item: any) => ({
-          id: item.notifications.id,
-          title: item.notifications.title,
-          message: item.notifications.message,
-          created_at: item.notifications.created_at,
-          is_read: item.is_read,
-          read_at: item.read_at
-        }));
-        
-        setNotifications(formattedNotifications);
-        setUnreadCount(formattedNotifications.filter(n => !n.is_read).length);
+        logger.error('Error loading notifications', error, { context: 'useNotifications' });
+        return [];
       }
-    } catch (error) {
-      console.error('Error in useNotifications:', error);
-      setNotifications([]);
-      setUnreadCount(0);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
 
-  useEffect(() => {
-    loadNotifications();
+      return (data || []).map((item: any) => ({
+        id: item.notifications?.id ?? item.id,
+        title: item.notifications?.title ?? '',
+        message: item.notifications?.message ?? '',
+        created_at: item.notifications?.created_at ?? '',
+        is_read: item.is_read,
+        read_at: item.read_at
+      }));
+    },
+    enabled: !!user,
+    staleTime: 1000 * 60 * 2 // 2 minutes
+  });
 
-    // Subscribe to realtime updates
-    const channel = supabase
-      .channel('user-notifications-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_notifications'
-        },
-        () => {
-          loadNotifications();
-        }
-      )
-      .subscribe();
+  // Contagem de não lidas (memoizada)
+  const unreadCount = useMemo(() => 
+    notifications.filter(n => !n.is_read).length, 
+    [notifications]
+  );
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [loadNotifications]);
-
-  const markAsRead = async (notificationId: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) return;
+  // Mutation para marcar como lida
+  const markAsReadMutation = useMutation({
+    mutationFn: async (notificationId: string) => {
+      if (!user) throw new Error('Não autenticado');
 
       const { error } = await supabase
         .from('user_notifications')
@@ -104,15 +74,42 @@ export const useNotifications = () => {
         .eq('user_id', user.id)
         .eq('notification_id', notificationId);
 
-      if (error) {
-        console.error('Error marking notification as read:', error);
-      } else {
-        await loadNotifications();
-      }
-    } catch (error) {
-      console.error('Error in markAsRead:', error);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['user-notifications', user?.id] });
+    },
+    onError: (error) => {
+      logger.error('Error marking notification as read', error, { context: 'useNotifications' });
     }
-  };
+  });
 
-  return { notifications, unreadCount, loading, markAsRead, reloadNotifications: loadNotifications };
+  // Setup realtime com filtro de user_id para segurança
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel(`user-notifications-${user.id}`)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_notifications',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        queryClient.invalidateQueries({ queryKey: ['user-notifications', user.id] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, queryClient]);
+
+  return { 
+    notifications, 
+    unreadCount, 
+    loading, 
+    markAsRead: markAsReadMutation.mutate, 
+    reloadNotifications: () => queryClient.invalidateQueries({ queryKey: ['user-notifications', user?.id] })
+  };
 };

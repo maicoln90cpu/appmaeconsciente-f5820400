@@ -1,97 +1,119 @@
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
+import logger from "@/lib/logger";
 import type {
   BabyVaccinationProfile,
   VaccinationCalendar,
   BabyVaccination,
   VaccinationReminderSettings,
 } from "@/types/vaccination";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const useVaccination = () => {
-  const [profiles, setProfiles] = useState<BabyVaccinationProfile[]>([]);
-  const [currentProfile, setCurrentProfile] = useState<BabyVaccinationProfile | null>(null);
-  const [calendar, setCalendar] = useState<VaccinationCalendar[]>([]);
-  const [vaccinations, setVaccinations] = useState<BabyVaccination[]>([]);
-  const [settings, setSettings] = useState<VaccinationReminderSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Carregar perfis do bebê
-      const { data: profilesData, error: profilesError } = await supabase
+  // Query para perfis do bebê
+  const profilesQuery = useQuery({
+    queryKey: ['vaccination-profiles', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const { data, error } = await supabase
         .from('baby_vaccination_profiles')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-
-      if (profilesError) throw profilesError;
-      setProfiles((profilesData || []) as BabyVaccinationProfile[]);
       
-      if (profilesData && profilesData.length > 0) {
-        const activeProfile = profilesData[0] as BabyVaccinationProfile;
-        setCurrentProfile(activeProfile);
-
-        // Carregar calendário de vacinação
-        const { data: calendarData, error: calendarError } = await supabase
-          .from('vaccination_calendar')
-          .select('*')
-          .eq('calendar_type', activeProfile.calendar_type)
-          .order('age_months', { ascending: true })
-          .order('dose_number', { ascending: true });
-
-        if (calendarError) throw calendarError;
-        setCalendar((calendarData || []) as VaccinationCalendar[]);
-
-        // Carregar vacinas aplicadas
-        const { data: vaccinationsData, error: vaccinationsError } = await supabase
-          .from('baby_vaccinations')
-          .select('*')
-          .eq('baby_profile_id', activeProfile.id)
-          .order('application_date', { ascending: false });
-
-        if (vaccinationsError) throw vaccinationsError;
-        setVaccinations(vaccinationsData || []);
-
-        // Carregar configurações de lembretes
-        const { data: settingsData, error: settingsError } = await supabase
-          .from('vaccination_reminder_settings')
-          .select('*')
-          .eq('baby_profile_id', activeProfile.id)
-          .maybeSingle();
-
-        if (settingsError && settingsError.code !== 'PGRST116') throw settingsError;
-        setSettings(settingsData);
-      } else {
-        setCurrentProfile(null);
-        setCalendar([]);
-        setVaccinations([]);
-        setSettings(null);
+      if (error) {
+        logger.error('Error loading profiles', error, { context: 'useVaccination' });
+        throw error;
       }
-    } catch (error) {
-      console.error('Error loading vaccination data:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao carregar dados de vacinação",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+      return data as BabyVaccinationProfile[];
+    },
+    enabled: !!user
+  });
+
+  // Perfil atual (selecionado ou primeiro da lista)
+  const currentProfile = useMemo(() => {
+    if (!profilesQuery.data?.length) return null;
+    if (selectedProfileId) {
+      return profilesQuery.data.find(p => p.id === selectedProfileId) ?? profilesQuery.data[0];
     }
-  }, [toast]);
+    return profilesQuery.data[0];
+  }, [profilesQuery.data, selectedProfileId]);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  // Query para calendário (depende do perfil)
+  const calendarQuery = useQuery({
+    queryKey: ['vaccination-calendar', currentProfile?.calendar_type],
+    queryFn: async () => {
+      if (!currentProfile) return [];
+      
+      const { data, error } = await supabase
+        .from('vaccination_calendar')
+        .select('*')
+        .eq('calendar_type', currentProfile.calendar_type)
+        .order('age_months', { ascending: true })
+        .order('dose_number', { ascending: true });
+      
+      if (error) {
+        logger.error('Error loading calendar', error, { context: 'useVaccination' });
+        throw error;
+      }
+      return data as VaccinationCalendar[];
+    },
+    enabled: !!currentProfile,
+    staleTime: 1000 * 60 * 30 // 30 minutes - calendar data rarely changes
+  });
 
-  const saveProfile = async (profile: Partial<BabyVaccinationProfile>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
+  // Query para vacinas aplicadas (depende do perfil)
+  const vaccinationsQuery = useQuery({
+    queryKey: ['baby-vaccinations', currentProfile?.id],
+    queryFn: async () => {
+      if (!currentProfile) return [];
+      
+      const { data, error } = await supabase
+        .from('baby_vaccinations')
+        .select('*')
+        .eq('baby_profile_id', currentProfile.id)
+        .order('application_date', { ascending: false });
+      
+      if (error) {
+        logger.error('Error loading vaccinations', error, { context: 'useVaccination' });
+        throw error;
+      }
+      return data as BabyVaccination[];
+    },
+    enabled: !!currentProfile
+  });
+
+  // Query para configurações de lembretes
+  const settingsQuery = useQuery({
+    queryKey: ['vaccination-settings', currentProfile?.id],
+    queryFn: async () => {
+      if (!currentProfile) return null;
+      
+      const { data, error } = await supabase
+        .from('vaccination_reminder_settings')
+        .select('*')
+        .eq('baby_profile_id', currentProfile.id)
+        .maybeSingle();
+      
+      if (error && error.code !== 'PGRST116') {
+        logger.error('Error loading settings', error, { context: 'useVaccination' });
+        throw error;
+      }
+      return data as VaccinationReminderSettings | null;
+    },
+    enabled: !!currentProfile
+  });
+
+  // Mutation para salvar perfil
+  const saveProfileMutation = useMutation({
+    mutationFn: async (profile: Partial<BabyVaccinationProfile>) => {
       if (!user) throw new Error('Usuário não autenticado');
 
       const profileData = {
@@ -106,27 +128,21 @@ export const useVaccination = () => {
         .single();
 
       if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Perfil do bebê salvo com sucesso!",
-      });
-      await loadData();
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error saving profile:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar perfil do bebê",
-        variant: "destructive",
-      });
-      return { data: null, error: error.message };
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vaccination-profiles'] });
+      toast.success("Perfil do bebê salvo com sucesso!");
+    },
+    onError: (error) => {
+      logger.error('Error saving profile', error, { context: 'useVaccination' });
+      toast.error("Erro ao salvar perfil do bebê");
     }
-  };
+  });
 
-  const addVaccination = async (vaccination: Partial<BabyVaccination>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
+  // Mutation para adicionar vacinação
+  const addVaccinationMutation = useMutation({
+    mutationFn: async (vaccination: Partial<BabyVaccination>) => {
       if (!user) throw new Error('Usuário não autenticado');
       if (!currentProfile) throw new Error('Nenhum perfil de bebê selecionado');
 
@@ -143,79 +159,61 @@ export const useVaccination = () => {
         .single();
 
       if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Vacina registrada com sucesso!",
-      });
-      await loadData();
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error adding vaccination:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao registrar vacina",
-        variant: "destructive",
-      });
-      return { data: null, error: error.message };
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations', currentProfile?.id] });
+      toast.success("Vacina registrada com sucesso!");
+    },
+    onError: (error) => {
+      logger.error('Error adding vaccination', error, { context: 'useVaccination' });
+      toast.error("Erro ao registrar vacina");
     }
-  };
+  });
 
-  const updateVaccination = async (id: string, updates: Partial<BabyVaccination>) => {
-    try {
+  // Mutation para atualizar vacinação
+  const updateVaccinationMutation = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<BabyVaccination> }) => {
       const { error } = await supabase
         .from('baby_vaccinations')
         .update(updates)
         .eq('id', id);
 
       if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Vacina atualizada com sucesso!",
-      });
-      await loadData();
-      return { error: null };
-    } catch (error: any) {
-      console.error('Error updating vaccination:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar vacina",
-        variant: "destructive",
-      });
-      return { error: error.message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations', currentProfile?.id] });
+      toast.success("Vacina atualizada com sucesso!");
+    },
+    onError: (error) => {
+      logger.error('Error updating vaccination', error, { context: 'useVaccination' });
+      toast.error("Erro ao atualizar vacina");
     }
-  };
+  });
 
-  const deleteVaccination = async (id: string) => {
-    try {
+  // Mutation para deletar vacinação
+  const deleteVaccinationMutation = useMutation({
+    mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('baby_vaccinations')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
-
-      toast({
-        title: "Sucesso",
-        description: "Vacina removida com sucesso!",
-      });
-      await loadData();
-      return { error: null };
-    } catch (error: any) {
-      console.error('Error deleting vaccination:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao remover vacina",
-        variant: "destructive",
-      });
-      return { error: error.message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations', currentProfile?.id] });
+      toast.success("Vacina removida com sucesso!");
+    },
+    onError: (error) => {
+      logger.error('Error deleting vaccination', error, { context: 'useVaccination' });
+      toast.error("Erro ao remover vacina");
     }
-  };
+  });
 
-  const saveSettings = async (newSettings: Partial<VaccinationReminderSettings>) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
+  // Mutation para salvar configurações
+  const saveSettingsMutation = useMutation({
+    mutationFn: async (newSettings: Partial<VaccinationReminderSettings>) => {
       if (!user) throw new Error('Usuário não autenticado');
       if (!currentProfile) throw new Error('Nenhum perfil de bebê selecionado');
 
@@ -230,45 +228,86 @@ export const useVaccination = () => {
         .upsert(settingsData);
 
       if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['vaccination-settings', currentProfile?.id] });
+      toast.success("Configurações salvas com sucesso!");
+    },
+    onError: (error) => {
+      logger.error('Error saving settings', error, { context: 'useVaccination' });
+      toast.error("Erro ao salvar configurações");
+    }
+  });
 
-      toast({
-        title: "Sucesso",
-        description: "Configurações salvas com sucesso!",
-      });
-      await loadData();
+  // Função para trocar perfil
+  const switchProfile = (profileId: string) => {
+    setSelectedProfileId(profileId);
+  };
+
+  // Wrapper functions to maintain API compatibility
+  const saveProfile = async (profile: Partial<BabyVaccinationProfile>) => {
+    try {
+      const data = await saveProfileMutation.mutateAsync(profile);
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error: error.message };
+    }
+  };
+
+  const addVaccination = async (vaccination: Partial<BabyVaccination>) => {
+    try {
+      const data = await addVaccinationMutation.mutateAsync(vaccination);
+      return { data, error: null };
+    } catch (error: any) {
+      return { data: null, error: error.message };
+    }
+  };
+
+  const updateVaccination = async (id: string, updates: Partial<BabyVaccination>) => {
+    try {
+      await updateVaccinationMutation.mutateAsync({ id, updates });
       return { error: null };
     } catch (error: any) {
-      console.error('Error saving settings:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar configurações",
-        variant: "destructive",
-      });
       return { error: error.message };
     }
   };
 
-  const switchProfile = async (profileId: string) => {
-    const profile = profiles.find(p => p.id === profileId);
-    if (profile) {
-      setCurrentProfile(profile);
-      await loadData();
+  const deleteVaccination = async (id: string) => {
+    try {
+      await deleteVaccinationMutation.mutateAsync(id);
+      return { error: null };
+    } catch (error: any) {
+      return { error: error.message };
+    }
+  };
+
+  const saveSettings = async (newSettings: Partial<VaccinationReminderSettings>) => {
+    try {
+      await saveSettingsMutation.mutateAsync(newSettings);
+      return { error: null };
+    } catch (error: any) {
+      return { error: error.message };
     }
   };
 
   return {
-    profiles,
+    profiles: profilesQuery.data ?? [],
     currentProfile,
-    calendar,
-    vaccinations,
-    settings,
-    loading,
+    calendar: calendarQuery.data ?? [],
+    vaccinations: vaccinationsQuery.data ?? [],
+    settings: settingsQuery.data ?? null,
+    loading: profilesQuery.isLoading,
     saveProfile,
     addVaccination,
     updateVaccination,
     deleteVaccination,
     saveSettings,
     switchProfile,
-    reloadData: loadData,
+    reloadData: () => {
+      queryClient.invalidateQueries({ queryKey: ['vaccination-profiles'] });
+      queryClient.invalidateQueries({ queryKey: ['vaccination-calendar'] });
+      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations'] });
+      queryClient.invalidateQueries({ queryKey: ['vaccination-settings'] });
+    },
   };
 };

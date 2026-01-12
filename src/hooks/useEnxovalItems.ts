@@ -2,15 +2,15 @@
  * @fileoverview Hook para gerenciamento de itens do enxoval
  * @module hooks/useEnxovalItems
  * 
- * Provê operações CRUD com atualização otimista e paginação
+ * Provê operações CRUD com React Query, atualização otimista e paginação
  * para a lista de itens do enxoval do usuário.
  */
 
-import { useState, useEffect, useCallback } from "react";
-
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { EnxovalItem, Config } from "@/types/enxoval";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 import {
   calculatePriority,
   calculateSubtotalPlanned,
@@ -25,44 +25,19 @@ import logger from "@/lib/logger";
 const ITEMS_PER_PAGE = 50;
 
 /**
- * Hook para gerenciar itens do enxoval com paginação e CRUD
- * 
- * Implementa:
- * - Carregamento paginado (infinite scroll)
- * - Atualizações otimistas para melhor UX
- * - Cálculos automáticos de totais e alertas
- * - Verificação de limites RN e prazos de troca
+ * Hook para gerenciar itens do enxoval com React Query
  * 
  * @param config - Configuração do usuário (limites RN, dias alerta)
  * @returns Objeto com items, estados e funções de manipulação
- * 
- * @example
- * ```tsx
- * const { items, loading, addItem, deleteItem } = useEnxovalItems(config);
- * 
- * const handleAdd = async () => {
- *   await addItem({ item: 'Body', category: 'Roupas', ... });
- * };
- * ```
  */
 export const useEnxovalItems = (config: Config | null) => {
-  const [items, setItems] = useState<EnxovalItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(0);
-  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
 
   /**
    * Processa um item do banco de dados para o formato do frontend
-   * Calcula subtotais, economia e verifica alertas/limites
-   * 
-   * @param dbItem - Item raw do Supabase
-   * @param config - Configuração com limites RN
-   * @returns Item processado com cálculos e alertas
    */
-  const processItem = useCallback((dbItem: any, config: Config | null): EnxovalItem => {
+  const processItem = useCallback((dbItem: any): EnxovalItem => {
     const subtotalPlanned = calculateSubtotalPlanned(dbItem.qtd_planejada, dbItem.preco_planejado);
     const subtotalPaid = calculateSubtotalPaid(
       dbItem.qtd_comprada,
@@ -74,7 +49,7 @@ export const useEnxovalItems = (config: Config | null) => {
     const savingsPercent = calculateSavingsPercent(subtotalPlanned, subtotalPaid);
 
     // Verificar se excede limite RN (itens tamanho recém-nascido)
-    const limite = config?.limites_rn.find((l) => l.item.toLowerCase() === dbItem.item.toLowerCase());
+    const limite = config?.limites_rn?.find((l) => l.item.toLowerCase() === dbItem.item.toLowerCase());
     const excessoRN = dbItem.tamanho === "RN" && limite && dbItem.qtd_comprada > limite.limite;
 
     // Verificar se é item supérfluo que foi comprado (possível arrependimento)
@@ -122,28 +97,22 @@ export const useEnxovalItems = (config: Config | null) => {
       emocao: dbItem.emocao,
       tags: dbItem.tags || [],
     };
-  }, []);
+  }, [config]);
 
-  /**
-   * Carrega itens do banco de dados com paginação
-   * 
-   * @param pageNum - Número da página (0-indexed)
-   * @param append - Se true, adiciona aos itens existentes (infinite scroll)
-   */
-  const loadItems = useCallback(async (pageNum: number = 0, append: boolean = false) => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+  // Query infinita para paginação
+  const {
+    data,
+    isLoading: loading,
+    isFetchingNextPage: loadingMore,
+    hasNextPage: hasMore,
+    fetchNextPage,
+    refetch
+  } = useInfiniteQuery({
+    queryKey: ['enxoval-items', user?.id, config?.id],
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!user) return { items: [], nextPage: null };
 
-    if (pageNum > 0) {
-      setLoadingMore(true);
-    } else {
-      setLoading(true);
-    }
-
-    try {
-      const from = pageNum * ITEMS_PER_PAGE;
+      const from = pageParam * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
       const { data, error } = await supabase
@@ -153,52 +122,33 @@ export const useEnxovalItems = (config: Config | null) => {
         .order("created_at", { ascending: false })
         .range(from, to);
 
-      if (error) throw error;
-
-      // Verifica se há mais itens para carregar
-      setHasMore((data?.length || 0) === ITEMS_PER_PAGE);
-
-      const processedItems = (data || []).map((item) => processItem(item, config));
-      
-      if (append) {
-        setItems(prev => [...prev, ...processedItems]);
-      } else {
-        setItems(processedItems);
+      if (error) {
+        logger.error("Erro ao carregar itens", error, { context: 'useEnxovalItems' });
+        throw error;
       }
-      setPage(pageNum);
-    } catch (error: any) {
-      logger.error("Erro ao carregar itens:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar os itens.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, [user, config, processItem, toast]);
 
-  /**
-   * Carrega mais itens (próxima página)
-   * Usado para implementar infinite scroll
-   */
-  const loadMore = useCallback(() => {
-    if (!loadingMore && hasMore) {
-      loadItems(page + 1, true);
-    }
-  }, [loadingMore, hasMore, page, loadItems]);
+      return {
+        items: (data || []).map(item => processItem(item)),
+        nextPage: (data?.length || 0) === ITEMS_PER_PAGE ? pageParam + 1 : null
+      };
+    },
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    enabled: !!user && !!config,
+    initialPageParam: 0,
+    staleTime: 1000 * 60 * 5 // 5 minutes
+  });
 
-  /**
-   * Adiciona um novo item ao enxoval
-   * Usa atualização otimista - adiciona à UI antes de confirmar no servidor
-   * 
-   * @param item - Dados do item (sem ID, será gerado pelo banco)
-   */
-  const addItem = useCallback(async (item: Omit<EnxovalItem, "id">) => {
-    if (!user) return;
+  // Flatten dos items paginados
+  const items = useMemo(() => 
+    data?.pages.flatMap(page => page.items) ?? [],
+    [data]
+  );
 
-    try {
+  // Mutation para adicionar com optimistic update
+  const addItemMutation = useMutation({
+    mutationFn: async (item: Omit<EnxovalItem, "id">) => {
+      if (!user) throw new Error('Não autenticado');
+
       const priority = calculatePriority(item.necessity);
 
       const { data: newItem, error } = await supabase
@@ -233,35 +183,21 @@ export const useEnxovalItems = (config: Config | null) => {
         .single();
 
       if (error) throw error;
-
-      // Atualização otimista - adiciona ao início da lista
-      if (newItem) {
-        const processedItem = processItem(newItem, config);
-        setItems(prev => [processedItem, ...prev]);
-      }
-      
-      toast({
-        title: "Sucesso",
-        description: "Item adicionado com sucesso!",
-      });
-    } catch (error: any) {
-      logger.error("Erro ao adicionar item:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível adicionar o item.",
-        variant: "destructive",
-      });
+      return newItem;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['enxoval-items'] });
+      toast.success("Item adicionado com sucesso!");
+    },
+    onError: (error) => {
+      logger.error("Erro ao adicionar item", error, { context: 'useEnxovalItems' });
+      toast.error("Não foi possível adicionar o item.");
     }
-  }, [user, config, processItem, toast]);
+  });
 
-  /**
-   * Atualiza um item existente
-   * Usa atualização otimista para feedback imediato
-   * 
-   * @param item - Item completo com as alterações
-   */
-  const updateItem = useCallback(async (item: EnxovalItem) => {
-    try {
+  // Mutation para atualizar
+  const updateItemMutation = useMutation({
+    mutationFn: async (item: EnxovalItem) => {
       const priority = calculatePriority(item.necessity);
 
       const { error } = await supabase
@@ -294,81 +230,110 @@ export const useEnxovalItems = (config: Config | null) => {
         .eq("id", item.id);
 
       if (error) throw error;
+      return item;
+    },
+    onMutate: async (updatedItem) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['enxoval-items'] });
 
-      // Atualização otimista
-      const updatedItem = processItem({
-        ...item,
-        prioridade: priority,
-        data: item.date,
-        categoria: item.category,
-        necessidade: item.necessity,
-        tamanho: item.size,
-        qtd_planejada: item.plannedQty,
-        preco_planejado: item.plannedPrice,
-        qtd_comprada: item.boughtQty,
-        preco_unit_pago: item.unitPricePaid,
-        loja: item.store,
-        obs: item.notes,
-        origem: item.origin,
-        data_limite_troca: item.dataLimiteTroca,
-        etapa_maes: item.etapaMaes,
-      }, config);
-      
-      setItems(prev => prev.map(i => i.id === item.id ? updatedItem : i));
-      
-      toast({
-        title: "Sucesso",
-        description: "Item atualizado com sucesso!",
+      // Snapshot the previous value
+      const previousData = queryClient.getQueryData(['enxoval-items', user?.id, config?.id]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(['enxoval-items', user?.id, config?.id], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            items: page.items.map((item: EnxovalItem) =>
+              item.id === updatedItem.id ? processItem({
+                ...updatedItem,
+                prioridade: calculatePriority(updatedItem.necessity),
+                data: updatedItem.date,
+                categoria: updatedItem.category,
+                necessidade: updatedItem.necessity,
+                tamanho: updatedItem.size,
+                qtd_planejada: updatedItem.plannedQty,
+                preco_planejado: updatedItem.plannedPrice,
+                qtd_comprada: updatedItem.boughtQty,
+                preco_unit_pago: updatedItem.unitPricePaid,
+                loja: updatedItem.store,
+                obs: updatedItem.notes,
+                origem: updatedItem.origin,
+                data_limite_troca: updatedItem.dataLimiteTroca,
+                etapa_maes: updatedItem.etapaMaes,
+              }) : item
+            )
+          }))
+        };
       });
-    } catch (error: any) {
-      logger.error("Erro ao atualizar item:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível atualizar o item.",
-        variant: "destructive",
-      });
-    }
-  }, [config, processItem, toast]);
 
-  /**
-   * Remove um item do enxoval
-   * Usa atualização otimista com rollback em caso de erro
-   * 
-   * @param id - ID do item a ser removido
-   */
-  const deleteItem = useCallback(async (id: string) => {
-    try {
-      // Atualização otimista - remove da UI imediatamente
-      setItems(prev => prev.filter(i => i.id !== id));
-
-      const { error } = await supabase.from("itens_enxoval").delete().eq("id", id);
-
-      if (error) {
-        // Rollback: recarrega lista se falhar
-        await loadItems(0, false);
-        throw error;
+      return { previousData };
+    },
+    onError: (error, _, context) => {
+      // Rollback on error
+      if (context?.previousData) {
+        queryClient.setQueryData(['enxoval-items', user?.id, config?.id], context.previousData);
       }
-      
-      toast({
-        title: "Sucesso",
-        description: "Item removido com sucesso!",
-      });
-    } catch (error: any) {
-      logger.error("Erro ao remover item:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível remover o item.",
-        variant: "destructive",
-      });
+      logger.error("Erro ao atualizar item", error, { context: 'useEnxovalItems' });
+      toast.error("Não foi possível atualizar o item.");
+    },
+    onSuccess: () => {
+      toast.success("Item atualizado com sucesso!");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['enxoval-items'] });
     }
-  }, [loadItems, toast]);
+  });
 
-  // Carrega itens quando config estiver disponível
-  useEffect(() => {
-    if (config) {
-      loadItems(0, false);
+  // Mutation para deletar com optimistic update
+  const deleteItemMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("itens_enxoval").delete().eq("id", id);
+      if (error) throw error;
+      return id;
+    },
+    onMutate: async (deletedId) => {
+      await queryClient.cancelQueries({ queryKey: ['enxoval-items'] });
+
+      const previousData = queryClient.getQueryData(['enxoval-items', user?.id, config?.id]);
+
+      // Optimistically remove the item
+      queryClient.setQueryData(['enxoval-items', user?.id, config?.id], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            items: page.items.filter((item: EnxovalItem) => item.id !== deletedId)
+          }))
+        };
+      });
+
+      return { previousData };
+    },
+    onError: (error, _, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['enxoval-items', user?.id, config?.id], context.previousData);
+      }
+      logger.error("Erro ao remover item", error, { context: 'useEnxovalItems' });
+      toast.error("Não foi possível remover o item.");
+    },
+    onSuccess: () => {
+      toast.success("Item removido com sucesso!");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['enxoval-items'] });
     }
-  }, [config]);
+  });
+
+  // Load more function
+  const loadMore = useCallback(() => {
+    if (hasMore && !loadingMore) {
+      fetchNextPage();
+    }
+  }, [hasMore, loadingMore, fetchNextPage]);
 
   return { 
     /** Lista de itens processados */
@@ -378,16 +343,16 @@ export const useEnxovalItems = (config: Config | null) => {
     /** Carregando mais itens */
     loadingMore,
     /** Se há mais itens para carregar */
-    hasMore,
+    hasMore: hasMore ?? false,
     /** Função para carregar próxima página */
     loadMore,
     /** Adicionar novo item */
-    addItem, 
+    addItem: addItemMutation.mutateAsync, 
     /** Atualizar item existente */
-    updateItem, 
+    updateItem: updateItemMutation.mutateAsync, 
     /** Remover item */
-    deleteItem, 
+    deleteItem: deleteItemMutation.mutateAsync, 
     /** Recarregar lista do início */
-    reloadItems: () => loadItems(0, false) 
+    reloadItems: () => refetch()
   };
 };
