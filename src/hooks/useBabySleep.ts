@@ -1,23 +1,49 @@
+/**
+ * @fileoverview Hook para gerenciamento de dados de sono do bebê
+ * Utiliza useBabyLogs como base para operações CRUD
+ * @module hooks/useBabySleep
+ */
+
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { BabySleepLog, BabySleepSettings, BabySleepMilestone } from "@/types/babySleep";
 import { useToast } from "@/hooks/useToast";
-import { useAchievements } from "@/hooks/useAchievements";
+import { useBabyLogs } from "@/hooks/useBabyLogs";
+import logger from "@/lib/logger";
+import type { BabySleepLog, BabySleepSettings, BabySleepMilestone } from "@/types/babySleep";
+
+const log = logger.scoped("useBabySleep");
 
 export const useBabySleep = () => {
-  const [sleepLogs, setSleepLogs] = useState<BabySleepLog[]>([]);
   const [settings, setSettings] = useState<BabySleepSettings | null>(null);
   const [milestones, setMilestones] = useState<BabySleepMilestone[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { checkAchievements } = useAchievements();
+  const [settingsLoading, setSettingsLoading] = useState(true);
   const { toast } = useToast();
 
-  const loadData = useCallback(async () => {
+  // Usar hook base para logs de sono
+  const {
+    data: sleepLogs,
+    loading: logsLoading,
+    add: addLog,
+    update: updateLog,
+    remove: removeLog,
+    reload: reloadLogs,
+  } = useBabyLogs<BabySleepLog>({
+    tableName: "baby_sleep_logs",
+    orderBy: { column: "sleep_start", ascending: false },
+    entityName: "Registro de sono",
+    checkAchievementsOnAdd: true,
+  });
+
+  // Carregar configurações e marcos separadamente
+  const loadSettingsAndMilestones = useCallback(async () => {
     try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
+      setSettingsLoading(true);
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
       
       if (!user) {
+        setSettings(null);
+        setMilestones([]);
         toast({
           title: "Erro",
           description: "Você precisa estar logado para acessar este recurso.",
@@ -26,49 +52,40 @@ export const useBabySleep = () => {
         return;
       }
 
-      // Carregar configurações
-      const { data: settingsData } = await supabase
-        .from("baby_sleep_settings")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+      const [settingsResponse, milestonesResponse] = await Promise.all([
+        supabase
+          .from("baby_sleep_settings")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle(),
+        supabase
+          .from("baby_sleep_milestones")
+          .select("*")
+          .order("age_range_start")
+      ]);
 
-      setSettings(settingsData);
-
-      // Carregar registros de sono
-      const { data: logsData, error: logsError } = await supabase
-        .from("baby_sleep_logs")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("sleep_start", { ascending: false });
-
-      if (logsError) throw logsError;
-      setSleepLogs((logsData as BabySleepLog[]) || []);
-
-      // Carregar marcos de sono
-      const { data: milestonesData, error: milestonesError } = await supabase
-        .from("baby_sleep_milestones")
-        .select("*")
-        .order("age_range_start");
-
-      if (milestonesError) throw milestonesError;
-      setMilestones(milestonesData || []);
-
-    } catch (error: any) {
-      console.error("Error loading sleep data:", error);
+      setSettings(settingsResponse.data as BabySleepSettings || null);
+      
+      if (milestonesResponse.error) throw milestonesResponse.error;
+      setMilestones(milestonesResponse.data as BabySleepMilestone[] || []);
+    } catch (error) {
+      log.error("Erro ao carregar configurações e marcos", error);
       toast({
         title: "Erro ao carregar dados",
-        description: error.message,
+        description: "Erro ao carregar configurações de sono",
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setSettingsLoading(false);
     }
   }, [toast]);
 
-  const saveSettings = async (newSettings: Omit<BabySleepSettings, "id" | "user_id" | "created_at" | "updated_at">) => {
+  const saveSettings = useCallback(async (
+    newSettings: Omit<BabySleepSettings, "id" | "user_id" | "created_at" | "updated_at">
+  ) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
       if (!user) throw new Error("Usuário não autenticado");
 
       const { data, error } = await supabase
@@ -82,128 +99,55 @@ export const useBabySleep = () => {
 
       if (error) throw error;
 
-      setSettings(data);
+      setSettings(data as BabySleepSettings);
       toast({
         title: "Configurações salvas",
         description: "Suas configurações foram atualizadas com sucesso!",
       });
       
       return data;
-    } catch (error: any) {
-      console.error("Error saving settings:", error);
+    } catch (error) {
+      log.error("Erro ao salvar configurações", error);
       toast({
         title: "Erro ao salvar configurações",
-        description: error.message,
+        description: "Não foi possível salvar as configurações",
         variant: "destructive",
       });
       throw error;
     }
-  };
+  }, [toast]);
 
-  const addSleepLog = async (log: Omit<BabySleepLog, "id" | "user_id" | "created_at" | "updated_at">) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+  const addSleepLog = useCallback(async (
+    logData: Omit<BabySleepLog, "id" | "user_id" | "created_at" | "updated_at">
+  ) => {
+    return await addLog(logData as Record<string, unknown>);
+  }, [addLog]);
 
-      const { data, error } = await supabase
-        .from("baby_sleep_logs")
-        .insert({
-          ...log,
-          user_id: user.id,
-        })
-        .select()
-        .single();
+  const updateSleepLog = useCallback(async (id: string, updates: Partial<BabySleepLog>) => {
+    return await updateLog(id, updates as Record<string, unknown>);
+  }, [updateLog]);
 
-      if (error) throw error;
+  const deleteSleepLog = useCallback(async (id: string) => {
+    await removeLog(id);
+  }, [removeLog]);
 
-      setSleepLogs(prev => [data as BabySleepLog, ...prev]);
-      toast({
-        title: "Registro salvo",
-        description: "O registro de sono foi adicionado com sucesso!",
-      });
-      
-      // Verificar conquistas após adicionar
-      setTimeout(() => checkAchievements(), 1000);
-      
-      return data;
-    } catch (error: any) {
-      console.error("Error adding sleep log:", error);
-      toast({
-        title: "Erro ao adicionar registro",
-        description: error.message,
-        variant: "destructive",
-      });
-      throw error;
-    }
-  };
-
-  const updateSleepLog = async (id: string, updates: Partial<BabySleepLog>) => {
-    try {
-      const { data, error } = await supabase
-        .from("baby_sleep_logs")
-        .update(updates)
-        .eq("id", id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      setSleepLogs(prev => prev.map(log => log.id === id ? (data as BabySleepLog) : log));
-      toast({
-        title: "Registro atualizado",
-        description: "O registro de sono foi atualizado com sucesso!",
-      });
-      
-      return data;
-    } catch (error: any) {
-      console.error("Error updating sleep log:", error);
-      toast({
-        title: "Erro ao atualizar registro",
-        description: error.message,
-        variant: "destructive",
-      });
-      throw error;
-    }
-  };
-
-  const deleteSleepLog = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("baby_sleep_logs")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
-      setSleepLogs(prev => prev.filter(log => log.id !== id));
-      toast({
-        title: "Registro excluído",
-        description: "O registro de sono foi removido com sucesso!",
-      });
-    } catch (error: any) {
-      console.error("Error deleting sleep log:", error);
-      toast({
-        title: "Erro ao excluir registro",
-        description: error.message,
-        variant: "destructive",
-      });
-      throw error;
-    }
-  };
+  const reloadData = useCallback(async () => {
+    await Promise.all([reloadLogs(), loadSettingsAndMilestones()]);
+  }, [reloadLogs, loadSettingsAndMilestones]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    loadSettingsAndMilestones();
+  }, [loadSettingsAndMilestones]);
 
   return {
     sleepLogs,
     settings,
     milestones,
-    loading,
+    loading: logsLoading || settingsLoading,
     saveSettings,
     addSleepLog,
     updateSleepLog,
     deleteSleepLog,
-    reloadData: loadData,
+    reloadData,
   };
 };

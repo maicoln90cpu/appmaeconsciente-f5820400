@@ -10,7 +10,7 @@ import type { BabyFeedingLog, FeedingSettings } from "@/types/babyFeeding";
 
 interface RegistroMamadaProps {
   settings: FeedingSettings | null;
-  onAddLog: (log: Omit<BabyFeedingLog, "id" | "user_id" | "created_at" | "updated_at">) => Promise<void>;
+  onAddLog: (log: Omit<BabyFeedingLog, "id" | "user_id" | "created_at" | "updated_at">) => Promise<unknown>;
 }
 
 export const RegistroMamada = ({ settings, onAddLog }: RegistroMamadaProps) => {

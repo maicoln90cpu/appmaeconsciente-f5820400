@@ -14,7 +14,7 @@ import type { BreastMilkStorage } from "@/types/babyFeeding";
 
 interface GestaoOrdenhaProps {
   storage: BreastMilkStorage[];
-  onAddStorage: (item: Omit<BreastMilkStorage, "id" | "user_id" | "created_at" | "updated_at" | "is_used" | "used_at">) => Promise<void>;
+  onAddStorage: (item: Omit<BreastMilkStorage, "id" | "user_id" | "created_at" | "updated_at" | "is_used" | "used_at">) => Promise<unknown>;
   onMarkAsUsed: (id: string) => Promise<void>;
 }
 
