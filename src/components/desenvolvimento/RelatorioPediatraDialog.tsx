@@ -11,10 +11,7 @@ import { Button } from "@/components/ui/button";
 import { FileText, Download } from "lucide-react";
 import { BabyMilestoneRecord, DevelopmentSummary } from "@/types/development";
 import { AREA_LABELS } from "@/types/development";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 interface RelatorioPediatraDialogProps {
   summary: DevelopmentSummary;
@@ -38,6 +35,12 @@ export const RelatorioPediatraDialog = ({
     setIsGenerating(true);
 
     try {
+      const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+        import("jspdf"),
+        import("jspdf-autotable")
+      ]);
+      // autoTable is imported for side effects (extends jsPDF)
+
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       let y = 20;

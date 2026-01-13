@@ -2,9 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Download, FileSpreadsheet } from "lucide-react";
 import { EnxovalItem } from "@/types/enxoval";
 import { formatCurrency } from "@/lib/calculations";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import * as XLSX from "xlsx";
 import { useToast } from "@/hooks/useToast";
 import {
   DropdownMenu,
@@ -20,7 +17,12 @@ interface ExportEnxovalProps {
 export const ExportEnxoval = ({ items }: ExportEnxovalProps) => {
   const { toast } = useToast();
 
-  const exportToPDF = () => {
+  const exportToPDF = async () => {
+    const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+      import("jspdf"),
+      import("jspdf-autotable")
+    ]);
+
     const doc = new jsPDF();
     
     doc.setFontSize(16);
@@ -60,7 +62,9 @@ export const ExportEnxoval = ({ items }: ExportEnxovalProps) => {
     });
   };
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
+    const XLSX = await import("xlsx");
+
     const worksheetData = items.map(item => ({
       Data: item.date ? new Date(item.date).toLocaleDateString('pt-BR') : '',
       Categoria: item.category,

@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Share2, FileText, Mail } from "lucide-react";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
@@ -14,7 +12,12 @@ interface ExportAmamentacaoPDFProps {
 }
 
 export const ExportAmamentacaoPDF = ({ feedingLogs, settings }: ExportAmamentacaoPDFProps) => {
-  const generatePDF = () => {
+  const generatePDF = async () => {
+    const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+      import("jspdf"),
+      import("jspdf-autotable")
+    ]);
+
     const doc = new jsPDF();
     
     // Título
@@ -65,9 +68,9 @@ export const ExportAmamentacaoPDF = ({ feedingLogs, settings }: ExportAmamentaca
     return doc;
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     try {
-      const doc = generatePDF();
+      const doc = await generatePDF();
       doc.save(`relatorio-amamentacao-${format(new Date(), "yyyy-MM-dd")}.pdf`);
       toast.success("PDF gerado com sucesso!");
     } catch (error) {

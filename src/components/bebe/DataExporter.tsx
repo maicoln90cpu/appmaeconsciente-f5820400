@@ -13,8 +13,6 @@ import { useBabyColic } from "@/hooks/useBabyColic";
 import { useFoodIntroduction } from "@/hooks/useFoodIntroduction";
 import { useBabyRoutines } from "@/hooks/useBabyRoutines";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import * as XLSX from "xlsx";
 
 interface DataExporterProps {
   babyProfileId?: string;
@@ -43,12 +41,13 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
 
   const babyProfile = profiles.find(p => p.id === babyProfileId);
 
-  const exportToExcel = () => {
+  const exportToExcel = async () => {
     if (!babyProfile) return;
 
     setIsExporting(true);
 
     try {
+      const XLSX = await import("xlsx");
       const workbook = XLSX.utils.book_new();
 
       // Profile Sheet
