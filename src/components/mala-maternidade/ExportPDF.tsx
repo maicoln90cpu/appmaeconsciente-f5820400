@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Mail } from "lucide-react";
-import jsPDF from "jspdf";
 import { useToast } from "@/hooks/useToast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -30,7 +29,9 @@ export const ExportPDF = ({
 }: ExportPDFProps) => {
   const { toast } = useToast();
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
+    
     const doc = new jsPDF();
     let yPosition = 20;
 

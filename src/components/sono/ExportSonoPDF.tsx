@@ -3,7 +3,6 @@ import { Download, Share2, Mail } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { BabySleepLog } from "@/types/babySleep";
 import { useToast } from "@/hooks/useToast";
-import jsPDF from "jspdf";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -47,7 +46,9 @@ export const ExportSonoPDF = ({ sleepLogs, babyName }: ExportSonoPDFProps) => {
     return summary;
   };
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
+    const { default: jsPDF } = await import("jspdf");
+    
     const doc = new jsPDF();
     let yPosition = 20;
 

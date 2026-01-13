@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileText, Download, Baby, Ruler, Apple, Pill, Calendar, Moon, Milk, Activity } from "lucide-react";
+import { FileText, Download, Baby, Ruler, Apple, Pill, Calendar, Activity } from "lucide-react";
 import { useVaccination } from "@/hooks/useVaccination";
 import { useGrowthMeasurements } from "@/hooks/useGrowthMeasurements";
 import { useBabyAppointments } from "@/hooks/useBabyAppointments";
@@ -15,8 +13,6 @@ import { useFoodIntroduction } from "@/hooks/useFoodIntroduction";
 import { useDevelopmentMilestones } from "@/hooks/useDevelopmentMilestones";
 import { format, differenceInMonths, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 
 interface PediatricReportGeneratorProps {
   babyProfileId?: string;
@@ -65,6 +61,11 @@ export const PediatricReportGenerator = ({ babyProfileId }: PediatricReportGener
     setIsGenerating(true);
 
     try {
+      const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+        import("jspdf"),
+        import("jspdf-autotable")
+      ]);
+
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       let yPos = 20;
