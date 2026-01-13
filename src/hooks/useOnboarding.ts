@@ -71,7 +71,7 @@ export const useOnboarding = () => {
       
       const { data, error } = await supabase
         .from("onboarding_progress")
-        .select("*")
+        .select("id, user_id, step_key, completed_at, created_at")
         .eq("user_id", user.id);
       
       if (error) throw error;

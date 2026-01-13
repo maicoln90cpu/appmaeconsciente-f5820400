@@ -134,7 +134,7 @@ export const useMaternityBag = () => {
       // Load categories
       const { data: categoriesData, error: categoriesError } = await supabase
         .from("maternity_bag_categories")
-        .select("*")
+        .select("id, user_id, name, icon, delivery_type_filter, display_order, created_at, updated_at")
         .order("display_order");
 
       if (categoriesError) throw categoriesError;
@@ -142,7 +142,7 @@ export const useMaternityBag = () => {
       // Load items
       const { data: itemsData, error: itemsError } = await supabase
         .from("maternity_bag_items")
-        .select("*");
+        .select("id, user_id, category_id, name, quantity, checked, notes, cesarean_only, normal_only, created_at, updated_at");
 
       if (itemsError) throw itemsError;
 
@@ -155,11 +155,11 @@ export const useMaternityBag = () => {
         // Reload after initialization
         const { data: newCategoriesData } = await supabase
           .from("maternity_bag_categories")
-          .select("*")
+          .select("id, user_id, name, icon, delivery_type_filter, display_order, created_at, updated_at")
           .order("display_order");
         const { data: newItemsData } = await supabase
           .from("maternity_bag_items")
-          .select("*");
+          .select("id, user_id, category_id, name, quantity, checked, notes, cesarean_only, normal_only, created_at, updated_at");
         
         setCategories((newCategoriesData || []) as MaternityBagCategory[]);
         setItems((newItemsData || []) as MaternityBagItem[]);

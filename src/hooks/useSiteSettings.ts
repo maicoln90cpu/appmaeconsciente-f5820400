@@ -18,7 +18,7 @@ export const useSiteSettings = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("site_settings")
-        .select("*")
+        .select("id, gtm_id, created_at, updated_at")
         .limit(1)
         .maybeSingle();
 

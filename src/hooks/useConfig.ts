@@ -15,7 +15,7 @@ export const useConfig = () => {
 
       const { data: configData, error: configError } = await supabase
         .from("config")
-        .select("*")
+        .select("id, user_id, orcamento_total, dias_alerta_troca, created_at, updated_at")
         .eq("user_id", user.id)
         .single();
 
@@ -57,7 +57,7 @@ export const useConfig = () => {
 
         const { data: limits } = await supabase
           .from("limites_rn")
-          .select("*")
+          .select("id, config_id, item, limite, quando_aumentar, observacoes")
           .eq("config_id", newConfig?.id);
 
         setConfig({
@@ -75,7 +75,7 @@ export const useConfig = () => {
       } else {
         const { data: limits } = await supabase
           .from("limites_rn")
-          .select("*")
+          .select("id, config_id, item, limite, quando_aumentar, observacoes")
           .eq("config_id", configData.id);
 
         setConfig({

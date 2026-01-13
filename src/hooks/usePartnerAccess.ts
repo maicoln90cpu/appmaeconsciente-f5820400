@@ -30,7 +30,7 @@ export const usePartnerAccess = () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from('partner_access')
-        .select('*')
+        .select('id, user_id, partner_email, access_token, is_active, granted_at, expires_at, last_accessed, created_at, updated_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 

@@ -69,7 +69,7 @@ export const useToolSuggestions = () => {
 
       const { data, error } = await supabase
         .from("tool_suggestions")
-        .select("*")
+        .select("id, user_id, title, main_idea, problem_solved, main_functions, integrations, phases, target_audience, priority_rating, reference_examples, available_for_beta, contact_email, status, admin_feedback, reward_granted, share_count, created_at, updated_at")
         .order("created_at", { ascending: false });
 
       if (error) throw error;

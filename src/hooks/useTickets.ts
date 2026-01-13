@@ -72,7 +72,7 @@ export const useTickets = () => {
 
       const { data, error } = await supabase
         .from("support_tickets")
-        .select("*")
+        .select("id, user_id, name, email, subject, message, status, priority, created_at, updated_at")
         .order("created_at", { ascending: false });
 
       if (error) throw error;

@@ -45,7 +45,7 @@ export const useUltrasounds = () => {
 
       const { data, error } = await supabase
         .from("ultrasound_images")
-        .select("*")
+        .select("id, user_id, image_url, gestational_week, ultrasound_date, ultrasound_type, notes, baby_weight_grams, baby_length_cm, is_favorite, created_at, updated_at")
         .eq("user_id", user.id)
         .order("gestational_week", { ascending: true });
 

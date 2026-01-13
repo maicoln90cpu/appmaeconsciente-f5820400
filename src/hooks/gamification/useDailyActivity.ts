@@ -49,7 +49,7 @@ export const useDailyActivity = () => {
       
       const { data, error } = await supabase
         .from('daily_activity')
-        .select('*')
+        .select('activity_date, posts_count, comments_count, likes_count, sleep_logs_count, feeding_logs_count, total_xp_earned')
         .eq('user_id', user.id)
         .gte('activity_date', startDate)
         .order('activity_date', { ascending: false });

@@ -117,7 +117,7 @@ export const useEnxovalItems = (config: Config | null) => {
 
       const { data, error } = await supabase
         .from("itens_enxoval")
-        .select("*")
+        .select("id, user_id, data, categoria, item, necessidade, prioridade, tamanho, qtd_planejada, preco_planejado, qtd_comprada, preco_unit_pago, frete, desconto, preco_referencia, status, loja, link, origem, data_limite_troca, obs, etapa_maes, classificacao, emocao, tags, created_at")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .range(from, to);

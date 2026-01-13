@@ -66,7 +66,7 @@ export const useWeeklyGoal = () => {
       // Check if reward was claimed this week
       const { data: claimData } = await supabase
         .from("user_streaks")
-        .select("*")
+        .select("id, user_id, streak_type, current_streak, longest_streak, last_activity_date")
         .eq("user_id", user.id)
         .eq("streak_type", "weekly_goal")
         .maybeSingle();

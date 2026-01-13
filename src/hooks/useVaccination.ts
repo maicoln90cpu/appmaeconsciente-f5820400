@@ -24,7 +24,7 @@ export const useVaccination = () => {
       
       const { data, error } = await supabase
         .from('baby_vaccination_profiles')
-        .select('*')
+        .select('id, user_id, baby_name, birth_date, calendar_type, gender, nickname, avatar_url, birth_city, birth_type, development_monitoring_enabled, created_at, updated_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       
@@ -54,7 +54,7 @@ export const useVaccination = () => {
       
       const { data, error } = await supabase
         .from('vaccination_calendar')
-        .select('*')
+        .select('id, calendar_type, vaccine_name, dose_number, dose_label, age_months, description, purpose, side_effects, post_vaccine_tips, application_type, interval_days, created_at')
         .eq('calendar_type', currentProfile.calendar_type)
         .order('age_months', { ascending: true })
         .order('dose_number', { ascending: true });
@@ -77,7 +77,7 @@ export const useVaccination = () => {
       
       const { data, error } = await supabase
         .from('baby_vaccinations')
-        .select('*')
+        .select('id, user_id, baby_profile_id, calendar_vaccine_id, vaccine_name, dose_label, application_date, batch_number, manufacturer, health_professional, application_site, reactions, notes, proof_url, created_at, updated_at')
         .eq('baby_profile_id', currentProfile.id)
         .order('application_date', { ascending: false });
       
@@ -98,7 +98,7 @@ export const useVaccination = () => {
       
       const { data, error } = await supabase
         .from('vaccination_reminder_settings')
-        .select('*')
+        .select('id, user_id, baby_profile_id, reminder_days_before, reminder_enabled, push_enabled, email_enabled, created_at, updated_at')
         .eq('baby_profile_id', currentProfile.id)
         .maybeSingle();
       

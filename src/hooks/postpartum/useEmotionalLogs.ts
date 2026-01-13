@@ -20,7 +20,7 @@ export const useEmotionalLogs = () => {
 
       const { data, error } = await supabase
         .from('emotional_logs')
-        .select('*')
+        .select('id, user_id, date, mood, edinburgh_score, notes, created_at, updated_at')
         .eq('user_id', userId)
         .order('date', { ascending: false });
 
