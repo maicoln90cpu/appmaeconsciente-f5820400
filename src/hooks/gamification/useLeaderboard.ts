@@ -29,7 +29,7 @@ export const useLeaderboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leaderboard_cache')
-        .select('*')
+        .select('user_id, display_name, xp_total, level, max_streak, badges_count, weekly_xp, rank_position')
         .order('rank_position');
 
       if (error) throw error;

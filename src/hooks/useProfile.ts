@@ -76,7 +76,7 @@ const fetchProfile = async (userId: string | undefined): Promise<Profile | null>
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("*")
+    .select("id, email, full_name, whatsapp, idade, sexo, foto_perfil_url, meses_gestacao, possui_filhos, idades_filhos, cidade, estado, data_prevista_parto, data_inicio_planejamento, peso_atual, altura_cm, perfil_completo, delivery_date, delivery_type, postpartum_notes, onboarding_completed, onboarding_completed_at, created_at, updated_at")
     .eq("id", userId)
     .maybeSingle();
 

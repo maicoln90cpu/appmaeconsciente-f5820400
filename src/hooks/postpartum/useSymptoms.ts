@@ -20,7 +20,7 @@ export const usePostpartumSymptoms = () => {
 
       const { data, error } = await supabase
         .from('postpartum_symptoms')
-        .select('*')
+        .select('id, user_id, date, bleeding_intensity, pain_level, fever, healing_status, breast_pain, energy_level, sleep_quality, appetite, bowel_movement, urination, swelling, temperature, cramps_level, notes, created_at, updated_at')
         .eq('user_id', userId)
         .order('date', { ascending: false });
 

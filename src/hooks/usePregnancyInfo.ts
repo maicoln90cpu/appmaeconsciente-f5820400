@@ -86,7 +86,7 @@ export const usePregnancyInfo = () => {
 
       const { data, error } = await supabase
         .from("pregnancy_info")
-        .select("*")
+        .select("id, user_id, last_menstrual_period, conception_date, due_date, due_date_source, ultrasound_due_date, gestational_weeks, gestational_days, is_high_risk, ob_doctor_name, hospital_name, notes, created_at, updated_at")
         .eq("user_id", user.id)
         .maybeSingle();
 
