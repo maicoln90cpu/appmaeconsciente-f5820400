@@ -1,10 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EnxovalItem, Category } from "@/types/enxoval";
-import { calculateTotals, formatCurrency } from "@/lib/calculations";
+import { EnxovalItem } from "@/types/enxoval";
+import { formatCurrency } from "@/lib/calculations";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { TrendingDown, TrendingUp, ShoppingCart, CheckCircle2, Package, Sparkles, Ruler } from "lucide-react";
+import { TrendingDown, TrendingUp, ShoppingCart, CheckCircle2, Package, Sparkles } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ClothingSizeCalculator } from "@/components/enxoval/ClothingSizeCalculator";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
 
 interface DashboardTabProps {
   items: EnxovalItem[];
@@ -14,28 +15,7 @@ interface DashboardTabProps {
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--primary) / 0.8)', 'hsl(var(--primary) / 0.6)', 'hsl(var(--primary) / 0.4)', 'hsl(var(--primary) / 0.2)'];
 
 export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
-  const totals = calculateTotals(items);
-  
-  const categoryData = items.reduce((acc, item) => {
-    const cat = item.category;
-    if (!acc[cat]) {
-      acc[cat] = { planned: 0, paid: 0 };
-    }
-    acc[cat].planned += item.subtotalPlanned;
-    acc[cat].paid += item.subtotalPaid;
-    return acc;
-  }, {} as Record<Category, { planned: number; paid: number }>);
-
-  const chartData = Object.entries(categoryData).map(([category, values]) => ({
-    category,
-    planejado: values.planned,
-    pago: values.paid
-  }));
-
-  const statusData = [
-    { name: 'A comprar', value: items.filter(i => i.status === 'A comprar').length },
-    { name: 'Comprado', value: items.filter(i => i.status === 'Comprado').length }
-  ].filter(d => d.value > 0);
+  const { totals, chartData, statusData, progressPercentage } = useDashboardStats(items);
 
   return (
     <div className="space-y-6">
@@ -129,9 +109,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
             <CheckCircle2 className="h-4 w-4 text-success" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {items.length > 0 ? Math.round((totals.itemsBought / items.length) * 100) : 0}%
-            </div>
+            <div className="text-2xl font-bold">{progressPercentage}%</div>
             <p className="text-xs text-muted-foreground mt-1">
               dos itens já comprados
             </p>
@@ -214,7 +192,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {statusData.map((entry, index) => (
+                  {statusData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -247,7 +225,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
                   fill="#8884d8"
                   dataKey="pago"
                 >
-                  {chartData.map((entry, index) => (
+                  {chartData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
