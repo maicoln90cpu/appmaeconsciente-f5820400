@@ -1,6 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import { getCorsHeaders, handleCorsOptions, logSecurityEvent, getRequestInfo } from "../_shared/cors.ts";
+import { handleCorsOptions } from "../_shared/cors.ts";
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  withErrorHandling,
+  parseRequestBody,
+  logEvent,
+} from "../_shared/error-handler.ts";
 
 interface CreateUserRequest {
   email: string;
@@ -9,8 +16,6 @@ interface CreateUserRequest {
 
 /**
  * Generate a cryptographically secure random password
- * @param length Password length (minimum 12 recommended)
- * @returns Random password string
  */
 function generateSecurePassword(length: number = 16): string {
   const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%&*';
@@ -27,90 +32,73 @@ function generateSecurePassword(length: number = 16): string {
   return password;
 }
 
-serve(async (req) => {
+serve(withErrorHandling(async (req) => {
   if (req.method === "OPTIONS") {
     return handleCorsOptions(req);
   }
 
-  const corsHeaders = getCorsHeaders(req.headers.get('Origin'));
-
-  try {
-    const { email, full_name }: CreateUserRequest = await req.json();
-    console.log("📝 Criando usuário:", email);
-
-    if (!email) {
-      return new Response(JSON.stringify({ error: "Email é obrigatório" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Conectar ao Supabase com service role key
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Gerar senha aleatória segura
-    const password = generateSecurePassword(16);
-
-    // Criar usuário
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: email,
-      password: password,
-      email_confirm: true,
-      user_metadata: {
-        full_name: full_name || email,
-      },
-    });
-
-    if (authError) {
-      console.error("❌ Erro ao criar usuário:", authError);
-      return new Response(JSON.stringify({ error: authError.message }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    console.log("✅ Usuário criado:", authData.user.id);
-
-    // Enviar email de boas-vindas
-    try {
-      const { data: emailData, error: emailError } = await supabase.functions.invoke("send-resend-email", {
-        body: {
-          to: email,
-          template: "welcome",
-          data: {
-            userName: full_name || email.split("@")[0],
-            email: email,
-            password: password,
-          },
-        },
-      });
-
-      if (emailError) {
-        console.error("⚠️ Erro ao enviar email:", emailError);
-        // Não falhar a criação do usuário se o email não for enviado
-      } else {
-        console.log("📧 Email de boas-vindas enviado com sucesso");
-      }
-    } catch (emailErr) {
-      console.error("⚠️ Erro ao enviar email de boas-vindas:", emailErr);
-      // Não falhar a criação do usuário se o email não for enviado
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        user: authData.user,
-        message: "Usuário criado com sucesso",
-      }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
-  } catch (error: any) {
-    console.error("🔥 Erro não tratado:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  const { data: body, error: parseError } = await parseRequestBody<CreateUserRequest>(req);
+  
+  if (parseError || !body) {
+    return createErrorResponse('VALIDATION_ERROR', req, parseError || 'Invalid request body');
   }
-});
+
+  const { email, full_name } = body;
+
+  if (!email) {
+    return createErrorResponse('MISSING_FIELD', req, 'email is required');
+  }
+
+  logEvent('info', 'create-user-start', { email });
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+  const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+  // Gerar senha aleatória segura
+  const password = generateSecurePassword(16);
+
+  // Criar usuário
+  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    email: email,
+    password: password,
+    email_confirm: true,
+    user_metadata: {
+      full_name: full_name || email,
+    },
+  });
+
+  if (authError) {
+    logEvent('error', 'user-creation-failed', { error: authError.message });
+    return createErrorResponse('DATABASE_ERROR', req, authError.message);
+  }
+
+  logEvent('info', 'user-created', { userId: authData.user.id });
+
+  // Enviar email de boas-vindas (fire and forget)
+  supabase.functions.invoke("send-resend-email", {
+    body: {
+      to: email,
+      template: "welcome",
+      data: {
+        userName: full_name || email.split("@")[0],
+        email: email,
+        password: password,
+      },
+    },
+  }).then(({ error }) => {
+    if (error) {
+      logEvent('warn', 'welcome-email-failed', { error: error.message });
+    } else {
+      logEvent('info', 'welcome-email-sent', { email });
+    }
+  }).catch((err) => {
+    logEvent('warn', 'welcome-email-exception', { error: String(err) });
+  });
+
+  return createSuccessResponse({
+    success: true,
+    user: authData.user,
+    message: "Usuário criado com sucesso",
+  }, req);
+}));
