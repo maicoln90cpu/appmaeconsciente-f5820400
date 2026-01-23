@@ -1,7 +1,7 @@
 # 📋 PENDÊNCIAS - Maternidade Consciente
 
 **Última atualização:** Janeiro 2026  
-**Status geral:** MVP Completo | Mobile UX Otimizado | Growth em planejamento
+**Status geral:** MVP Completo | Performance Otimizada | Auto-save Implementado
 
 ---
 
@@ -11,8 +11,8 @@
 - [Pendências Altas](#pendências-altas-p1)
 - [Pendências Médias](#pendências-médias-p2)
 - [Pendências Baixas](#pendências-baixas-p3)
-- [Sugestões de Novas Features](#sugestões-de-novas-features)
 - [Débitos Técnicos](#débitos-técnicos)
+- [Próximos Pacotes](#próximos-pacotes-de-implementação)
 - [Histórico de Mudanças](#histórico-de-mudanças)
 
 ---
@@ -37,6 +37,9 @@
 | P1-004 | E2E tests com Playwright | Quality | ✅ Completo | Jan/2026 |
 | P1-005 | Onboarding guiado para novos usuários | UX | 📋 Planejado | Abr/2026 |
 | P1-006 | Layout mobile responsivo | UX | ✅ Completo | Jan/2026 |
+| P1-007 | QueryKeys padronizados | Performance | ✅ Completo | Jan/2026 |
+| P1-008 | Error handler centralizado (Edge Functions) | Backend | 🔄 Em progresso (9/13) | Jan/2026 |
+| P1-009 | Segurança: RLS + Leaked Password Protection | Security | 📋 Planejado | Fev/2026 |
 
 ---
 
@@ -49,8 +52,10 @@
 | P2-003 | Sistema de gamificação expandido | Community | 📋 Planejado | Jun/2026 |
 | P2-004 | Compartilhamento em redes sociais | Social | 📋 Planejado | Jun/2026 |
 | P2-005 | Performance monitoring dashboard | DevOps | 📋 Planejado | Abr/2026 |
-| P2-006 | Background sync para mais formulários | PWA | 📋 Planejado | Abr/2026 |
+| P2-006 | Background sync para mais formulários | PWA | ✅ Completo | Jan/2026 |
 | P2-007 | Modo offline para comunidade | Community | 📋 Planejado | Mai/2026 |
+| P2-008 | Auto-save de rascunhos (IndexedDB) | Forms | ✅ Completo | Jan/2026 |
+| P2-009 | Índices de banco de dados (35+) | Database | ✅ Completo | Jan/2026 |
 
 ---
 
@@ -64,38 +69,8 @@
 | P3-004 | Modo escuro automático por horário | UX | 📋 Planejado | Q2/2026 |
 | P3-005 | Animações de transição aprimoradas | UX | 📋 Planejado | Q2/2026 |
 | P3-006 | Atalhos de teclado | Accessibility | 📋 Planejado | Q2/2026 |
-
----
-
-## 💡 Sugestões de Novas Features
-
-### Baseadas em Ferramentas Existentes
-
-| Feature | Descrição | Módulo Base | Prioridade |
-|---------|-----------|-------------|------------|
-| **Calculadora de Mamadeira** | Calcular quantidade de leite por idade/peso | Amamentação | P2 |
-| **Rastreador de Cólicas** | Registrar episódios e correlacionar com alimentação | Baby Care | P2 |
-| **Diário de Introdução Alimentar** | Registrar novos alimentos e reações | Alimentação | ✅ Completo |
-| **Timer de Medicamentos** | Alarmes para próxima dose | Recuperação | ✅ Completo |
-| **Calculadora de Idade Gestacional** | Converter semanas/meses de gestação | Materiais | P3 |
-| **Gráfico de Crescimento** | Curvas de peso/altura do bebê | Desenvolvimento | ✅ Completo |
-| **Organizador de Consultas** | Agenda de pediatra/obstetra | Core | ✅ Completo |
-| **Lista de Contatos de Emergência** | Pediatra, hospital, família | Core | P3 |
-| **Rastreador de Fraldas** | Registrar trocas e padrões | Baby Care | P3 |
-| **Álbum do Primeiro Ano** | Fotos mensais com marcos | Development | ✅ Completo |
-
-### Novas Ferramentas Complementares
-
-| Feature | Descrição | Justificativa | Prioridade |
-|---------|-----------|---------------|------------|
-| **Checklist de Consultas** | Perguntas para levar ao pediatra | Complementa Vacinação | P2 |
-| **Banco de Leite Pessoal** | Gestão avançada de estoque | Complementa Ordenha | P2 |
-| **Planner de Rotina** | Criar rotinas diárias do bebê | Complementa Sono | ✅ Completo |
-| **Histórico de Crescimento** | Gráficos OMS integrados | Complementa Desenvolvimento | ✅ Completo |
-| **Gestor de Babá/Cuidador** | Compartilhar info com cuidadores | Novo módulo | P2 |
-| **Biblioteca de White Noise** | Sons para acalmar bebê | Complementa Sono | P3 |
-| **Diário de Gratidão da Mãe** | Bem-estar emocional | Complementa Recuperação | P3 |
-| **Simulador de Orçamento Bebê** | Projeção de gastos por ano | Complementa Enxoval | P2 |
+| P3-007 | Cleanup automático de rascunhos antigos | PWA | 📋 Planejado | Fev/2026 |
+| P3-008 | Auto-save em mais formulários | Forms | 📋 Planejado | Fev/2026 |
 
 ---
 
@@ -108,20 +83,95 @@
 | DT-002 | Migrar mais hooks para createSupabaseCRUD | Médio | Médio | 📋 |
 | DT-003 | Eliminar @ts-ignore restantes (~30) | Médio | Baixo | 📋 |
 | DT-004 | Componentizar formulários repetitivos | Médio | Médio | 📋 |
-| DT-005 | Otimizar queries N+1 restantes | Alto | Médio | 📋 |
+| DT-005 | Refatorar hooks restantes para QueryKeys | Alto | Médio | 📋 |
+| DT-006 | Migrar Edge Functions restantes (4) para error-handler | Médio | Baixo | 📋 |
 
 ### Infraestrutura
 | ID | Descrição | Impacto | Esforço | Status |
 |----|-----------|---------|---------|--------|
-| DT-006 | Setup de staging environment | Alto | Médio | 📋 |
-| DT-007 | Implementar database migrations CI | Alto | Médio | 📋 |
-| DT-008 | Configurar Playwright para E2E | Alto | Alto | ✅ Completo |
-| DT-009 | Setup de monitoramento APM | Médio | Médio | 📋 |
-| DT-010 | Backup automatizado de dados | Alto | Baixo | 📋 |
+| DT-007 | Setup de staging environment | Alto | Médio | 📋 |
+| DT-008 | Implementar database migrations CI | Alto | Médio | 📋 |
+| DT-009 | Configurar Playwright para E2E | Alto | Alto | ✅ Completo |
+| DT-010 | Setup de monitoramento APM | Médio | Médio | 📋 |
+| DT-011 | Backup automatizado de dados | Alto | Baixo | 📋 |
+
+---
+
+## 📦 Próximos Pacotes de Implementação
+
+### Pacote 12: Edge Functions (Finalização)
+| Item | Descrição | Esforço |
+|------|-----------|---------|
+| check-exchange-alerts | Migrar para error-handler centralizado | Baixo |
+| export-users-crm | Migrar para error-handler centralizado | Baixo |
+| notify-ticket-created | Migrar para error-handler centralizado | Baixo |
+| configure-auth-security | Migrar para error-handler centralizado | Baixo |
+
+### Pacote 13: Segurança
+| Item | Descrição | Esforço |
+|------|-----------|---------|
+| RLS policies | Corrigir warnings de RLS | Médio |
+| Leaked Password Protection | Verificar configuração | Baixo |
+| Auth config | Revisar auto-confirm settings | Baixo |
+
+### Pacote 14: Query Standardization (Finalização)
+| Item | Descrição | Esforço |
+|------|-----------|---------|
+| useEnxovalItems | Migrar para QueryKeys padronizados | Médio |
+| useDashboardBebe | Migrar para QueryKeys padronizados | Médio |
+| useCrossModuleAnalytics | Migrar para QueryKeys padronizados | Médio |
+| usePosts | Migrar para QueryKeys padronizados | Médio |
+
+### Pacote 15: Auto-save Extensão
+| Item | Descrição | Esforço |
+|------|-----------|---------|
+| RegistroMamada | Adicionar auto-save | Baixo |
+| ContractionDiary | Adicionar auto-save | Baixo |
+| TicketForm | Adicionar auto-save | Baixo |
+| ProfileSettings | Adicionar auto-save | Baixo |
+
+### Pacote 16: Cleanup e Manutenção
+| Item | Descrição | Esforço |
+|------|-----------|---------|
+| IndexedDB cleanup | Limpar drafts > 7 dias automaticamente | Baixo |
+| Cache expiration | Limpar cache expirado | Baixo |
+| Storage quota | Monitorar uso de armazenamento | Baixo |
 
 ---
 
 ## 📜 Histórico de Mudanças
+
+### Janeiro 2026 (Pacote 11 - Auto-save)
+- ✅ Hook `useAutoSave` para formulários longos
+- ✅ Componente `DraftIndicator` com status visual
+- ✅ Auto-save no `ItemDialog` (Enxoval)
+- ✅ Auto-save no `CreatePostDialog` (Comunidade)
+- ✅ Auto-save no `RegistroSono` (Sono)
+- ✅ Recuperação de rascunhos com dropdown
+- ✅ Limpeza automática após envio bem-sucedido
+
+### Janeiro 2026 (Pacote 10 - QueryKeys)
+- ✅ 40+ QueryKeys padronizados em `query-config.ts`
+- ✅ `useProfile` migrado para QueryKeys
+- ✅ `useNotifications` migrado para QueryKeys
+- ✅ `useSiteSettings` migrado para QueryKeys
+- ✅ `useUserRole` migrado para QueryKeys
+- ✅ `useTickets` migrado para React Query mutations
+- ✅ `useVaccination` otimizado com cache estático
+- ✅ Hooks de gamificação migrados (4 hooks)
+
+### Janeiro 2026 (Pacotes 8-9 - Edge Functions + Indexes)
+- ✅ 9 Edge Functions migradas para error-handler centralizado
+- ✅ 35+ índices de banco de dados criados
+- ✅ Queries otimizadas (posts, feeding, sleep, vaccinations)
+- ✅ ANALYZE executado para atualizar estatísticas
+
+### Janeiro 2026 (Pacote 7 - IndexedDB + Sync)
+- ✅ IndexedDBManager com stores `cache` e `drafts`
+- ✅ Cache com expiração automática
+- ✅ Invalidação por tags
+- ✅ 13 sync handlers registrados
+- ✅ SyncQueueManager UI no header
 
 ### Janeiro 2026 (Sprint 5 - Mobile UX)
 - ✅ Layout responsivo para badges (texto adaptativo)
@@ -130,8 +180,6 @@
 - ✅ Tabelas convertidas em cards para mobile
 - ✅ Legendas de gráficos ocultas em mobile
 - ✅ CSS utilities globais (`.text-adaptive`, `.no-overflow-text`, `.btn-adaptive`)
-- ✅ Melhorias em 15+ componentes mobile
-- ✅ Documentação técnica atualizada
 
 ### Janeiro 2026 (Sprint 4)
 - ✅ Sentry error monitoring configurado
@@ -140,10 +188,6 @@
 - ✅ Bundle optimization com lazy loading avançado
 - ✅ Testes unitários para UI components (Card, Alert, Tabs, Dialog, Input)
 - ✅ Componentes otimizados (VirtualizedList, OptimizedSelect, OptimizedGrid)
-- ✅ Hooks de memoização avançados (useMemoizedCallback)
-- ✅ Code splitting no DashboardBebe (16 componentes)
-- ✅ Prefetch durante idle time (requestIdleCallback)
-- ✅ Documentação técnica completa (README, ARCHITECTURE, PRD, ROADMAP)
 
 ### Janeiro 2026 (Sprint 3)
 - ✅ Documentação técnica completa
@@ -205,10 +249,11 @@
 - [PRD.md](PRD.md) - Requisitos do produto
 - [ROADMAP.md](ROADMAP.md) - Fases e timeline
 - [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura técnica
+- [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) - System Design detalhado
 - [SPRINT_REVIEW.md](SPRINT_REVIEW.md) - Histórico de sprints
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Guia de contribuição
 
 ---
 
 *Documento mantido por: Development Team*  
-*Última atualização: Janeiro 2026 (Sprint 5)*
+*Última atualização: Janeiro 2026 (Pacote 11 - Auto-save)*
