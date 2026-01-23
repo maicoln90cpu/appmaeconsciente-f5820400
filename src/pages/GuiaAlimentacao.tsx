@@ -1,5 +1,6 @@
 import { useState, lazy } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { LazyTabContent } from "@/components/ui/lazy-tab-content";
 import { DashboardSaude } from "@/components/alimentacao/DashboardSaude";
 import { GenerateMealPlanButton } from "@/components/alimentacao/GenerateMealPlanButton";
@@ -84,48 +85,82 @@ export default function GuiaAlimentacao() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5 gap-1 h-auto p-1">
-            <TabsTrigger value="dashboard" className="flex flex-col items-center gap-1 py-2 px-1">
-              <BarChart3 className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Dash</span>
-            </TabsTrigger>
-            <TabsTrigger value="ia" className="flex flex-col items-center gap-1 py-2 px-1">
-              <Bot className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">IA</span>
-            </TabsTrigger>
-            <TabsTrigger value="plano" className="flex flex-col items-center gap-1 py-2 px-1">
-              <Utensils className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Plano</span>
-            </TabsTrigger>
-            <TabsTrigger value="receitas" className="flex flex-col items-center gap-1 py-2 px-1">
-              <BookOpen className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Receitas</span>
-            </TabsTrigger>
-            <TabsTrigger value="suplementos" className="flex flex-col items-center gap-1 py-2 px-1">
-              <Pill className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Suplem.</span>
-            </TabsTrigger>
-            <TabsTrigger value="hidratacao" className="flex flex-col items-center gap-1 py-2 px-1">
-              <Droplets className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Água</span>
-            </TabsTrigger>
-            <TabsTrigger value="exercicios" className="flex flex-col items-center gap-1 py-2 px-1">
-              <Dumbbell className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Exerc.</span>
-            </TabsTrigger>
-            <TabsTrigger value="peso" className="flex flex-col items-center gap-1 py-2 px-1">
-              <Scale className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Peso</span>
-            </TabsTrigger>
-            <TabsTrigger value="compras" className="flex flex-col items-center gap-1 py-2 px-1">
-              <ShoppingCart className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Compras</span>
-            </TabsTrigger>
-            <TabsTrigger value="alertas" className="flex flex-col items-center gap-1 py-2 px-1">
-              <AlertTriangle className="h-4 w-4" />
-              <span className="text-[10px] sm:text-xs">Alertas</span>
-            </TabsTrigger>
-          </TabsList>
+          {/* ScrollArea horizontal para tabs em mobile */}
+          <ScrollArea className="w-full whitespace-nowrap">
+            <TabsList className="inline-flex w-max gap-1 h-auto p-1.5 md:grid md:w-full md:grid-cols-5 lg:grid-cols-10">
+              <TabsTrigger 
+                value="dashboard" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <BarChart3 className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Dash</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="ia" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <Bot className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">IA</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="plano" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <Utensils className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Plano</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="receitas" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <BookOpen className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Receitas</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="suplementos" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <Pill className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Suplem.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="hidratacao" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <Droplets className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Água</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="exercicios" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <Dumbbell className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Exerc.</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="peso" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <Scale className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Peso</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="compras" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <ShoppingCart className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Compras</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="alertas" 
+                className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
+              >
+                <AlertTriangle className="h-4 w-4" />
+                <span className="text-[10px] sm:text-xs">Alertas</span>
+              </TabsTrigger>
+            </TabsList>
+            <ScrollBar orientation="horizontal" className="h-2" />
+          </ScrollArea>
 
           <TabsContent value="dashboard">
             <DashboardSaude />
