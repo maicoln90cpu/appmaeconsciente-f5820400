@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface SiteSettings {
   id: string;
@@ -13,8 +14,10 @@ export const useSiteSettings = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  const queryKey = QueryKeys.siteSettings();
+
   const { data: settings, isLoading } = useQuery({
-    queryKey: ["site-settings"],
+    queryKey,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("site_settings")
@@ -38,6 +41,8 @@ export const useSiteSettings = () => {
       
       return data as SiteSettings;
     },
+    staleTime: QueryCacheConfig.reference.staleTime,
+    gcTime: QueryCacheConfig.reference.gcTime,
   });
 
   const updateSettings = useMutation({
@@ -57,7 +62,7 @@ export const useSiteSettings = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+      queryClient.invalidateQueries({ queryKey });
       toast({
         title: "Configurações atualizadas",
         description: "O GTM ID foi atualizado com sucesso.",

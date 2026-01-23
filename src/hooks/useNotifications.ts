@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import logger from "@/lib/logger";
 import { useAuth } from "@/contexts/AuthContext";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface Notification {
   id: string;
@@ -17,9 +18,11 @@ export const useNotifications = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
+  const queryKey = QueryKeys.notifications(user?.id ?? '');
+
   // Query principal para notificações
   const { data: notifications = [], isLoading: loading } = useQuery({
-    queryKey: ['user-notifications', user?.id],
+    queryKey,
     queryFn: async (): Promise<Notification[]> => {
       if (!user) return [];
 
@@ -54,7 +57,8 @@ export const useNotifications = () => {
       }));
     },
     enabled: !!user,
-    staleTime: 1000 * 60 * 2 // 2 minutes
+    staleTime: QueryCacheConfig.dynamic.staleTime,
+    gcTime: QueryCacheConfig.dynamic.gcTime,
   });
 
   // Contagem de não lidas (memoizada)
@@ -77,7 +81,7 @@ export const useNotifications = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['user-notifications', user?.id] });
+      queryClient.invalidateQueries({ queryKey });
     },
     onError: (error) => {
       logger.error('Error marking notification as read', error, { context: 'useNotifications' });
@@ -96,20 +100,20 @@ export const useNotifications = () => {
         table: 'user_notifications',
         filter: `user_id=eq.${user.id}`
       }, () => {
-        queryClient.invalidateQueries({ queryKey: ['user-notifications', user.id] });
+        queryClient.invalidateQueries({ queryKey });
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [user, queryClient]);
+  }, [user, queryClient, queryKey]);
 
   return { 
     notifications, 
     unreadCount, 
     loading, 
     markAsRead: markAsReadMutation.mutate, 
-    reloadNotifications: () => queryClient.invalidateQueries({ queryKey: ['user-notifications', user?.id] })
+    reloadNotifications: () => queryClient.invalidateQueries({ queryKey })
   };
 };

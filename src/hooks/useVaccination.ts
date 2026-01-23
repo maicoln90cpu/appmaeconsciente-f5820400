@@ -10,15 +10,18 @@ import type {
   VaccinationReminderSettings,
 } from "@/types/vaccination";
 import { useAuth } from "@/contexts/AuthContext";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export const useVaccination = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
 
+  const profilesQueryKey = QueryKeys.babyProfiles(user?.id ?? '');
+
   // Query para perfis do bebê
   const profilesQuery = useQuery({
-    queryKey: ['vaccination-profiles', user?.id],
+    queryKey: profilesQueryKey,
     queryFn: async () => {
       if (!user) return [];
       
@@ -34,7 +37,9 @@ export const useVaccination = () => {
       }
       return data as BabyVaccinationProfile[];
     },
-    enabled: !!user
+    enabled: !!user,
+    staleTime: QueryCacheConfig.user.staleTime,
+    gcTime: QueryCacheConfig.user.gcTime,
   });
 
   // Perfil atual (selecionado ou primeiro da lista)
@@ -46,9 +51,12 @@ export const useVaccination = () => {
     return profilesQuery.data[0];
   }, [profilesQuery.data, selectedProfileId]);
 
+  const calendarQueryKey = QueryKeys.vaccinationCalendar(currentProfile?.calendar_type ?? '');
+  const vaccinationsQueryKey = QueryKeys.vaccinations(currentProfile?.id ?? '');
+
   // Query para calendário (depende do perfil)
   const calendarQuery = useQuery({
-    queryKey: ['vaccination-calendar', currentProfile?.calendar_type],
+    queryKey: calendarQueryKey,
     queryFn: async () => {
       if (!currentProfile) return [];
       
@@ -66,12 +74,13 @@ export const useVaccination = () => {
       return data as VaccinationCalendar[];
     },
     enabled: !!currentProfile,
-    staleTime: 1000 * 60 * 30 // 30 minutes - calendar data rarely changes
+    staleTime: QueryCacheConfig.static.staleTime, // Calendar data rarely changes
+    gcTime: QueryCacheConfig.static.gcTime,
   });
 
   // Query para vacinas aplicadas (depende do perfil)
   const vaccinationsQuery = useQuery({
-    queryKey: ['baby-vaccinations', currentProfile?.id],
+    queryKey: vaccinationsQueryKey,
     queryFn: async () => {
       if (!currentProfile) return [];
       
@@ -87,7 +96,9 @@ export const useVaccination = () => {
       }
       return data as BabyVaccination[];
     },
-    enabled: !!currentProfile
+    enabled: !!currentProfile,
+    staleTime: QueryCacheConfig.list.staleTime,
+    gcTime: QueryCacheConfig.list.gcTime,
   });
 
   // Query para configurações de lembretes
@@ -108,7 +119,9 @@ export const useVaccination = () => {
       }
       return data as VaccinationReminderSettings | null;
     },
-    enabled: !!currentProfile
+    enabled: !!currentProfile,
+    staleTime: QueryCacheConfig.user.staleTime,
+    gcTime: QueryCacheConfig.user.gcTime,
   });
 
   // Mutation para salvar perfil
@@ -131,7 +144,7 @@ export const useVaccination = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['vaccination-profiles'] });
+      queryClient.invalidateQueries({ queryKey: profilesQueryKey });
       toast.success("Perfil do bebê salvo com sucesso!");
     },
     onError: (error) => {
@@ -162,7 +175,7 @@ export const useVaccination = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations', currentProfile?.id] });
+      queryClient.invalidateQueries({ queryKey: vaccinationsQueryKey });
       toast.success("Vacina registrada com sucesso!");
     },
     onError: (error) => {
@@ -182,7 +195,7 @@ export const useVaccination = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations', currentProfile?.id] });
+      queryClient.invalidateQueries({ queryKey: vaccinationsQueryKey });
       toast.success("Vacina atualizada com sucesso!");
     },
     onError: (error) => {
@@ -202,7 +215,7 @@ export const useVaccination = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations', currentProfile?.id] });
+      queryClient.invalidateQueries({ queryKey: vaccinationsQueryKey });
       toast.success("Vacina removida com sucesso!");
     },
     onError: (error) => {
@@ -304,9 +317,9 @@ export const useVaccination = () => {
     saveSettings,
     switchProfile,
     reloadData: () => {
-      queryClient.invalidateQueries({ queryKey: ['vaccination-profiles'] });
-      queryClient.invalidateQueries({ queryKey: ['vaccination-calendar'] });
-      queryClient.invalidateQueries({ queryKey: ['baby-vaccinations'] });
+      queryClient.invalidateQueries({ queryKey: profilesQueryKey });
+      queryClient.invalidateQueries({ queryKey: calendarQueryKey });
+      queryClient.invalidateQueries({ queryKey: vaccinationsQueryKey });
       queryClient.invalidateQueries({ queryKey: ['vaccination-settings'] });
     },
   };

@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { logger } from "@/lib/logger";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 /**
  * Interface que representa o perfil completo do usuário
@@ -65,9 +66,6 @@ export interface Profile {
   updated_at: string;
 }
 
-const PROFILE_QUERY_KEY = ["profile"] as const;
-const STALE_TIME = 5 * 60 * 1000; // 5 minutes
-
 /**
  * Fetches profile data from Supabase
  */
@@ -91,35 +89,17 @@ const fetchProfile = async (userId: string | undefined): Promise<Profile | null>
 /**
  * Hook para carregar e atualizar o perfil do usuário autenticado
  * Usa React Query para caching e gerenciamento de estado
- * 
- * @returns Objeto contendo:
- * - `profile`: Dados do perfil ou null se não carregado
- * - `loading`: Estado de carregamento
- * - `updateProfile`: Função para atualizar o perfil
- * - `reloadProfile`: Função para recarregar os dados do perfil
- * 
- * @example
- * ```tsx
- * const { profile, loading, updateProfile } = useProfile();
- * 
- * if (loading) return <Spinner />;
- * 
- * const handleSave = async () => {
- *   const { error } = await updateProfile({ full_name: 'Novo Nome' });
- *   if (!error) console.log('Salvo!');
- * };
- * ```
  */
 export const useProfile = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const { data: profile, isLoading: loading, refetch } = useQuery({
-    queryKey: [...PROFILE_QUERY_KEY, user?.id],
+    queryKey: QueryKeys.profile(user?.id ?? ''),
     queryFn: () => fetchProfile(user?.id),
     enabled: !!user?.id,
-    staleTime: STALE_TIME,
-    gcTime: 10 * 60 * 1000, // 10 minutes cache
+    staleTime: QueryCacheConfig.user.staleTime,
+    gcTime: QueryCacheConfig.user.gcTime,
   });
 
   const updateMutation = useMutation({
@@ -136,7 +116,7 @@ export const useProfile = () => {
     },
     onSuccess: (updates) => {
       // Optimistically update the cache
-      queryClient.setQueryData([...PROFILE_QUERY_KEY, user?.id], (old: Profile | null) => {
+      queryClient.setQueryData(QueryKeys.profile(user?.id ?? ''), (old: Profile | null) => {
         if (!old) return old;
         return { ...old, ...updates };
       });
@@ -145,9 +125,6 @@ export const useProfile = () => {
 
   /**
    * Atualiza parcialmente o perfil do usuário
-   * 
-   * @param updates - Objeto com os campos a serem atualizados
-   * @returns Objeto com `error` (null se sucesso, mensagem se erro)
    */
   const updateProfile = async (updates: Partial<Profile>) => {
     try {

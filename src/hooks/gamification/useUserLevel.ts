@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 // XP rewards por ação
 export const XP_REWARDS = {
@@ -36,9 +37,11 @@ export const useUserLevel = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
+  const queryKey = QueryKeys.userLevel(user?.id ?? '');
+
   // Buscar dados de nível do usuário
   const { data: levelData, isLoading } = useQuery({
-    queryKey: ['user-level', user?.id],
+    queryKey,
     queryFn: async (): Promise<UserLevel | null> => {
       if (!user) return null;
       
@@ -69,7 +72,8 @@ export const useUserLevel = () => {
       };
     },
     enabled: !!user,
-    staleTime: 30000,
+    staleTime: QueryCacheConfig.realtime.staleTime,
+    gcTime: QueryCacheConfig.realtime.gcTime,
   });
 
   // Mutation para adicionar XP
@@ -93,8 +97,8 @@ export const useUserLevel = () => {
       return data?.[0];
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['user-level'] });
-      queryClient.invalidateQueries({ queryKey: ['daily-activity'] });
+      queryClient.invalidateQueries({ queryKey });
+      queryClient.invalidateQueries({ queryKey: QueryKeys.dailyActivity(user?.id ?? '') });
       
       if (data?.leveled_up) {
         toast.success(`🎉 Parabéns! Você subiu para o nível ${data.new_level}!`, {

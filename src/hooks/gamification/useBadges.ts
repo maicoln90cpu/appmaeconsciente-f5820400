@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useUserLevel } from "./useUserLevel";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface Badge {
   id: string;
@@ -37,7 +38,7 @@ export const useBadges = () => {
 
   // Buscar badges disponíveis
   const { data: allBadges = [], isLoading: loadingBadges } = useQuery({
-    queryKey: ['badges'],
+    queryKey: QueryKeys.badges(),
     queryFn: async () => {
       const { data, error } = await supabase
         .from('badges')
@@ -48,12 +49,15 @@ export const useBadges = () => {
       if (error) throw error;
       return data as Badge[];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: QueryCacheConfig.reference.staleTime,
+    gcTime: QueryCacheConfig.reference.gcTime,
   });
+
+  const userBadgesQueryKey = QueryKeys.userBadges(user?.id ?? '');
 
   // Buscar badges do usuário
   const { data: userBadges = [], isLoading: loadingUserBadges } = useQuery({
-    queryKey: ['user-badges', user?.id],
+    queryKey: userBadgesQueryKey,
     queryFn: async () => {
       if (!user) return [];
       
@@ -66,6 +70,8 @@ export const useBadges = () => {
       return data as UserBadge[];
     },
     enabled: !!user,
+    staleTime: QueryCacheConfig.user.staleTime,
+    gcTime: QueryCacheConfig.user.gcTime,
   });
 
   // Badges por categoria (memoizado)
@@ -100,7 +106,7 @@ export const useBadges = () => {
     },
     onSuccess: (data) => {
       if (data?.badge) {
-        queryClient.invalidateQueries({ queryKey: ['user-badges'] });
+        queryClient.invalidateQueries({ queryKey: userBadgesQueryKey });
         toast.success(`🏆 Badge desbloqueado: ${data.badge.name}!`, {
           duration: 5000,
         });

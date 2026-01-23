@@ -85,35 +85,35 @@ export const QueryCacheConfig = {
 export const QueryKeys = {
   // User
   profile: (userId: string) => ['profile', userId] as const,
-  userRoles: (userId: string) => ['userRoles', userId] as const,
-  userAccess: (userId: string) => ['userAccess', userId] as const,
+  userRoles: (userId: string) => ['user-roles', userId] as const,
+  userAccess: (userId: string) => ['user-access', userId] as const,
   
   // Baby
-  babyProfiles: (userId: string) => ['babyProfiles', userId] as const,
-  babyProfile: (profileId: string) => ['babyProfile', profileId] as const,
+  babyProfiles: (userId: string) => ['baby-profiles', userId] as const,
+  babyProfile: (profileId: string) => ['baby-profile', profileId] as const,
   
   // Feeding
   feedingLogs: (userId: string, filters?: Record<string, unknown>) => 
-    ['feedingLogs', userId, filters] as const,
-  feedingSettings: (userId: string) => ['feedingSettings', userId] as const,
+    ['feeding-logs', userId, filters] as const,
+  feedingSettings: (userId: string) => ['feeding-settings', userId] as const,
   
   // Sleep
   sleepLogs: (userId: string, filters?: Record<string, unknown>) => 
-    ['sleepLogs', userId, filters] as const,
-  sleepSettings: (userId: string) => ['sleepSettings', userId] as const,
-  sleepMilestones: () => ['sleepMilestones'] as const,
+    ['sleep-logs', userId, filters] as const,
+  sleepSettings: (userId: string) => ['sleep-settings', userId] as const,
+  sleepMilestones: () => ['sleep-milestones'] as const,
   
   // Development
-  milestoneTypes: () => ['milestoneTypes'] as const,
-  milestoneRecords: (babyProfileId: string) => ['milestoneRecords', babyProfileId] as const,
+  milestoneTypes: () => ['milestone-types'] as const,
+  milestoneRecords: (babyProfileId: string) => ['milestone-records', babyProfileId] as const,
   
   // Vaccination
-  vaccinationCalendar: (calendarType: string) => ['vaccinationCalendar', calendarType] as const,
+  vaccinationCalendar: (calendarType: string) => ['vaccination-calendar', calendarType] as const,
   vaccinations: (babyProfileId: string) => ['vaccinations', babyProfileId] as const,
   
   // Enxoval
-  enxovalItems: (userId: string) => ['enxovalItems', userId] as const,
-  enxovalConfig: (userId: string) => ['enxovalConfig', userId] as const,
+  enxovalItems: (userId: string, configId?: string) => ['enxoval-items', userId, configId] as const,
+  enxovalConfig: (userId: string) => ['enxoval-config', userId] as const,
   
   // Community
   posts: (filters?: Record<string, unknown>) => ['posts', filters] as const,
@@ -126,19 +126,59 @@ export const QueryKeys = {
   
   // Gamification
   badges: () => ['badges'] as const,
-  userBadges: (userId: string) => ['userBadges', userId] as const,
+  userBadges: (userId: string) => ['user-badges', userId] as const,
+  userLevel: (userId: string) => ['user-level', userId] as const,
   leaderboard: () => ['leaderboard'] as const,
-  dailyActivity: (userId: string, date: string) => ['dailyActivity', userId, date] as const,
+  leaderboardOptIn: (userId: string) => ['leaderboard-opt-in', userId] as const,
+  dailyActivity: (userId: string) => ['daily-activity', userId] as const,
+  userStreaks: (userId: string) => ['user-streaks', userId] as const,
   
   // Notifications
-  notifications: (userId: string) => ['notifications', userId] as const,
+  notifications: (userId: string) => ['user-notifications', userId] as const,
   
   // Site settings
-  siteSettings: () => ['siteSettings'] as const,
+  siteSettings: () => ['site-settings'] as const,
   
   // Admin
-  adminUsers: (filters?: Record<string, unknown>) => ['adminUsers', filters] as const,
-  adminStats: () => ['adminStats'] as const,
+  adminUsers: (filters?: Record<string, unknown>) => ['admin-users', filters] as const,
+  adminStats: () => ['admin-stats'] as const,
+  
+  // Tickets
+  tickets: (userId: string) => ['tickets', userId] as const,
+  ticket: (ticketId: string) => ['ticket', ticketId] as const,
+  
+  // Baby specific
+  babyAppointments: (babyProfileId?: string) => ['baby-appointments', babyProfileId] as const,
+  babyMedications: (babyProfileId?: string) => ['baby-medications', babyProfileId] as const,
+  babyColic: (babyProfileId?: string) => ['baby-colic', babyProfileId] as const,
+  babyRoutines: (babyProfileId?: string) => ['baby-routines', babyProfileId] as const,
+  babyRoutineLogs: (date: string) => ['baby-routine-logs', date] as const,
+  growthMeasurements: (babyProfileId?: string) => ['growth-measurements', babyProfileId] as const,
+  foodIntroduction: (babyProfileId?: string) => ['food-introduction', babyProfileId] as const,
+  
+  // Postpartum
+  postpartumSymptoms: (userId: string) => ['postpartum-symptoms', userId] as const,
+  postpartumMedications: (userId: string) => ['postpartum-medications', userId] as const,
+  postpartumAppointments: (userId: string) => ['postpartum-appointments', userId] as const,
+  postpartumRecoveryChecklist: (userId: string) => ['postpartum-recovery-checklist', userId] as const,
+  postpartumEmotionalLogs: (userId: string) => ['postpartum-emotional-logs', userId] as const,
+  postpartumBodyImageLogs: (userId: string) => ['postpartum-body-image-logs', userId] as const,
+  
+  // Contractions
+  contractions: (userId: string) => ['contractions', userId] as const,
+  
+  // Ultrasounds
+  ultrasounds: (userId: string) => ['ultrasounds', userId] as const,
+  
+  // Maternity Bag
+  maternityBagCategories: (userId: string) => ['maternity-bag-categories', userId] as const,
+  maternityBagItems: (userId: string) => ['maternity-bag-items', userId] as const,
+  
+  // Favorites
+  favorites: (userId: string, itemType: string) => ['favorites', userId, itemType] as const,
+  
+  // Follows
+  follows: (userId: string) => ['follows', userId] as const,
 } as const;
 
 /**
