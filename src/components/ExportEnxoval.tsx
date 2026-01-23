@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Download, FileSpreadsheet } from "lucide-react";
 import { EnxovalItem } from "@/types/enxoval";
+import { getLastAutoTableY } from "@/types/jspdf";
 import { formatCurrency } from "@/lib/calculations";
 import { useToast } from "@/hooks/useToast";
 import {
@@ -49,7 +50,7 @@ export const ExportEnxoval = ({ items }: ExportEnxovalProps) => {
     });
 
     const totalPaid = items.reduce((sum, item) => sum + item.subtotalPaid, 0);
-    const finalY = (doc as any).lastAutoTable.finalY || 30;
+    const finalY = getLastAutoTableY(doc, 30);
     
     doc.setFontSize(12);
     doc.text(`Total Gasto: ${formatCurrency(totalPaid)}`, 14, finalY + 10);
