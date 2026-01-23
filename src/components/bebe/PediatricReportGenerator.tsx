@@ -11,6 +11,7 @@ import { useBabyMedications } from "@/hooks/useBabyMedications";
 import { useBabyColic } from "@/hooks/useBabyColic";
 import { useFoodIntroduction } from "@/hooks/useFoodIntroduction";
 import { useDevelopmentMilestones } from "@/hooks/useDevelopmentMilestones";
+import { getLastAutoTableY } from "@/types/jspdf";
 import { format, differenceInMonths, differenceInDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -126,7 +127,7 @@ export const PediatricReportGenerator = ({ babyProfileId }: PediatricReportGener
           margin: { left: 14 },
         });
 
-        yPos = (doc as any).lastAutoTable.finalY + 10;
+        yPos = getLastAutoTableY(doc, yPos) + 10;
       }
 
       // Medications
@@ -157,7 +158,7 @@ export const PediatricReportGenerator = ({ babyProfileId }: PediatricReportGener
           margin: { left: 14 },
         });
 
-        yPos = (doc as any).lastAutoTable.finalY + 10;
+        yPos = getLastAutoTableY(doc, yPos) + 10;
       }
 
       // Colic Stats
@@ -242,7 +243,7 @@ export const PediatricReportGenerator = ({ babyProfileId }: PediatricReportGener
           margin: { left: 14 },
         });
 
-        yPos = (doc as any).lastAutoTable.finalY + 10;
+        yPos = getLastAutoTableY(doc, yPos) + 10;
       }
 
       // Appointments

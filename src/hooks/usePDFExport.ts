@@ -2,8 +2,9 @@ import { useCallback } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useToast } from "@/hooks/useToast";
+import { getLastAutoTableY } from "@/types/jspdf";
 
-type jsPDFInstance = InstanceType<typeof import("jspdf").default>;
+import type { jsPDF } from "jspdf";
 
 export interface PDFSection {
   title: string;
@@ -55,7 +56,7 @@ export const usePDFExport = (): PDFExportReturn => {
 
   const addSection = useCallback(
     (
-      doc: jsPDFInstance,
+      doc: jsPDF,
       section: PDFSection,
       yPos: number,
       autoTable: typeof import("jspdf-autotable").default
@@ -100,7 +101,7 @@ export const usePDFExport = (): PDFExportReturn => {
           },
           margin: { left: 14 },
         });
-        y = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY + 10;
+        y = getLastAutoTableY(doc, y) + 10;
       }
 
       if (section.type === "stats" && section.content) {
