@@ -3,7 +3,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Share2, FileText, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { toast } from "sonner";
+import { usePDFExport, shareViaWhatsApp, shareViaEmail } from "@/hooks/usePDFExport";
+import { useToast } from "@/hooks/useToast";
 import type { BabyFeedingLog, FeedingSettings } from "@/types/babyFeeding";
 
 interface ExportAmamentacaoPDFProps {
@@ -12,95 +13,79 @@ interface ExportAmamentacaoPDFProps {
 }
 
 export const ExportAmamentacaoPDF = ({ feedingLogs, settings }: ExportAmamentacaoPDFProps) => {
-  const generatePDF = async () => {
-    const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
-      import("jspdf"),
-      import("jspdf-autotable")
-    ]);
+  const { toast } = useToast();
+  const { generatePDF, formatDate } = usePDFExport();
 
-    const doc = new jsPDF();
-    
-    // Título
-    doc.setFontSize(20);
-    doc.text("Relatório de Amamentação", 14, 22);
-    
-    if (settings) {
-      doc.setFontSize(12);
-      doc.text(`Bebê: ${settings.baby_name}`, 14, 32);
-      doc.text(`Data de Nascimento: ${format(new Date(settings.baby_birthdate), "dd/MM/yyyy", { locale: ptBR })}`, 14, 38);
-    }
-    
-    doc.setFontSize(10);
-    doc.text(`Relatório gerado em: ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`, 14, 44);
-
-    // Estatísticas
-    const totalFeedings = feedingLogs.length;
-    const breastfeedingCount = feedingLogs.filter(l => l.feeding_type === "breastfeeding").length;
-    const bottleCount = feedingLogs.filter(l => l.feeding_type === "bottle").length;
-    const totalVolume = feedingLogs.reduce((sum, l) => sum + (l.volume_ml || 0), 0);
-    
-    doc.setFontSize(12);
-    doc.text("Resumo Geral", 14, 54);
-    doc.setFontSize(10);
-    doc.text(`Total de Mamadas: ${totalFeedings}`, 14, 62);
-    doc.text(`Amamentação: ${breastfeedingCount}`, 14, 68);
-    doc.text(`Mamadeiras: ${bottleCount}`, 14, 74);
-    doc.text(`Volume Total: ${totalVolume}ml`, 14, 80);
-
-    // Tabela de registros
-    const tableData = feedingLogs.map(log => [
-      format(new Date(log.start_time), "dd/MM/yyyy HH:mm", { locale: ptBR }),
-      log.feeding_type === "breastfeeding" ? "Amamentação" : log.feeding_type === "bottle" ? "Mamadeira" : "Ordenha",
-      log.duration_minutes ? `${log.duration_minutes} min` : "-",
-      log.volume_ml ? `${log.volume_ml}ml` : "-",
-      log.notes || "-"
-    ]);
-
-    autoTable(doc, {
-      startY: 90,
-      head: [["Data/Hora", "Tipo", "Duração", "Volume", "Observações"]],
-      body: tableData,
-      theme: "grid",
-      headStyles: { fillColor: [248, 215, 218] },
-      styles: { fontSize: 8 }
-    });
-
-    return doc;
-  };
+  const breastfeedingCount = feedingLogs.filter(l => l.feeding_type === "breastfeeding").length;
+  const bottleCount = feedingLogs.filter(l => l.feeding_type === "bottle").length;
+  const totalVolume = feedingLogs.reduce((sum, l) => sum + (l.volume_ml || 0), 0);
 
   const handleExportPDF = async () => {
     try {
-      const doc = await generatePDF();
-      doc.save(`relatorio-amamentacao-${format(new Date(), "yyyy-MM-dd")}.pdf`);
-      toast.success("PDF gerado com sucesso!");
+      await generatePDF({
+        title: "Relatório de Amamentação",
+        subtitle: settings ? `Bebê: ${settings.baby_name}` : undefined,
+        filename: `relatorio-amamentacao`,
+        sections: [
+          ...(settings ? [{
+            title: "Dados do Bebê",
+            type: "text" as const,
+            content: [
+              `Nome: ${settings.baby_name}`,
+              `Data de Nascimento: ${formatDate(settings.baby_birthdate)}`,
+            ],
+          }] : []),
+          {
+            title: "Resumo Geral",
+            type: "stats" as const,
+            content: [
+              `Total de Mamadas: ${feedingLogs.length}`,
+              `Amamentação: ${breastfeedingCount}`,
+              `Mamadeiras: ${bottleCount}`,
+              `Volume Total: ${totalVolume}ml`,
+            ],
+          },
+          {
+            title: "Registros",
+            type: "table" as const,
+            tableHead: ["Data/Hora", "Tipo", "Duração", "Volume", "Observações"],
+            tableBody: feedingLogs.map(log => [
+              format(new Date(log.start_time), "dd/MM/yyyy HH:mm", { locale: ptBR }),
+              log.feeding_type === "breastfeeding" ? "Amamentação" : log.feeding_type === "bottle" ? "Mamadeira" : "Ordenha",
+              log.duration_minutes ? `${log.duration_minutes} min` : "-",
+              log.volume_ml ? `${log.volume_ml}ml` : "-",
+              log.notes || "-",
+            ]),
+            tableColor: [248, 215, 218],
+          },
+        ],
+        footer: "Gerado pelo MÃE CONSCIENTE",
+      });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast.error("Erro ao gerar PDF");
+      toast({ title: "Erro ao gerar PDF", variant: "destructive" });
     }
   };
 
-  const shareViaWhatsApp = () => {
-    const text = encodeURIComponent(
+  const getSummaryText = () => {
+    return (
       `📊 Relatório de Amamentação - ${settings?.baby_name || "Bebê"}\n\n` +
       `Total de Mamadas: ${feedingLogs.length}\n` +
-      `Amamentação: ${feedingLogs.filter(l => l.feeding_type === "breastfeeding").length}\n` +
-      `Mamadeiras: ${feedingLogs.filter(l => l.feeding_type === "bottle").length}\n\n` +
+      `Amamentação: ${breastfeedingCount}\n` +
+      `Mamadeiras: ${bottleCount}\n\n` +
       `Gerado em ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`
     );
-    window.open(`https://wa.me/?text=${text}`, "_blank");
   };
 
-  const shareViaEmail = () => {
-    const subject = encodeURIComponent(`Relatório de Amamentação - ${settings?.baby_name || "Bebê"}`);
-    const body = encodeURIComponent(
-      `Relatório de Amamentação\n\n` +
-      `Bebê: ${settings?.baby_name || "Não informado"}\n` +
-      `Total de Mamadas: ${feedingLogs.length}\n` +
-      `Amamentação: ${feedingLogs.filter(l => l.feeding_type === "breastfeeding").length}\n` +
-      `Mamadeiras: ${feedingLogs.filter(l => l.feeding_type === "bottle").length}\n\n` +
-      `Gerado em ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`
+  const handleShareWhatsApp = () => {
+    shareViaWhatsApp(getSummaryText());
+  };
+
+  const handleShareEmail = () => {
+    shareViaEmail(
+      `Relatório de Amamentação - ${settings?.baby_name || "Bebê"}`,
+      getSummaryText()
     );
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -116,11 +101,11 @@ export const ExportAmamentacaoPDF = ({ feedingLogs, settings }: ExportAmamentaca
           <FileText className="mr-2 h-4 w-4" />
           Baixar PDF
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={shareViaWhatsApp}>
+        <DropdownMenuItem onClick={handleShareWhatsApp}>
           <Share2 className="mr-2 h-4 w-4" />
           Compartilhar via WhatsApp
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={shareViaEmail}>
+        <DropdownMenuItem onClick={handleShareEmail}>
           <Mail className="mr-2 h-4 w-4" />
           Enviar por Email
         </DropdownMenuItem>
