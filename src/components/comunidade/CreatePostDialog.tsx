@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { DraftIndicator } from "@/components/ui/draft-indicator";
 
 const postSchema = z.object({
   content: z.string()
@@ -38,6 +40,12 @@ interface CreatePostDialogProps {
   ) => Promise<void>;
 }
 
+type PostFormData = {
+  content: string;
+  displayName: string;
+  categoria: string;
+};
+
 export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
   const [open, setOpen] = useState(false);
   const [content, setContent] = useState("");
@@ -48,6 +56,45 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
+
+  // Auto-save for posts
+  const {
+    isSaving,
+    hasSavedRecently,
+    lastSavedAt,
+    availableDrafts,
+    triggerAutoSave,
+    deleteDraft,
+    loadDraftById,
+    deleteDraftById,
+  } = useAutoSave<PostFormData>({
+    type: 'community-post',
+    enabled: open,
+    debounceMs: 2000,
+    minDataCheck: (data) => !!(data.content && (data.content as string).length > 10),
+    onDraftLoaded: (data) => {
+      const { __userId, __savedAt, ...cleanData } = data as PostFormData & { __userId?: string; __savedAt?: number };
+      if (cleanData.content) setContent(cleanData.content);
+      if (cleanData.displayName) setDisplayName(cleanData.displayName);
+      if (cleanData.categoria) setCategoria(cleanData.categoria);
+    },
+  });
+
+  // Trigger auto-save when form data changes
+  useEffect(() => {
+    if (open && content.length > 10) {
+      triggerAutoSave({ content, displayName, categoria });
+    }
+  }, [content, displayName, categoria, open, triggerAutoSave]);
+
+  // Handle draft load
+  const handleLoadDraft = useCallback(async (id: string) => {
+    await loadDraftById(id);
+    toast({
+      title: "Rascunho carregado",
+      description: "O conteúdo do rascunho foi restaurado.",
+    });
+  }, [loadDraftById, toast]);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -169,6 +216,9 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
         undefined
       );
 
+      // Delete draft after successful post
+      await deleteDraft();
+
       // Reset form
       setContent("");
       setDisplayName("");
@@ -201,10 +251,23 @@ export const CreatePostDialog = ({ onPostCreated }: CreatePostDialogProps) => {
       </DialogTrigger>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Criar Novo Post</DialogTitle>
-          <DialogDescription>
-            Compartilhe sua história com a comunidade
-          </DialogDescription>
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <DialogTitle>Criar Novo Post</DialogTitle>
+              <DialogDescription>
+                Compartilhe sua história com a comunidade
+              </DialogDescription>
+            </div>
+            <DraftIndicator
+              isSaving={isSaving}
+              hasSavedRecently={hasSavedRecently}
+              lastSavedAt={lastSavedAt}
+              availableDrafts={availableDrafts}
+              onLoadDraft={handleLoadDraft}
+              onDeleteDraft={deleteDraftById}
+              onDeleteCurrentDraft={deleteDraft}
+            />
+          </div>
         </DialogHeader>
 
         <div className="space-y-4 py-4">

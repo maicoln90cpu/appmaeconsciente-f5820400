@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { calculatePriority, calculateSubtotalPlanned, calculateSubtotalPaid, cal
 import { TagsInput } from "@/components/TagsInput";
 import { sanitizeUrl } from "@/lib/url-validator";
 import { useToast } from "@/hooks/useToast";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { DraftIndicator } from "@/components/ui/draft-indicator";
 
 interface ItemDialogProps {
   onAdd?: (item: EnxovalItem) => void;
@@ -37,34 +39,98 @@ const etapasMaes: EtapaMaes[] = ["Mapear", "Avaliar", "Enxugar", "Sustentar"];
 const classificacoes: Classificacao[] = ["Essencial", "Pode Esperar", "Supérfluo"];
 const emocoes: Emocao[] = ["😌 útil", "💸 impulso", "🧡 amor"];
 
+type FormData = {
+  category: Category;
+  item: string;
+  necessity: Necessity;
+  size: Size | "";
+  plannedQty: number;
+  plannedPrice: number;
+  boughtQty: number;
+  unitPricePaid: number;
+  frete: number;
+  desconto: number;
+  precoReferencia: number;
+  store: string;
+  link: string;
+  status: Status;
+  origin: string;
+  dataLimiteTroca: string;
+  notes: string;
+  etapaMaes: EtapaMaes;
+  classificacao: Classificacao | "";
+  emocao: Emocao | "";
+  tags: string[];
+};
+
+const defaultFormData: FormData = {
+  category: "Roupas",
+  item: "",
+  necessity: "Necessário",
+  size: "",
+  plannedQty: 0,
+  plannedPrice: 0,
+  boughtQty: 0,
+  unitPricePaid: 0,
+  frete: 0,
+  desconto: 0,
+  precoReferencia: 0,
+  store: "",
+  link: "",
+  status: "A comprar",
+  origin: "",
+  dataLimiteTroca: "",
+  notes: "",
+  etapaMaes: "Mapear",
+  classificacao: "",
+  emocao: "",
+  tags: []
+};
+
 export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, onOpenChange }: ItemDialogProps) => {
   const { toast } = useToast();
   const [internalOpen, setInternalOpen] = useState(false);
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setIsOpen = onOpenChange || setInternalOpen;
-  const [formData, setFormData] = useState({
-    category: "Roupas" as Category,
-    item: "",
-    necessity: "Necessário" as Necessity,
-    size: "" as Size | "",
-    plannedQty: 0,
-    plannedPrice: 0,
-    boughtQty: 0,
-    unitPricePaid: 0,
-    frete: 0,
-    desconto: 0,
-    precoReferencia: 0,
-    store: "",
-    link: "",
-    status: "A comprar" as Status,
-    origin: "" as string,
-    dataLimiteTroca: "",
-    notes: "",
-    etapaMaes: "Mapear" as EtapaMaes,
-    classificacao: "" as Classificacao | "",
-    emocao: "" as Emocao | "",
-    tags: [] as string[]
+  const [formData, setFormData] = useState<FormData>(defaultFormData);
+
+  // Auto-save for new items only (not when editing)
+  const {
+    isSaving,
+    hasSavedRecently,
+    lastSavedAt,
+    availableDrafts,
+    triggerAutoSave,
+    deleteDraft,
+    loadDraftById,
+    deleteDraftById,
+  } = useAutoSave<FormData>({
+    type: 'enxoval-item',
+    enabled: !editingItem && isOpen,
+    debounceMs: 1500,
+    minDataCheck: (data) => !!(data.item && (data.item as string).length > 2),
+    onDraftLoaded: (data) => {
+      // Remove metadata fields before setting form data
+      const { __userId, __savedAt, ...cleanData } = data as FormData & { __userId?: string; __savedAt?: number };
+      setFormData(prev => ({ ...prev, ...cleanData }));
+    },
   });
+
+  // Trigger auto-save when form data changes
+  useEffect(() => {
+    if (!editingItem && isOpen && formData.item.length > 2) {
+      triggerAutoSave(formData);
+    }
+  }, [formData, editingItem, isOpen, triggerAutoSave]);
+
+  // Handle draft load
+  const handleLoadDraft = useCallback(async (id: string) => {
+    await loadDraftById(id);
+    toast({
+      title: "Rascunho carregado",
+      description: "Os dados do rascunho foram restaurados.",
+    });
+  }, [loadDraftById, toast]);
 
   useEffect(() => {
     if (editingItem) {
@@ -93,33 +159,11 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
       });
     } else if (!isOpen) {
       // Reset form when dialog closes and not editing
-      setFormData({
-        category: "Roupas",
-        item: "",
-        necessity: "Necessário",
-        size: "",
-        plannedQty: 0,
-        plannedPrice: 0,
-        boughtQty: 0,
-        unitPricePaid: 0,
-        frete: 0,
-        desconto: 0,
-        precoReferencia: 0,
-        store: "",
-        link: "",
-        status: "A comprar",
-        origin: "",
-        dataLimiteTroca: "",
-        notes: "",
-        etapaMaes: "Mapear",
-        classificacao: "",
-        emocao: "",
-        tags: []
-      });
+      setFormData(defaultFormData);
     }
   }, [editingItem, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validar URL se fornecida
@@ -207,6 +251,8 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
       onAdd(newItem);
     }
 
+    // Delete draft after successful save
+    await deleteDraft();
     setIsOpen(false);
   };
 
@@ -222,7 +268,20 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
       )}
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{editingItem ? "Editar Item" : "Adicionar Novo Item"}</DialogTitle>
+          <div className="flex items-center justify-between gap-4">
+            <DialogTitle>{editingItem ? "Editar Item" : "Adicionar Novo Item"}</DialogTitle>
+            {!editingItem && (
+              <DraftIndicator
+                isSaving={isSaving}
+                hasSavedRecently={hasSavedRecently}
+                lastSavedAt={lastSavedAt}
+                availableDrafts={availableDrafts}
+                onLoadDraft={handleLoadDraft}
+                onDeleteDraft={deleteDraftById}
+                onDeleteCurrentDraft={deleteDraft}
+              />
+            )}
+          </div>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">

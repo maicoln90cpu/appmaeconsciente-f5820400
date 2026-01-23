@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,12 +8,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Play, Square, Save } from "lucide-react";
 import { BabySleepLog, SleepLocation, WakeupMood, MomMood } from "@/types/babySleep";
 import { toast } from "@/hooks/useToast";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import { DraftIndicator } from "@/components/ui/draft-indicator";
 
 interface RegistroSonoProps {
   onSave: (log: Omit<BabySleepLog, "id" | "user_id" | "created_at" | "updated_at">) => Promise<any>;
   babyName?: string;
   babyAgeMonths?: number;
 }
+
+type SleepFormData = {
+  sleepStart: string;
+  sleepEnd: string;
+  location: SleepLocation;
+  wakeupMood: WakeupMood;
+  momMood: MomMood;
+  notes: string;
+};
 
 export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoProps) => {
   const [isTimerActive, setIsTimerActive] = useState(false);
@@ -24,6 +35,48 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
   const [wakeupMood, setWakeupMood] = useState<WakeupMood>("calmo");
   const [momMood, setMomMood] = useState<MomMood>("descansada");
   const [notes, setNotes] = useState("");
+
+  // Auto-save for sleep records
+  const {
+    isSaving,
+    hasSavedRecently,
+    lastSavedAt,
+    availableDrafts,
+    triggerAutoSave,
+    deleteDraft,
+    loadDraftById,
+    deleteDraftById,
+  } = useAutoSave<SleepFormData>({
+    type: 'sleep-log',
+    enabled: true,
+    debounceMs: 2000,
+    minDataCheck: (data) => !!(data.sleepStart),
+    onDraftLoaded: (data) => {
+      const { __userId, __savedAt, ...cleanData } = data as SleepFormData & { __userId?: string; __savedAt?: number };
+      if (cleanData.sleepStart) setSleepStart(cleanData.sleepStart);
+      if (cleanData.sleepEnd) setSleepEnd(cleanData.sleepEnd);
+      if (cleanData.location) setLocation(cleanData.location);
+      if (cleanData.wakeupMood) setWakeupMood(cleanData.wakeupMood);
+      if (cleanData.momMood) setMomMood(cleanData.momMood);
+      if (cleanData.notes) setNotes(cleanData.notes);
+    },
+  });
+
+  // Trigger auto-save when form data changes
+  useEffect(() => {
+    if (sleepStart) {
+      triggerAutoSave({ sleepStart, sleepEnd, location, wakeupMood, momMood, notes });
+    }
+  }, [sleepStart, sleepEnd, location, wakeupMood, momMood, notes, triggerAutoSave]);
+
+  // Handle draft load
+  const handleLoadDraft = useCallback(async (id: string) => {
+    await loadDraftById(id);
+    toast({
+      title: "Rascunho carregado",
+      description: "Os dados do rascunho foram restaurados.",
+    });
+  }, [loadDraftById]);
 
   const startTimer = () => {
     const now = new Date();
@@ -81,6 +134,9 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
 
     await onSave(log);
     
+    // Delete draft after successful save
+    await deleteDraft();
+    
     // Limpar formulário
     setSleepStart("");
     setSleepEnd("");
@@ -92,10 +148,23 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
   return (
     <Card>
       <CardHeader>
-        <CardTitle>📝 Registrar Sono</CardTitle>
-        <CardDescription>
-          Use o temporizador ou adicione manualmente os horários
-        </CardDescription>
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <CardTitle>📝 Registrar Sono</CardTitle>
+            <CardDescription>
+              Use o temporizador ou adicione manualmente os horários
+            </CardDescription>
+          </div>
+          <DraftIndicator
+            isSaving={isSaving}
+            hasSavedRecently={hasSavedRecently}
+            lastSavedAt={lastSavedAt}
+            availableDrafts={availableDrafts}
+            onLoadDraft={handleLoadDraft}
+            onDeleteDraft={deleteDraftById}
+            onDeleteCurrentDraft={deleteDraft}
+          />
+        </div>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
