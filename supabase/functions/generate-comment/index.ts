@@ -1,26 +1,29 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { getCorsHeaders, handleCorsOptions } from "../_shared/cors.ts";
+import { handleCorsOptions } from "../_shared/cors.ts";
+import { 
+  createErrorResponse, 
+  createSuccessResponse, 
+  withErrorHandling,
+  logEvent 
+} from "../_shared/error-handler.ts";
 
-serve(async (req) => {
+serve(withErrorHandling(async (req) => {
   if (req.method === 'OPTIONS') {
     return handleCorsOptions(req);
   }
 
-  const corsHeaders = getCorsHeaders(req.headers.get('Origin'));
+  const { postContent, postCategory } = await req.json();
 
-  try {
-    const { postContent, postCategory } = await req.json();
+  if (!postContent) {
+    return createErrorResponse('VALIDATION_ERROR', req, 'Post content is required');
+  }
 
-    if (!postContent) {
-      throw new Error('Post content is required');
-    }
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  if (!LOVABLE_API_KEY) {
+    return createErrorResponse('CONFIG_ERROR', req, 'LOVABLE_API_KEY not configured');
+  }
 
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
-    }
-
-    const prompt = `Você é uma mãe brasileira participando de uma comunidade de gestantes e mães.
+  const prompt = `Você é uma mãe brasileira participando de uma comunidade de gestantes e mães.
 Escreva um comentário empático e natural para o seguinte post:
 
 Categoria: ${postCategory || 'Geral'}
@@ -43,41 +46,34 @@ Exemplos de tom:
 
 Retorne APENAS o texto do comentário, sem aspas ou formatação extra.`;
 
-    const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { role: 'system', content: 'You are a warm, empathetic Brazilian mother in an online community. Write natural, conversational comments.' },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.9,
-        max_tokens: 150,
-      }),
-    });
+  logEvent('info', 'generate-comment-request', { postCategory });
 
-    if (!aiResponse.ok) {
-      const errorText = await aiResponse.text();
-      console.error('AI API Error:', aiResponse.status, errorText);
-      throw new Error(`AI generation failed: ${errorText}`);
-    }
+  const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'google/gemini-2.5-flash',
+      messages: [
+        { role: 'system', content: 'You are a warm, empathetic Brazilian mother in an online community. Write natural, conversational comments.' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.9,
+      max_tokens: 150,
+    }),
+  });
 
-    const aiData = await aiResponse.json();
-    const comment = aiData.choices[0].message.content.trim();
-
-    return new Response(
-      JSON.stringify({ comment }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
-  } catch (error) {
-    console.error('Error in generate-comment:', error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+  if (!aiResponse.ok) {
+    const errorText = await aiResponse.text();
+    logEvent('error', 'ai-api-error', { status: aiResponse.status, error: errorText });
+    return createErrorResponse('AI_ERROR', req, errorText);
   }
-});
+
+  const aiData = await aiResponse.json();
+  const comment = aiData.choices[0].message.content.trim();
+
+  logEvent('info', 'generate-comment-success');
+  return createSuccessResponse({ comment }, req);
+}));
