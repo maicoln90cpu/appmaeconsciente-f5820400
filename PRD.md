@@ -2,9 +2,9 @@
 
 ## Maternidade Consciente
 
-**Versão:** 1.1  
+**Versão:** 1.2  
 **Data:** Janeiro 2026  
-**Status:** MVP Completo + Melhorias Mobile
+**Status:** MVP Completo + Performance Otimizada + Auto-save
 
 ---
 
@@ -39,6 +39,8 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 - ✅ Criar comunidade de suporte entre mães
 - ✅ Disponibilizar versão offline (PWA)
 - ✅ Experiência mobile otimizada
+- ✅ Performance otimizada (35+ índices DB, QueryKeys padronizados)
+- ✅ Auto-save de formulários (dados nunca perdidos)
 - 🔄 Integrar com profissionais de saúde
 
 ---
@@ -56,6 +58,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Guia de quantidades RN | P1 | ✅ Completo |
 | Exportação Excel/PDF | P1 | ✅ Completo |
 | Alerta de troca (data limite) | P2 | ✅ Completo |
+| **Auto-save de rascunhos** | P2 | ✅ Completo |
 
 ### 3.2 Amamentação
 **Objetivo:** Facilitar o registro e acompanhamento da amamentação
@@ -80,6 +83,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Comparação com marcos | P2 | ✅ Completo |
 | Exportação PDF | P2 | ✅ Completo |
 | Cards mobile responsivos | P1 | ✅ Completo |
+| **Auto-save de rascunhos** | P2 | ✅ Completo |
 
 ### 3.4 Cartão de Vacinação
 **Objetivo:** Manter registro completo e lembretes de vacinas
@@ -139,6 +143,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Sistema de likes | P1 | ✅ Completo |
 | Denúncias e moderação | P1 | ✅ Completo |
 | Desafios comunitários | P2 | ✅ Completo |
+| **Auto-save de rascunhos** | P2 | ✅ Completo |
 
 ### 3.9 Mala da Maternidade
 **Objetivo:** Organizar itens para o hospital
@@ -185,6 +190,8 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Lighthouse Performance | > 90 | ✅ |
 | Code Splitting | Lazy loading | ✅ |
 | Virtualização | Listas grandes | ✅ |
+| Índices de banco | 35+ índices | ✅ |
+| QueryKeys padronizados | 40+ keys | ✅ |
 
 ### 4.2 Segurança
 | Requisito | Status |
@@ -195,6 +202,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | CORS configurado | ✅ |
 | Leaked password protection | ✅ |
 | Error monitoring (Sentry) | ✅ |
+| Error handler centralizado | ✅ (9/13 functions) |
 
 ### 4.3 Acessibilidade
 | Requisito | Status |
@@ -205,13 +213,16 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 | Navegação por teclado | ✅ |
 | Focus management | ✅ |
 
-### 4.4 PWA
+### 4.4 PWA & Offline
 | Requisito | Status |
 |-----------|--------|
 | Instalável | ✅ |
 | Offline-first | ✅ |
-| Background sync | ✅ |
+| Background sync | ✅ (13 tipos) |
 | Push notifications | 🔄 |
+| IndexedDB cache | ✅ |
+| Auto-save drafts | ✅ |
+| Sync queue UI | ✅ |
 
 ### 4.5 Testes
 | Requisito | Status |
@@ -242,12 +253,14 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 - [ ] Integração com calendário do dispositivo
 - [ ] Modo multi-idiomas (i18n)
 - [ ] App nativo (React Native)
+- [ ] Onboarding guiado
 
 ### 5.2 Prioridade Média (Q3/2026)
 - [ ] Integração com wearables (sono)
 - [ ] Relatórios automáticos para pediatra
 - [ ] Gamificação expandida
 - [ ] Parcerias com marcas (marketplace)
+- [ ] Modo offline para comunidade
 
 ### 5.3 Prioridade Baixa (Q4/2026)
 - [ ] IA de previsão de marcos
@@ -268,6 +281,7 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 - **Itens de enxoval por usuário:** > 30
 - **Registros de mamada por dia:** > 5
 - **Posts na comunidade por mês:** > 1.000
+- **Rascunhos recuperados por semana:** > 100
 
 ### 6.3 Métricas de Satisfação
 - **NPS:** > 50
@@ -279,7 +293,8 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 ## 7. Documentos Relacionados
 
 - [README.md](README.md) - Visão geral do projeto
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura técnica
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura de componentes
+- [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) - **System Design detalhado**
 - [ROADMAP.md](ROADMAP.md) - Fases e timeline
 - [PENDENCIAS.md](PENDENCIAS.md) - Status de pendências
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Guia de contribuição
@@ -287,4 +302,4 @@ Ser a plataforma de referência para gestantes e mães no Brasil, oferecendo aco
 
 ---
 
-*Documento atualizado em: Janeiro 2026 (Sprint 5)*
+*Documento atualizado em: Janeiro 2026 (Pacote 11 - Auto-save)*

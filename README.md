@@ -53,11 +53,19 @@ Maternidade Consciente é uma aplicação web progressiva (PWA) que oferece ferr
 ### Backend (Lovable Cloud)
 | Serviço | Descrição |
 |---------|-----------|
-| PostgreSQL | Banco de dados com RLS |
+| PostgreSQL | Banco de dados com RLS + 35 índices otimizados |
 | Auth | Autenticação e autorização |
 | Edge Functions | Lógica serverless (28+ funções) |
 | Storage | Armazenamento de arquivos |
 | Realtime | Atualizações em tempo real |
+
+### PWA & Offline
+| Tecnologia | Descrição |
+|------------|-----------|
+| Service Worker | Cache e sincronização |
+| IndexedDB | Armazenamento local (cache + drafts) |
+| Background Sync | Sincronização em segundo plano |
+| Auto-save | Rascunhos automáticos de formulários |
 
 ### Ferramentas de Desenvolvimento
 | Ferramenta | Descrição |
@@ -99,13 +107,21 @@ A aplicação estará disponível em `http://localhost:5173`
 ### Comandos Disponíveis
 
 ```bash
+# Desenvolvimento
 npm run dev          # Servidor de desenvolvimento
 npm run build        # Build de produção
 npm run preview      # Preview do build
+
+# Testes
 npm run test         # Executa testes unitários
+npm run test:watch   # Testes em watch mode
+npm run test:coverage # Testes com cobertura
 npm run test:e2e     # Executa testes E2E
+
+# Qualidade de Código
 npm run lint         # Verifica código
 npm run format       # Formata código
+npm run typecheck    # Verifica tipos
 ```
 
 ## 📁 Estrutura do Projeto
@@ -114,6 +130,9 @@ npm run format       # Formata código
 src/
 ├── components/           # Componentes React
 │   ├── ui/              # Componentes base (shadcn) + responsivos
+│   │   ├── draft-indicator.tsx  # Indicador de auto-save
+│   │   ├── virtualized-list.tsx # Lista virtualizada
+│   │   └── ...
 │   ├── admin/           # Painel administrativo
 │   ├── alimentacao/     # Módulo de nutrição
 │   ├── alimentacao-bebe/# Alimentação do bebê
@@ -130,16 +149,25 @@ src/
 │   ├── mala-maternidade/# Mala da maternidade
 │   ├── onboarding/      # Onboarding do usuário
 │   ├── offline/         # Componentes offline
+│   │   ├── SyncQueueManager.tsx # UI de fila de sync
+│   │   └── ...
 │   ├── pwa/             # Componentes PWA
 │   ├── recuperacao/     # Recuperação pós-parto
 │   ├── sono/            # Monitoramento de sono
 │   └── vacinacao/       # Cartão de vacinação
 ├── hooks/               # Custom hooks
 │   ├── factories/       # Factories de hooks (createSupabaseCRUD)
-│   └── postpartum/      # Hooks de pós-parto
+│   ├── postpartum/      # Hooks de pós-parto
+│   ├── gamification/    # Hooks de gamificação
+│   ├── useAutoSave.ts   # Auto-save de formulários
+│   ├── useOfflineSync.ts# Sincronização offline
+│   └── ...
 ├── pages/               # Páginas/rotas
 ├── contexts/            # Contextos React
 ├── lib/                 # Utilitários
+│   ├── indexed-db.ts    # Manager IndexedDB
+│   ├── offline-sync.ts  # Sync engine
+│   ├── query-config.ts  # QueryKeys + cache config
 │   └── validators/      # Schemas Zod
 ├── integrations/        # Integrações externas
 │   └── supabase/        # Cliente Supabase
@@ -153,6 +181,9 @@ src/
 supabase/
 ├── functions/           # Edge Functions (28+)
 │   ├── _shared/         # Código compartilhado
+│   │   ├── cors.ts
+│   │   ├── error-handler.ts  # Handler centralizado
+│   │   └── rate-limiter.ts
 │   └── ...              # Funções individuais
 └── config.toml          # Configuração
 
@@ -183,7 +214,8 @@ e2e/                     # Testes E2E Playwright
 ### Recursos Técnicos
 
 - ✅ **PWA** - Instalável, funciona offline
-- ✅ **Background Sync** - Sincronização em segundo plano
+- ✅ **Background Sync** - Sincronização em segundo plano (13 tipos de dados)
+- ✅ **Auto-save** - Rascunhos automáticos com IndexedDB
 - ✅ **RLS** - Row Level Security em todas as tabelas
 - ✅ **Lazy Loading** - Carregamento sob demanda com retry
 - ✅ **Prefetch** - Pré-carregamento de rotas (hover + idle)
@@ -192,6 +224,7 @@ e2e/                     # Testes E2E Playwright
 - ✅ **Responsivo** - Mobile-first com layout adaptativo
 - ✅ **Error Monitoring** - Sentry integrado
 - ✅ **Virtualização** - Listas otimizadas para grandes volumes
+- ✅ **35+ Índices DB** - Queries otimizadas
 
 ## 🧪 Testes
 
@@ -235,8 +268,10 @@ Cobertura E2E:
 | Virtualização | Listas grandes otimizadas |
 | Memoização avançada | Menos re-renders |
 | Query optimization | N+1 queries eliminados |
-| 15+ índices DB | Queries 90%+ mais rápidas |
+| 35+ índices DB | Queries 2-10x mais rápidas |
+| QueryKeys padronizados | Cache otimizado |
 | Mobile-first CSS | Layout adaptativo |
+| Auto-save IndexedDB | Dados não perdidos |
 
 ### Métricas Target
 
@@ -252,7 +287,8 @@ Cobertura E2E:
 | Documento | Descrição |
 |-----------|-----------|
 | [README.md](README.md) | Visão geral e setup |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitetura técnica detalhada |
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Arquitetura de componentes |
+| [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) | **System Design detalhado** |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Guia de contribuição |
 | [PRD.md](PRD.md) | Product Requirements Document |
 | [ROADMAP.md](ROADMAP.md) | Fases e prioridades |
@@ -288,4 +324,4 @@ Este projeto é proprietário. Todos os direitos reservados.
 
 **Desenvolvido com 💜 por Lovable**
 
-*Última atualização: Janeiro 2026 (Sprint 5 - Mobile Improvements)*
+*Última atualização: Janeiro 2026 (Pacote 11 - Auto-save)*

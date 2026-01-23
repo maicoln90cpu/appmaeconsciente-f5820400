@@ -12,7 +12,7 @@
 │                         2025-2026                                │
 ├──────────────┬──────────────┬──────────────┬──────────────────────┤
 │   Q4/2025    │   Q1/2026    │   Q2/2026    │      Q3-Q4/2026      │
-│  Foundation  │  MVP + UX    │   Growth     │      Scale           │
+│  Foundation  │  MVP + Perf  │   Growth     │      Scale           │
 │      ✅      │      ✅      │     🔄       │        📋            │
 └──────────────┴──────────────┴──────────────┴──────────────────────┘
 ```
@@ -39,7 +39,7 @@
 
 ---
 
-## ✅ Fase 2: MVP (Q1/2026) - COMPLETA
+## ✅ Fase 2: MVP + Performance (Q1/2026) - COMPLETA
 
 ### Sprint 1: Core Features
 - [x] Enxoval do Bebê
@@ -75,6 +75,29 @@
 - [x] Legendas de gráficos otimizadas
 - [x] CSS utilities globais para responsividade
 
+### Pacote 7: IndexedDB & Offline Sync
+- [x] IndexedDBManager com stores cache/drafts
+- [x] 13 sync handlers registrados
+- [x] SyncQueueManager UI no header
+- [x] Cache com expiração automática
+
+### Pacote 8-9: Edge Functions + Database
+- [x] 9 Edge Functions migradas para error-handler
+- [x] 35+ índices de banco de dados
+- [x] Queries otimizadas
+
+### Pacote 10: QueryKeys Standardization
+- [x] 40+ QueryKeys padronizados
+- [x] 11 hooks migrados
+- [x] Cache config por categoria
+
+### Pacote 11: Auto-save System
+- [x] Hook `useAutoSave` genérico
+- [x] Componente `DraftIndicator`
+- [x] Auto-save no ItemDialog (Enxoval)
+- [x] Auto-save no CreatePostDialog (Comunidade)
+- [x] Auto-save no RegistroSono (Sono)
+
 ### Resultados
 | Métrica | Antes | Depois |
 |---------|-------|--------|
@@ -85,10 +108,47 @@
 | Error Monitoring | Nenhum | Sentry |
 | E2E Tests | 0 | 20+ specs |
 | Mobile UX | Básico | Otimizado |
+| DB Indexes | 15 | 35+ |
+| Edge Functions (error-handler) | 0 | 9/13 |
+| QueryKeys padronizados | 0 | 40+ |
+| Auto-save formulários | 0 | 3 forms |
 
 ---
 
 ## 🔄 Fase 3: Growth (Q2/2026) - EM PROGRESSO
+
+### Próximos Pacotes Planejados
+
+#### Pacote 12: Edge Functions (Finalização)
+| Item | Status | ETA |
+|------|--------|-----|
+| check-exchange-alerts | 📋 | Fev |
+| export-users-crm | 📋 | Fev |
+| notify-ticket-created | 📋 | Fev |
+| configure-auth-security | 📋 | Fev |
+
+#### Pacote 13: Segurança
+| Item | Status | ETA |
+|------|--------|-----|
+| RLS policies review | 📋 | Fev |
+| Leaked Password Protection | 📋 | Fev |
+| Auth config review | 📋 | Fev |
+
+#### Pacote 14: Query Standardization (Finalização)
+| Item | Status | ETA |
+|------|--------|-----|
+| useEnxovalItems | 📋 | Fev |
+| useDashboardBebe | 📋 | Fev |
+| useCrossModuleAnalytics | 📋 | Fev |
+| usePosts | 📋 | Fev |
+
+#### Pacote 15: Auto-save Extensão
+| Item | Status | ETA |
+|------|--------|-----|
+| RegistroMamada | 📋 | Mar |
+| ContractionDiary | 📋 | Mar |
+| TicketForm | 📋 | Mar |
+| ProfileSettings | 📋 | Mar |
 
 ### Prioridade Alta
 | Feature | Status | ETA |
@@ -110,7 +170,7 @@
 | Item | Status | ETA |
 |------|--------|-----|
 | Performance monitoring | 📋 Planejado | Abril |
-| Database optimization | 📋 Planejado | Abril |
+| Cleanup automático IndexedDB | 📋 Planejado | Abril |
 | Test coverage expansion | 📋 Planejado | Maio |
 
 ---
@@ -181,19 +241,20 @@ Utilizamos o framework **RICE** para priorização:
 | Performance mobile | Média | Médio | Testing contínuo |
 | Regulação de dados | Média | Alto | LGPD compliance |
 | Competição | Alta | Médio | Diferenciação por UX |
+| Perda de dados offline | Baixa | Alto | Auto-save + IndexedDB |
 
 ---
 
 ## Próximos Passos Imediatos
 
-### Semana 1-2 (Janeiro 2026)
-1. ~~Finalizar melhorias mobile~~ ✅
-2. ~~Atualizar documentação técnica~~ ✅
+### Semana 1-2 (Fevereiro 2026)
+1. Executar Pacote 12 (Edge Functions restantes)
+2. Executar Pacote 13 (Segurança)
 3. Revisar pendências críticas
 
-### Semana 3-4 (Janeiro 2026)
-1. Iniciar i18n
-2. Prototipar push notifications
+### Semana 3-4 (Fevereiro 2026)
+1. Executar Pacote 14 (QueryKeys restantes)
+2. Iniciar Pacote 15 (Auto-save extensão)
 3. Planejar sprint Q2
 
 ---
@@ -203,11 +264,12 @@ Utilizamos o framework **RICE** para priorização:
 - [README.md](README.md) - Setup e visão geral
 - [PRD.md](PRD.md) - Requisitos do produto
 - [PENDENCIAS.md](PENDENCIAS.md) - Lista de pendências
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura técnica
+- [ARCHITECTURE.md](ARCHITECTURE.md) - Arquitetura de componentes
+- [SYSTEM_DESIGN.md](SYSTEM_DESIGN.md) - **System Design detalhado**
 - [SPRINT_REVIEW.md](SPRINT_REVIEW.md) - Histórico de sprints
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Guia de contribuição
 
 ---
 
-*Roadmap atualizado em: Janeiro 2026 (Sprint 5)*  
+*Roadmap atualizado em: Janeiro 2026 (Pacote 11 - Auto-save)*  
 *Responsável: Product Team*
