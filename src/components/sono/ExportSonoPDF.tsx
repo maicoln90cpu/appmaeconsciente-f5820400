@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Share2, Mail } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { BabySleepLog } from "@/types/babySleep";
+import { usePDFExport, shareViaWhatsApp, shareViaEmail, downloadAsText } from "@/hooks/usePDFExport";
 import { useToast } from "@/hooks/useToast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -13,6 +14,7 @@ interface ExportSonoPDFProps {
 
 export const ExportSonoPDF = ({ sleepLogs, babyName }: ExportSonoPDFProps) => {
   const { toast } = useToast();
+  const { generatePDF, formatDate } = usePDFExport();
 
   const generateSummary = () => {
     const sortedLogs = [...sleepLogs].sort(
@@ -47,136 +49,56 @@ export const ExportSonoPDF = ({ sleepLogs, babyName }: ExportSonoPDFProps) => {
   };
 
   const downloadPDF = async () => {
-    const { default: jsPDF } = await import("jspdf");
-    
-    const doc = new jsPDF();
-    let yPosition = 20;
+    const sortedLogs = [...sleepLogs]
+      .sort((a, b) => new Date(b.sleep_start).getTime() - new Date(a.sleep_start).getTime())
+      .slice(0, 30);
 
-    // Título
-    doc.setFontSize(20);
-    doc.text(`Diário de Sono${babyName ? ` - ${babyName}` : ''}`, 20, yPosition);
-    yPosition += 10;
-
-    doc.setFontSize(10);
-    doc.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, 20, yPosition);
-    yPosition += 15;
-
-    // Logs
-    const sortedLogs = [...sleepLogs].sort(
-      (a, b) => new Date(b.sleep_start).getTime() - new Date(a.sleep_start).getTime()
-    );
-
-    const last30Days = sortedLogs.slice(0, 30);
-
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text("Registros de Sono", 20, yPosition);
-    yPosition += 8;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-
-    last30Days.forEach((log) => {
-      if (yPosition > 270) {
-        doc.addPage();
-        yPosition = 20;
-      }
-
-      const date = format(new Date(log.sleep_start), "dd/MM/yyyy", { locale: ptBR });
-      const startTime = format(new Date(log.sleep_start), "HH:mm", { locale: ptBR });
-      const endTime = log.sleep_end ? format(new Date(log.sleep_end), "HH:mm", { locale: ptBR }) : "Em andamento";
-      const duration = log.duration_minutes ? `${Math.floor(log.duration_minutes / 60)}h${log.duration_minutes % 60}m` : "—";
-      const type = log.sleep_type === 'diurno' ? 'Diurno' : 'Noturno';
-
-      doc.setFont("helvetica", "bold");
-      doc.text(`${date} - ${type}`, 20, yPosition);
-      yPosition += 5;
-
-      doc.setFont("helvetica", "normal");
-      doc.text(`  Horário: ${startTime} - ${endTime} (${duration})`, 20, yPosition);
-      yPosition += 4;
-
-      if (log.location) {
-        doc.text(`  Local: ${log.location}`, 20, yPosition);
-        yPosition += 4;
-      }
-
-      if (log.wakeup_mood) {
-        doc.text(`  Humor ao acordar: ${log.wakeup_mood}`, 20, yPosition);
-        yPosition += 4;
-      }
-
-      if (log.notes) {
-        doc.setFontSize(8);
-        doc.text(`  Observações: ${log.notes}`, 20, yPosition);
-        doc.setFontSize(9);
-        yPosition += 4;
-      }
-
-      yPosition += 3;
-    });
-
-    // Estatísticas
-    if (yPosition > 240) {
-      doc.addPage();
-      yPosition = 20;
-    }
-
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("Estatísticas", 20, yPosition);
-    yPosition += 8;
-
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
     const totalHours = sleepLogs.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) / 60;
-    doc.text(`Total de sono registrado: ${Math.round(totalHours * 10) / 10}h`, 20, yPosition);
-    yPosition += 5;
-    doc.text(`Total de registros: ${sleepLogs.length}`, 20, yPosition);
 
-    doc.save(`diario-sono-${babyName || 'bebe'}-${format(new Date(), "dd-MM-yyyy")}.pdf`);
-
-    toast({
-      title: "PDF gerado com sucesso!",
-      description: "Seu diário de sono foi baixado.",
+    await generatePDF({
+      title: `Diário de Sono${babyName ? ` - ${babyName}` : ''}`,
+      filename: `diario-sono-${babyName || 'bebe'}`,
+      sections: [
+        {
+          title: "Registros de Sono",
+          type: "table",
+          tableHead: ["Data", "Tipo", "Horário", "Duração", "Local"],
+          tableBody: sortedLogs.map((log) => [
+            formatDate(log.sleep_start),
+            log.sleep_type === 'diurno' ? 'Diurno' : 'Noturno',
+            `${format(new Date(log.sleep_start), "HH:mm")} - ${log.sleep_end ? format(new Date(log.sleep_end), "HH:mm") : "—"}`,
+            log.duration_minutes ? `${Math.floor(log.duration_minutes / 60)}h${log.duration_minutes % 60}m` : "—",
+            log.location || "—",
+          ]),
+          tableColor: [147, 51, 234],
+        },
+        {
+          title: "Estatísticas",
+          type: "stats",
+          content: [
+            `Total de sono registrado: ${Math.round(totalHours * 10) / 10}h`,
+            `Total de registros: ${sleepLogs.length}`,
+          ],
+        },
+      ],
+      footer: "Página {page} de {pages} - Gerado pelo MÃE CONSCIENTE",
     });
   };
 
   const downloadTxt = () => {
     const summary = generateSummary();
-    const blob = new Blob([summary], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `diario-sono-${babyName || 'bebe'}-${format(new Date(), "dd-MM-yyyy")}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    toast({
-      title: "Arquivo baixado!",
-      description: "Seu resumo foi salvo como TXT.",
-    });
+    downloadAsText(summary, `diario-sono-${babyName || 'bebe'}-${format(new Date(), "dd-MM-yyyy")}.txt`);
+    toast({ title: "Arquivo baixado!", description: "Seu resumo foi salvo como TXT." });
   };
 
-  const shareViaWhatsApp = () => {
-    const summary = generateSummary();
-    const url = `https://wa.me/?text=${encodeURIComponent(summary)}`;
-    window.open(url, '_blank');
-    toast({
-      title: "Compartilhando via WhatsApp",
-    });
+  const handleShareWhatsApp = () => {
+    shareViaWhatsApp(generateSummary());
+    toast({ title: "Compartilhando via WhatsApp" });
   };
 
-  const shareViaEmail = () => {
-    const summary = generateSummary();
-    const subject = `Diário de Sono${babyName ? ` - ${babyName}` : ''}`;
-    const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(summary)}`;
-    window.location.href = url;
-    toast({
-      title: "Abrindo email...",
-    });
+  const handleShareEmail = () => {
+    shareViaEmail(`Diário de Sono${babyName ? ` - ${babyName}` : ''}`, generateSummary());
+    toast({ title: "Abrindo email..." });
   };
 
   return (
@@ -208,11 +130,11 @@ export const ExportSonoPDF = ({ sleepLogs, babyName }: ExportSonoPDFProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem onClick={shareViaWhatsApp}>
+          <DropdownMenuItem onClick={handleShareWhatsApp}>
             <Share2 className="h-4 w-4 mr-2 text-green-600" />
             Via WhatsApp
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={shareViaEmail}>
+          <DropdownMenuItem onClick={handleShareEmail}>
             <Mail className="h-4 w-4 mr-2 text-blue-600" />
             Via Email
           </DropdownMenuItem>

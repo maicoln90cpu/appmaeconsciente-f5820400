@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Mail } from "lucide-react";
+import { usePDFExport, shareViaWhatsApp, shareViaEmail } from "@/hooks/usePDFExport";
 import { useToast } from "@/hooks/useToast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
@@ -28,10 +29,10 @@ export const ExportPDF = ({
   deliveryType,
 }: ExportPDFProps) => {
   const { toast } = useToast();
+  const { loadJsPDF } = usePDFExport();
 
   const generatePDF = async () => {
-    const { default: jsPDF } = await import("jspdf");
-    
+    const jsPDF = await loadJsPDF();
     const doc = new jsPDF();
     let yPosition = 20;
 
@@ -81,13 +82,11 @@ export const ExportPDF = ({
           doc.setFont("helvetica", "normal");
         }
 
-        // Checkbox
         doc.rect(25, yPosition - 3, 3, 3);
         if (item.checked) {
           doc.text("✓", 25.5, yPosition);
         }
 
-        // Item name
         let itemText = `  ${item.name}`;
         if (item.quantity) {
           itemText += ` (${item.quantity})`;
@@ -112,7 +111,7 @@ export const ExportPDF = ({
     addSection("👶 Mala do Bebê", babyItems);
     addSection("👤 Mala do Acompanhante", companionItems);
 
-    // Dicas no final
+    // Dicas
     if (yPosition > 240) {
       doc.addPage();
       yPosition = 20;
@@ -155,23 +154,14 @@ export const ExportPDF = ({
     return `Estou preparando minha mala da maternidade! 🎒\n\nProgresso: ${checkedItems}/${totalItems} itens prontos (${Math.round((checkedItems / totalItems) * 100)}%)\n\n👩 Mala da Mãe: ${motherItems.filter(i => i.checked).length}/${motherItems.length}\n👶 Mala do Bebê: ${babyItems.filter(i => i.checked).length}/${babyItems.length}\n👤 Mala do Acompanhante: ${companionItems.filter(i => i.checked).length}/${companionItems.length}`;
   };
 
-  const shareViaWhatsApp = () => {
-    const text = getShareText();
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
-    toast({
-      title: "Compartilhando via WhatsApp",
-    });
+  const handleShareWhatsApp = () => {
+    shareViaWhatsApp(getShareText());
+    toast({ title: "Compartilhando via WhatsApp" });
   };
 
-  const shareViaEmail = () => {
-    const text = getShareText();
-    const subject = "Meu Checklist de Mala da Maternidade";
-    const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(text)}`;
-    window.location.href = url;
-    toast({
-      title: "Abrindo email...",
-    });
+  const handleShareEmail = () => {
+    shareViaEmail("Meu Checklist de Mala da Maternidade", getShareText());
+    toast({ title: "Abrindo email..." });
   };
 
   const shareGeneric = async () => {
@@ -179,23 +169,14 @@ export const ExportPDF = ({
     
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: "Checklist de Mala da Maternidade",
-          text: text,
-        });
-        toast({
-          title: "Compartilhado com sucesso!",
-        });
-      } catch (error) {
-        // Usuário cancelou
+        await navigator.share({ title: "Checklist de Mala da Maternidade", text });
+        toast({ title: "Compartilhado com sucesso!" });
+      } catch {
+        // User cancelled
       }
     } else {
-      // Fallback: copiar para clipboard
       navigator.clipboard.writeText(text);
-      toast({
-        title: "Copiado para a área de transferência!",
-        description: "Cole onde quiser compartilhar.",
-      });
+      toast({ title: "Copiado para a área de transferência!", description: "Cole onde quiser compartilhar." });
     }
   };
 
@@ -214,11 +195,11 @@ export const ExportPDF = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
-          <DropdownMenuItem onClick={shareViaWhatsApp}>
+          <DropdownMenuItem onClick={handleShareWhatsApp}>
             <Share2 className="h-4 w-4 mr-2 text-green-600" />
             Compartilhar via WhatsApp
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={shareViaEmail}>
+          <DropdownMenuItem onClick={handleShareEmail}>
             <Mail className="h-4 w-4 mr-2 text-blue-600" />
             Compartilhar via Email
           </DropdownMenuItem>
