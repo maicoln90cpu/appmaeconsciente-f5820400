@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
+import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
 import { analytics } from "@/lib/analytics";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface Ticket {
   id: string;
@@ -57,43 +59,37 @@ const ticketSchema = z.object({
 export type TicketFormData = z.infer<typeof ticketSchema>;
 
 export const useTickets = () => {
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  const loadTickets = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+  const queryKey = QueryKeys.tickets(user?.id ?? '');
+
+  const { data: tickets = [], isLoading: loading, refetch } = useQuery({
+    queryKey,
+    queryFn: async (): Promise<Ticket[]> => {
+      if (!user) return [];
 
       const { data, error } = await supabase
         .from("support_tickets")
         .select("id, user_id, name, email, subject, message, status, priority, created_at, updated_at")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading tickets:", error);
+        throw error;
+      }
 
-      setTickets((data || []) as Ticket[]);
-    } catch (error) {
-      console.error("Error loading tickets:", error);
-      toast({
-        title: "Erro ao carregar tickets",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+      return (data || []) as Ticket[];
+    },
+    enabled: !!user,
+    staleTime: QueryCacheConfig.realtime.staleTime,
+    gcTime: QueryCacheConfig.realtime.gcTime,
+  });
 
-  const createTicket = async (formData: TicketFormData) => {
-    try {
+  const createTicketMutation = useMutation({
+    mutationFn: async (formData: TicketFormData) => {
       // Rate limiting: verificar se usuário criou ticket recentemente
-      const { data: { user } } = await supabase.auth.getUser();
-      
       if (user) {
         const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
         const { count } = await supabase
@@ -103,12 +99,7 @@ export const useTickets = () => {
           .gte("created_at", fiveMinutesAgo);
 
         if (count && count >= 3) {
-          toast({
-            title: "Aguarde um momento",
-            description: "Você atingiu o limite de 3 tickets em 5 minutos. Tente novamente mais tarde.",
-            variant: "destructive",
-          });
-          return { success: false };
+          throw new Error("RATE_LIMIT");
         }
       }
 
@@ -136,12 +127,24 @@ export const useTickets = () => {
       });
 
       analytics.ticketCreated(data.id);
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
       toast({ title: "Ticket criado com sucesso!" });
-      await loadTickets();
-      
-      return { success: true };
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Error creating ticket:", error);
+      
+      if (error.message === "RATE_LIMIT") {
+        toast({
+          title: "Aguarde um momento",
+          description: "Você atingiu o limite de 3 tickets em 5 minutos. Tente novamente mais tarde.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       if (error instanceof z.ZodError) {
         toast({
           title: "Erro de validação",
@@ -154,13 +157,11 @@ export const useTickets = () => {
           variant: "destructive",
         });
       }
-      return { success: false };
-    }
-  };
+    },
+  });
 
-  const addMessage = async (ticketId: string, message: string) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
+  const addMessageMutation = useMutation({
+    mutationFn: async ({ ticketId, message }: { ticketId: string; message: string }) => {
       if (!user) throw new Error("Not authenticated");
 
       const { error } = await supabase.from("ticket_messages").insert({
@@ -171,26 +172,37 @@ export const useTickets = () => {
       });
 
       if (error) throw error;
-
+    },
+    onSuccess: () => {
       toast({ title: "Mensagem enviada!" });
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error("Error adding message:", error);
       toast({
         title: "Erro ao enviar mensagem",
         variant: "destructive",
       });
+    },
+  });
+
+  const createTicket = async (formData: TicketFormData) => {
+    try {
+      await createTicketMutation.mutateAsync(formData);
+      return { success: true };
+    } catch {
+      return { success: false };
     }
   };
 
-  useEffect(() => {
-    loadTickets();
-  }, []);
+  const addMessage = async (ticketId: string, message: string) => {
+    await addMessageMutation.mutateAsync({ ticketId, message });
+  };
 
   return {
     tickets,
     loading,
     createTicket,
     addMessage,
-    reloadTickets: loadTickets,
+    reloadTickets: refetch,
   };
 };

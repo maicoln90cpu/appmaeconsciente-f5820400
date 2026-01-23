@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { format, subDays, eachDayOfInterval } from "date-fns";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface DailyActivity {
   activity_date: string;
@@ -39,9 +40,11 @@ export const useDailyActivity = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
+  const queryKey = QueryKeys.dailyActivity(user?.id ?? '');
+
   // Buscar atividade diária (últimos 90 dias para calendário)
   const { data: dailyActivity = [], isLoading } = useQuery({
-    queryKey: ['daily-activity', user?.id],
+    queryKey,
     queryFn: async () => {
       if (!user) return [];
       
@@ -58,6 +61,8 @@ export const useDailyActivity = () => {
       return data as DailyActivity[];
     },
     enabled: !!user,
+    staleTime: QueryCacheConfig.stats.staleTime,
+    gcTime: QueryCacheConfig.stats.gcTime,
   });
 
   // Gerar dados para o calendário de atividade (memoizado)
@@ -132,7 +137,7 @@ export const useDailyActivity = () => {
         }, { onConflict: 'user_id,activity_date' });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['daily-activity'] });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 
