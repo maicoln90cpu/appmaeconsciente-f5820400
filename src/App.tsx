@@ -74,18 +74,35 @@ const ScrollToTop = () => {
 };
 
 const App = () => {
-  // QueryClient como estado para evitar recriação em re-renders
-  const [queryClient] = useState(() => new QueryClient({
-    defaultOptions: {
-      queries: {
-        // Otimizações de cache
-        staleTime: 1000 * 60 * 5, // 5 minutos
-        gcTime: 1000 * 60 * 30, // 30 minutos (antigo cacheTime)
-        refetchOnWindowFocus: false,
-        retry: 1,
+  // QueryClient com configuração centralizada
+  const [queryClient] = useState(() => {
+    // Importação dinâmica lazy para não bloquear
+    import('@/lib/query-config').then(({ defaultQueryClientConfig }) => {
+      queryClient.setDefaultOptions(defaultQueryClientConfig.defaultOptions);
+    });
+    
+    return new QueryClient({
+      defaultOptions: {
+        queries: {
+          // Configuração inicial (será sobrescrita após load)
+          staleTime: 1000 * 60 * 5, // 5 minutos
+          gcTime: 1000 * 60 * 30, // 30 minutos
+          refetchOnWindowFocus: false,
+          refetchOnReconnect: true,
+          retry: (failureCount, error) => {
+            // Não retry em erros de autenticação
+            if (error instanceof Error && error.message.includes('401')) {
+              return false;
+            }
+            return failureCount < 2;
+          },
+        },
+        mutations: {
+          retry: 1,
+        },
       },
-    },
-  }));
+    });
+  });
 
   return (
     <QueryClientProvider client={queryClient}>
