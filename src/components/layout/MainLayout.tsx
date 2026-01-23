@@ -30,7 +30,7 @@ import {
 
 import { NotificationBell } from "@/components/NotificationBell";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { OfflineBanner } from "@/components/offline";
+import { OfflineBanner, SyncQueueManager } from "@/components/offline";
 
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/useToast";
@@ -126,7 +126,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <SyncQueueManager className="hidden sm:flex" />
             <ThemeToggle />
             <NotificationBell />
 
