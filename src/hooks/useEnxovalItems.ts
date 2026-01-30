@@ -20,6 +20,7 @@ import {
 } from "@/lib/calculations";
 import { useAuth } from "@/contexts/AuthContext";
 import logger from "@/lib/logger";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 /** Quantidade de itens carregados por página */
 const ITEMS_PER_PAGE = 50;
@@ -99,6 +100,9 @@ export const useEnxovalItems = (config: Config | null) => {
     };
   }, [config]);
 
+  // Query key centralizada
+  const queryKey = user ? QueryKeys.enxovalItems(user.id, config?.id) : ['enxoval-items'];
+
   // Query infinita para paginação
   const {
     data,
@@ -108,7 +112,7 @@ export const useEnxovalItems = (config: Config | null) => {
     fetchNextPage,
     refetch
   } = useInfiniteQuery({
-    queryKey: ['enxoval-items', user?.id, config?.id],
+    queryKey,
     queryFn: async ({ pageParam = 0 }) => {
       if (!user) return { items: [], nextPage: null };
 
@@ -135,7 +139,7 @@ export const useEnxovalItems = (config: Config | null) => {
     getNextPageParam: (lastPage) => lastPage.nextPage,
     enabled: !!user && !!config,
     initialPageParam: 0,
-    staleTime: 1000 * 60 * 5 // 5 minutes
+    ...QueryCacheConfig.list, // Cache de lista padronizado
   });
 
   // Flatten dos items paginados
@@ -186,7 +190,7 @@ export const useEnxovalItems = (config: Config | null) => {
       return newItem;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['enxoval-items'] });
+      queryClient.invalidateQueries({ queryKey });
       toast.success("Item adicionado com sucesso!");
     },
     onError: (error) => {
@@ -234,13 +238,13 @@ export const useEnxovalItems = (config: Config | null) => {
     },
     onMutate: async (updatedItem) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['enxoval-items'] });
+      await queryClient.cancelQueries({ queryKey });
 
       // Snapshot the previous value
-      const previousData = queryClient.getQueryData(['enxoval-items', user?.id, config?.id]);
+      const previousData = queryClient.getQueryData(queryKey);
 
       // Optimistically update to the new value
-      queryClient.setQueryData(['enxoval-items', user?.id, config?.id], (old: any) => {
+      queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -274,7 +278,7 @@ export const useEnxovalItems = (config: Config | null) => {
     onError: (error, _, context) => {
       // Rollback on error
       if (context?.previousData) {
-        queryClient.setQueryData(['enxoval-items', user?.id, config?.id], context.previousData);
+        queryClient.setQueryData(queryKey, context.previousData);
       }
       logger.error("Erro ao atualizar item", error, { context: 'useEnxovalItems' });
       toast.error("Não foi possível atualizar o item.");
@@ -283,7 +287,7 @@ export const useEnxovalItems = (config: Config | null) => {
       toast.success("Item atualizado com sucesso!");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['enxoval-items'] });
+      queryClient.invalidateQueries({ queryKey });
     }
   });
 
@@ -295,12 +299,12 @@ export const useEnxovalItems = (config: Config | null) => {
       return id;
     },
     onMutate: async (deletedId) => {
-      await queryClient.cancelQueries({ queryKey: ['enxoval-items'] });
+      await queryClient.cancelQueries({ queryKey });
 
-      const previousData = queryClient.getQueryData(['enxoval-items', user?.id, config?.id]);
+      const previousData = queryClient.getQueryData(queryKey);
 
       // Optimistically remove the item
-      queryClient.setQueryData(['enxoval-items', user?.id, config?.id], (old: any) => {
+      queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old;
         return {
           ...old,
@@ -315,7 +319,7 @@ export const useEnxovalItems = (config: Config | null) => {
     },
     onError: (error, _, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(['enxoval-items', user?.id, config?.id], context.previousData);
+        queryClient.setQueryData(queryKey, context.previousData);
       }
       logger.error("Erro ao remover item", error, { context: 'useEnxovalItems' });
       toast.error("Não foi possível remover o item.");
@@ -324,7 +328,7 @@ export const useEnxovalItems = (config: Config | null) => {
       toast.success("Item removido com sucesso!");
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['enxoval-items'] });
+      queryClient.invalidateQueries({ queryKey });
     }
   });
 
