@@ -1,6 +1,15 @@
-import { useState, useEffect, useCallback } from 'react';
+/**
+ * @fileoverview Hook para gerenciamento de marcos de desenvolvimento
+ * @module hooks/useDevelopmentMilestones
+ * 
+ * Provê dados de marcos com React Query e cache otimizado
+ */
+
+import { useCallback, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/useToast';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   DevelopmentMilestoneType, 
   BabyMilestoneRecord, 
@@ -8,13 +17,12 @@ import {
   DevelopmentSummary 
 } from '@/types/development';
 import { differenceInMonths } from 'date-fns';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
 
 export const useDevelopmentMilestones = (babyProfileId: string | null) => {
-  const [milestoneTypes, setMilestoneTypes] = useState<DevelopmentMilestoneType[]>([]);
-  const [records, setRecords] = useState<BabyMilestoneRecord[]>([]);
-  const [summary, setSummary] = useState<DevelopmentSummary | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const calculateAge = (birthDate: string): number => {
     return differenceInMonths(new Date(), new Date(birthDate));
@@ -30,78 +38,63 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     return 'pending';
   }, []);
 
-  const loadData = useCallback(async () => {
-    if (!babyProfileId) {
-      setLoading(false);
-      return;
-    }
+  // Query para tipos de marcos (dados estáticos)
+  const { data: milestoneTypes = [], isLoading: typesLoading } = useQuery({
+    queryKey: QueryKeys.milestoneTypes(),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('development_milestone_types')
+        .select('*')
+        .eq('is_active', true)
+        .order('age_min_months', { ascending: true });
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({
-          title: "Erro de autenticação",
-          description: "Você precisa estar logado para acessar os marcos de desenvolvimento.",
-          variant: "destructive",
-        });
-        setLoading(false);
-        return;
-      }
+      if (error) throw error;
+      return (data || []) as DevelopmentMilestoneType[];
+    },
+    ...QueryCacheConfig.static, // Cache estático (24h)
+  });
 
-      // Load baby profile to get age
+  // Query para registros do bebê
+  const { 
+    data: queryData, 
+    isLoading: recordsLoading,
+    refetch: refetchRecords
+  } = useQuery({
+    queryKey: babyProfileId ? QueryKeys.milestoneRecords(babyProfileId) : ['milestone-records'],
+    queryFn: async () => {
+      if (!babyProfileId || !user) return { records: [], summary: null, babyAgeMonths: 0 };
+
+      // Carregar perfil do bebê
       const { data: profile } = await supabase
         .from('baby_vaccination_profiles')
         .select('*')
         .eq('id', babyProfileId)
         .single();
 
-      if (!profile) {
-        setLoading(false);
-        return;
-      }
+      if (!profile) return { records: [], summary: null, babyAgeMonths: 0 };
 
       const babyAgeMonths = calculateAge(profile.birth_date);
 
-      // Load milestone types
-      const { data: types, error: typesError } = await supabase
-        .from('development_milestone_types')
-        .select('*')
-        .eq('is_active', true)
-        .order('age_min_months', { ascending: true });
-
-      if (typesError) throw typesError;
-      setMilestoneTypes((types || []) as DevelopmentMilestoneType[]);
-
-      // Load existing records
-      const { data: existingRecords, error: recordsError } = await supabase
+      // Carregar registros existentes
+      const { data: existingRecords, error } = await supabase
         .from('baby_milestone_records')
         .select('*')
         .eq('baby_profile_id', babyProfileId);
 
-      if (recordsError) throw recordsError;
-      
+      if (error) throw error;
+
       const typedRecords = (existingRecords || []) as BabyMilestoneRecord[];
+      const recordsMap = new Map(typedRecords.map(r => [r.milestone_type_id, r]));
 
-      // Create records map for quick lookup
-      const recordsMap = new Map(
-        typedRecords.map(r => [r.milestone_type_id, r])
-      );
-
-      // Calculate status for all milestones and merge with records
-      const enrichedRecords: BabyMilestoneRecord[] = (types || []).map(milestone => {
-        const typedMilestone = milestone as DevelopmentMilestoneType;
+      // Enriquecer registros com status calculado
+      const enrichedRecords: BabyMilestoneRecord[] = milestoneTypes.map(milestone => {
         const existingRecord = recordsMap.get(milestone.id);
-        const status = calculateStatus(typedMilestone, babyAgeMonths, existingRecord || null);
+        const status = calculateStatus(milestone, babyAgeMonths, existingRecord || null);
 
         if (existingRecord) {
-          return {
-            ...existingRecord,
-            status,
-            milestone: typedMilestone
-          };
+          return { ...existingRecord, status, milestone };
         }
 
-        // Create virtual record for display
         return {
           id: '',
           user_id: user.id,
@@ -115,13 +108,11 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
           marked_as_achieved_at: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          milestone: typedMilestone
+          milestone
         };
       });
 
-      setRecords(enrichedRecords);
-
-      // Calculate summary
+      // Calcular resumo
       const summaryData: DevelopmentSummary = {
         baby_profile_id: babyProfileId,
         baby_name: profile.baby_name,
@@ -148,11 +139,11 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
 
         if (isExpected) {
           const totalKey = `${area}_total`;
-          summaryData[totalKey] = ((summaryData as any)[totalKey] || 0) + 1;
+          (summaryData as any)[totalKey] = ((summaryData as any)[totalKey] || 0) + 1;
 
           if (record.status === 'achieved') {
             const achievedKey = `${area}_achieved`;
-            summaryData[achievedKey] = ((summaryData as any)[achievedKey] || 0) + 1;
+            (summaryData as any)[achievedKey] = ((summaryData as any)[achievedKey] || 0) + 1;
 
             if (record.achieved_date) {
               if (!summaryData.last_milestone_date || 
@@ -168,29 +159,27 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
         }
       });
 
-      setSummary(summaryData);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error loading development data:', error);
-      toast({
-        title: "Erro ao carregar dados",
-        description: "Não foi possível carregar os marcos de desenvolvimento.",
-        variant: "destructive",
-      });
-      setLoading(false);
-    }
-  }, [babyProfileId, calculateStatus, toast]);
+      return { records: enrichedRecords, summary: summaryData, babyAgeMonths };
+    },
+    enabled: !!babyProfileId && !!user && milestoneTypes.length > 0,
+    ...QueryCacheConfig.user, // Cache de usuário (5min)
+  });
 
-  const markAsAchieved = async (
-    milestoneTypeId: string, 
-    achievedDate: Date, 
-    notes?: string
-  ) => {
-    if (!babyProfileId) return;
+  const records = queryData?.records ?? [];
+  const summary = queryData?.summary ?? null;
 
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+  // Mutation para marcar como alcançado
+  const markMutation = useMutation({
+    mutationFn: async ({ 
+      milestoneTypeId, 
+      achievedDate, 
+      notes 
+    }: { 
+      milestoneTypeId: string; 
+      achievedDate: Date; 
+      notes?: string;
+    }) => {
+      if (!babyProfileId || !user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('baby_milestone_records')
@@ -209,46 +198,48 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
         .single();
 
       if (error) throw error;
-
-      toast({
-        title: "Marco registrado!",
-        description: "A conquista foi salva com sucesso.",
-      });
-
-      await loadData();
-    } catch (error) {
+      return data;
+    },
+    onSuccess: () => {
+      toast({ title: "Marco registrado!", description: "A conquista foi salva com sucesso." });
+      if (babyProfileId) {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.milestoneRecords(babyProfileId) });
+      }
+    },
+    onError: (error) => {
       console.error('Error marking milestone:', error);
-      toast({
-        title: "Erro ao salvar",
-        description: "Não foi possível registrar o marco.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro ao salvar", description: "Não foi possível registrar o marco.", variant: "destructive" });
     }
-  };
+  });
 
-  const updateRecord = async (recordId: string, updates: Partial<BabyMilestoneRecord>) => {
-    try {
+  // Mutation para atualizar registro
+  const updateMutation = useMutation({
+    mutationFn: async ({ recordId, updates }: { recordId: string; updates: Partial<BabyMilestoneRecord> }) => {
       const { error } = await supabase
         .from('baby_milestone_records')
         .update(updates)
         .eq('id', recordId);
 
       if (error) throw error;
-
-      toast({
-        title: "Atualizado!",
-        description: "O marco foi atualizado com sucesso.",
-      });
-
-      await loadData();
-    } catch (error) {
+    },
+    onSuccess: () => {
+      toast({ title: "Atualizado!", description: "O marco foi atualizado com sucesso." });
+      if (babyProfileId) {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.milestoneRecords(babyProfileId) });
+      }
+    },
+    onError: (error) => {
       console.error('Error updating record:', error);
-      toast({
-        title: "Erro ao atualizar",
-        description: "Não foi possível atualizar o marco.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro ao atualizar", description: "Não foi possível atualizar o marco.", variant: "destructive" });
     }
+  });
+
+  const markAsAchieved = async (milestoneTypeId: string, achievedDate: Date, notes?: string): Promise<void> => {
+    await markMutation.mutateAsync({ milestoneTypeId, achievedDate, notes });
+  };
+
+  const updateRecord = async (recordId: string, updates: Partial<BabyMilestoneRecord>) => {
+    return updateMutation.mutateAsync({ recordId, updates });
   };
 
   const getMilestonesByArea = useCallback((area: string) => {
@@ -266,16 +257,14 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     return records.filter(r => r.status === 'attention');
   }, [records]);
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const loading = typesLoading || recordsLoading;
 
   return {
     milestoneTypes,
     records,
     summary,
     loading,
-    loadData,
+    loadData: refetchRecords,
     markAsAchieved,
     updateRecord,
     getMilestonesByArea,

@@ -1,10 +1,11 @@
 /**
  * @fileoverview Hook para gerenciar medições de crescimento do bebê
- * Migrado para usar createSupabaseCRUD
+ * Migrado para usar createSupabaseCRUD com QueryKeys centralizados
  */
 
 import { useMemo } from "react";
 import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 import type { Database } from "@/integrations/supabase/types";
 
 type GrowthMeasurementRow = Database['public']['Tables']['growth_measurements']['Row'];
@@ -94,10 +95,10 @@ export const WHO_HEIGHT_GIRLS = [
   { month: 24, p3: 80.0, p15: 83.2, p50: 86.4, p85: 89.6, p97: 92.9 },
 ];
 
-// Base hook using factory
+// Base hook using factory com QueryKeys centralizados
 const useGrowthBase = createSupabaseCRUD<GrowthMeasurementRow, GrowthMeasurementInsert>({
   tableName: 'growth_measurements',
-  queryKey: ['growth-measurements'],
+  queryKey: QueryKeys.growthMeasurements(),
   orderBy: 'measurement_date',
   orderDirection: 'asc',
   messages: {

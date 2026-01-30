@@ -1,10 +1,19 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+/**
+ * @fileoverview Hook para gerenciamento de posts da comunidade
+ * @module hooks/usePosts
+ * 
+ * Provê operações CRUD com React Query e realtime updates
+ */
+
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/lib/analytics";
 import logger from "@/lib/logger";
 import { createMultiTableSubscription } from "@/lib/realtime-utils";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface Post {
   id: string;
@@ -25,34 +34,32 @@ export interface Post {
 const POSTS_PER_PAGE = 20;
 
 export const usePosts = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(0);
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Cache de profiles para evitar refetch
+  // Cache de profiles
   const [profileCache, setProfileCache] = useState<Map<string, { email: string; foto_perfil_url: string | null }>>(new Map());
 
-  const loadPosts = useCallback(async (pageNum: number = 0, append: boolean = false) => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+  // Query key centralizada
+  const postsQueryKey = QueryKeys.posts();
 
-    if (pageNum > 0) {
-      setLoadingMore(true);
-    } else {
-      setLoading(true);
-    }
+  // Infinite Query para posts paginados
+  const {
+    data,
+    isLoading: loading,
+    isFetchingNextPage: loadingMore,
+    hasNextPage: hasMore,
+    fetchNextPage,
+    refetch
+  } = useInfiniteQuery({
+    queryKey: postsQueryKey,
+    queryFn: async ({ pageParam = 0 }) => {
+      if (!user) return { posts: [], nextPage: null };
 
-    try {
-      const from = pageNum * POSTS_PER_PAGE;
+      const from = pageParam * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
 
-      // Fetch posts with pagination
       const { data: postsData, error: postsError } = await supabase
         .from("posts")
         .select(`
@@ -69,52 +76,32 @@ export const usePosts = () => {
         .range(from, to);
 
       if (postsError) throw postsError;
-      
-      // Check if there are more posts
-      setHasMore((postsData?.length || 0) === POSTS_PER_PAGE);
 
       if (!postsData || postsData.length === 0) {
-        if (!append) setPosts([]);
-        return;
+        return { posts: [], nextPage: null };
       }
 
-      // Get all unique user IDs
       const userIds = [...new Set(postsData.map(p => p.user_id))];
       const postIds = postsData.map(p => p.id);
 
-      // Parallel fetch profiles, likes, and comments using Promise.all
       const [profilesResult, likesResult, commentsResult] = await Promise.all([
-        supabase
-          .from("profiles")
-          .select("id, email, foto_perfil_url")
-          .in("id", userIds),
-        supabase
-          .from("post_likes")
-          .select("post_id, user_id")
-          .in("post_id", postIds),
-        supabase
-          .from("post_comments")
-          .select("post_id")
-          .in("post_id", postIds),
+        supabase.from("profiles").select("id, email, foto_perfil_url").in("id", userIds),
+        supabase.from("post_likes").select("post_id, user_id").in("post_id", postIds),
+        supabase.from("post_comments").select("post_id").in("post_id", postIds),
       ]);
 
-      const profiles = profilesResult.data;
-      const allLikes = likesResult.data;
-      const allComments = commentsResult.data;
-
-      // Atualizar cache de profiles
+      // Update profile cache
       const newProfileCache = new Map(profileCache);
-      profiles?.forEach(p => {
+      profilesResult.data?.forEach(p => {
         newProfileCache.set(p.id, { email: p.email, foto_perfil_url: p.foto_perfil_url });
       });
       setProfileCache(newProfileCache);
 
-      // Create lookup maps for O(1) access
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const profileMap = new Map(profilesResult.data?.map(p => [p.id, p]) || []);
       const likesCountMap = new Map<string, number>();
       const userLikesSet = new Set<string>();
 
-      allLikes?.forEach(like => {
+      likesResult.data?.forEach(like => {
         likesCountMap.set(like.post_id, (likesCountMap.get(like.post_id) || 0) + 1);
         if (like.user_id === user.id) {
           userLikesSet.add(like.post_id);
@@ -122,12 +109,11 @@ export const usePosts = () => {
       });
 
       const commentsCountMap = new Map<string, number>();
-      allComments?.forEach(comment => {
+      commentsResult.data?.forEach(comment => {
         commentsCountMap.set(comment.post_id, (commentsCountMap.get(comment.post_id) || 0) + 1);
       });
 
-      // Enrich posts using lookup maps
-      const enrichedPosts = postsData.map(post => {
+      const enrichedPosts: Post[] = postsData.map(post => {
         const profile = profileMap.get(post.user_id);
         return {
           ...post,
@@ -139,60 +125,73 @@ export const usePosts = () => {
         };
       });
 
-      if (append) {
-        setPosts(prev => [...prev, ...enrichedPosts]);
-      } else {
-        setPosts(enrichedPosts);
-      }
-      setPage(pageNum);
-    } catch (error) {
-      logger.error("Error loading posts", error);
-      toast({
-        title: "Erro ao carregar posts",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-      setLoadingMore(false);
-    }
-  }, [user, toast, profileCache]);
+      return {
+        posts: enrichedPosts,
+        nextPage: postsData.length === POSTS_PER_PAGE ? pageParam + 1 : null
+      };
+    },
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    enabled: !!user,
+    initialPageParam: 0,
+    ...QueryCacheConfig.dynamic,
+  });
 
-  // Load more posts (infinite scroll)
+  // Flatten posts
+  const posts = useMemo(() => 
+    data?.pages.flatMap(page => page.posts) ?? [],
+    [data]
+  );
+
+  // Load more
   const loadMore = useCallback(() => {
     if (!loadingMore && hasMore) {
-      loadPosts(page + 1, true);
+      fetchNextPage();
     }
-  }, [loadingMore, hasMore, page, loadPosts]);
+  }, [loadingMore, hasMore, fetchNextPage]);
 
-  // Atualização otimista de likes
+  // Optimistic like update
   const updatePostLike = useCallback((postId: string, liked: boolean) => {
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          user_has_liked: liked,
-          likes_count: liked ? post.likes_count + 1 : Math.max(0, post.likes_count - 1),
-        };
-      }
-      return post;
-    }));
-  }, []);
+    queryClient.setQueryData(postsQueryKey, (old: any) => {
+      if (!old) return old;
+      return {
+        ...old,
+        pages: old.pages.map((page: any) => ({
+          ...page,
+          posts: page.posts.map((post: Post) => {
+            if (post.id === postId) {
+              return {
+                ...post,
+                user_has_liked: liked,
+                likes_count: liked ? post.likes_count + 1 : Math.max(0, post.likes_count - 1),
+              };
+            }
+            return post;
+          })
+        }))
+      };
+    });
+  }, [queryClient, postsQueryKey]);
 
-  // Atualização otimista de comentários
+  // Optimistic comment count update
   const updatePostCommentCount = useCallback((postId: string, delta: number) => {
-    setPosts(prev => prev.map(post => {
-      if (post.id === postId) {
-        return {
-          ...post,
-          comments_count: Math.max(0, post.comments_count + delta),
-        };
-      }
-      return post;
-    }));
-  }, []);
+    queryClient.setQueryData(postsQueryKey, (old: any) => {
+      if (!old) return old;
+      return {
+        ...old,
+        pages: old.pages.map((page: any) => ({
+          ...page,
+          posts: page.posts.map((post: Post) => {
+            if (post.id === postId) {
+              return { ...post, comments_count: Math.max(0, post.comments_count + delta) };
+            }
+            return post;
+          })
+        }))
+      };
+    });
+  }, [queryClient, postsQueryKey]);
 
-  // Adicionar post localmente (otimista)
+  // Add post locally (optimistic)
   const addPostLocally = useCallback((newPost: any) => {
     const profile = profileCache.get(newPost.user_id);
     const enrichedPost: Post = {
@@ -204,64 +203,61 @@ export const usePosts = () => {
       comments_count: 0,
       user_has_liked: false,
     };
-    setPosts(prev => [enrichedPost, ...prev]);
-  }, [profileCache]);
 
-  // Remover post localmente
+    queryClient.setQueryData(postsQueryKey, (old: any) => {
+      if (!old) return { pages: [{ posts: [enrichedPost], nextPage: null }], pageParams: [0] };
+      return {
+        ...old,
+        pages: [
+          { ...old.pages[0], posts: [enrichedPost, ...old.pages[0].posts] },
+          ...old.pages.slice(1)
+        ]
+      };
+    });
+  }, [profileCache, queryClient, postsQueryKey]);
+
+  // Remove post locally
   const removePostLocally = useCallback((postId: string) => {
-    setPosts(prev => prev.filter(p => p.id !== postId));
-  }, []);
+    queryClient.setQueryData(postsQueryKey, (old: any) => {
+      if (!old) return old;
+      return {
+        ...old,
+        pages: old.pages.map((page: any) => ({
+          ...page,
+          posts: page.posts.filter((p: Post) => p.id !== postId)
+        }))
+      };
+    });
+  }, [queryClient, postsQueryKey]);
 
-  const createPost = useCallback(async (
-    content: string,
-    imageUrls: string[],
-    displayName?: string | null,
-    categoria?: string,
-    tags?: string[]
-  ) => {
-    if (!user) {
-      toast({
-        title: "Erro",
-        description: "Você precisa estar autenticado.",
-        variant: "destructive",
-      });
-      return;
-    }
+  // Create post mutation
+  const createPostMutation = useMutation({
+    mutationFn: async ({
+      content,
+      imageUrls,
+      displayName,
+      categoria,
+      tags
+    }: {
+      content: string;
+      imageUrls: string[];
+      displayName?: string | null;
+      categoria?: string;
+      tags?: string[];
+    }) => {
+      if (!user) throw new Error("Não autenticado");
 
-    try {
-      // Validação de conteúdo
       const trimmedContent = content.trim();
       
-      if (trimmedContent.length === 0) {
-        toast({
-          title: "Conteúdo vazio",
-          description: "Escreva algo antes de publicar.",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (trimmedContent.length === 0) throw new Error("Conteúdo vazio");
+      if (trimmedContent.length > 5000) throw new Error("Conteúdo muito longo");
 
-      if (trimmedContent.length > 5000) {
-        toast({
-          title: "Conteúdo muito longo",
-          description: "O post deve ter no máximo 5000 caracteres.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Verificação anti-XSS básica
       const dangerousPatterns = [/<script/i, /javascript:/i, /on\w+\s*=/i];
       if (dangerousPatterns.some(pattern => pattern.test(trimmedContent))) {
-        toast({
-          title: "Conteúdo inválido",
-          description: "O post contém código potencialmente perigoso.",
-          variant: "destructive",
-        });
-        return;
+        throw new Error("Conteúdo inválido");
       }
 
-      const { data: newPostData, error } = await supabase.from("posts").insert({
+      const { data, error } = await supabase.from("posts").insert({
         user_id: user.id,
         content: trimmedContent,
         image_urls: imageUrls,
@@ -270,107 +266,89 @@ export const usePosts = () => {
         tags: tags || null,
       }).select().single();
 
-      if (error) {
-        // Tratamento específico de erro de rate limit
-        if (error.message.includes("Aguarde antes de postar novamente")) {
-          toast({
-            title: "Aguarde um momento",
-            description: "Você está postando muito rápido. Tente novamente em alguns segundos.",
-            variant: "destructive",
-          });
-          return;
-        }
-        throw error;
-      }
-
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
       analytics.postCreated();
       toast({ title: "Post criado com sucesso!" });
-      
-      // Atualização otimista - adicionar post localmente
-      if (newPostData) {
-        addPostLocally(newPostData);
+      addPostLocally(data);
+    },
+    onError: (error: any) => {
+      if (error.message?.includes("Aguarde antes de postar")) {
+        toast({ title: "Aguarde um momento", description: "Você está postando muito rápido.", variant: "destructive" });
+      } else {
+        toast({ title: "Erro ao criar post", description: "Tente novamente mais tarde.", variant: "destructive" });
       }
-    } catch (error) {
       logger.error("Error creating post", error);
-      toast({
-        title: "Erro ao criar post",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
     }
-  }, [user, toast, addPostLocally]);
+  });
 
-  const deletePost = useCallback(async (postId: string) => {
-    try {
-      // Otimista - remover localmente primeiro
-      removePostLocally(postId);
-
+  // Delete post mutation
+  const deletePostMutation = useMutation({
+    mutationFn: async (postId: string) => {
       const { error } = await supabase.from("posts").delete().eq("id", postId);
-
-      if (error) {
-        // Reverter se falhar
-        await loadPosts(0, false);
-        throw error;
-      }
-
+      if (error) throw error;
+      return postId;
+    },
+    onMutate: (postId) => {
+      removePostLocally(postId);
+    },
+    onSuccess: () => {
       toast({ title: "Post deletado com sucesso!" });
-    } catch (error) {
+    },
+    onError: (error) => {
       logger.error("Error deleting post", error);
-      toast({
-        title: "Erro ao deletar post",
-        variant: "destructive",
-      });
+      toast({ title: "Erro ao deletar post", variant: "destructive" });
+      refetch(); // Revert
     }
-  }, [removePostLocally, loadPosts, toast]);
+  });
 
-  const toggleLike = useCallback(async (postId: string) => {
-    if (!user) return;
+  // Toggle like mutation
+  const toggleLikeMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      if (!user) throw new Error("Não autenticado");
+      
+      const post = posts.find(p => p.id === postId);
+      if (!post) throw new Error("Post não encontrado");
 
-    const post = posts.find((p) => p.id === postId);
-    if (!post) return;
-
-    const willLike = !post.user_has_liked;
-
-    // Atualização otimista
-    updatePostLike(postId, willLike);
-
-    try {
       if (post.user_has_liked) {
         const { error } = await supabase
           .from("post_likes")
           .delete()
           .eq("post_id", postId)
           .eq("user_id", user.id);
-        
-        if (error) {
-          // Reverter
-          updatePostLike(postId, true);
-          throw error;
-        }
+        if (error) throw error;
+        return { postId, liked: false };
       } else {
         const { error } = await supabase.from("post_likes").insert({
           post_id: postId,
           user_id: user.id,
         });
-        
-        if (error) {
-          // Reverter
-          updatePostLike(postId, false);
-          throw error;
-        }
+        if (error) throw error;
         analytics.postLiked(postId);
+        return { postId, liked: true };
       }
-    } catch (error) {
+    },
+    onMutate: (postId) => {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        updatePostLike(postId, !post.user_has_liked);
+      }
+    },
+    onError: (error, postId) => {
+      const post = posts.find(p => p.id === postId);
+      if (post) {
+        updatePostLike(postId, post.user_has_liked); // Revert
+      }
       logger.error("Error toggling like", error);
     }
-  }, [user, posts, updatePostLike]);
+  });
 
+  // Realtime subscriptions
   useEffect(() => {
-    loadPosts(0, false);
-
     if (!user?.id) return;
 
-    // Subscribe to realtime changes usando utilitário padronizado
     const subscription = createMultiTableSubscription(
       `posts-changes-${user.id}`,
       [
@@ -378,7 +356,6 @@ export const usePosts = () => {
           table: "posts",
           event: "INSERT",
           onPayload: (payload: any) => {
-            // Só adicionar se não for do usuário atual (já adicionou otimisticamente)
             if (payload.new && payload.new.user_id !== user.id) {
               addPostLocally(payload.new);
             }
@@ -398,12 +375,7 @@ export const usePosts = () => {
           event: "INSERT",
           onPayload: (payload: any) => {
             if (payload.new && payload.new.user_id !== user.id) {
-              setPosts(prev => prev.map(post => {
-                if (post.id === payload.new.post_id) {
-                  return { ...post, likes_count: post.likes_count + 1 };
-                }
-                return post;
-              }));
+              updatePostLike(payload.new.post_id, true);
             }
           },
         },
@@ -412,12 +384,7 @@ export const usePosts = () => {
           event: "DELETE",
           onPayload: (payload: any) => {
             if (payload.old && payload.old.user_id !== user.id) {
-              setPosts(prev => prev.map(post => {
-                if (post.id === payload.old.post_id) {
-                  return { ...post, likes_count: Math.max(0, post.likes_count - 1) };
-                }
-                return post;
-              }));
+              updatePostLike(payload.old.post_id, false);
             }
           },
         },
@@ -445,17 +412,32 @@ export const usePosts = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [user?.id]);
+  }, [user?.id, addPostLocally, removePostLocally, updatePostLike, updatePostCommentCount]);
+
+  // Public API
+  const createPost = async (
+    content: string,
+    imageUrls: string[],
+    displayName?: string | null,
+    categoria?: string,
+    tags?: string[]
+  ) => {
+    await createPostMutation.mutateAsync({ content, imageUrls, displayName, categoria, tags });
+  };
+
+  const deletePost = (postId: string) => deletePostMutation.mutate(postId);
+
+  const toggleLike = (postId: string) => toggleLikeMutation.mutate(postId);
 
   return {
     posts,
     loading,
     loadingMore,
-    hasMore,
+    hasMore: hasMore ?? false,
     loadMore,
     createPost,
     deletePost,
     toggleLike,
-    reloadPosts: () => loadPosts(0, false),
+    reloadPosts: () => refetch(),
   };
 };

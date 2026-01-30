@@ -1,7 +1,17 @@
-import { useState, useEffect, useCallback } from "react";
+/**
+ * @fileoverview Hook para gerenciamento da mala da maternidade
+ * @module hooks/useMaternityBag
+ * 
+ * Provê operações CRUD com React Query para categorias e itens
+ */
+
+import { useCallback, useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
+import { useAuth } from "@/contexts/AuthContext";
 import { logger } from "@/lib/logger";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface MaternityBagCategory {
   id: string;
@@ -28,28 +38,96 @@ export interface MaternityBagItem {
   updated_at: string;
 }
 
-export const useMaternityBag = () => {
-  const [categories, setCategories] = useState<MaternityBagCategory[]>([]);
-  const [items, setItems] = useState<MaternityBagItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+// Dados padrão para inicialização
+const DEFAULT_CATEGORIES = [
+  { name: "Mãe", icon: "👩", display_order: 0 },
+  { name: "Bebê", icon: "👶", display_order: 1 },
+  { name: "Acompanhante", icon: "👨", display_order: 2 },
+];
 
-  // Initialize default maternity bag
-  const initializeDefaultMaternityBag = useCallback(async (userId: string) => {
-    try {
-      const defaultCategories = [
-        { name: "Mãe", icon: "👩", display_order: 0 },
-        { name: "Bebê", icon: "👶", display_order: 1 },
-        { name: "Acompanhante", icon: "👨", display_order: 2 },
-      ];
+const DEFAULT_ITEMS: Record<string, string[]> = {
+  "Mãe": [
+    "Camisola ou pijama",
+    "Roupão",
+    "Chinelo antiderrapante",
+    "Sutiã de amamentação",
+    "Absorventes pós-parto",
+    "Calcinha pós-parto",
+  ],
+  "Bebê": [
+    "Body manga curta",
+    "Body manga longa",
+    "Mijão ou calça",
+    "Macacão",
+    "Meia",
+    "Toalha",
+  ],
+  "Acompanhante": [
+    "Documento de identidade",
+    "Roupa confortável",
+    "Chinelo",
+    "Carregador de celular",
+  ],
+};
+
+export const useMaternityBag = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Query para categorias
+  const categoriesQuery = useQuery({
+    queryKey: user ? QueryKeys.maternityBagCategories(user.id) : ['maternity-bag-categories'],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from("maternity_bag_categories")
+        .select("id, user_id, name, icon, delivery_type_filter, display_order, created_at, updated_at")
+        .eq("user_id", user.id)
+        .order("display_order");
+
+      if (error) throw error;
+      return (data || []) as MaternityBagCategory[];
+    },
+    enabled: !!user,
+    ...QueryCacheConfig.user,
+  });
+
+  // Query para itens
+  const itemsQuery = useQuery({
+    queryKey: user ? QueryKeys.maternityBagItems(user.id) : ['maternity-bag-items'],
+    queryFn: async () => {
+      if (!user) return [];
+
+      const { data, error } = await supabase
+        .from("maternity_bag_items")
+        .select("id, user_id, category_id, name, quantity, checked, notes, cesarean_only, normal_only, created_at, updated_at")
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      return (data || []) as MaternityBagItem[];
+    },
+    enabled: !!user,
+    ...QueryCacheConfig.user,
+  });
+
+  const categories = categoriesQuery.data ?? [];
+  const items = itemsQuery.data ?? [];
+  const loading = categoriesQuery.isLoading || itemsQuery.isLoading;
+
+  // Inicializar mala padrão
+  const initializeMutation = useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Não autenticado");
 
       const categoryMap: Record<string, string> = {};
 
-      for (const cat of defaultCategories) {
+      for (const cat of DEFAULT_CATEGORIES) {
         const { data, error } = await supabase
           .from("maternity_bag_categories")
           .insert({
-            user_id: userId,
+            user_id: user.id,
             name: cat.name,
             icon: cat.icon,
             display_order: cat.display_order,
@@ -61,132 +139,54 @@ export const useMaternityBag = () => {
         if (data) categoryMap[cat.name] = data.id;
       }
 
-      // Default items
-      const defaultMotherItems = [
-        "Camisola ou pijama",
-        "Roupão",
-        "Chinelo antiderrapante",
-        "Sutiã de amamentação",
-        "Absorventes pós-parto",
-        "Calcinha pós-parto",
-      ];
-
-      const defaultBabyItems = [
-        "Body manga curta",
-        "Body manga longa",
-        "Mijão ou calça",
-        "Macacão",
-        "Meia",
-        "Toalha",
-      ];
-
-      const defaultCompanionItems = [
-        "Documento de identidade",
-        "Roupa confortável",
-        "Chinelo",
-        "Carregador de celular",
-      ];
-
-      for (const itemName of defaultMotherItems) {
-        await supabase.from("maternity_bag_items").insert({
-          user_id: userId,
-          category_id: categoryMap["Mãe"],
-          name: itemName,
-          quantity: 1,
-          checked: false,
-        });
+      // Inserir itens padrão
+      for (const [categoryName, itemNames] of Object.entries(DEFAULT_ITEMS)) {
+        for (const itemName of itemNames) {
+          await supabase.from("maternity_bag_items").insert({
+            user_id: user.id,
+            category_id: categoryMap[categoryName],
+            name: itemName,
+            quantity: 1,
+            checked: false,
+          });
+        }
       }
 
-      for (const itemName of defaultBabyItems) {
-        await supabase.from("maternity_bag_items").insert({
-          user_id: userId,
-          category_id: categoryMap["Bebê"],
-          name: itemName,
-          quantity: 1,
-          checked: false,
-        });
+      return categoryMap;
+    },
+    onSuccess: () => {
+      if (user) {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagCategories(user.id) });
+        queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
       }
-
-      for (const itemName of defaultCompanionItems) {
-        await supabase.from("maternity_bag_items").insert({
-          user_id: userId,
-          category_id: categoryMap["Acompanhante"],
-          name: itemName,
-          quantity: 1,
-          checked: false,
-        });
-      }
-    } catch (error) {
+    },
+    onError: (error) => {
       logger.error("Erro ao inicializar mala", error, { context: "useMaternityBag" });
     }
-  }, []);
+  });
 
-  // Load categories and items from database
-  const loadMaternityBag = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error("Usuário não autenticado");
-      }
+  // Auto-inicializar se não houver categorias
+  const shouldInitialize = !loading && categories.length === 0 && user;
+  if (shouldInitialize && !initializeMutation.isPending) {
+    initializeMutation.mutate();
+  }
 
-      // Load categories
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from("maternity_bag_categories")
-        .select("id, user_id, name, icon, delivery_type_filter, display_order, created_at, updated_at")
-        .order("display_order");
-
-      if (categoriesError) throw categoriesError;
-
-      // Load items
-      const { data: itemsData, error: itemsError } = await supabase
-        .from("maternity_bag_items")
-        .select("id, user_id, category_id, name, quantity, checked, notes, cesarean_only, normal_only, created_at, updated_at");
-
-      if (itemsError) throw itemsError;
-
-      setCategories((categoriesData || []) as MaternityBagCategory[]);
-      setItems((itemsData || []) as MaternityBagItem[]);
-
-      // If no categories exist, initialize defaults
-      if (!categoriesData || categoriesData.length === 0) {
-        await initializeDefaultMaternityBag(user.id);
-        // Reload after initialization
-        const { data: newCategoriesData } = await supabase
-          .from("maternity_bag_categories")
-          .select("id, user_id, name, icon, delivery_type_filter, display_order, created_at, updated_at")
-          .order("display_order");
-        const { data: newItemsData } = await supabase
-          .from("maternity_bag_items")
-          .select("id, user_id, category_id, name, quantity, checked, notes, cesarean_only, normal_only, created_at, updated_at");
-        
-        setCategories((newCategoriesData || []) as MaternityBagCategory[]);
-        setItems((newItemsData || []) as MaternityBagItem[]);
-      }
-    } catch (error) {
-      logger.error("Erro ao carregar mala da maternidade", error, { context: "useMaternityBag" });
-      toast({
-        title: "Erro ao carregar dados",
-        description: "Não foi possível carregar sua mala da maternidade.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [toast, initializeDefaultMaternityBag]);
-
-  // Add item
-  const addItem = async (
-    categoryId: string,
-    name: string,
-    quantity: number = 1,
-    cesareanOnly: boolean = false,
-    normalOnly: boolean = false
-  ) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+  // Mutation para adicionar item
+  const addItemMutation = useMutation({
+    mutationFn: async ({
+      categoryId,
+      name,
+      quantity = 1,
+      cesareanOnly = false,
+      normalOnly = false,
+    }: {
+      categoryId: string;
+      name: string;
+      quantity?: number;
+      cesareanOnly?: boolean;
+      normalOnly?: boolean;
+    }) => {
+      if (!user) throw new Error("Não autenticado");
 
       const { data, error } = await supabase
         .from("maternity_bag_items")
@@ -203,27 +203,22 @@ export const useMaternityBag = () => {
         .single();
 
       if (error) throw error;
-
-      if (data) {
-        setItems([...items, data]);
-        toast({
-          title: "Item adicionado!",
-          description: `${name} foi adicionado à sua mala.`,
-        });
+      return data;
+    },
+    onSuccess: (data) => {
+      if (user) {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
       }
-    } catch (error) {
-      console.error("Erro ao adicionar item:", error);
-      toast({
-        title: "Erro ao adicionar item",
-        description: "Não foi possível adicionar o item.",
-        variant: "destructive",
-      });
+      toast({ title: "Item adicionado!", description: `${data.name} foi adicionado à sua mala.` });
+    },
+    onError: () => {
+      toast({ title: "Erro ao adicionar item", description: "Não foi possível adicionar o item.", variant: "destructive" });
     }
-  };
+  });
 
-  // Update item
-  const updateItem = async (itemId: string, updates: Partial<MaternityBagItem>) => {
-    try {
+  // Mutation para atualizar item
+  const updateItemMutation = useMutation({
+    mutationFn: async ({ itemId, updates }: { itemId: string; updates: Partial<MaternityBagItem> }) => {
       const { data, error } = await supabase
         .from("maternity_bag_items")
         .update(updates)
@@ -232,68 +227,113 @@ export const useMaternityBag = () => {
         .single();
 
       if (error) throw error;
-
-      if (data) {
-        setItems(items.map((item) => (item.id === itemId ? data : item)));
+      return data;
+    },
+    onMutate: async ({ itemId, updates }) => {
+      if (!user) return;
+      
+      await queryClient.cancelQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
+      
+      const previousItems = queryClient.getQueryData<MaternityBagItem[]>(QueryKeys.maternityBagItems(user.id));
+      
+      queryClient.setQueryData<MaternityBagItem[]>(
+        QueryKeys.maternityBagItems(user.id),
+        (old) => old?.map(item => item.id === itemId ? { ...item, ...updates } : item) ?? []
+      );
+      
+      return { previousItems };
+    },
+    onError: (_, __, context) => {
+      if (context?.previousItems && user) {
+        queryClient.setQueryData(QueryKeys.maternityBagItems(user.id), context.previousItems);
       }
-    } catch (error) {
-      console.error("Erro ao atualizar item:", error);
-      toast({
-        title: "Erro ao atualizar item",
-        description: "Não foi possível atualizar o item.",
-        variant: "destructive",
-      });
+      toast({ title: "Erro ao atualizar item", description: "Não foi possível atualizar o item.", variant: "destructive" });
+    },
+    onSettled: () => {
+      if (user) {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
+      }
     }
-  };
+  });
 
-  // Delete item
-  const deleteItem = async (itemId: string) => {
-    try {
+  // Mutation para deletar item
+  const deleteItemMutation = useMutation({
+    mutationFn: async (itemId: string) => {
       const { error } = await supabase
         .from("maternity_bag_items")
         .delete()
         .eq("id", itemId);
 
       if (error) throw error;
+      return itemId;
+    },
+    onMutate: async (itemId) => {
+      if (!user) return;
+      
+      await queryClient.cancelQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
+      
+      const previousItems = queryClient.getQueryData<MaternityBagItem[]>(QueryKeys.maternityBagItems(user.id));
+      
+      queryClient.setQueryData<MaternityBagItem[]>(
+        QueryKeys.maternityBagItems(user.id),
+        (old) => old?.filter(item => item.id !== itemId) ?? []
+      );
+      
+      return { previousItems };
+    },
+    onSuccess: () => {
+      toast({ title: "Item removido", description: "O item foi removido da sua mala." });
+    },
+    onError: (_, __, context) => {
+      if (context?.previousItems && user) {
+        queryClient.setQueryData(QueryKeys.maternityBagItems(user.id), context.previousItems);
+      }
+      toast({ title: "Erro ao remover item", description: "Não foi possível remover o item.", variant: "destructive" });
+    },
+    onSettled: () => {
+      if (user) {
+        queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
+      }
+    }
+  });
 
-      setItems(items.filter((item) => item.id !== itemId));
-      toast({
-        title: "Item removido",
-        description: "O item foi removido da sua mala.",
-      });
-    } catch (error) {
-      console.error("Erro ao deletar item:", error);
-      toast({
-        title: "Erro ao remover item",
-        description: "Não foi possível remover o item.",
-        variant: "destructive",
-      });
+  // Helper functions
+  const addItem = (
+    categoryId: string,
+    name: string,
+    quantity: number = 1,
+    cesareanOnly: boolean = false,
+    normalOnly: boolean = false
+  ) => addItemMutation.mutate({ categoryId, name, quantity, cesareanOnly, normalOnly });
+
+  const updateItem = (itemId: string, updates: Partial<MaternityBagItem>) => 
+    updateItemMutation.mutate({ itemId, updates });
+
+  const deleteItem = (itemId: string) => deleteItemMutation.mutate(itemId);
+
+  const toggleItemChecked = (itemId: string) => {
+    const item = items.find((i) => i.id === itemId);
+    if (item) {
+      updateItem(itemId, { checked: !item.checked });
     }
   };
 
-  // Toggle item checked status
-  const toggleItemChecked = async (itemId: string) => {
-    const item = items.find((i) => i.id === itemId);
-    if (!item) return;
-
-    await updateItem(itemId, { checked: !item.checked });
-  };
-
-  // Get items by category
-  const getItemsByCategory = (categoryId: string) => {
+  const getItemsByCategory = useCallback((categoryId: string) => {
     return items.filter((item) => item.category_id === categoryId);
-  };
+  }, [items]);
 
-  // Get progress percentage
-  const getProgress = () => {
+  const getProgress = useMemo(() => {
     if (items.length === 0) return 0;
     const checkedCount = items.filter((item) => item.checked).length;
     return Math.round((checkedCount / items.length) * 100);
-  };
+  }, [items]);
 
-  useEffect(() => {
-    loadMaternityBag();
-  }, [loadMaternityBag]);
+  const reloadMaternityBag = useCallback(() => {
+    if (user) {
+      queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagCategories(user.id) });
+      queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
+    }
+  }, [user, queryClient]);
 
   return {
     categories,
@@ -304,7 +344,7 @@ export const useMaternityBag = () => {
     deleteItem,
     toggleItemChecked,
     getItemsByCategory,
-    getProgress,
-    reloadMaternityBag: loadMaternityBag,
+    getProgress: () => getProgress,
+    reloadMaternityBag,
   };
 };

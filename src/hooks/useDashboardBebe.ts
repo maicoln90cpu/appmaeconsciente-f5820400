@@ -1,7 +1,17 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+/**
+ * @fileoverview Hook para dashboard consolidado do bebê
+ * @module hooks/useDashboardBebe
+ * 
+ * Provê dados agregados de alimentação, sono e alertas usando React Query
+ */
+
+import { useMemo, useCallback } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useVaccination } from "@/hooks/useVaccination";
+import { useAuth } from "@/contexts/AuthContext";
 import { logger } from "@/lib/logger";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface FeedingLog {
   id: string;
@@ -21,66 +31,37 @@ export interface SleepLog {
   wakeup_mood?: string;
 }
 
-interface UseDashboardBebeReturn {
-  loading: boolean;
+interface DashboardData {
   lastFeeding: FeedingLog | null;
   lastSleep: SleepLog | null;
   feedingLogs24h: FeedingLog[];
   sleepLogs24h: SleepLog[];
-  alerts: string[];
-  selectedBabyId: string;
-  setSelectedBabyId: (id: string) => void;
-  babyProfiles: Array<{ id: string; baby_name: string }>;
-  stats: {
-    totalFeedingTime: number;
-    totalSleepTime: number;
-    averageSleepDuration: number;
-  };
-  reload: () => Promise<void>;
 }
 
-export const useDashboardBebe = (): UseDashboardBebeReturn => {
-  const [loading, setLoading] = useState(true);
-  const [lastFeeding, setLastFeeding] = useState<FeedingLog | null>(null);
-  const [lastSleep, setLastSleep] = useState<SleepLog | null>(null);
-  const [feedingLogs24h, setFeedingLogs24h] = useState<FeedingLog[]>([]);
-  const [sleepLogs24h, setSleepLogs24h] = useState<SleepLog[]>([]);
-  const [alerts, setAlerts] = useState<string[]>([]);
-  const [selectedBabyId, setSelectedBabyId] = useState<string>("");
-  const { profiles: babyProfiles } = useVaccination();
+// Query key local para dashboard (dados agregados)
+const dashboardQueryKey = (userId: string) => ['dashboard-bebe', userId] as const;
 
-  const generateAlerts = useCallback((lastFeed: FeedingLog | null, lastSleepData: SleepLog | null) => {
-    const newAlerts: string[] = [];
-    const now = new Date();
+export const useDashboardBebe = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { profiles: babyProfiles, currentProfile, switchProfile } = useVaccination();
+  
+  // Derivar selectedBabyId do currentProfile
+  const selectedBabyId = currentProfile?.id ?? "";
+  const setSelectedBabyId = switchProfile;
 
-    if (lastFeed) {
-      const timeSinceFeeding = now.getTime() - new Date(lastFeed.start_time).getTime();
-      const hoursSinceFeeding = timeSinceFeeding / (1000 * 60 * 60);
-      if (hoursSinceFeeding >= 3.5) {
-        newAlerts.push("🍼 Bebê pode estar com fome - última mamada há mais de 3h30");
+  // Query principal com dados do dashboard
+  const { data, isLoading: loading, refetch } = useQuery({
+    queryKey: user ? dashboardQueryKey(user.id) : ['dashboard-bebe'],
+    queryFn: async (): Promise<DashboardData> => {
+      if (!user) {
+        return { lastFeeding: null, lastSleep: null, feedingLogs24h: [], sleepLogs24h: [] };
       }
-    }
-
-    if (lastSleepData?.sleep_end) {
-      const timeSinceWakeup = now.getTime() - new Date(lastSleepData.sleep_end).getTime();
-      const hoursSinceWakeup = timeSinceWakeup / (1000 * 60 * 60);
-      if (hoursSinceWakeup >= 2.25) {
-        newAlerts.push("💤 Hora da soneca - bebê acordado há mais de 2h15");
-      }
-    }
-
-    setAlerts(newAlerts);
-  }, []);
-
-  const loadDashboardData = useCallback(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
 
       const now = new Date();
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-      // Otimização: queries paralelas com select específico
+      // Queries paralelas para performance
       const [lastFeedResult, lastSleepResult, feeds24hResult, sleeps24hResult] = await Promise.all([
         supabase
           .from("baby_feeding_logs")
@@ -110,29 +91,46 @@ export const useDashboardBebe = (): UseDashboardBebeReturn => {
           .order("sleep_start", { ascending: false })
       ]);
 
-      setLastFeeding(lastFeedResult.data);
-      setLastSleep(lastSleepResult.data);
-      setFeedingLogs24h(feeds24hResult.data || []);
-      setSleepLogs24h(sleeps24hResult.data || []);
+      return {
+        lastFeeding: lastFeedResult.data as FeedingLog | null,
+        lastSleep: lastSleepResult.data as SleepLog | null,
+        feedingLogs24h: (feeds24hResult.data || []) as FeedingLog[],
+        sleepLogs24h: (sleeps24hResult.data || []) as SleepLog[],
+      };
+    },
+    enabled: !!user,
+    ...QueryCacheConfig.stats, // Cache de estatísticas
+  });
 
-      generateAlerts(lastFeedResult.data, lastSleepResult.data);
-    } catch (error) {
-      logger.error("Error loading dashboard data", error, { context: "useDashboardBebe" });
-    } finally {
-      setLoading(false);
+  // Extrair dados do resultado
+  const lastFeeding = data?.lastFeeding ?? null;
+  const lastSleep = data?.lastSleep ?? null;
+  const feedingLogs24h = data?.feedingLogs24h ?? [];
+  const sleepLogs24h = data?.sleepLogs24h ?? [];
+
+  // Gerar alertas baseado nos dados
+  const alerts = useMemo(() => {
+    const newAlerts: string[] = [];
+    const now = new Date();
+
+    if (lastFeeding) {
+      const timeSinceFeeding = now.getTime() - new Date(lastFeeding.start_time).getTime();
+      const hoursSinceFeeding = timeSinceFeeding / (1000 * 60 * 60);
+      if (hoursSinceFeeding >= 3.5) {
+        newAlerts.push("🍼 Bebê pode estar com fome - última mamada há mais de 3h30");
+      }
     }
-  }, [generateAlerts]);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, [loadDashboardData]);
-
-  // Auto-select first baby profile
-  useEffect(() => {
-    if (babyProfiles.length > 0 && !selectedBabyId) {
-      setSelectedBabyId(babyProfiles[0].id);
+    if (lastSleep?.sleep_end) {
+      const timeSinceWakeup = now.getTime() - new Date(lastSleep.sleep_end).getTime();
+      const hoursSinceWakeup = timeSinceWakeup / (1000 * 60 * 60);
+      if (hoursSinceWakeup >= 2.25) {
+        newAlerts.push("💤 Hora da soneca - bebê acordado há mais de 2h15");
+      }
     }
-  }, [babyProfiles, selectedBabyId]);
+
+    return newAlerts;
+  }, [lastFeeding, lastSleep]);
 
   // Cálculos memoizados para evitar recálculos desnecessários
   const stats = useMemo(() => {
@@ -145,6 +143,11 @@ export const useDashboardBebe = (): UseDashboardBebeReturn => {
     return { totalFeedingTime, totalSleepTime, averageSleepDuration };
   }, [feedingLogs24h, sleepLogs24h]);
 
+  // Reload function
+  const reload = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
   return {
     loading,
     lastFeeding,
@@ -156,6 +159,6 @@ export const useDashboardBebe = (): UseDashboardBebeReturn => {
     setSelectedBabyId,
     babyProfiles,
     stats,
-    reload: loadDashboardData
+    reload
   };
 };
