@@ -33,17 +33,22 @@ const tabs: TabConfig[] = [
 
 export const DashboardBebeTabs = () => {
   return (
-    <TabsList className="grid grid-cols-3 md:flex md:flex-wrap gap-1.5 h-auto p-2 mb-4 bg-muted/50 overflow-visible">
-      {tabs.map(({ value, icon: Icon, label }) => (
-        <TabsTrigger 
-          key={value}
-          value={value} 
-          className="flex items-center justify-center md:justify-start gap-1 text-[10px] md:text-xs px-2 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-        >
-          <Icon className="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" />
-          <span className="truncate">{label}</span>
-        </TabsTrigger>
-      ))}
-    </TabsList>
+    <div className="relative mb-4">
+      <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-muted-foreground/20 scrollbar-track-transparent pb-1">
+        <TabsList className="inline-flex w-max gap-1 h-auto p-1.5 bg-muted/50">
+          {tabs.map(({ value, icon: Icon, label, shortLabel }) => (
+            <TabsTrigger 
+              key={value}
+              value={value} 
+              className="flex items-center gap-1 text-[10px] md:text-xs px-2.5 py-2 whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <Icon className="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" />
+              <span className="hidden md:inline">{label}</span>
+              <span className="md:hidden">{shortLabel}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </div>
+    </div>
   );
 };
