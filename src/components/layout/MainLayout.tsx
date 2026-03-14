@@ -39,6 +39,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 
 import { supabase } from "@/integrations/supabase/client";
 import { preloadComponent, routeImports } from "@/lib/lazy-utils";
+import { QuickRecordFAB } from "@/components/layout/QuickRecordFAB";
 
 interface MainLayoutProps {
   children: React.ReactNode;
