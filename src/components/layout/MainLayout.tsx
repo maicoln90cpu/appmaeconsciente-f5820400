@@ -67,6 +67,14 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     { path: "/suporte", label: "Suporte", icon: HeadphonesIcon, preload: routeImports.suporte },
   ];
 
+  const mobileNavItems: Array<{ path?: string; label?: string; icon?: React.ElementType; spacer?: boolean }> = [
+    { path: "/dashboard-bebe", label: "Início", icon: Home },
+    { path: "/materiais", label: "Ferramentas", icon: BookOpen },
+    { spacer: true },
+    { path: "/comunidade", label: "Comunidade", icon: Users },
+    { path: "/profile", label: "Perfil", icon: User },
+  ];
+
   const footerLinks = {
     resources: [
       { path: "/materiais", label: "Ferramentas" },
