@@ -3,14 +3,9 @@ import { TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   TrendingUp, Ruler, Apple, Calculator, Frown, Pill, Calendar, 
   CalendarClock, CalendarDays, FileText, Download, Users, Bell, 
-  Trophy, Camera, History, Heart, Stethoscope, UtensilsCrossed,
+  Trophy, Camera, History, Stethoscope, UtensilsCrossed,
   MoreHorizontal, ChevronDown
 } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 
 interface TabConfig {
   value: string;
@@ -82,36 +77,30 @@ const tabGroups: TabGroup[] = [
 export const DashboardBebeTabs = () => {
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
 
+  // Get the tabs to show: overview is always visible, plus expanded group's tabs
+  const visibleTabs: TabConfig[] = [
+    { value: "overview", icon: TrendingUp, label: "Hoje" },
+    ...(expandedGroup
+      ? tabGroups.find((g) => g.id === expandedGroup)?.tabs ?? []
+      : []),
+  ];
+
   return (
     <div className="space-y-2">
-      {/* Primary group selector - always visible */}
+      {/* Group selector buttons (NOT TabsTriggers) */}
       <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-muted-foreground/20">
-        {tabGroups.map((group) => {
+        {tabGroups.filter(g => g.id !== "hoje").map((group) => {
           const GroupIcon = group.icon;
           const isExpanded = expandedGroup === group.id;
-          
-          // For "Hoje" group with single tab, render as direct TabsTrigger
-          if (group.tabs.length === 1) {
-            return (
-              <TabsTrigger
-                key={group.id}
-                value={group.tabs[0].value}
-                onClick={() => setExpandedGroup(null)}
-                className="flex items-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm whitespace-nowrap rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-              >
-                <GroupIcon className="h-4 w-4 shrink-0" />
-                {group.label}
-              </TabsTrigger>
-            );
-          }
 
           return (
             <button
               key={group.id}
+              type="button"
               onClick={() => setExpandedGroup(isExpanded ? null : group.id)}
-              className={`flex items-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm whitespace-nowrap rounded-lg border transition-colors ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm whitespace-nowrap rounded-lg border transition-colors shrink-0 ${
                 isExpanded
-                  ? "bg-primary/10 border-primary/30 text-primary"
+                  ? "bg-primary/10 border-primary/30 text-primary font-medium"
                   : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
               }`}
             >
@@ -123,26 +112,19 @@ export const DashboardBebeTabs = () => {
         })}
       </div>
 
-      {/* Expanded sub-tabs */}
-      {expandedGroup && (
-        <div className="flex gap-1 flex-wrap p-2 bg-muted/30 rounded-lg border border-border/50 animate-fade-in">
-          {tabGroups
-            .find((g) => g.id === expandedGroup)
-            ?.tabs.map((tab) => {
-              const TabIcon = tab.icon;
-              return (
-                <TabsTrigger
-                  key={tab.value}
-                  value={tab.value}
-                  className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm whitespace-nowrap rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                >
-                  <TabIcon className="h-3.5 w-3.5 shrink-0" />
-                  {tab.label}
-                </TabsTrigger>
-              );
-            })}
-        </div>
-      )}
+      {/* Actual TabsList with valid TabsTriggers */}
+      <TabsList className="flex w-full gap-1 h-auto p-1 bg-muted/50 flex-wrap">
+        {visibleTabs.map(({ value, icon: Icon, label }) => (
+          <TabsTrigger
+            key={value}
+            value={value}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+          >
+            <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+            {label}
+          </TabsTrigger>
+        ))}
+      </TabsList>
     </div>
   );
 };
