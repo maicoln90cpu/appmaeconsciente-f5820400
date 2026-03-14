@@ -5,3 +5,6 @@ export { DashboardBebeStats24h } from "./DashboardBebeStats24h";
 export { DashboardBebeTimeline } from "./DashboardBebeTimeline";
 export { DashboardBebeQuickActions } from "./DashboardBebeQuickActions";
 export { DashboardBebeTabs } from "./DashboardBebeTabs";
+export { DashboardBebeUpcomingEvents } from "./DashboardBebeUpcomingEvents";
+export { DashboardBebeRecentActivity } from "./DashboardBebeRecentActivity";
+export { DashboardBebeGamification } from "./DashboardBebeGamification";

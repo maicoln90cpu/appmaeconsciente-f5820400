@@ -30,7 +30,7 @@ export const RegistroMamada = ({ settings, onAddLog }: RegistroMamadaProps) => {
   const suggestedSide = settings?.last_breast_side === "left" ? "right" : "left";
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isTimerRunning) {
       interval = setInterval(() => {
         setTimerSeconds((prev) => prev + 1);

@@ -5,7 +5,7 @@ import {
   FileText,
   HeadphonesIcon, 
   Heart,
-  LayoutDashboard,
+  Home,
   Lock,
   LogOut, 
   MessageSquare,
@@ -59,15 +59,15 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   };
 
   const navItems = [
-    { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, preload: routeImports.dashboard },
+    { path: "/dashboard-bebe", label: "Início", icon: Home, preload: routeImports.dashboard },
     { path: "/comunidade", label: "Comunidade", icon: Users, preload: routeImports.comunidade },
-    { path: "/materiais", label: "Materiais", icon: BookOpen, preload: routeImports.materiais },
+    { path: "/materiais", label: "Ferramentas", icon: BookOpen, preload: routeImports.materiais },
     { path: "/suporte", label: "Suporte", icon: HeadphonesIcon, preload: routeImports.suporte },
   ];
 
   const footerLinks = {
     resources: [
-      { path: "/materiais", label: "Materiais" },
+      { path: "/materiais", label: "Ferramentas" },
       { path: "/comunidade", label: "Comunidade" },
       { path: "/clube-premium", label: "Clube Premium" },
     ],
@@ -144,7 +144,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                   <DropdownMenuSeparator />
                   
                   <DropdownMenuItem onClick={() => navigate("/admin")}>
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <Shield className="mr-2 h-4 w-4" />
                     Dashboard
                   </DropdownMenuItem>
                   

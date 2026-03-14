@@ -73,7 +73,7 @@ const ERROR_MESSAGES: Record<State['errorType'], { title: string; description: s
 };
 
 export class ErrorBoundary extends Component<Props, State> {
-  private retryTimeoutId: NodeJS.Timeout | null = null;
+  private retryTimeoutId: ReturnType<typeof setTimeout> | null = null;
   
   static defaultProps = {
     maxRetries: 3,

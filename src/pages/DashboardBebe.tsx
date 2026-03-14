@@ -1,6 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useDashboardBebe } from "@/hooks/useDashboardBebe";
+import { useProfile } from "@/hooks/useProfile";
 import {
   DashboardBebeHeader,
   DashboardBebeAlerts,
@@ -8,9 +9,17 @@ import {
   DashboardBebeStats24h,
   DashboardBebeTimeline,
   DashboardBebeQuickActions,
-  DashboardBebeTabs
+  DashboardBebeTabs,
+  DashboardBebeUpcomingEvents,
+  DashboardBebeRecentActivity,
+  DashboardBebeGamification,
 } from "@/components/dashboard-bebe";
+import { OnboardingWizard, OnboardingChecklist } from "@/components/onboarding";
+import { ActionableInsights, CrossModuleInsights } from "@/components/insights";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Sparkles } from "lucide-react";
 
 // Lazy load heavy tab components
 const GrowthChart = lazy(() => import("@/components/crescimento/GrowthChart").then(m => ({ default: m.GrowthChart })));
@@ -30,7 +39,16 @@ const BabyAchievements = lazy(() => import("@/components/bebe/BabyAchievements")
 const FirstTimesAlbum = lazy(() => import("@/components/bebe/FirstTimesAlbum").then(m => ({ default: m.FirstTimesAlbum })));
 const VisualTimeline = lazy(() => import("@/components/bebe/VisualTimeline").then(m => ({ default: m.VisualTimeline })));
 
-// Lightweight loading skeleton for tabs
+const DAILY_TIPS = [
+  "Beba pelo menos 2 litros de água por dia para manter-se hidratada! 💧",
+  "Descanse sempre que possível - seu corpo está trabalhando duro! 😴",
+  "Movimente-se com caminhadas leves para melhorar a circulação 🚶‍♀️",
+  "Alimentos ricos em ferro ajudam a prevenir anemia na gestação 🥬",
+  "Converse com seu bebê - ele já consegue ouvir sua voz! 💕",
+  "Pratique exercícios de respiração para relaxar 🧘‍♀️",
+  "Registre os movimentos do bebê - é importante para o acompanhamento 📝",
+];
+
 const TabLoadingSkeleton = () => (
   <div className="space-y-4">
     <Skeleton className="h-8 w-1/3" />
@@ -43,6 +61,10 @@ const TabLoadingSkeleton = () => (
 );
 
 const DashboardBebe = () => {
+  const { profile } = useProfile();
+  const [showWizard, setShowWizard] = useState(false);
+  const [dailyTip] = useState(() => DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)]);
+
   const {
     loading,
     lastFeeding,
@@ -56,6 +78,14 @@ const DashboardBebe = () => {
     stats
   } = useDashboardBebe();
 
+  // Show onboarding wizard for new users
+  useEffect(() => {
+    if (profile && !profile.onboarding_completed) {
+      const dismissed = localStorage.getItem("onboarding_wizard_dismissed");
+      if (!dismissed) setShowWizard(true);
+    }
+  }, [profile]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -65,19 +95,47 @@ const DashboardBebe = () => {
   }
 
   return (
-    <div className="container py-8 max-w-6xl">
-      <DashboardBebeHeader
-        babyProfiles={babyProfiles}
-        selectedBabyId={selectedBabyId}
-        onBabyChange={setSelectedBabyId}
-      />
+    <div className="container py-4 sm:py-6 md:py-8 max-w-6xl space-y-4 sm:space-y-6">
+      {/* Onboarding */}
+      <OnboardingWizard open={showWizard} onClose={() => { setShowWizard(false); localStorage.setItem("onboarding_wizard_dismissed", "true"); }} />
 
+      {/* Greeting + Baby Selector */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold mb-1">
+            Olá, {profile?.email?.split('@')[0] || 'Mamãe'}! 👋
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
+          </p>
+        </div>
+        <DashboardBebeHeader
+          babyProfiles={babyProfiles}
+          selectedBabyId={selectedBabyId}
+          onBabyChange={setSelectedBabyId}
+        />
+      </div>
+
+      {/* Onboarding checklist */}
+      {profile && !profile.onboarding_completed && <OnboardingChecklist />}
+
+      {/* Daily tip */}
+      <div className="flex items-start gap-2 p-3 rounded-lg bg-primary/5 border border-primary/10">
+        <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+        <p className="text-sm text-muted-foreground">{dailyTip}</p>
+      </div>
+
+      {/* Alerts */}
       <DashboardBebeAlerts alerts={alerts} />
 
-      <Tabs defaultValue="overview" className="space-y-6">
+      {/* Gamification row */}
+      <DashboardBebeGamification />
+
+      {/* Main tabbed content */}
+      <Tabs defaultValue="overview" className="space-y-4">
         <DashboardBebeTabs />
 
-        {/* Overview Tab */}
+        {/* Overview Tab - the merged "home" */}
         <TabsContent value="overview" className="space-y-6">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <BabySummaryWidget />
@@ -95,114 +153,115 @@ const DashboardBebe = () => {
             totalSleepTime={stats.totalSleepTime}
             averageSleepDuration={stats.averageSleepDuration}
           />
+
+          <DashboardBebeQuickActions />
+          
+          {/* Events + Activity side by side */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <DashboardBebeUpcomingEvents />
+            <DashboardBebeRecentActivity />
+          </div>
+
+          {/* Insights */}
+          <div className="grid gap-4 md:grid-cols-2">
+            <ActionableInsights maxItems={4} />
+            <CrossModuleInsights />
+          </div>
           
           <DashboardBebeTimeline 
             feedingLogs={feedingLogs24h} 
             sleepLogs={sleepLogs24h} 
           />
-          
-          <DashboardBebeQuickActions />
         </TabsContent>
 
-        {/* Growth Tab */}
+        {/* Saúde group */}
         <TabsContent value="growth">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <GrowthChart babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Food Introduction Tab */}
-        <TabsContent value="food">
-          <Suspense fallback={<TabLoadingSkeleton />}>
-            <FoodIntroductionDiary babyProfileId={selectedBabyId} />
-          </Suspense>
-        </TabsContent>
-
-        {/* Bottle Calculator Tab */}
-        <TabsContent value="bottle">
-          <Suspense fallback={<TabLoadingSkeleton />}>
-            <BottleCalculator babyProfileId={selectedBabyId} />
-          </Suspense>
-        </TabsContent>
-
-        {/* Colic Tracker Tab */}
         <TabsContent value="colic">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <ColicTracker babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Medications Tab */}
         <TabsContent value="medications">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <MedicationTimer babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Appointments Tab */}
+        {/* Alimentação group */}
+        <TabsContent value="food">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <FoodIntroductionDiary babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="bottle">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <BottleCalculator babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        {/* Rotina group */}
         <TabsContent value="appointments">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <AppointmentOrganizer babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Routine Tab */}
         <TabsContent value="routine">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <RoutinePlanner babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Unified Calendar Tab */}
         <TabsContent value="calendar">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <UnifiedCalendar babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Pediatric Report Tab */}
+        {/* Mais group */}
         <TabsContent value="report">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <PediatricReportGenerator babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Data Export Tab */}
         <TabsContent value="export">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <DataExporter babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Partner Access Tab */}
         <TabsContent value="partner">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <PartnerAccessManager />
           </Suspense>
         </TabsContent>
 
-        {/* Notification Settings Tab */}
         <TabsContent value="notifications">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <NotificationSettings />
           </Suspense>
         </TabsContent>
 
-        {/* Achievements Tab */}
         <TabsContent value="achievements">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <BabyAchievements babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* First Times Album Tab */}
         <TabsContent value="firsts">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <FirstTimesAlbum babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 
-        {/* Visual Timeline Tab */}
         <TabsContent value="timeline">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <VisualTimeline babyProfileId={selectedBabyId} />
