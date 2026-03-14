@@ -14,7 +14,8 @@ import {
   Shield, 
   Ticket,
   UserCog,
-  Users, 
+  Users,
+  User,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,6 +39,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 
 import { supabase } from "@/integrations/supabase/client";
 import { preloadComponent, routeImports } from "@/lib/lazy-utils";
+import { QuickRecordFAB } from "@/components/layout/QuickRecordFAB";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -63,6 +65,14 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     { path: "/comunidade", label: "Comunidade", icon: Users, preload: routeImports.comunidade },
     { path: "/materiais", label: "Ferramentas", icon: BookOpen, preload: routeImports.materiais },
     { path: "/suporte", label: "Suporte", icon: HeadphonesIcon, preload: routeImports.suporte },
+  ];
+
+  const mobileNavItems: Array<{ path?: string; label?: string; icon?: React.ElementType; spacer?: boolean }> = [
+    { path: "/dashboard-bebe", label: "Início", icon: Home },
+    { path: "/materiais", label: "Ferramentas", icon: BookOpen },
+    { spacer: true },
+    { path: "/comunidade", label: "Comunidade", icon: Users },
+    { path: "/profile", label: "Perfil", icon: User },
   ];
 
   const footerLinks = {
@@ -217,18 +227,21 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation - 5 items with FAB gap */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-xl safe-bottom overflow-x-hidden">
         <div className="flex items-center justify-around py-1 px-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
+          {mobileNavItems.map((item, index) => {
+            // Center spacer for FAB
+            if (item.spacer) {
+              return <div key="fab-spacer" className="w-14 shrink-0" />;
+            }
+            const Icon = item.icon!;
+            const active = isActive(item.path!);
             return (
               <Link
                 key={item.path}
-                to={item.path}
-                onTouchStart={() => preloadComponent(item.preload)}
-                className={`relative flex flex-col items-center gap-0.5 px-2 py-1.5 min-h-[52px] min-w-0 flex-1 text-[10px] xs:text-xs font-medium transition-all duration-200 active:scale-95 ${
+                to={item.path!}
+                className={`relative flex flex-col items-center gap-0.5 px-1 py-1.5 min-h-[52px] min-w-0 flex-1 text-[10px] xs:text-xs font-medium transition-all duration-200 active:scale-95 ${
                   active ? "text-primary" : "text-muted-foreground"
                 }`}
               >
@@ -248,6 +261,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           })}
         </div>
       </nav>
+
+      {/* Quick Record FAB */}
+      <QuickRecordFAB />
 
       {/* Main Content with bottom padding for mobile nav and skip link target */}
       <main id="main-content" tabIndex={-1} className="flex-1 pb-20 md:pb-0 outline-none">{children}</main>
