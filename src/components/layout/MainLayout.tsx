@@ -5,7 +5,7 @@ import {
   FileText,
   HeadphonesIcon, 
   Heart,
-  LayoutDashboard,
+  Home,
   Lock,
   LogOut, 
   MessageSquare,
