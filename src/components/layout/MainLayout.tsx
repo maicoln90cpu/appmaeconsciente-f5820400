@@ -14,7 +14,8 @@ import {
   Shield, 
   Ticket,
   UserCog,
-  Users, 
+  Users,
+  User,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
