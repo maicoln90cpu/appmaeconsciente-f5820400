@@ -35,7 +35,7 @@ export const useContractions = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<Date | null>(null);
 
   // Fetch contractions

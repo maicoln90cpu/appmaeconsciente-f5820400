@@ -65,8 +65,8 @@ export function useAutoSave<T extends Record<string, unknown>>({
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [availableDrafts, setAvailableDrafts] = useState<DraftEntry[]>([]);
   
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const savedIndicatorRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const savedIndicatorRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Generate unique draft key including user
   const getDraftKey = useCallback((id?: string) => {
