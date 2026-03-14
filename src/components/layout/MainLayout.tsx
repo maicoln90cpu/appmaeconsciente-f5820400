@@ -67,7 +67,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
   const footerLinks = {
     resources: [
-      { path: "/materiais", label: "Materiais" },
+      { path: "/materiais", label: "Ferramentas" },
       { path: "/comunidade", label: "Comunidade" },
       { path: "/clube-premium", label: "Clube Premium" },
     ],
