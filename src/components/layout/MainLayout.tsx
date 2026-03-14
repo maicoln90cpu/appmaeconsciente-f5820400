@@ -59,9 +59,9 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   };
 
   const navItems = [
-    { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard, preload: routeImports.dashboard },
+    { path: "/dashboard-bebe", label: "Início", icon: Home, preload: routeImports.dashboard },
     { path: "/comunidade", label: "Comunidade", icon: Users, preload: routeImports.comunidade },
-    { path: "/materiais", label: "Materiais", icon: BookOpen, preload: routeImports.materiais },
+    { path: "/materiais", label: "Ferramentas", icon: BookOpen, preload: routeImports.materiais },
     { path: "/suporte", label: "Suporte", icon: HeadphonesIcon, preload: routeImports.suporte },
   ];
 
