@@ -60,6 +60,8 @@ export interface Profile {
   onboarding_completed?: boolean;
   /** Data de conclusão do onboarding */
   onboarding_completed_at?: string;
+  /** Fase da maternidade: gestante ou pos-parto */
+  fase_maternidade?: string;
   /** Data de criação do perfil */
   created_at: string;
   /** Data da última atualização */
