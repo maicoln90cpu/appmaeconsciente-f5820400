@@ -59,6 +59,7 @@ const Materiais = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
+  const { profile } = useProfile();
 
   useEffect(() => { loadProducts(); }, []);
 
