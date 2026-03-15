@@ -14,7 +14,9 @@ import {
   DashboardBebeRecentActivity,
   DashboardBebeGamification,
 } from "@/components/dashboard-bebe";
+import { ContextCards } from "@/components/dashboard-bebe/ContextCards";
 import { OnboardingWizard, OnboardingChecklist } from "@/components/onboarding";
+import { PhaseSelectionModal } from "@/components/onboarding/PhaseSelectionModal";
 import { ActionableInsights, CrossModuleInsights } from "@/components/insights";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
