@@ -125,6 +125,10 @@ const Materiais = () => {
     }
   };
 
+  // Infer phase
+  const fase = profile?.fase_maternidade || (profile?.delivery_date ? "pos-parto" : "gestante");
+  const prioritySlugs = fase === "gestante" ? GESTANTE_SLUGS : POS_PARTO_SLUGS;
+
   const displayProducts = products
     .filter((p) => p.slug !== "clube-premium")
     .filter((p) => {
@@ -133,6 +137,11 @@ const Materiais = () => {
       if (filter === "paid") return !p.is_free;
       if (filter === "my") return hasAccess(p.id) || p.is_free;
       return true;
+    })
+    .sort((a, b) => {
+      const aP = prioritySlugs.has(a.slug) ? 0 : 1;
+      const bP = prioritySlugs.has(b.slug) ? 0 : 1;
+      return aP - bP;
     });
 
   if (loading) {
