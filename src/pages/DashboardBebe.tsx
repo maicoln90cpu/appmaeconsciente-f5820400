@@ -110,11 +110,14 @@ const DashboardBebe = () => {
       {/* Onboarding */}
       <OnboardingWizard open={showWizard} onClose={() => { setShowWizard(false); localStorage.setItem("onboarding_wizard_dismissed", "true"); }} />
 
+      {/* Phase selection */}
+      <PhaseSelectionModal open={showPhaseModal} onOpenChange={(open) => { setShowPhaseModal(open); if (!open) localStorage.setItem("phase_selection_dismissed", "true"); }} />
+
       {/* Greeting + Baby Selector */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold mb-1">
-            Olá, {profile?.email?.split('@')[0] || 'Mamãe'}! 👋
+            Olá, {profile?.full_name?.split(' ')[0] || profile?.email?.split('@')[0] || 'Mamãe'}! 👋
           </h1>
           <p className="text-muted-foreground text-sm">
             {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
@@ -130,11 +133,8 @@ const DashboardBebe = () => {
       {/* Onboarding checklist */}
       {profile && !profile.onboarding_completed && <OnboardingChecklist />}
 
-      {/* Daily tip */}
-      <div className="flex items-start gap-2 p-3 rounded-lg bg-primary/5 border border-primary/10">
-        <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-        <p className="text-sm text-muted-foreground">{dailyTip}</p>
-      </div>
+      {/* Context cards (dynamic, phase-aware) */}
+      <ContextCards />
 
       {/* Alerts */}
       <DashboardBebeAlerts alerts={alerts} />
