@@ -2834,6 +2834,7 @@ export type Database = {
           delivery_type: string | null
           email: string
           estado: string | null
+          fase_maternidade: string | null
           foto_perfil_url: string | null
           full_name: string | null
           id: string
@@ -2863,6 +2864,7 @@ export type Database = {
           delivery_type?: string | null
           email: string
           estado?: string | null
+          fase_maternidade?: string | null
           foto_perfil_url?: string | null
           full_name?: string | null
           id: string
@@ -2892,6 +2894,7 @@ export type Database = {
           delivery_type?: string | null
           email?: string
           estado?: string | null
+          fase_maternidade?: string | null
           foto_perfil_url?: string | null
           full_name?: string | null
           id?: string
