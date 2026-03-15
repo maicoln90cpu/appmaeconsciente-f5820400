@@ -60,6 +60,8 @@ export interface Profile {
   onboarding_completed?: boolean;
   /** Data de conclusão do onboarding */
   onboarding_completed_at?: string;
+  /** Fase da maternidade: gestante ou pos-parto */
+  fase_maternidade?: string;
   /** Data de criação do perfil */
   created_at: string;
   /** Data da última atualização */
@@ -74,7 +76,7 @@ const fetchProfile = async (userId: string | undefined): Promise<Profile | null>
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, email, full_name, whatsapp, idade, sexo, foto_perfil_url, meses_gestacao, possui_filhos, idades_filhos, cidade, estado, data_prevista_parto, data_inicio_planejamento, peso_atual, altura_cm, perfil_completo, delivery_date, delivery_type, postpartum_notes, onboarding_completed, onboarding_completed_at, created_at, updated_at")
+    .select("id, email, full_name, whatsapp, idade, sexo, foto_perfil_url, meses_gestacao, possui_filhos, idades_filhos, cidade, estado, data_prevista_parto, data_inicio_planejamento, peso_atual, altura_cm, perfil_completo, delivery_date, delivery_type, postpartum_notes, onboarding_completed, onboarding_completed_at, fase_maternidade, created_at, updated_at")
     .eq("id", userId)
     .maybeSingle();
 

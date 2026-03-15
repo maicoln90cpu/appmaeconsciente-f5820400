@@ -6,9 +6,14 @@ import { useNavigate } from "react-router-dom";
 import { Loader2, Star, Lightbulb, Filter } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useProfile } from "@/hooks/useProfile";
 import { ToolIconGrid } from "@/components/materiais/ToolIconGrid";
 import { PremiumUpgradeModal } from "@/components/materiais/PremiumUpgradeModal";
 import { ToolSuggestionDialog } from "@/components/materiais/ToolSuggestionDialog";
+
+// Tools relevant per phase — others still show but are deprioritized
+const GESTANTE_SLUGS = new Set(["controle-enxoval", "mala-maternidade", "ferramentas-gestacao", "guia-alimentacao", "calculadora-fraldas"]);
+const POS_PARTO_SLUGS = new Set(["rastreador-amamentacao", "diario-sono", "monitor-desenvolvimento", "cartao-vacinacao", "recuperacao-pos-parto", "guia-alimentacao"]);
 
 interface Product {
   id: string;
@@ -54,6 +59,7 @@ const Materiais = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isAdmin } = useUserRole();
+  const { profile } = useProfile();
 
   useEffect(() => { loadProducts(); }, []);
 
@@ -119,6 +125,10 @@ const Materiais = () => {
     }
   };
 
+  // Infer phase
+  const fase = profile?.fase_maternidade || (profile?.delivery_date ? "pos-parto" : "gestante");
+  const prioritySlugs = fase === "gestante" ? GESTANTE_SLUGS : POS_PARTO_SLUGS;
+
   const displayProducts = products
     .filter((p) => p.slug !== "clube-premium")
     .filter((p) => {
@@ -127,6 +137,11 @@ const Materiais = () => {
       if (filter === "paid") return !p.is_free;
       if (filter === "my") return hasAccess(p.id) || p.is_free;
       return true;
+    })
+    .sort((a, b) => {
+      const aP = prioritySlugs.has(a.slug) ? 0 : 1;
+      const bP = prioritySlugs.has(b.slug) ? 0 : 1;
+      return aP - bP;
     });
 
   if (loading) {
