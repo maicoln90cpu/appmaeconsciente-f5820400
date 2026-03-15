@@ -65,6 +65,7 @@ const TabLoadingSkeleton = () => (
 const DashboardBebe = () => {
   const { profile } = useProfile();
   const [showWizard, setShowWizard] = useState(false);
+  const [showPhaseModal, setShowPhaseModal] = useState(false);
   const [dailyTip] = useState(() => DAILY_TIPS[Math.floor(Math.random() * DAILY_TIPS.length)]);
 
   const {
@@ -85,6 +86,14 @@ const DashboardBebe = () => {
     if (profile && !profile.onboarding_completed) {
       const dismissed = localStorage.getItem("onboarding_wizard_dismissed");
       if (!dismissed) setShowWizard(true);
+    }
+  }, [profile]);
+
+  // Show phase selection if not set
+  useEffect(() => {
+    if (profile && !profile.fase_maternidade && profile.onboarding_completed) {
+      const dismissed = localStorage.getItem("phase_selection_dismissed");
+      if (!dismissed) setShowPhaseModal(true);
     }
   }, [profile]);
 
