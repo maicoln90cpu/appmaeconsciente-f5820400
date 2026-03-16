@@ -76,7 +76,14 @@ const tabGroups: TabGroup[] = [
 ];
 
 export const DashboardBebeTabs = () => {
+  const { profile } = useProfile();
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+
+  // In simple mode, hide advanced groups
+  const SIMPLE_MODE_HIDDEN = new Set(["mais"]);
+  const filteredGroups = profile?.simple_mode
+    ? tabGroups.filter(g => !SIMPLE_MODE_HIDDEN.has(g.id))
+    : tabGroups;
 
   // Get the tabs to show: overview is always visible, plus expanded group's tabs
   const visibleTabs: TabConfig[] = [
