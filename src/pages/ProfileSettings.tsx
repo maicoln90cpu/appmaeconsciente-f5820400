@@ -262,6 +262,12 @@ export default function ProfileSettings() {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
+            {/* Conquistas & Nível */}
+            <ProfileAchievements />
+
+            {/* Modo Simples */}
+            <SimpleModeToggle />
+
             {/* Foto de Perfil */}
             <Card>
               <CardHeader>
