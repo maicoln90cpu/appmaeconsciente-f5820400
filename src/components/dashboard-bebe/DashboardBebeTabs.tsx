@@ -97,7 +97,7 @@ export const DashboardBebeTabs = () => {
     <div className="space-y-2">
       {/* Group selector buttons (NOT TabsTriggers) */}
       <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-muted-foreground/20">
-        {tabGroups.filter(g => g.id !== "hoje").map((group) => {
+        {filteredGroups.filter(g => g.id !== "hoje").map((group) => {
           const GroupIcon = group.icon;
           const isExpanded = expandedGroup === group.id;
 
