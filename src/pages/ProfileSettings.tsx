@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/useToast";
 import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { SyncQueuePanel } from "@/components/offline";
+import { ProfileAchievements } from "@/components/profile/ProfileAchievements";
+import { SimpleModeToggle } from "@/components/profile/SimpleModeToggle";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -260,6 +262,12 @@ export default function ProfileSettings() {
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
+            {/* Conquistas & Nível */}
+            <ProfileAchievements />
+
+            {/* Modo Simples */}
+            <SimpleModeToggle />
+
             {/* Foto de Perfil */}
             <Card>
               <CardHeader>

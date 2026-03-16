@@ -2850,6 +2850,7 @@ export type Database = {
           possui_filhos: boolean | null
           postpartum_notes: string | null
           sexo: string | null
+          simple_mode: boolean | null
           updated_at: string
           whatsapp: string | null
           xp_total: number
@@ -2880,6 +2881,7 @@ export type Database = {
           possui_filhos?: boolean | null
           postpartum_notes?: string | null
           sexo?: string | null
+          simple_mode?: boolean | null
           updated_at?: string
           whatsapp?: string | null
           xp_total?: number
@@ -2910,6 +2912,7 @@ export type Database = {
           possui_filhos?: boolean | null
           postpartum_notes?: string | null
           sexo?: string | null
+          simple_mode?: boolean | null
           updated_at?: string
           whatsapp?: string | null
           xp_total?: number

@@ -139,8 +139,8 @@ const DashboardBebe = () => {
       {/* Alerts */}
       <DashboardBebeAlerts alerts={alerts} />
 
-      {/* Gamification row */}
-      <DashboardBebeGamification />
+      {/* Gamification row - hidden in simple mode */}
+      {!profile?.simple_mode && <DashboardBebeGamification />}
 
       {/* Main tabbed content */}
       <Tabs defaultValue="overview" className="space-y-4">
@@ -173,11 +173,13 @@ const DashboardBebe = () => {
             <DashboardBebeRecentActivity />
           </div>
 
-          {/* Insights */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <ActionableInsights maxItems={4} />
-            <CrossModuleInsights />
-          </div>
+          {/* Insights - hidden in simple mode */}
+          {!profile?.simple_mode && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <ActionableInsights maxItems={4} />
+              <CrossModuleInsights />
+            </div>
+          )}
           
           <DashboardBebeTimeline 
             feedingLogs={feedingLogs24h} 

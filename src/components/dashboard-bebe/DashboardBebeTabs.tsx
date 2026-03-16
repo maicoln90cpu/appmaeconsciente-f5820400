@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useProfile } from "@/hooks/useProfile";
 import { 
   TrendingUp, Ruler, Apple, Calculator, Frown, Pill, Calendar, 
   CalendarClock, CalendarDays, FileText, Download, Users, Bell, 
@@ -75,7 +76,14 @@ const tabGroups: TabGroup[] = [
 ];
 
 export const DashboardBebeTabs = () => {
+  const { profile } = useProfile();
   const [expandedGroup, setExpandedGroup] = useState<string | null>(null);
+
+  // In simple mode, hide advanced groups
+  const SIMPLE_MODE_HIDDEN = new Set(["mais"]);
+  const filteredGroups = profile?.simple_mode
+    ? tabGroups.filter(g => !SIMPLE_MODE_HIDDEN.has(g.id))
+    : tabGroups;
 
   // Get the tabs to show: overview is always visible, plus expanded group's tabs
   const visibleTabs: TabConfig[] = [
@@ -89,7 +97,7 @@ export const DashboardBebeTabs = () => {
     <div className="space-y-2">
       {/* Group selector buttons (NOT TabsTriggers) */}
       <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin scrollbar-thumb-muted-foreground/20">
-        {tabGroups.filter(g => g.id !== "hoje").map((group) => {
+        {filteredGroups.filter(g => g.id !== "hoje").map((group) => {
           const GroupIcon = group.icon;
           const isExpanded = expandedGroup === group.id;
 
