@@ -139,8 +139,8 @@ const DashboardBebe = () => {
       {/* Alerts */}
       <DashboardBebeAlerts alerts={alerts} />
 
-      {/* Gamification row */}
-      <DashboardBebeGamification />
+      {/* Gamification row - hidden in simple mode */}
+      {!profile?.simple_mode && <DashboardBebeGamification />}
 
       {/* Main tabbed content */}
       <Tabs defaultValue="overview" className="space-y-4">
