@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/useToast";
 import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { SyncQueuePanel } from "@/components/offline";
+import { ProfileAchievements } from "@/components/profile/ProfileAchievements";
+import { SimpleModeToggle } from "@/components/profile/SimpleModeToggle";
 import {
   AlertDialog,
   AlertDialogAction,
