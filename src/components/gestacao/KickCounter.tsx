@@ -60,7 +60,7 @@ export function KickCounter() {
               </Button>
 
               {kickCount >= 10 && (
-                <Badge variant="default" className="bg-green-600 text-white text-sm px-4 py-2">
+                <Badge variant="default" className="text-sm px-4 py-2">
                   ✅ Meta atingida! Bebê está ativo.
                 </Badge>
               )}
