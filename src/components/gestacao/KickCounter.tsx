@@ -98,7 +98,7 @@ export function KickCounter() {
                   <div>
                     <p className="font-medium">
                       {session.kick_count} movimentos
-                      {session.kick_count >= 10 && <span className="ml-2 text-green-600">✅</span>}
+                      {session.kick_count >= 10 && <span className="ml-2">✅</span>}
                       {session.kick_count < 10 && session.ended_at && <span className="ml-2 text-amber-500">⚠️</span>}
                     </p>
                     <p className="text-xs text-muted-foreground">
