@@ -26,7 +26,7 @@ const FerramentasGestacao = () => {
       </div>
 
       <Tabs defaultValue="ultrassons" className="space-y-6">
-        <TabsList className="flex flex-wrap h-auto gap-1 w-full max-w-2xl p-1.5">
+        <TabsList className="flex flex-wrap h-auto gap-1 w-full max-w-4xl p-1.5">
           <TabsTrigger value="ultrassons" className="flex items-center gap-1.5">
             <Image className="h-4 w-4" />
             <span className="hidden sm:inline">Ultrassons</span>
