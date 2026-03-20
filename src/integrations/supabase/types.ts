@@ -928,6 +928,78 @@ export type Database = {
         }
         Relationships: []
       }
+      birth_plans: {
+        Row: {
+          anesthesia: string | null
+          breastfeed_first_hour: boolean | null
+          companion_backup: string | null
+          companion_name: string | null
+          created_at: string
+          delayed_cord_clamping: boolean | null
+          delivery_type: string | null
+          due_date: string | null
+          emergency_notes: string | null
+          episiotomy_preference: string | null
+          hospital_name: string | null
+          id: string
+          lighting_preference: string | null
+          music_playlist: string | null
+          pediatrician_name: string | null
+          photos_video: boolean | null
+          placenta_preference: string | null
+          skin_to_skin: boolean | null
+          special_requests: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          anesthesia?: string | null
+          breastfeed_first_hour?: boolean | null
+          companion_backup?: string | null
+          companion_name?: string | null
+          created_at?: string
+          delayed_cord_clamping?: boolean | null
+          delivery_type?: string | null
+          due_date?: string | null
+          emergency_notes?: string | null
+          episiotomy_preference?: string | null
+          hospital_name?: string | null
+          id?: string
+          lighting_preference?: string | null
+          music_playlist?: string | null
+          pediatrician_name?: string | null
+          photos_video?: boolean | null
+          placenta_preference?: string | null
+          skin_to_skin?: boolean | null
+          special_requests?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          anesthesia?: string | null
+          breastfeed_first_hour?: boolean | null
+          companion_backup?: string | null
+          companion_name?: string | null
+          created_at?: string
+          delayed_cord_clamping?: boolean | null
+          delivery_type?: string | null
+          due_date?: string | null
+          emergency_notes?: string | null
+          episiotomy_preference?: string | null
+          hospital_name?: string | null
+          id?: string
+          lighting_preference?: string | null
+          music_playlist?: string | null
+          pediatrician_name?: string | null
+          photos_video?: boolean | null
+          placenta_preference?: string | null
+          skin_to_skin?: boolean | null
+          special_requests?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       blocked_users: {
         Row: {
           blocked_id: string
@@ -1882,6 +1954,45 @@ export type Database = {
         }
         Relationships: []
       }
+      kick_count_sessions: {
+        Row: {
+          created_at: string
+          duration_minutes: number | null
+          ended_at: string | null
+          id: string
+          kick_count: number
+          notes: string | null
+          started_at: string
+          target_kicks: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duration_minutes?: number | null
+          ended_at?: string | null
+          id?: string
+          kick_count?: number
+          notes?: string | null
+          started_at?: string
+          target_kicks?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duration_minutes?: number | null
+          ended_at?: string | null
+          id?: string
+          kick_count?: number
+          notes?: string | null
+          started_at?: string
+          target_kicks?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       leaderboard_cache: {
         Row: {
           badges_count: number | null
@@ -2656,6 +2767,51 @@ export type Database = {
           id?: string
           image_urls?: string[] | null
           tags?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pregnancy_exams: {
+        Row: {
+          category: string
+          completed: boolean
+          completed_date: string | null
+          created_at: string
+          exam_name: string
+          id: string
+          is_custom: boolean
+          result_notes: string | null
+          scheduled_date: string | null
+          trimester: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          completed?: boolean
+          completed_date?: string | null
+          created_at?: string
+          exam_name: string
+          id?: string
+          is_custom?: boolean
+          result_notes?: string | null
+          scheduled_date?: string | null
+          trimester: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          completed?: boolean
+          completed_date?: string | null
+          created_at?: string
+          exam_name?: string
+          id?: string
+          is_custom?: boolean
+          result_notes?: string | null
+          scheduled_date?: string | null
+          trimester?: number
           updated_at?: string
           user_id?: string
         }
