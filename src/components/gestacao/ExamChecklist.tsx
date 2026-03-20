@@ -37,7 +37,7 @@ export function ExamChecklist() {
   }));
 
   const trimesterLabels = ["", "1º Trimestre (1-13 sem)", "2º Trimestre (14-27 sem)", "3º Trimestre (28-40 sem)"];
-  const categoryColors: Record<string, string> = { sus: "bg-blue-100 text-blue-800", particular: "bg-purple-100 text-purple-800", ambos: "bg-green-100 text-green-800" };
+  const categoryColors: Record<string, string> = { sus: "bg-primary/10 text-primary", particular: "bg-accent text-accent-foreground", ambos: "bg-secondary text-secondary-foreground" };
 
   const handleAddExam = () => {
     if (!newExamName.trim()) return;
