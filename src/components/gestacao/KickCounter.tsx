@@ -99,7 +99,7 @@ export function KickCounter() {
                     <p className="font-medium">
                       {session.kick_count} movimentos
                       {session.kick_count >= 10 && <span className="ml-2">✅</span>}
-                      {session.kick_count < 10 && session.ended_at && <span className="ml-2 text-amber-500">⚠️</span>}
+                      {session.kick_count < 10 && session.ended_at && <span className="ml-2">⚠️</span>}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {format(new Date(session.started_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
