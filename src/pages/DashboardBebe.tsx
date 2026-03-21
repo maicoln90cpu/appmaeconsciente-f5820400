@@ -208,6 +208,18 @@ const DashboardBebe = () => {
           </Suspense>
         </TabsContent>
 
+        <TabsContent value="jaundice">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <JaundiceMonitor babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="wellness">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <MomWellnessDiary />
+          </Suspense>
+        </TabsContent>
+
         {/* Alimentação group */}
         <TabsContent value="food">
           <Suspense fallback={<TabLoadingSkeleton />}>
