@@ -1954,6 +1954,62 @@ export type Database = {
         }
         Relationships: []
       }
+      jaundice_logs: {
+        Row: {
+          alert_signs: string[] | null
+          baby_profile_id: string | null
+          created_at: string
+          feeding_well: boolean | null
+          id: string
+          kramer_zone: number
+          log_date: string
+          notes: string | null
+          photo_url: string | null
+          sclera_color: string | null
+          skin_color: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alert_signs?: string[] | null
+          baby_profile_id?: string | null
+          created_at?: string
+          feeding_well?: boolean | null
+          id?: string
+          kramer_zone: number
+          log_date?: string
+          notes?: string | null
+          photo_url?: string | null
+          sclera_color?: string | null
+          skin_color?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alert_signs?: string[] | null
+          baby_profile_id?: string | null
+          created_at?: string
+          feeding_well?: boolean | null
+          id?: string
+          kramer_zone?: number
+          log_date?: string
+          notes?: string | null
+          photo_url?: string | null
+          sclera_color?: string | null
+          skin_color?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jaundice_logs_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kick_count_sessions: {
         Row: {
           created_at: string
@@ -2298,6 +2354,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      mom_wellness_logs: {
+        Row: {
+          anxiety: number | null
+          appetite: string | null
+          created_at: string
+          energy: number
+          id: string
+          log_date: string
+          mood: number
+          notes: string | null
+          pain: number
+          sleep_hours: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          anxiety?: number | null
+          appetite?: string | null
+          created_at?: string
+          energy: number
+          id?: string
+          log_date?: string
+          mood: number
+          notes?: string | null
+          pain?: number
+          sleep_hours?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          anxiety?: number | null
+          appetite?: string | null
+          created_at?: string
+          energy?: number
+          id?: string
+          log_date?: string
+          mood?: number
+          notes?: string | null
+          pain?: number
+          sleep_hours?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {

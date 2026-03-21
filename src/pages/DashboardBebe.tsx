@@ -40,6 +40,8 @@ const NotificationSettings = lazy(() => import("@/components/bebe/NotificationSe
 const BabyAchievements = lazy(() => import("@/components/bebe/BabyAchievements").then(m => ({ default: m.BabyAchievements })));
 const FirstTimesAlbum = lazy(() => import("@/components/bebe/FirstTimesAlbum").then(m => ({ default: m.FirstTimesAlbum })));
 const VisualTimeline = lazy(() => import("@/components/bebe/VisualTimeline").then(m => ({ default: m.VisualTimeline })));
+const JaundiceMonitor = lazy(() => import("@/components/bebe/JaundiceMonitor").then(m => ({ default: m.JaundiceMonitor })));
+const MomWellnessDiary = lazy(() => import("@/components/bebe/MomWellnessDiary").then(m => ({ default: m.MomWellnessDiary })));
 
 const DAILY_TIPS = [
   "Beba pelo menos 2 litros de água por dia para manter-se hidratada! 💧",
@@ -203,6 +205,18 @@ const DashboardBebe = () => {
         <TabsContent value="medications">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <MedicationTimer babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="jaundice">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <JaundiceMonitor babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="wellness">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <MomWellnessDiary />
           </Suspense>
         </TabsContent>
 
