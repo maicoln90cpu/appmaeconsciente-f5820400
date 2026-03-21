@@ -38,6 +38,8 @@ const tabGroups: TabGroup[] = [
       { value: "growth", icon: Ruler, label: "Crescimento" },
       { value: "colic", icon: Frown, label: "Cólicas" },
       { value: "medications", icon: Pill, label: "Medicamentos" },
+      { value: "jaundice", icon: Eye, label: "Icterícia" },
+      { value: "wellness", icon: Heart, label: "Bem-estar Mãe" },
     ],
   },
   {
