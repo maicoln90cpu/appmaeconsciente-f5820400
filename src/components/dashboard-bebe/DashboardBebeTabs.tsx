@@ -5,7 +5,7 @@ import {
   TrendingUp, Ruler, Apple, Calculator, Frown, Pill, Calendar, 
   CalendarClock, CalendarDays, FileText, Download, Users, Bell, 
   Trophy, Camera, History, Stethoscope, UtensilsCrossed,
-  MoreHorizontal, ChevronDown, Eye, Heart
+  MoreHorizontal, ChevronDown, Eye, Heart, Baby, Sparkles, ShieldAlert
 } from "lucide-react";
 
 interface TabConfig {
