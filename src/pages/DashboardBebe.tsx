@@ -292,6 +292,25 @@ const DashboardBebe = () => {
           </Suspense>
         </TabsContent>
 
+        {/* Desenvolvimento group */}
+        <TabsContent value="teeth">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <TeethTracker babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="stimulation">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <StimulationBank babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="allergies">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <AllergyDiary babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
         <TabsContent value="timeline">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <VisualTimeline babyProfileId={selectedBabyId} />
