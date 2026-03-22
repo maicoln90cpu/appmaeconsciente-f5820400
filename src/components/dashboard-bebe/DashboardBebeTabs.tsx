@@ -5,7 +5,7 @@ import {
   TrendingUp, Ruler, Apple, Calculator, Frown, Pill, Calendar, 
   CalendarClock, CalendarDays, FileText, Download, Users, Bell, 
   Trophy, Camera, History, Stethoscope, UtensilsCrossed,
-  MoreHorizontal, ChevronDown, Eye, Heart
+  MoreHorizontal, ChevronDown, Eye, Heart, Baby, Sparkles, ShieldAlert
 } from "lucide-react";
 
 interface TabConfig {
@@ -49,6 +49,16 @@ const tabGroups: TabGroup[] = [
     tabs: [
       { value: "food", icon: Apple, label: "Introdução Alimentar" },
       { value: "bottle", icon: Calculator, label: "Mamadeira" },
+    ],
+  },
+  {
+    id: "desenvolvimento",
+    label: "Desenvolvimento",
+    icon: Baby,
+    tabs: [
+      { value: "teeth", icon: Baby, label: "Dentes" },
+      { value: "stimulation", icon: Sparkles, label: "Estimulação" },
+      { value: "allergies", icon: ShieldAlert, label: "Alergias" },
     ],
   },
   {

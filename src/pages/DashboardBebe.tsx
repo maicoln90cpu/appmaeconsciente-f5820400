@@ -42,6 +42,9 @@ const FirstTimesAlbum = lazy(() => import("@/components/bebe/FirstTimesAlbum").t
 const VisualTimeline = lazy(() => import("@/components/bebe/VisualTimeline").then(m => ({ default: m.VisualTimeline })));
 const JaundiceMonitor = lazy(() => import("@/components/bebe/JaundiceMonitor").then(m => ({ default: m.JaundiceMonitor })));
 const MomWellnessDiary = lazy(() => import("@/components/bebe/MomWellnessDiary").then(m => ({ default: m.MomWellnessDiary })));
+const TeethTracker = lazy(() => import("@/components/bebe/TeethTracker").then(m => ({ default: m.TeethTracker })));
+const StimulationBank = lazy(() => import("@/components/bebe/StimulationBank").then(m => ({ default: m.StimulationBank })));
+const AllergyDiary = lazy(() => import("@/components/bebe/AllergyDiary").then(m => ({ default: m.AllergyDiary })));
 
 const DAILY_TIPS = [
   "Beba pelo menos 2 litros de água por dia para manter-se hidratada! 💧",
@@ -286,6 +289,25 @@ const DashboardBebe = () => {
         <TabsContent value="firsts">
           <Suspense fallback={<TabLoadingSkeleton />}>
             <FirstTimesAlbum babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        {/* Desenvolvimento group */}
+        <TabsContent value="teeth">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <TeethTracker babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="stimulation">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <StimulationBank babyProfileId={selectedBabyId} />
+          </Suspense>
+        </TabsContent>
+
+        <TabsContent value="allergies">
+          <Suspense fallback={<TabLoadingSkeleton />}>
+            <AllergyDiary babyProfileId={selectedBabyId} />
           </Suspense>
         </TabsContent>
 

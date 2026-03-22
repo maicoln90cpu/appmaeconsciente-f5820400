@@ -96,6 +96,71 @@ export type Database = {
           },
         ]
       }
+      baby_allergy_logs: {
+        Row: {
+          action_taken: string | null
+          baby_profile_id: string | null
+          created_at: string | null
+          doctor_consulted: boolean | null
+          food_name: string
+          id: string
+          introduction_date: string
+          is_confirmed_allergy: boolean | null
+          notes: string | null
+          onset_time_hours: number | null
+          photo_url: string | null
+          reaction_severity: string | null
+          reaction_type: string | null
+          symptoms: string[] | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          action_taken?: string | null
+          baby_profile_id?: string | null
+          created_at?: string | null
+          doctor_consulted?: boolean | null
+          food_name: string
+          id?: string
+          introduction_date?: string
+          is_confirmed_allergy?: boolean | null
+          notes?: string | null
+          onset_time_hours?: number | null
+          photo_url?: string | null
+          reaction_severity?: string | null
+          reaction_type?: string | null
+          symptoms?: string[] | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          action_taken?: string | null
+          baby_profile_id?: string | null
+          created_at?: string | null
+          doctor_consulted?: boolean | null
+          food_name?: string
+          id?: string
+          introduction_date?: string
+          is_confirmed_allergy?: boolean | null
+          notes?: string | null
+          onset_time_hours?: number | null
+          photo_url?: string | null
+          reaction_severity?: string | null
+          reaction_type?: string | null
+          symptoms?: string[] | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_allergy_logs_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       baby_appointments: {
         Row: {
           appointment_type: string
@@ -697,6 +762,133 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      baby_stimulation_activities: {
+        Row: {
+          age_range_end: number
+          age_range_start: number
+          baby_profile_id: string | null
+          category: string
+          completed_count: number | null
+          created_at: string | null
+          description: string | null
+          development_areas: string[] | null
+          duration_minutes: number | null
+          id: string
+          is_custom: boolean | null
+          is_favorite: boolean | null
+          last_done_at: string | null
+          materials: string[] | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          age_range_end?: number
+          age_range_start?: number
+          baby_profile_id?: string | null
+          category?: string
+          completed_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          development_areas?: string[] | null
+          duration_minutes?: number | null
+          id?: string
+          is_custom?: boolean | null
+          is_favorite?: boolean | null
+          last_done_at?: string | null
+          materials?: string[] | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          age_range_end?: number
+          age_range_start?: number
+          baby_profile_id?: string | null
+          category?: string
+          completed_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          development_areas?: string[] | null
+          duration_minutes?: number | null
+          id?: string
+          is_custom?: boolean | null
+          is_favorite?: boolean | null
+          last_done_at?: string | null
+          materials?: string[] | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_stimulation_activities_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      baby_teeth_logs: {
+        Row: {
+          baby_profile_id: string | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          noticed_date: string
+          pain_level: number | null
+          photo_url: string | null
+          relief_methods: string[] | null
+          symptoms: string[] | null
+          tooth_name: string
+          tooth_number: number
+          tooth_position: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          baby_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          noticed_date?: string
+          pain_level?: number | null
+          photo_url?: string | null
+          relief_methods?: string[] | null
+          symptoms?: string[] | null
+          tooth_name: string
+          tooth_number: number
+          tooth_position?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          baby_profile_id?: string | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          noticed_date?: string
+          pain_level?: number | null
+          photo_url?: string | null
+          relief_methods?: string[] | null
+          symptoms?: string[] | null
+          tooth_name?: string
+          tooth_number?: number
+          tooth_position?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "baby_teeth_logs_baby_profile_id_fkey"
+            columns: ["baby_profile_id"]
+            isOneToOne: false
+            referencedRelation: "baby_vaccination_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       baby_timeline_events: {
         Row: {
