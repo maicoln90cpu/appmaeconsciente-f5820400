@@ -52,6 +52,16 @@ const tabGroups: TabGroup[] = [
     ],
   },
   {
+    id: "desenvolvimento",
+    label: "Desenvolvimento",
+    icon: Baby,
+    tabs: [
+      { value: "teeth", icon: Baby, label: "Dentes" },
+      { value: "stimulation", icon: Sparkles, label: "Estimulação" },
+      { value: "allergies", icon: ShieldAlert, label: "Alergias" },
+    ],
+  },
+  {
     id: "rotina",
     label: "Rotina",
     icon: CalendarClock,
