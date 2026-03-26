@@ -69,7 +69,7 @@ export const StimulationBank = ({ babyProfileId }: Props) => {
         </div>
         <div className="flex gap-2">
           {activities.length === 0 && (
-            <Button variant="outline" size="sm" onClick={seedDefaults}>
+            <Button variant="outline" size="sm" onClick={() => seedDefaults()}>
               <Sparkles className="h-4 w-4 mr-1" /> Carregar sugestões
             </Button>
           )}

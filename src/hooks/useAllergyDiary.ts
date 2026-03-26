@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/useToast";
-import logger from "@/lib/logger";
+import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 export interface AllergyLog {
   id: string;
@@ -43,75 +44,86 @@ export const COMMON_ALLERGENS = [
 ];
 
 export function useAllergyDiary(babyProfileId?: string) {
-  const [logs, setLogs] = useState<AllergyLog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const queryKey = ["allergy-logs", user?.id, babyProfileId];
 
-  const load = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user) { setLogs([]); return; }
-
+  const { data: logs = [], isLoading: loading } = useQuery({
+    queryKey,
+    queryFn: async () => {
       let query = (supabase.from("baby_allergy_logs" as any).select("*") as any)
-        .eq("user_id", userData.user.id)
+        .eq("user_id", user!.id)
         .order("introduction_date", { ascending: false });
 
       if (babyProfileId) query = query.eq("baby_profile_id", babyProfileId);
 
       const { data, error } = await query;
       if (error) throw error;
-      setLogs((data || []) as AllergyLog[]);
-    } catch (e) {
-      logger.error("Error loading allergy logs", e);
-    } finally {
-      setLoading(false);
-    }
-  }, [babyProfileId]);
+      return (data || []) as AllergyLog[];
+    },
+    enabled: !!user,
+    ...QueryCacheConfig.list,
+  });
 
-  const addLog = useCallback(async (log: Record<string, unknown>) => {
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData?.user) throw new Error("Não autenticado");
-
-    const { data, error } = await (supabase.from("baby_allergy_logs" as any).insert({
-      ...log,
-      user_id: userData.user.id,
-      baby_profile_id: babyProfileId || null,
-    } as any).select().single() as any);
-
-    if (error) {
+  const addLog = useMutation({
+    mutationFn: async (log: Record<string, unknown>) => {
+      if (!user) throw new Error("Não autenticado");
+      const { data, error } = await (supabase.from("baby_allergy_logs" as any).insert({
+        ...log,
+        user_id: user.id,
+        baby_profile_id: babyProfileId || null,
+      } as any).select().single() as any);
+      if (error) throw error;
+      return data as AllergyLog;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey });
+      toast({ title: "🍎 Registrado!", description: `${data.food_name} adicionado ao diário` });
+    },
+    onError: () => {
       toast({ title: "Erro", description: "Erro ao registrar alimento", variant: "destructive" });
-      throw error;
-    }
+    },
+  });
 
-    setLogs(prev => [data as AllergyLog, ...prev]);
-    toast({ title: "🍎 Registrado!", description: `${(log as any).food_name} adicionado ao diário` });
-    return data as AllergyLog;
-  }, [babyProfileId, toast]);
+  const updateLog = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
+      const { data, error } = await (supabase.from("baby_allergy_logs" as any)
+        .update(updates as any).eq("id", id).select().single() as any);
+      if (error) throw error;
+      return data as AllergyLog;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast({ title: "Atualizado", description: "Registro atualizado" });
+    },
+  });
 
-  const updateLog = useCallback(async (id: string, updates: Record<string, unknown>) => {
-    const { data, error } = await (supabase.from("baby_allergy_logs" as any)
-      .update(updates as any).eq("id", id).select().single() as any);
-
-    if (error) throw error;
-    setLogs(prev => prev.map(l => l.id === id ? data as AllergyLog : l));
-    toast({ title: "Atualizado", description: "Registro atualizado" });
-    return data as AllergyLog;
-  }, [toast]);
-
-  const removeLog = useCallback(async (id: string) => {
-    const { error } = await (supabase.from("baby_allergy_logs" as any).delete().eq("id", id) as any);
-    if (error) throw error;
-    setLogs(prev => prev.filter(l => l.id !== id));
-    toast({ title: "Removido", description: "Registro excluído" });
-  }, [toast]);
+  const removeLog = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase.from("baby_allergy_logs" as any).delete().eq("id", id) as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast({ title: "Removido", description: "Registro excluído" });
+    },
+  });
 
   // Stats
   const confirmedAllergies = logs.filter(l => l.is_confirmed_allergy);
   const safefoods = logs.filter(l => l.reaction_type === "none" && !l.is_confirmed_allergy);
   const pendingWatch = logs.filter(l => l.reaction_type !== "none" && !l.is_confirmed_allergy);
 
-  useEffect(() => { load(); }, [load]);
-
-  return { logs, loading, addLog, updateLog, removeLog, reload: load, confirmedAllergies, safefoods, pendingWatch };
+  return {
+    logs,
+    loading,
+    addLog: addLog.mutateAsync,
+    updateLog: (id: string, updates: Record<string, unknown>) => updateLog.mutateAsync({ id, updates }),
+    removeLog: removeLog.mutateAsync,
+    reload: () => queryClient.invalidateQueries({ queryKey }),
+    confirmedAllergies,
+    safefoods,
+    pendingWatch,
+  };
 }
