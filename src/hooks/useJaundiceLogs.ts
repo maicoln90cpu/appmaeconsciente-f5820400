@@ -45,9 +45,10 @@ export const useJaundiceLogs = (babyProfileId?: string) => {
 
   const addLog = useMutation({
     mutationFn: async (log: Omit<JaundiceLog, "id" | "user_id" | "created_at" | "updated_at">) => {
+      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("jaundice_logs")
-        .insert({ ...log, user_id: user!.id })
+        .insert({ ...log, user_id: user.id })
         .select()
         .single();
       if (error) throw error;

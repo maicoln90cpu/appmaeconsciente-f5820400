@@ -91,11 +91,22 @@ export function useKickCounter() {
     const newCount = kickCount + 1;
     setKickCount(newCount);
 
-    await (supabase
-      .from("kick_count_sessions" as any)
-      .update({ kick_count: newCount } as any)
-      .eq("id", activeSessionId) as any);
-  }, [activeSessionId, kickCount]);
+    try {
+      const { error } = await (supabase
+        .from("kick_count_sessions" as any)
+        .update({ kick_count: newCount } as any)
+        .eq("id", activeSessionId) as any);
+      if (error) {
+        logger.error("Kick record error", error);
+        setKickCount(kickCount); // rollback UI
+        toast({ title: "Erro ao salvar chute", description: "Tente novamente", variant: "destructive" });
+      }
+    } catch (e) {
+      logger.error("Kick record exception", e);
+      setKickCount(kickCount); // rollback UI
+      toast({ title: "Erro ao salvar chute", description: "Tente novamente", variant: "destructive" });
+    }
+  }, [activeSessionId, kickCount, toast]);
 
   // Finalizar sessão
   const endSession = useMutation({
