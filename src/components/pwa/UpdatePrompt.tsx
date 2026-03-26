@@ -57,9 +57,11 @@ export const UpdatePrompt = () => {
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       
       // Reload page when new SW takes control
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
+      const onControllerChange = () => {
+        navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
         window.location.reload();
-      });
+      };
+      navigator.serviceWorker.addEventListener('controllerchange', onControllerChange);
     }
     setShowPrompt(false);
   };

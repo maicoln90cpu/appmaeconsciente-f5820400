@@ -39,10 +39,11 @@ export const useMomWellness = () => {
 
   const upsertLog = useMutation({
     mutationFn: async (log: Omit<MomWellnessLog, "id" | "user_id" | "created_at" | "updated_at">) => {
+      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("mom_wellness_logs")
         .upsert(
-          { ...log, user_id: user!.id },
+          { ...log, user_id: user.id },
           { onConflict: "user_id,log_date" }
         )
         .select()

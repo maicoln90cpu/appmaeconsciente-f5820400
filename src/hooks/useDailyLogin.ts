@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useGamification, XP_REWARDS } from "@/hooks/useGamification";
 import { format, differenceInDays, parseISO } from "date-fns";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export interface DailyLoginData {
   id: string;
@@ -139,11 +139,13 @@ export const useDailyLogin = () => {
     },
   });
 
-  // Auto-record login on mount
+  // Auto-record login on mount (with ref guard to prevent double-fire in StrictMode)
+  const hasRecordedRef = useRef(false);
   useEffect(() => {
     if (user && !isLoading) {
       const today = format(new Date(), "yyyy-MM-dd");
-      if (loginData?.last_login_date !== today) {
+      if (loginData?.last_login_date !== today && !hasRecordedRef.current) {
+        hasRecordedRef.current = true;
         recordLogin.mutate();
       }
     }
