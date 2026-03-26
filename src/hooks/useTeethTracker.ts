@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/useToast";
-import logger from "@/lib/logger";
+import { QueryCacheConfig } from "@/lib/query-config";
 
 export interface ToothLog {
   id: string;
@@ -56,62 +57,66 @@ export const RELIEF_METHODS = [
 ];
 
 export function useTeethTracker(babyProfileId?: string) {
-  const [logs, setLogs] = useState<ToothLog[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const queryKey = ["teeth-logs", user?.id, babyProfileId];
 
-  const load = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData?.user) { setLogs([]); return; }
-
+  const { data: logs = [], isLoading: loading } = useQuery({
+    queryKey,
+    queryFn: async () => {
       let query = (supabase.from("baby_teeth_logs" as any).select("*") as any)
-        .eq("user_id", userData.user.id)
+        .eq("user_id", user!.id)
         .order("noticed_date", { ascending: true });
 
       if (babyProfileId) query = query.eq("baby_profile_id", babyProfileId);
 
       const { data, error } = await query;
       if (error) throw error;
-      setLogs((data || []) as ToothLog[]);
-    } catch (e) {
-      logger.error("Error loading teeth logs", e);
-    } finally {
-      setLoading(false);
-    }
-  }, [babyProfileId]);
+      return (data || []) as ToothLog[];
+    },
+    enabled: !!user,
+    ...QueryCacheConfig.list,
+  });
 
-  const addTooth = useCallback(async (tooth: Omit<ToothLog, "id" | "user_id" | "created_at">) => {
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData?.user) throw new Error("Não autenticado");
-
-    const { data, error } = await (supabase.from("baby_teeth_logs" as any).insert({
-      ...tooth,
-      user_id: userData.user.id,
-    } as any).select().single() as any);
-
-    if (error) {
+  const addTooth = useMutation({
+    mutationFn: async (tooth: Omit<ToothLog, "id" | "user_id" | "created_at">) => {
+      if (!user) throw new Error("Não autenticado");
+      const { data, error } = await (supabase.from("baby_teeth_logs" as any).insert({
+        ...tooth,
+        user_id: user.id,
+      } as any).select().single() as any);
+      if (error) throw error;
+      return data as ToothLog;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey });
+      toast({ title: "🦷 Dente registrado!", description: `${data.tooth_name} anotado com sucesso` });
+    },
+    onError: () => {
       toast({ title: "Erro", description: "Erro ao registrar dente", variant: "destructive" });
-      throw error;
-    }
+    },
+  });
 
-    setLogs(prev => [...prev, data as ToothLog]);
-    toast({ title: "🦷 Dente registrado!", description: `${tooth.tooth_name} anotado com sucesso` });
-    return data as ToothLog;
-  }, [toast]);
-
-  const removeTooth = useCallback(async (id: string) => {
-    const { error } = await (supabase.from("baby_teeth_logs" as any).delete().eq("id", id) as any);
-    if (error) {
+  const removeTooth = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await (supabase.from("baby_teeth_logs" as any).delete().eq("id", id) as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast({ title: "Removido", description: "Registro excluído" });
+    },
+    onError: () => {
       toast({ title: "Erro", description: "Erro ao remover registro", variant: "destructive" });
-      throw error;
-    }
-    setLogs(prev => prev.filter(l => l.id !== id));
-    toast({ title: "Removido", description: "Registro excluído" });
-  }, [toast]);
+    },
+  });
 
-  useEffect(() => { load(); }, [load]);
-
-  return { logs, loading, addTooth, removeTooth, reload: load };
+  return {
+    logs,
+    loading,
+    addTooth: addTooth.mutateAsync,
+    removeTooth: removeTooth.mutateAsync,
+    reload: () => queryClient.invalidateQueries({ queryKey }),
+  };
 }
