@@ -63,9 +63,9 @@ export function usePregnancyExams() {
     queryKey: ["pregnancy-exams"],
     queryFn: async () => {
       const userId = await getAuthenticatedUser();
-      const { data, error } = await (supabase
-        .from("pregnancy_exams" as any)
-        .select("*") as any)
+      const { data, error } = await supabase
+        .from("pregnancy_exams")
+        .select("*")
         .eq("user_id", userId)
         .order("trimester", { ascending: true })
         .order("exam_name", { ascending: true });
@@ -86,9 +86,9 @@ export function usePregnancyExams() {
     try {
       const userId = await getAuthenticatedUser();
       const rows = DEFAULT_EXAMS.map((e) => ({ ...e, user_id: userId }));
-      const { error } = await (supabase
-        .from("pregnancy_exams" as any)
-        .insert(rows as any) as any);
+      const { error } = await supabase
+        .from("pregnancy_exams")
+        .insert(rows);
       if (error) throw error;
       queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
     } catch (e) {
@@ -98,11 +98,10 @@ export function usePregnancyExams() {
 
   const toggleCompleted = useMutation({
     mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
-      const updates: any = { completed, completed_date: completed ? new Date().toISOString().split("T")[0] : null };
-      const { error } = await (supabase
-        .from("pregnancy_exams" as any)
-        .update(updates)
-        .eq("id", id) as any);
+      const { error } = await supabase
+        .from("pregnancy_exams")
+        .update({ completed, completed_date: completed ? new Date().toISOString().split("T")[0] : null })
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -112,10 +111,10 @@ export function usePregnancyExams() {
 
   const updateExam = useMutation({
     mutationFn: async ({ id, ...updates }: { id: string; scheduled_date?: string; result_notes?: string }) => {
-      const { error } = await (supabase
-        .from("pregnancy_exams" as any)
-        .update(updates as any)
-        .eq("id", id) as any);
+      const { error } = await supabase
+        .from("pregnancy_exams")
+        .update(updates)
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -127,9 +126,9 @@ export function usePregnancyExams() {
   const addCustomExam = useMutation({
     mutationFn: async (exam: { exam_name: string; trimester: number; category: string }) => {
       const userId = await getAuthenticatedUser();
-      const { error } = await (supabase
-        .from("pregnancy_exams" as any)
-        .insert({ ...exam, user_id: userId, is_custom: true } as any) as any);
+      const { error } = await supabase
+        .from("pregnancy_exams")
+        .insert({ ...exam, user_id: userId, is_custom: true });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -140,10 +139,10 @@ export function usePregnancyExams() {
 
   const deleteExam = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase
-        .from("pregnancy_exams" as any)
+      const { error } = await supabase
+        .from("pregnancy_exams")
         .delete()
-        .eq("id", id) as any);
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

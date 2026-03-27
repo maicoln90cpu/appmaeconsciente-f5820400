@@ -38,9 +38,9 @@ export function useBirthPlan() {
     queryKey: ["birth-plan"],
     queryFn: async (): Promise<BirthPlan | null> => {
       const userId = await getAuthenticatedUser();
-      const { data, error } = await (supabase
-        .from("birth_plans" as any)
-        .select("*") as any)
+      const { data, error } = await supabase
+        .from("birth_plans")
+        .select("*")
         .eq("user_id", userId)
         .maybeSingle();
       if (error) throw error;
@@ -52,20 +52,20 @@ export function useBirthPlan() {
     mutationFn: async (input: Partial<BirthPlanInput>) => {
       const userId = await getAuthenticatedUser();
       if (plan) {
-        const { data, error } = await (supabase
-          .from("birth_plans" as any)
-          .update(input as any)
+        const { data, error } = await supabase
+          .from("birth_plans")
+          .update(input)
           .eq("id", plan.id)
           .select()
-          .single() as any);
+          .single();
         if (error) throw error;
         return data as BirthPlan;
       } else {
-        const { data, error } = await (supabase
-          .from("birth_plans" as any)
-          .insert({ ...input, user_id: userId } as any)
+        const { data, error } = await supabase
+          .from("birth_plans")
+          .insert({ ...input, user_id: userId })
           .select()
-          .single() as any);
+          .single();
         if (error) throw error;
         return data as BirthPlan;
       }

@@ -52,7 +52,7 @@ export function useAllergyDiary(babyProfileId?: string) {
   const { data: logs = [], isLoading: loading } = useQuery({
     queryKey,
     queryFn: async () => {
-      let query = (supabase.from("baby_allergy_logs" as any).select("*") as any)
+      let query = supabase.from("baby_allergy_logs").select("*")
         .eq("user_id", user!.id)
         .order("introduction_date", { ascending: false });
 
@@ -69,11 +69,11 @@ export function useAllergyDiary(babyProfileId?: string) {
   const addLog = useMutation({
     mutationFn: async (log: Record<string, unknown>) => {
       if (!user) throw new Error("Não autenticado");
-      const { data, error } = await (supabase.from("baby_allergy_logs" as any).insert({
+      const { data, error } = await supabase.from("baby_allergy_logs").insert({
         ...log,
         user_id: user.id,
         baby_profile_id: babyProfileId || null,
-      } as any).select().single() as any);
+      } as never).select().single();
       if (error) throw error;
       return data as AllergyLog;
     },
@@ -88,8 +88,8 @@ export function useAllergyDiary(babyProfileId?: string) {
 
   const updateLog = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Record<string, unknown> }) => {
-      const { data, error } = await (supabase.from("baby_allergy_logs" as any)
-        .update(updates as any).eq("id", id).select().single() as any);
+      const { data, error } = await supabase.from("baby_allergy_logs")
+        .update(updates as never).eq("id", id).select().single();
       if (error) throw error;
       return data as AllergyLog;
     },
@@ -101,7 +101,7 @@ export function useAllergyDiary(babyProfileId?: string) {
 
   const removeLog = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from("baby_allergy_logs" as any).delete().eq("id", id) as any);
+      const { error } = await supabase.from("baby_allergy_logs").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
