@@ -26,12 +26,12 @@ const registerDefaultHandlers = () => {
       const insertData = { ...task.data, user_id: user.id };
       const { error } = await supabase
         .from("baby_feeding_logs")
-        .insert(insertData as any);
+        .insert(insertData as never);
       if (error) throw error;
     } else if (task.operation === "update") {
       const { error } = await supabase
         .from("baby_feeding_logs")
-        .update(task.data as any)
+        .update(task.data as never)
         .eq("id", task.data.id);
       if (error) throw error;
     } else if (task.operation === "delete") {
@@ -52,12 +52,12 @@ const registerDefaultHandlers = () => {
       const insertData = { ...task.data, user_id: user.id };
       const { error } = await supabase
         .from("baby_sleep_logs")
-        .insert(insertData as any);
+        .insert(insertData as never);
       if (error) throw error;
     } else if (task.operation === "update") {
       const { error } = await supabase
         .from("baby_sleep_logs")
-        .update(task.data as any)
+        .update(task.data as never)
         .eq("id", task.data.id);
       if (error) throw error;
     } else if (task.operation === "delete") {
@@ -78,12 +78,12 @@ const registerDefaultHandlers = () => {
       const insertData = { ...task.data, user_id: user.id };
       const { error } = await supabase
         .from("itens_enxoval")
-        .insert(insertData as any);
+        .insert(insertData as never);
       if (error) throw error;
     } else if (task.operation === "update") {
       const { error } = await supabase
         .from("itens_enxoval")
-        .update(task.data as any)
+        .update(task.data as never)
         .eq("id", task.data.id);
       if (error) throw error;
     } else if (task.operation === "delete") {
@@ -410,7 +410,7 @@ export function useOfflineSync() {
       type: string,
       table: string,
       operation: "insert" | "update" | "delete",
-      data: Record<string, any>
+      data: Record<string, unknown>
     ) => {
       return offlineSync.queueTask(type, table, operation, data);
     },

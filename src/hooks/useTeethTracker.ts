@@ -65,7 +65,7 @@ export function useTeethTracker(babyProfileId?: string) {
   const { data: logs = [], isLoading: loading } = useQuery({
     queryKey,
     queryFn: async () => {
-      let query = (supabase.from("baby_teeth_logs" as any).select("*") as any)
+      let query = supabase.from("baby_teeth_logs").select("*")
         .eq("user_id", user!.id)
         .order("noticed_date", { ascending: true });
 
@@ -82,10 +82,10 @@ export function useTeethTracker(babyProfileId?: string) {
   const addTooth = useMutation({
     mutationFn: async (tooth: Omit<ToothLog, "id" | "user_id" | "created_at">) => {
       if (!user) throw new Error("Não autenticado");
-      const { data, error } = await (supabase.from("baby_teeth_logs" as any).insert({
+      const { data, error } = await supabase.from("baby_teeth_logs").insert({
         ...tooth,
         user_id: user.id,
-      } as any).select().single() as any);
+      }).select().single();
       if (error) throw error;
       return data as ToothLog;
     },
@@ -100,7 +100,7 @@ export function useTeethTracker(babyProfileId?: string) {
 
   const removeTooth = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from("baby_teeth_logs" as any).delete().eq("id", id) as any);
+      const { error } = await supabase.from("baby_teeth_logs").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

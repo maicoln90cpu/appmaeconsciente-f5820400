@@ -2,8 +2,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
-// Interface local - tabela 'partner_access' não está nos types gerados do Supabase
-// TODO: Verificar se a tabela partner_access existe no banco ou criar migration
 export interface PartnerAccess {
   id: string;
   user_id: string;
@@ -26,9 +24,7 @@ export const usePartnerAccess = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Tabela 'partner_access' não está tipada no schema gerado
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('partner_access')
         .select('id, user_id, partner_email, access_token, is_active, granted_at, expires_at, last_accessed, created_at, updated_at')
         .eq('user_id', user.id)
@@ -54,8 +50,7 @@ export const usePartnerAccess = () => {
         ? new Date(Date.now() + expires_in_days * 24 * 60 * 60 * 1000).toISOString()
         : null;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('partner_access')
         .insert({ 
           user_id: user.id,
@@ -79,8 +74,7 @@ export const usePartnerAccess = () => {
 
   const revokeAccess = useMutation({
     mutationFn: async (accessId: string) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error } = await (supabase as any)
+      const { error } = await supabase
         .from('partner_access')
         .update({ is_active: false })
         .eq('id', accessId);

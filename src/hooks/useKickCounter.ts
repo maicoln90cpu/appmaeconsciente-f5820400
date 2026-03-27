@@ -49,9 +49,9 @@ export function useKickCounter() {
     queryKey: ["kick-count-sessions"],
     queryFn: async () => {
       const userId = await getAuthenticatedUser();
-      const { data, error } = await (supabase
-        .from("kick_count_sessions" as any)
-        .select("*") as any)
+      const { data, error } = await supabase
+        .from("kick_count_sessions")
+        .select("*")
         .eq("user_id", userId)
         .order("started_at", { ascending: false })
         .limit(30);
@@ -64,11 +64,11 @@ export function useKickCounter() {
   const startSession = useMutation({
     mutationFn: async () => {
       const userId = await getAuthenticatedUser();
-      const { data, error } = await (supabase
-        .from("kick_count_sessions" as any)
-        .insert({ user_id: userId, kick_count: 0, target_kicks: 10 } as any)
+      const { data, error } = await supabase
+        .from("kick_count_sessions")
+        .insert({ user_id: userId, kick_count: 0, target_kicks: 10 })
         .select()
-        .single() as any);
+        .single();
       if (error) throw error;
       return data as KickSession;
     },
@@ -92,10 +92,10 @@ export function useKickCounter() {
     setKickCount(newCount);
 
     try {
-      const { error } = await (supabase
-        .from("kick_count_sessions" as any)
-        .update({ kick_count: newCount } as any)
-        .eq("id", activeSessionId) as any);
+      const { error } = await supabase
+        .from("kick_count_sessions")
+        .update({ kick_count: newCount })
+        .eq("id", activeSessionId);
       if (error) {
         logger.error("Kick record error", error);
         setKickCount(kickCount); // rollback UI
@@ -113,16 +113,16 @@ export function useKickCounter() {
     mutationFn: async () => {
       if (!activeSessionId) throw new Error("No active session");
       const durationMinutes = Math.ceil(elapsedSeconds / 60);
-      const { data, error } = await (supabase
-        .from("kick_count_sessions" as any)
+      const { data, error } = await supabase
+        .from("kick_count_sessions")
         .update({
           ended_at: new Date().toISOString(),
           kick_count: kickCount,
           duration_minutes: durationMinutes,
-        } as any)
+        })
         .eq("id", activeSessionId)
         .select()
-        .single() as any);
+        .single();
       if (error) throw error;
       return data as KickSession;
     },
@@ -141,10 +141,10 @@ export function useKickCounter() {
   // Deletar sessão
   const deleteSession = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase
-        .from("kick_count_sessions" as any)
+      const { error } = await supabase
+        .from("kick_count_sessions")
         .delete()
-        .eq("id", id) as any);
+        .eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {

@@ -64,7 +64,7 @@ export function useStimulationBank(babyProfileId?: string) {
   const { data: activities = [], isLoading: loading } = useQuery({
     queryKey,
     queryFn: async () => {
-      let query = (supabase.from("baby_stimulation_activities" as any).select("*") as any)
+      let query = supabase.from("baby_stimulation_activities").select("*")
         .eq("user_id", user!.id)
         .order("category", { ascending: true });
 
@@ -89,7 +89,7 @@ export function useStimulationBank(babyProfileId?: string) {
         is_favorite: false,
         completed_count: 0,
       }));
-      const { error } = await (supabase.from("baby_stimulation_activities" as any).insert(items as any) as any);
+      const { error } = await supabase.from("baby_stimulation_activities").insert(items);
       if (error) throw error;
     },
     onSuccess: () => {
@@ -104,11 +104,11 @@ export function useStimulationBank(babyProfileId?: string) {
   const addActivity = useMutation({
     mutationFn: async (activity: Record<string, unknown>) => {
       if (!user) throw new Error("Não autenticado");
-      const { data, error } = await (supabase.from("baby_stimulation_activities" as any).insert({
+      const { data, error } = await supabase.from("baby_stimulation_activities").insert({
         ...activity,
         user_id: user.id,
         is_custom: true,
-      } as any).select().single() as any);
+      } as never).select().single();
       if (error) throw error;
       return data as StimulationActivity;
     },
@@ -122,9 +122,9 @@ export function useStimulationBank(babyProfileId?: string) {
     mutationFn: async (id: string) => {
       const current = activities.find(a => a.id === id);
       if (!current) throw new Error("Atividade não encontrada");
-      const { data, error } = await (supabase.from("baby_stimulation_activities" as any)
-        .update({ completed_count: current.completed_count + 1, last_done_at: new Date().toISOString() } as any)
-        .eq("id", id).select().single() as any);
+      const { data, error } = await supabase.from("baby_stimulation_activities")
+        .update({ completed_count: current.completed_count + 1, last_done_at: new Date().toISOString() })
+        .eq("id", id).select().single();
       if (error) throw error;
       return data as StimulationActivity;
     },
@@ -138,9 +138,9 @@ export function useStimulationBank(babyProfileId?: string) {
     mutationFn: async (id: string) => {
       const current = activities.find(a => a.id === id);
       if (!current) throw new Error("Atividade não encontrada");
-      const { data, error } = await (supabase.from("baby_stimulation_activities" as any)
-        .update({ is_favorite: !current.is_favorite } as any)
-        .eq("id", id).select().single() as any);
+      const { data, error } = await supabase.from("baby_stimulation_activities")
+        .update({ is_favorite: !current.is_favorite })
+        .eq("id", id).select().single();
       if (error) throw error;
       return data as StimulationActivity;
     },
@@ -151,7 +151,7 @@ export function useStimulationBank(babyProfileId?: string) {
 
   const removeActivity = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await (supabase.from("baby_stimulation_activities" as any).delete().eq("id", id) as any);
+      const { error } = await supabase.from("baby_stimulation_activities").delete().eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
