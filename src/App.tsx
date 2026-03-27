@@ -15,6 +15,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SkipLink } from "@/components/SkipLink";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
 import { UpdatePrompt } from "@/components/pwa/UpdatePrompt";
+import { FeatureErrorBoundary } from "@/components/FeatureErrorBoundary";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 
@@ -22,6 +23,7 @@ import { useAnalytics } from "@/hooks/useAnalytics";
 import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 
 import { lazyWithRetry, prefetchCommonRoutes } from "@/lib/lazy-utils";
+import { defaultQueryClientConfig } from "@/lib/query-config";
 
 // Lazy load com retry automático para resiliência de rede
 const Landing = lazyWithRetry(() => import("./pages/Landing"));
@@ -73,36 +75,18 @@ const ScrollToTop = () => {
   return null;
 };
 
+/** Helper to wrap a page with FeatureErrorBoundary + MainLayout + animation */
+const FeaturePage = ({ name, children }: { name: string; children: React.ReactNode }) => (
+  <MainLayout>
+    <FeatureErrorBoundary featureName={name}>
+      <div className="animate-scale-in">{children}</div>
+    </FeatureErrorBoundary>
+  </MainLayout>
+);
+
 const App = () => {
-  // QueryClient com configuração centralizada
-  const [queryClient] = useState(() => {
-    // Importação dinâmica lazy para não bloquear
-    import('@/lib/query-config').then(({ defaultQueryClientConfig }) => {
-      queryClient.setDefaultOptions(defaultQueryClientConfig.defaultOptions);
-    });
-    
-    return new QueryClient({
-      defaultOptions: {
-        queries: {
-          // Configuração inicial (será sobrescrita após load)
-          staleTime: 1000 * 60 * 5, // 5 minutos
-          gcTime: 1000 * 60 * 30, // 30 minutos
-          refetchOnWindowFocus: false,
-          refetchOnReconnect: true,
-          retry: (failureCount, error) => {
-            // Não retry em erros de autenticação
-            if (error instanceof Error && error.message.includes('401')) {
-              return false;
-            }
-            return failureCount < 2;
-          },
-        },
-        mutations: {
-          retry: 1,
-        },
-      },
-    });
-  });
+  // QueryClient com configuração centralizada — importação síncrona
+  const [queryClient] = useState(() => new QueryClient(defaultQueryClientConfig));
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -126,56 +110,56 @@ const App = () => {
             
             {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute />}>
-              <Route path="/complete-profile" element={<MainLayout><div className="animate-scale-in"><CompleteProfile /></div></MainLayout>} />
-              <Route path="/dashboard" element={<MainLayout><div className="animate-scale-in"><Dashboard /></div></MainLayout>} />
-              <Route path="/profile" element={<MainLayout><div className="animate-scale-in"><ProfileSettings /></div></MainLayout>} />
-              <Route path="/admin" element={<MainLayout><div className="animate-scale-in"><AdminDashboard /></div></MainLayout>} />
-              <Route path="/materiais" element={<MainLayout><div className="animate-scale-in"><Materiais /></div></MainLayout>} />
-              <Route path="/clube-premium" element={<MainLayout><div className="animate-scale-in"><ClubePremium /></div></MainLayout>} />
-              <Route path="/dashboard-bebe" element={<MainLayout><div className="animate-scale-in"><DashboardBebe /></div></MainLayout>} />
-              <Route path="/conquistas" element={<MainLayout><div className="animate-scale-in"><MinhasConquistas /></div></MainLayout>} />
-              <Route path="/comunidade" element={<MainLayout><div className="animate-scale-in"><Comunidade /></div></MainLayout>} />
-              <Route path="/suporte" element={<MainLayout><div className="animate-scale-in"><Suporte /></div></MainLayout>} />
+              <Route path="/complete-profile" element={<FeaturePage name="Perfil"><CompleteProfile /></FeaturePage>} />
+              <Route path="/dashboard" element={<FeaturePage name="Dashboard"><Dashboard /></FeaturePage>} />
+              <Route path="/profile" element={<FeaturePage name="Perfil"><ProfileSettings /></FeaturePage>} />
+              <Route path="/admin" element={<FeaturePage name="Admin"><AdminDashboard /></FeaturePage>} />
+              <Route path="/materiais" element={<FeaturePage name="Materiais"><Materiais /></FeaturePage>} />
+              <Route path="/clube-premium" element={<FeaturePage name="Premium"><ClubePremium /></FeaturePage>} />
+              <Route path="/dashboard-bebe" element={<FeaturePage name="Dashboard Bebê"><DashboardBebe /></FeaturePage>} />
+              <Route path="/conquistas" element={<FeaturePage name="Conquistas"><MinhasConquistas /></FeaturePage>} />
+              <Route path="/comunidade" element={<FeaturePage name="Comunidade"><Comunidade /></FeaturePage>} />
+              <Route path="/suporte" element={<FeaturePage name="Suporte"><Suporte /></FeaturePage>} />
               
               {/* Product Routes */}
               <Route element={<ProductRoute productSlug="controle-enxoval" />}>
-                <Route path="/materiais/controle-enxoval" element={<MainLayout><div className="animate-scale-in"><Index /></div></MainLayout>} />
+                <Route path="/materiais/controle-enxoval" element={<FeaturePage name="Enxoval"><Index /></FeaturePage>} />
               </Route>
               
               <Route element={<ProductRoute productSlug="calculadora-fraldas" />}>
-                <Route path="/materiais/calculadora-fraldas" element={<MainLayout><div className="animate-scale-in"><CalculadoraFraldas /></div></MainLayout>} />
+                <Route path="/materiais/calculadora-fraldas" element={<FeaturePage name="Calculadora de Fraldas"><CalculadoraFraldas /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="mala-maternidade" />}>
-                <Route path="/materiais/mala-maternidade" element={<MainLayout><div className="animate-scale-in"><MalaDaMaternidade /></div></MainLayout>} />
+                <Route path="/materiais/mala-maternidade" element={<FeaturePage name="Mala da Maternidade"><MalaDaMaternidade /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="guia-alimentacao" />}>
-                <Route path="/materiais/guia-alimentacao" element={<MainLayout><div className="animate-scale-in"><GuiaAlimentacao /></div></MainLayout>} />
+                <Route path="/materiais/guia-alimentacao" element={<FeaturePage name="Alimentação"><GuiaAlimentacao /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="diario-sono" />}>
-                <Route path="/materiais/diario-sono" element={<MainLayout><div className="animate-scale-in"><DiarioSono /></div></MainLayout>} />
+                <Route path="/materiais/diario-sono" element={<FeaturePage name="Diário de Sono"><DiarioSono /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="rastreador-amamentacao" />}>
-                <Route path="/materiais/rastreador-amamentacao" element={<MainLayout><div className="animate-scale-in"><RastreadorAmamentacao /></div></MainLayout>} />
+                <Route path="/materiais/rastreador-amamentacao" element={<FeaturePage name="Amamentação"><RastreadorAmamentacao /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="cartao-vacinacao" />}>
-                <Route path="/materiais/cartao-vacinacao" element={<MainLayout><div className="animate-scale-in"><CartaoVacinacao /></div></MainLayout>} />
+                <Route path="/materiais/cartao-vacinacao" element={<FeaturePage name="Vacinação"><CartaoVacinacao /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="recuperacao-pos-parto" />}>
-                <Route path="/materiais/recuperacao-pos-parto" element={<MainLayout><div className="animate-scale-in"><RecuperacaoPosPartoPage /></div></MainLayout>} />
+                <Route path="/materiais/recuperacao-pos-parto" element={<FeaturePage name="Recuperação Pós-Parto"><RecuperacaoPosPartoPage /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="monitor-desenvolvimento" />}>
-                <Route path="/materiais/monitor-desenvolvimento" element={<MainLayout><div className="animate-scale-in"><MonitorDesenvolvimento /></div></MainLayout>} />
+                <Route path="/materiais/monitor-desenvolvimento" element={<FeaturePage name="Desenvolvimento"><MonitorDesenvolvimento /></FeaturePage>} />
               </Route>
 
               <Route element={<ProductRoute productSlug="ferramentas-gestacao" />}>
-                <Route path="/materiais/ferramentas-gestacao" element={<MainLayout><div className="animate-scale-in"><FerramentasGestacao /></div></MainLayout>} />
+                <Route path="/materiais/ferramentas-gestacao" element={<FeaturePage name="Gestação"><FerramentasGestacao /></FeaturePage>} />
               </Route>
             </Route>
 
