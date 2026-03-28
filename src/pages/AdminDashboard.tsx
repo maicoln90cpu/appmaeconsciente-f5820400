@@ -86,10 +86,11 @@ export default function AdminDashboard() {
 
   const loadStats = async () => {
     try {
-      // Get total users
+      // Get total users (exclude virtual/bot users)
       const { count: totalUsers } = await supabase
         .from('profiles')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
+        .neq('is_virtual', true);
 
       // Get total items
       const { count: totalItems } = await supabase

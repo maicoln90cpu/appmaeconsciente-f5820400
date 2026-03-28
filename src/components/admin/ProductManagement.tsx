@@ -6,9 +6,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface Product {
   id: string;
@@ -84,9 +93,7 @@ export const ProductManagement = () => {
       setNewProduct(false);
       resetForm();
     },
-    onError: () => {
-      toast.error("Erro ao criar produto");
-    },
+    onError: () => toast.error("Erro ao criar produto"),
   });
 
   const updateMutation = useMutation({
@@ -100,9 +107,7 @@ export const ProductManagement = () => {
       setEditingId(null);
       resetForm();
     },
-    onError: () => {
-      toast.error("Erro ao atualizar produto");
-    },
+    onError: () => toast.error("Erro ao atualizar produto"),
   });
 
   const deleteMutation = useMutation({
@@ -114,27 +119,15 @@ export const ProductManagement = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       toast.success("Produto deletado");
     },
-    onError: () => {
-      toast.error("Erro ao deletar produto");
-    },
+    onError: () => toast.error("Erro ao deletar produto"),
   });
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      slug: "",
-      description: "",
-      short_description: "",
-      price: null,
-      is_free: true,
-      is_active: true,
-      display_order: 0,
-      destination_url: null,
-      hotmart_product_id: null,
-      payment_url: null,
-      access_duration_days: null,
-      trial_enabled: false,
-      trial_days: 3,
+      title: "", slug: "", description: "", short_description: "",
+      price: null, is_free: true, is_active: true, display_order: 0,
+      destination_url: null, hotmart_product_id: null, payment_url: null,
+      access_duration_days: null, trial_enabled: false, trial_days: 3,
     });
   };
 
@@ -157,9 +150,9 @@ export const ProductManagement = () => {
     resetForm();
   };
 
-  if (isLoading) {
-    return <div>Carregando produtos...</div>;
-  }
+  if (isLoading) return <div>Carregando produtos...</div>;
+
+  const isEditing = newProduct || editingId !== null;
 
   return (
     <div className="space-y-4">
@@ -171,309 +164,150 @@ export const ProductManagement = () => {
         </Button>
       </div>
 
-      {newProduct && (
+      {/* Edit/Create Form */}
+      {isEditing && (
         <Card>
           <CardHeader>
-            <CardTitle>Novo Produto</CardTitle>
+            <CardTitle>{newProduct ? "Novo Produto" : "Editar Produto"}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Título</Label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                />
+                <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
               </div>
               <div>
                 <Label>Slug (URL)</Label>
-                <Input
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                />
+                <Input value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} />
               </div>
             </div>
             <div>
               <Label>Descrição Curta</Label>
-              <Input
-                value={formData.short_description || ""}
-                onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
-              />
+              <Input value={formData.short_description || ""} onChange={(e) => setFormData({ ...formData, short_description: e.target.value })} />
             </div>
             <div>
               <Label>Descrição</Label>
-              <Textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-              />
+              <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
             </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Link de Destino (opcional)</Label>
-                <Input
-                  value={formData.destination_url || ""}
-                  onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })}
-                  placeholder="https://..."
-                />
+                <Label>Link de Destino</Label>
+                <Input value={formData.destination_url || ""} onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })} placeholder="https://..." />
               </div>
               <div>
-                <Label>ID Produto Hotmart (opcional)</Label>
-                <Input
-                  value={formData.hotmart_product_id || ""}
-                  onChange={(e) => setFormData({ ...formData, hotmart_product_id: e.target.value || null })}
-                  placeholder="12345"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  ID do produto na Hotmart para mapear compras automáticas
-                </p>
+                <Label>ID Produto Hotmart</Label>
+                <Input value={formData.hotmart_product_id || ""} onChange={(e) => setFormData({ ...formData, hotmart_product_id: e.target.value || null })} placeholder="12345" />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>URL de Pagamento (opcional)</Label>
-                <Input
-                  value={formData.payment_url || ""}
-                  onChange={(e) => setFormData({ ...formData, payment_url: e.target.value || null })}
-                  placeholder="https://pay.hotmart.com/..."
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  URL de checkout específica deste produto
-                </p>
+                <Label>URL de Pagamento</Label>
+                <Input value={formData.payment_url || ""} onChange={(e) => setFormData({ ...formData, payment_url: e.target.value || null })} placeholder="https://pay.hotmart.com/..." />
               </div>
               <div>
                 <Label>Duração do Acesso (dias)</Label>
-                <Input
-                  type="number"
-                  value={formData.access_duration_days || ""}
-                  onChange={(e) => setFormData({ ...formData, access_duration_days: e.target.value ? parseInt(e.target.value) : null })}
-                  placeholder="365"
-                />
-                <p className="text-xs text-muted-foreground mt-1">
-                  Deixe em branco para acesso vitalício
-                </p>
+                <Input type="number" value={formData.access_duration_days || ""} onChange={(e) => setFormData({ ...formData, access_duration_days: e.target.value ? parseInt(e.target.value) : null })} placeholder="Vitalício" />
               </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Switch
-                    checked={formData.trial_enabled || false}
-                    onCheckedChange={(checked) => setFormData({ ...formData, trial_enabled: checked })}
-                  />
+                  <Switch checked={formData.trial_enabled || false} onCheckedChange={(checked) => setFormData({ ...formData, trial_enabled: checked })} />
                   <Label>Trial para Novos Usuários</Label>
                 </div>
                 {formData.trial_enabled && (
                   <div>
                     <Label>Dias de Trial</Label>
-                    <Input
-                      type="number"
-                      min="1"
-                      value={formData.trial_days || 3}
-                      onChange={(e) => setFormData({ ...formData, trial_days: parseInt(e.target.value) })}
-                    />
+                    <Input type="number" min="1" value={formData.trial_days || 3} onChange={(e) => setFormData({ ...formData, trial_days: parseInt(e.target.value) })} />
                   </div>
                 )}
               </div>
               <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label>Preço</Label>
-                <Input
-                  type="number"
-                  value={formData.price || ""}
-                  onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || null })}
-                  disabled={formData.is_free}
-                />
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={formData.is_free}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_free: checked, price: checked ? null : formData.price })}
-                />
-                <Label>Gratuito</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={formData.is_active}
-                  onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                />
-                <Label>Ativo</Label>
+                <div>
+                  <Label>Preço</Label>
+                  <Input type="number" value={formData.price || ""} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || null })} disabled={formData.is_free} />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={formData.is_free} onCheckedChange={(checked) => setFormData({ ...formData, is_free: checked, price: checked ? null : formData.price })} />
+                  <Label>Gratuito</Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })} />
+                  <Label>Ativo</Label>
+                </div>
               </div>
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={handleCancel}>
-                <X className="h-4 w-4 mr-2" />
-                Cancelar
-              </Button>
-              <Button onClick={handleSave} disabled={createMutation.isPending}>
-                <Save className="h-4 w-4 mr-2" />
-                Salvar
-              </Button>
+              <Button variant="outline" onClick={handleCancel}><X className="h-4 w-4 mr-2" />Cancelar</Button>
+              <Button onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending}><Save className="h-4 w-4 mr-2" />Salvar</Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      <div className="grid gap-4">
-        {products?.map((product) => (
-          <Card key={product.id}>
-            {editingId === product.id ? (
-              <CardContent className="space-y-4 pt-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label>Título</Label>
-                    <Input
-                      value={formData.title}
-                      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    />
-                  </div>
-                  <div>
-                    <Label>Slug</Label>
-                    <Input
-                      value={formData.slug}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <Label>Descrição</Label>
-                  <Textarea
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={2}
-                  />
-                </div>
-                <div>
-                  <Label>Link de Destino (opcional)</Label>
-                  <Input
-                    value={formData.destination_url || ""}
-                    onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })}
-                    placeholder="https://..."
-                  />
-                </div>
-                <div>
-                  <Label>ID Produto Hotmart</Label>
-                  <Input
-                    value={formData.hotmart_product_id || ""}
-                    onChange={(e) => setFormData({ ...formData, hotmart_product_id: e.target.value || null })}
-                    placeholder="12345"
-                  />
-                </div>
-                <div>
-                  <Label>URL de Pagamento</Label>
-                  <Input
-                    value={formData.payment_url || ""}
-                    onChange={(e) => setFormData({ ...formData, payment_url: e.target.value || null })}
-                    placeholder="https://pay.hotmart.com/..."
-                  />
-                </div>
-                <div>
-                  <Label>Duração do Acesso (dias)</Label>
-                  <Input
-                    type="number"
-                    value={formData.access_duration_days || ""}
-                    onChange={(e) => setFormData({ ...formData, access_duration_days: e.target.value ? parseInt(e.target.value) : null })}
-                    placeholder="365"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={formData.trial_enabled || false}
-                      onCheckedChange={(checked) => setFormData({ ...formData, trial_enabled: checked })}
-                    />
-                    <Label>Trial para Novos Usuários</Label>
-                  </div>
-                  {formData.trial_enabled && (
-                    <div>
-                      <Label>Dias de Trial</Label>
-                      <Input
-                        type="number"
-                        min="1"
-                        value={formData.trial_days || 3}
-                        onChange={(e) => setFormData({ ...formData, trial_days: parseInt(e.target.value) })}
-                      />
-                    </div>
-                  )}
-                </div>
-                <div className="grid grid-cols-3 gap-4">
-                  <div>
-                    <Label>Preço</Label>
-                    <Input
-                      type="number"
-                      value={formData.price || ""}
-                      onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || null })}
-                      disabled={formData.is_free}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={formData.is_free}
-                      onCheckedChange={(checked) => setFormData({ ...formData, is_free: checked })}
-                    />
-                    <Label>Gratuito</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={formData.is_active}
-                      onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                    />
-                    <Label>Ativo</Label>
-                  </div>
-                </div>
-                <div className="flex gap-2 justify-end">
-                  <Button variant="outline" onClick={handleCancel}>
-                    <X className="h-4 w-4 mr-2" />
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleSave} disabled={updateMutation.isPending}>
-                    <Save className="h-4 w-4 mr-2" />
-                    Salvar
-                  </Button>
-                </div>
-              </CardContent>
-            ) : (
-              <>
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle>{product.title}</CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        /{product.slug}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleEdit(product)}
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteMutation.mutate(product.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm mb-2">{product.description}</p>
-                  <div className="flex gap-2">
+      {/* Product Table */}
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Título</TableHead>
+                <TableHead>Slug</TableHead>
+                <TableHead>Preço</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Trial</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products?.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    Nenhum produto cadastrado
+                  </TableCell>
+                </TableRow>
+              )}
+              {products?.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="font-medium">{product.title}</TableCell>
+                  <TableCell className="text-muted-foreground text-xs">/{product.slug}</TableCell>
+                  <TableCell>
                     {product.is_free ? (
-                      <span className="text-sm text-green-600">Gratuito</span>
+                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">Gratuito</Badge>
                     ) : (
                       <span className="text-sm">R$ {product.price?.toFixed(2)}</span>
                     )}
-                    <span className="text-sm text-muted-foreground">•</span>
-                    <span className="text-sm">
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={product.is_active ? "default" : "outline"}>
                       {product.is_active ? "Ativo" : "Inativo"}
-                    </span>
-                  </div>
-                </CardContent>
-              </>
-            )}
-          </Card>
-        ))}
-      </div>
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {product.trial_enabled ? (
+                      <Badge variant="secondary">{product.trial_days}d</Badge>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex gap-1 justify-end">
+                      <Button variant="ghost" size="icon" onClick={() => handleEdit(product)} disabled={isEditing}>
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(product.id)} disabled={isEditing} className="text-destructive hover:text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 };
+
+export default ProductManagement;
