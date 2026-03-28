@@ -117,7 +117,7 @@ export const usePosts = () => {
         const profile = profileMap.get(post.user_id);
         return {
           ...post,
-          user_email: post.display_name || profile?.email || "Usuário",
+          user_email: post.display_name || profile?.full_name || profile?.email || "Usuário",
           user_photo: profile?.foto_perfil_url || null,
           likes_count: likesCountMap.get(post.id) || 0,
           comments_count: commentsCountMap.get(post.id) || 0,
