@@ -49,11 +49,13 @@ export const UserManagement = () => {
           perfil_completo,
           created_at,
           updated_at,
+          is_virtual,
           user_roles (
             id,
             role
           )
         `)
+        .neq("is_virtual", true)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
