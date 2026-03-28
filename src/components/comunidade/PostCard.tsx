@@ -89,7 +89,7 @@ const PostCardComponent = ({ post, onLike, onDelete }: PostCardProps) => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="font-semibold">{post.user_email.split("@")[0]}</p>
+            <p className="font-semibold">{post.display_name || post.user_email.split("@")[0]}</p>
             <p className="text-sm text-muted-foreground">{timeAgo}</p>
           </div>
         </div>

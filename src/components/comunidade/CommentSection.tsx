@@ -51,13 +51,15 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
       (commentsData || []).map(async (comment) => {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("email, foto_perfil_url")
+          .select("email, foto_perfil_url, full_name")
           .eq("id", comment.user_id)
           .single();
 
+        const displayName = profile?.full_name || profile?.email?.split("@")[0] || "Usuário";
+
         return {
           ...comment,
-          user_email: profile?.email || "Usuário",
+          user_email: displayName,
           user_photo: profile?.foto_perfil_url || null,
         };
       })
