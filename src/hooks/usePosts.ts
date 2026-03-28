@@ -85,7 +85,7 @@ export const usePosts = () => {
       const postIds = postsData.map(p => p.id);
 
       const [profilesResult, likesResult, commentsResult] = await Promise.all([
-        supabase.from("profiles").select("id, email, foto_perfil_url").in("id", userIds),
+        supabase.from("profiles").select("id, email, foto_perfil_url, full_name").in("id", userIds),
         supabase.from("post_likes").select("post_id, user_id").in("post_id", postIds),
         supabase.from("post_comments").select("post_id").in("post_id", postIds),
       ]);
@@ -117,7 +117,7 @@ export const usePosts = () => {
         const profile = profileMap.get(post.user_id);
         return {
           ...post,
-          user_email: post.display_name || profile?.email || "Usuário",
+          user_email: post.display_name || profile?.full_name || profile?.email || "Usuário",
           user_photo: profile?.foto_perfil_url || null,
           likes_count: likesCountMap.get(post.id) || 0,
           comments_count: commentsCountMap.get(post.id) || 0,

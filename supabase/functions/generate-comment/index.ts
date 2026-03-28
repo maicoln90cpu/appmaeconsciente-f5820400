@@ -7,12 +7,27 @@ import {
   logEvent 
 } from "../_shared/error-handler.ts";
 
+const BANNED_PHRASES = [
+  "Ai, minha flor",
+  "Ai, mamãe",
+  "Ai, minha querida",
+  "Como eu te entendo",
+  "Sei exatamente como você se sente",
+  "Você não está sozinha",
+  "Força, mamãe",
+  "Forças, mamãe",
+  "Vai ficar tudo bem",
+  "Meninas, alguém mais",
+  "Oi meninas",
+  "Olá mamães",
+];
+
 serve(withErrorHandling(async (req) => {
   if (req.method === 'OPTIONS') {
     return handleCorsOptions(req);
   }
 
-  const { postContent, postCategory } = await req.json();
+  const { postContent, postCategory, persona } = await req.json();
 
   if (!postContent) {
     return createErrorResponse('VALIDATION_ERROR', req, 'Post content is required');
@@ -23,30 +38,46 @@ serve(withErrorHandling(async (req) => {
     return createErrorResponse('CONFIG_ERROR', req, 'LOVABLE_API_KEY not configured');
   }
 
-  const prompt = `Você é uma mãe brasileira participando de uma comunidade de gestantes e mães.
-Escreva um comentário empático e natural para o seguinte post:
+  // Build persona-aware system prompt
+  let systemPrompt: string;
+  if (persona) {
+    systemPrompt = `Você é ${persona.name}. ${persona.profile || ''}
+Estilo de escrita: ${persona.style || 'Natural e informal.'}
+Você está comentando em uma comunidade brasileira de mães e gestantes.
+Escreva APENAS em português brasileiro informal.`;
+  } else {
+    systemPrompt = `Você é uma mãe brasileira participando de uma comunidade de gestantes e mães.
+Escreva APENAS em português brasileiro informal e natural.
+Cada comentário deve ter personalidade própria — varie o tom entre: prática, engraçada, reflexiva, técnica, insegura, veterana.`;
+  }
+
+  const prompt = `Comente este post de outra mãe na comunidade:
 
 Categoria: ${postCategory || 'Geral'}
 Post: "${postContent}"
 
-**REGRAS:**
-1. Use linguagem informal e calorosa (como brasileiros conversam)
-2. Seja empática e ofereça apoio genuíno
-3. Compartilhe experiências pessoais relacionadas (invente detalhes realistas)
-4. Use emojis moderadamente (1-2 por comentário)
-5. Mantenha o comentário entre 2-4 linhas
-6. Seja específica e contextual ao post
-7. Evite clichês como "você não está sozinha" sem contexto
-8. Faça perguntas ou ofereça dicas práticas quando apropriado
+**REGRAS OBRIGATÓRIAS:**
+1. Escreva 1-3 linhas, como comentário real de rede social
+2. Responda ao CONTEÚDO ESPECÍFICO do post — não seja genérica
+3. Use no máximo 1 emoji
+4. Pode: compartilhar experiência, dar dica prática, fazer pergunta, ou discordar educadamente
+5. NUNCA repita frases do post original
 
-Exemplos de tom:
-- "Passa tão rápido! Com meu segundo filho percebi que cada fase tem seu charme ❤️"
-- "Tenta fazer caminhadas leves, me ajudou muito com o inchaço no terceiro trimestre"
-- "Normal sentir isso! Eu tive muito enjoo também, mas melhorou depois da 12ª semana"
+**ABERTURAS VARIADAS — escolha UMA:**
+- Comece contando algo que aconteceu com você ("Aqui aconteceu...", "Semana passada...", "Com X meses...")
+- Comece com uma dica direta ("Tenta...", "O que funcionou aqui foi...", "Uma coisa que ajuda...")
+- Comece com uma pergunta ("Qual idade?", "Já tentou...?", "Quanto tempo faz...?")
+- Comece com opinião ("Sinceramente...", "Eu acho que...", "Discordo um pouco...")
+- Comece com um fato ou dado ("A pediatra explicou que...", "Li que...")
+
+**FRASES 100% PROIBIDAS (NUNCA use):**
+${BANNED_PHRASES.map(f => `- "${f}"`).join('\n')}
+- Qualquer abertura com "Ai, [vocativo]"
+- Qualquer frase começando com interjeição + vocativo
 
 Retorne APENAS o texto do comentário, sem aspas ou formatação extra.`;
 
-  logEvent('info', 'generate-comment-request', { postCategory });
+  logEvent('info', 'generate-comment-request', { postCategory, hasPersona: !!persona });
 
   const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
     method: 'POST',
@@ -57,10 +88,10 @@ Retorne APENAS o texto do comentário, sem aspas ou formatação extra.`;
     body: JSON.stringify({
       model: 'google/gemini-2.5-flash',
       messages: [
-        { role: 'system', content: 'You are a warm, empathetic Brazilian mother in an online community. Write natural, conversational comments.' },
+        { role: 'system', content: systemPrompt },
         { role: 'user', content: prompt }
       ],
-      temperature: 0.9,
+      temperature: 0.95,
       max_tokens: 150,
     }),
   });
@@ -72,7 +103,10 @@ Retorne APENAS o texto do comentário, sem aspas ou formatação extra.`;
   }
 
   const aiData = await aiResponse.json();
-  const comment = aiData.choices[0].message.content.trim();
+  let comment = aiData.choices[0].message.content.trim();
+  
+  // Remove quotes if AI wrapped the response
+  comment = comment.replace(/^["']|["']$/g, '');
 
   logEvent('info', 'generate-comment-success');
   return createSuccessResponse({ comment }, req);
