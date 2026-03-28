@@ -85,7 +85,7 @@ export const usePosts = () => {
       const postIds = postsData.map(p => p.id);
 
       const [profilesResult, likesResult, commentsResult] = await Promise.all([
-        supabase.from("profiles").select("id, email, foto_perfil_url").in("id", userIds),
+        supabase.from("profiles").select("id, email, foto_perfil_url, full_name").in("id", userIds),
         supabase.from("post_likes").select("post_id, user_id").in("post_id", postIds),
         supabase.from("post_comments").select("post_id").in("post_id", postIds),
       ]);
