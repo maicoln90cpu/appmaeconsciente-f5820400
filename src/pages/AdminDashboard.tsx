@@ -455,6 +455,11 @@ export default function AdminDashboard() {
                     content: <PostModeration />,
                   },
                   {
+                    value: "virtual-users",
+                    label: "Usuários Virtuais",
+                    content: <VirtualUserManagement />,
+                  },
+                  {
                     value: "ai-engagement",
                     label: "Automação IA",
                     content: <AIEngagementPanel />,
