@@ -110,8 +110,8 @@
 ### Pacote 13: Segurança
 | Item | Descrição | Esforço |
 |------|-----------|---------|
-| RLS policies | Corrigir warnings de RLS | Médio |
-| Leaked Password Protection | Verificar configuração | Baixo |
+| RLS policies | Corrigir warnings de RLS (USING true) | Médio |
+| Leaked Password Protection | Ativar proteção | Baixo |
 | Auth config | Revisar auto-confirm settings | Baixo |
 
 ### Pacote 14: Query Standardization (Finalização)
@@ -122,20 +122,12 @@
 | useCrossModuleAnalytics | Migrar para QueryKeys padronizados | Médio |
 | usePosts | Migrar para QueryKeys padronizados | Médio |
 
-### Pacote 15: Auto-save Extensão
+### Pacote 18: Automação IA v2
 | Item | Descrição | Esforço |
 |------|-----------|---------|
-| RegistroMamada | Adicionar auto-save | Baixo |
-| ContractionDiary | Adicionar auto-save | Baixo |
-| TicketForm | Adicionar auto-save | Baixo |
-| ProfileSettings | Adicionar auto-save | Baixo |
-
-### Pacote 16: Cleanup e Manutenção
-| Item | Descrição | Esforço |
-|------|-----------|---------|
-| IndexedDB cleanup | Limpar drafts > 7 dias automaticamente | Baixo |
-| Cache expiration | Limpar cache expirado | Baixo |
-| Storage quota | Monitorar uso de armazenamento | Baixo |
+| Agendamento cron configurável | Permitir alterar frequência do cron pelo admin | Médio |
+| Análise de sentimento | Filtrar posts negativos antes de responder | Médio |
+| Auto-moderação | IA detectar e sinalizar conteúdo inadequado | Médio |
 
 ---
 
