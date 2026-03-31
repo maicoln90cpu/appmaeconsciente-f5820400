@@ -141,6 +141,18 @@
 
 ## 📜 Histórico de Mudanças
 
+### Março 2026 (Pacote 17 - Automação IA Calibrada)
+- ✅ 12 personas maternas distintas com estilos de escrita únicos
+- ✅ Lista de frases proibidas anti-repetição nos prompts
+- ✅ 24 temas ultra-específicos para posts automáticos
+- ✅ Aba "Usuários Virtuais" no admin para gestão de bots
+- ✅ Upload manual de avatares reais para bots (bucket `avatars`)
+- ✅ Toggle ativo/inativo para cada bot
+- ✅ Configuração persistente de automação (posts/respostas/curtidas por execução)
+- ✅ Toggle "Horários Randômicos" com delay configurável
+- ✅ Filtro de bots inativos na edge function
+- ✅ Display names e avatares nos posts e comentários da comunidade
+
 ### Janeiro 2026 (Pacote 11 - Auto-save)
 - ✅ Hook `useAutoSave` para formulários longos
 - ✅ Componente `DraftIndicator` com status visual
