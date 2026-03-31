@@ -43,6 +43,7 @@ const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPa
 const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then(m => ({ default: m.AdminCharts })));
 const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then(m => ({ default: m.AppHealthDashboard })));
 const AIEngagementPanel = lazy(() => import("@/components/admin/AIEngagementPanel").then(m => ({ default: m.AIEngagementPanel })));
+const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserManagement").then(m => ({ default: m.VirtualUserManagement })));
 
 // Loading fallback component
 const TabLoading = () => (
