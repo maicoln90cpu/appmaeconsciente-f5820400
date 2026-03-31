@@ -338,7 +338,7 @@ REGRAS:
           console.log(`Created post by ${persona.name}: ${newPost.id}`);
         }
 
-        await new Promise(r => setTimeout(r, 1000));
+        await randomDelay();
       } catch (err) {
         console.error('Error creating post:', err);
       }
