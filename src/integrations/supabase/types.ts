@@ -3289,6 +3289,7 @@ export type Database = {
           id: string
           idade: number | null
           idades_filhos: number[] | null
+          is_active: boolean | null
           is_virtual: boolean | null
           leaderboard_opt_in: boolean
           level: number
@@ -3321,6 +3322,7 @@ export type Database = {
           id: string
           idade?: number | null
           idades_filhos?: number[] | null
+          is_active?: boolean | null
           is_virtual?: boolean | null
           leaderboard_opt_in?: boolean
           level?: number
@@ -3353,6 +3355,7 @@ export type Database = {
           id?: string
           idade?: number | null
           idades_filhos?: number[] | null
+          is_active?: boolean | null
           is_virtual?: boolean | null
           leaderboard_opt_in?: boolean
           level?: number
@@ -3654,6 +3657,7 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          automation_config: Json | null
           created_at: string | null
           gtm_id: string | null
           id: string
@@ -3661,6 +3665,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          automation_config?: Json | null
           created_at?: string | null
           gtm_id?: string | null
           id?: string
@@ -3668,6 +3673,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          automation_config?: Json | null
           created_at?: string | null
           gtm_id?: string | null
           id?: string

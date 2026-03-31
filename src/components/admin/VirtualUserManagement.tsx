@@ -1,0 +1,262 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Bot, Upload, Save, RefreshCw, MapPin, Edit2, Check, X
+} from "lucide-react";
+import { toast } from "sonner";
+
+interface VirtualUser {
+  id: string;
+  email: string;
+  full_name: string | null;
+  foto_perfil_url: string | null;
+  cidade: string | null;
+  estado: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export const VirtualUserManagement = () => {
+  const queryClient = useQueryClient();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<VirtualUser>>({});
+
+  const { data: users, isLoading } = useQuery({
+    queryKey: ["virtual-users"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, email, full_name, foto_perfil_url, cidade, estado, is_active, created_at")
+        .eq("is_virtual", true)
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+      return (data || []) as VirtualUser[];
+    },
+  });
+
+  const updateUser = useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<VirtualUser> }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
+      toast.success("Perfil atualizado!");
+      setEditingId(null);
+    },
+    onError: (err: any) => toast.error(`Erro: ${err.message}`),
+  });
+
+  const toggleActive = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ is_active })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
+      toast.success(vars.is_active ? "Bot ativado" : "Bot desativado");
+    },
+    onError: (err: any) => toast.error(`Erro: ${err.message}`),
+  });
+
+  const handleAvatarUpload = async (userId: string, file: File) => {
+    const ext = file.name.split(".").pop();
+    const path = `bots/${userId}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(path, file, { upsert: true });
+
+    if (uploadError) {
+      toast.error(`Erro no upload: ${uploadError.message}`);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({ foto_perfil_url: urlData.publicUrl })
+      .eq("id", userId);
+
+    if (updateError) {
+      toast.error(`Erro ao salvar URL: ${updateError.message}`);
+      return;
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
+    toast.success("Avatar atualizado!");
+  };
+
+  const startEditing = (user: VirtualUser) => {
+    setEditingId(user.id);
+    setEditForm({
+      full_name: user.full_name,
+      cidade: user.cidade,
+      estado: user.estado,
+    });
+  };
+
+  const saveEditing = () => {
+    if (!editingId) return;
+    updateUser.mutate({ id: editingId, updates: editForm });
+  };
+
+  const activeCount = users?.filter(u => u.is_active).length || 0;
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold flex items-center gap-2">
+          <Bot className="h-6 w-6 text-primary" />
+          Usuários Virtuais
+        </h2>
+        <p className="text-muted-foreground">
+          Gerencie perfis, avatares e status dos bots da comunidade
+        </p>
+      </div>
+
+      {/* Summary */}
+      <div className="flex gap-4">
+        <Badge variant="outline" className="text-sm py-1 px-3">
+          {users?.length || 0} bots cadastrados
+        </Badge>
+        <Badge variant="default" className="text-sm py-1 px-3 bg-green-600">
+          {activeCount} ativos
+        </Badge>
+        <Badge variant="secondary" className="text-sm py-1 px-3">
+          {(users?.length || 0) - activeCount} inativos
+        </Badge>
+      </div>
+
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {users?.map((user) => (
+            <Card key={user.id} className={`transition-opacity ${!user.is_active ? "opacity-50" : ""}`}>
+              <CardContent className="pt-6 space-y-4">
+                {/* Avatar + Upload */}
+                <div className="flex items-center gap-4">
+                  <div className="relative group">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={user.foto_perfil_url || undefined} />
+                      <AvatarFallback className="text-lg">
+                        {(user.full_name || user.email).charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <label className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
+                      <Upload className="h-5 w-5 text-white" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleAvatarUpload(user.id, file);
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    {editingId === user.id ? (
+                      <Input
+                        value={editForm.full_name || ""}
+                        onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+                        className="text-sm font-semibold"
+                        placeholder="Nome"
+                      />
+                    ) : (
+                      <p className="font-semibold truncate">{user.full_name || "Sem nome"}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                </div>
+
+                {/* Location */}
+                {editingId === user.id ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      value={editForm.cidade || ""}
+                      onChange={(e) => setEditForm({ ...editForm, cidade: e.target.value })}
+                      placeholder="Cidade"
+                      className="text-sm"
+                    />
+                    <Input
+                      value={editForm.estado || ""}
+                      onChange={(e) => setEditForm({ ...editForm, estado: e.target.value })}
+                      placeholder="UF"
+                      className="text-sm"
+                      maxLength={2}
+                    />
+                  </div>
+                ) : (
+                  user.cidade && (
+                    <p className="text-sm text-muted-foreground flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {user.cidade}{user.estado ? `, ${user.estado}` : ""}
+                    </p>
+                  )
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center justify-between pt-2 border-t">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={user.is_active}
+                      onCheckedChange={(checked) => toggleActive.mutate({ id: user.id, is_active: checked })}
+                    />
+                    <Label className="text-xs">{user.is_active ? "Ativo" : "Inativo"}</Label>
+                  </div>
+
+                  {editingId === user.id ? (
+                    <div className="flex gap-1">
+                      <Button size="icon" variant="ghost" onClick={saveEditing}>
+                        <Check className="h-4 w-4 text-green-600" />
+                      </Button>
+                      <Button size="icon" variant="ghost" onClick={() => setEditingId(null)}>
+                        <X className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button size="sm" variant="ghost" onClick={() => startEditing(user)}>
+                      <Edit2 className="h-4 w-4 mr-1" />
+                      Editar
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {users && users.length === 0 && (
+        <div className="text-center py-12">
+          <Bot className="h-12 w-12 mx-auto text-muted-foreground/50 mb-2" />
+          <p className="text-muted-foreground">Nenhum usuário virtual cadastrado</p>
+          <p className="text-sm text-muted-foreground">Execute a automação IA para criar os bots automaticamente</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default VirtualUserManagement;

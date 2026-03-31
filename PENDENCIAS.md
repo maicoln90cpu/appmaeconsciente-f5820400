@@ -1,7 +1,7 @@
 # 📋 PENDÊNCIAS - Maternidade Consciente
 
-**Última atualização:** Janeiro 2026  
-**Status geral:** MVP Completo | Performance Otimizada | Auto-save Implementado
+**Última atualização:** Março 2026  
+**Status geral:** MVP Completo | Performance Otimizada | Auto-save Implementado | Automação IA Calibrada
 
 ---
 
@@ -110,8 +110,8 @@
 ### Pacote 13: Segurança
 | Item | Descrição | Esforço |
 |------|-----------|---------|
-| RLS policies | Corrigir warnings de RLS | Médio |
-| Leaked Password Protection | Verificar configuração | Baixo |
+| RLS policies | Corrigir warnings de RLS (USING true) | Médio |
+| Leaked Password Protection | Ativar proteção | Baixo |
 | Auth config | Revisar auto-confirm settings | Baixo |
 
 ### Pacote 14: Query Standardization (Finalização)
@@ -122,24 +122,28 @@
 | useCrossModuleAnalytics | Migrar para QueryKeys padronizados | Médio |
 | usePosts | Migrar para QueryKeys padronizados | Médio |
 
-### Pacote 15: Auto-save Extensão
+### Pacote 18: Automação IA v2
 | Item | Descrição | Esforço |
 |------|-----------|---------|
-| RegistroMamada | Adicionar auto-save | Baixo |
-| ContractionDiary | Adicionar auto-save | Baixo |
-| TicketForm | Adicionar auto-save | Baixo |
-| ProfileSettings | Adicionar auto-save | Baixo |
-
-### Pacote 16: Cleanup e Manutenção
-| Item | Descrição | Esforço |
-|------|-----------|---------|
-| IndexedDB cleanup | Limpar drafts > 7 dias automaticamente | Baixo |
-| Cache expiration | Limpar cache expirado | Baixo |
-| Storage quota | Monitorar uso de armazenamento | Baixo |
+| Agendamento cron configurável | Permitir alterar frequência do cron pelo admin | Médio |
+| Análise de sentimento | Filtrar posts negativos antes de responder | Médio |
+| Auto-moderação | IA detectar e sinalizar conteúdo inadequado | Médio |
 
 ---
 
 ## 📜 Histórico de Mudanças
+
+### Março 2026 (Pacote 17 - Automação IA Calibrada)
+- ✅ 12 personas maternas distintas com estilos de escrita únicos
+- ✅ Lista de frases proibidas anti-repetição nos prompts
+- ✅ 24 temas ultra-específicos para posts automáticos
+- ✅ Aba "Usuários Virtuais" no admin para gestão de bots
+- ✅ Upload manual de avatares reais para bots (bucket `avatars`)
+- ✅ Toggle ativo/inativo para cada bot
+- ✅ Configuração persistente de automação (posts/respostas/curtidas por execução)
+- ✅ Toggle "Horários Randômicos" com delay configurável
+- ✅ Filtro de bots inativos na edge function
+- ✅ Display names e avatares nos posts e comentários da comunidade
 
 ### Janeiro 2026 (Pacote 11 - Auto-save)
 - ✅ Hook `useAutoSave` para formulários longos

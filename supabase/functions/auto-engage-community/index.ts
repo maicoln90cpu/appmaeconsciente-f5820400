@@ -176,6 +176,7 @@ async function getOrCreateVirtualUsers(supabaseClient: any) {
     .from('profiles')
     .select('id, email')
     .eq('is_virtual', true)
+    .eq('is_active', true)
     .limit(20);
 
   if (existing && existing.length >= 10) return existing;
@@ -261,8 +262,17 @@ serve(async (req) => {
     const { 
       maxPosts = 3, 
       maxReplies = 3, 
-      maxLikes = 4 
+      maxLikes = 4,
+      randomTiming = false,
+      maxDelayMinutes = 30,
     } = await req.json().catch(() => ({}));
+
+    const randomDelay = async () => {
+      if (!randomTiming) return;
+      const delay = Math.floor(Math.random() * Math.min(maxDelayMinutes, 30) * 60 * 1000) + 60000; // 1min to maxDelay
+      console.log(`Random delay: ${Math.round(delay / 1000)}s`);
+      await new Promise(r => setTimeout(r, delay));
+    };
 
     console.log(`AI Engagement: ${maxPosts} posts, ${maxReplies} replies, ${maxLikes} likes`);
 
@@ -328,7 +338,7 @@ REGRAS:
           console.log(`Created post by ${persona.name}: ${newPost.id}`);
         }
 
-        await new Promise(r => setTimeout(r, 1000));
+        await randomDelay();
       } catch (err) {
         console.error('Error creating post:', err);
       }
@@ -404,7 +414,7 @@ REGRAS:
           console.log(`Reply by ${persona.name} on post ${post.id}`);
         }
 
-        await new Promise(r => setTimeout(r, 1000));
+        await randomDelay();
       } catch (err) {
         console.error('Error creating reply:', err);
       }
