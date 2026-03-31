@@ -414,7 +414,7 @@ REGRAS:
           console.log(`Reply by ${persona.name} on post ${post.id}`);
         }
 
-        await new Promise(r => setTimeout(r, 1000));
+        await randomDelay();
       } catch (err) {
         console.error('Error creating reply:', err);
       }

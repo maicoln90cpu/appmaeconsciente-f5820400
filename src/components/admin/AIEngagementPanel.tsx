@@ -81,7 +81,7 @@ export const AIEngagementPanel = () => {
       if (settings) {
         const { error } = await supabase
           .from("site_settings")
-          .update({ automation_config: config as any })
+          .update({ automation_config: config } as any)
           .eq("id", settings.id);
         if (error) throw error;
       }
