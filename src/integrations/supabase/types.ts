@@ -3657,6 +3657,7 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          automation_config: Json | null
           created_at: string | null
           gtm_id: string | null
           id: string
@@ -3664,6 +3665,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          automation_config?: Json | null
           created_at?: string | null
           gtm_id?: string | null
           id?: string
@@ -3671,6 +3673,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          automation_config?: Json | null
           created_at?: string | null
           gtm_id?: string | null
           id?: string
