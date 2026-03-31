@@ -3289,6 +3289,7 @@ export type Database = {
           id: string
           idade: number | null
           idades_filhos: number[] | null
+          is_active: boolean | null
           is_virtual: boolean | null
           leaderboard_opt_in: boolean
           level: number
@@ -3321,6 +3322,7 @@ export type Database = {
           id: string
           idade?: number | null
           idades_filhos?: number[] | null
+          is_active?: boolean | null
           is_virtual?: boolean | null
           leaderboard_opt_in?: boolean
           level?: number
@@ -3353,6 +3355,7 @@ export type Database = {
           id?: string
           idade?: number | null
           idades_filhos?: number[] | null
+          is_active?: boolean | null
           is_virtual?: boolean | null
           leaderboard_opt_in?: boolean
           level?: number
