@@ -123,9 +123,9 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
             <div className="flex-1 bg-muted rounded-lg p-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <p className="font-semibold text-sm">
-                    {comment.user_email.split("@")[0]}
-                  </p>
+                   <p className="font-semibold text-sm">
+                     {comment.user_email}
+                   </p>
                   <p className="text-sm">{comment.comment}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     {formatDistanceToNow(new Date(comment.created_at), {
