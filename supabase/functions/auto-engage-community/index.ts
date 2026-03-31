@@ -176,6 +176,7 @@ async function getOrCreateVirtualUsers(supabaseClient: any) {
     .from('profiles')
     .select('id, email')
     .eq('is_virtual', true)
+    .eq('is_active', true)
     .limit(20);
 
   if (existing && existing.length >= 10) return existing;
