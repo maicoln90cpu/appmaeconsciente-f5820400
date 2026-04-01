@@ -83,8 +83,14 @@ export const CronSchedulePanel = () => {
         .eq("id", settings.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success("Configurações de agendamento salvas!");
+    onSuccess: async () => {
+      // Sync the real pg_cron job with the new config
+      try {
+        await supabase.rpc("sync_cron_schedule");
+        toast.success("Agendamento salvo e cron atualizado automaticamente!");
+      } catch {
+        toast.success("Configurações salvas! (sincronização do cron pendente)");
+      }
       setHasChanges(false);
       queryClient.invalidateQueries({ queryKey: ["cron-config"] });
     },
