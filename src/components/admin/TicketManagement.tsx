@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { useState } from "react";
 import { MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { getTicketStatusBadgeVariant, getTicketStatusLabel, getTicketPriorityBadgeVariant } from "@/lib/ticket-utils";
 
 export const TicketManagement = () => {
   const queryClient = useQueryClient();

@@ -58,13 +58,14 @@ export const getTicketPriorityBadgeVariant = (priority: string) =>
 
 // ─── Suggestion Status ────────────────────────────────
 
-export type SuggestionStatus = "pending" | "approved" | "rejected" | "implemented";
+export type SuggestionStatus = "pending" | "approved" | "in_development" | "implemented" | "rejected";
 
 export const SUGGESTION_STATUS_CONFIG: Record<SuggestionStatus, { label: string; badgeVariant: "secondary" | "default" | "destructive" | "outline" }> = {
   pending: { label: "Pendente", badgeVariant: "secondary" },
   approved: { label: "Aprovada", badgeVariant: "default" },
+  in_development: { label: "Em Desenvolvimento", badgeVariant: "outline" },
+  implemented: { label: "Implementada", badgeVariant: "default" },
   rejected: { label: "Rejeitada", badgeVariant: "destructive" },
-  implemented: { label: "Implementada", badgeVariant: "outline" },
 };
 
 export const getSuggestionStatusLabel = (status: string) =>
