@@ -101,6 +101,7 @@ export const AnalyticsDashboard = () => {
       const { data } = await supabase
         .from("profiles")
         .select("created_at")
+        .neq("is_virtual", true)
         .order("created_at");
 
       if (!data) return [];
