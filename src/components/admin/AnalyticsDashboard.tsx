@@ -177,6 +177,7 @@ export const AnalyticsDashboard = () => {
       const { count: completedProfiles } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true)
         .eq("perfil_completo", true);
 
       const { count: hasItems } = await supabase.rpc("count_users_with_items" as any).single();
