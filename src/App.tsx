@@ -54,6 +54,10 @@ const CalculadoraSemanas = lazyWithRetry(() => import("./pages/CalculadoraSemana
 const ChecklistDocumentos = lazyWithRetry(() => import("./pages/ChecklistDocumentos"));
 const ChecklistQuartinho = lazyWithRetry(() => import("./pages/ChecklistQuartinho"));
 const TimerMamada = lazyWithRetry(() => import("./pages/TimerMamada"));
+const DiarioCrescimento = lazyWithRetry(() => import("./pages/DiarioCrescimento"));
+const PlanejadorRotina = lazyWithRetry(() => import("./pages/PlanejadorRotina"));
+const IntroducaoAlimentar = lazyWithRetry(() => import("./pages/IntroducaoAlimentar"));
+const AlbumMarcos = lazyWithRetry(() => import("./pages/AlbumMarcos"));
 const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
