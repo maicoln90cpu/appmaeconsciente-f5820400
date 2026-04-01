@@ -111,60 +111,63 @@ export const HotmartTransactions = () => {
             Nenhuma transação registrada
           </p>
         ) : (
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Data</TableHead>
-                  <TableHead>Evento</TableHead>
-                  <TableHead>Comprador</TableHead>
-                  <TableHead>ID Produto</TableHead>
-                  <TableHead>Valor</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {transactions.map((tx) => {
-                  const config = statusConfig[tx.status] || statusConfig.pending;
-                  const StatusIcon = config.icon;
+          <TransactionsTable transactions={transactions} />
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
-                  return (
-                    <TableRow key={tx.id}>
-                      <TableCell className="text-sm">
-                        {formatDistanceToNow(new Date(tx.processed_at), {
-                          addSuffix: true,
-                          locale: ptBR,
-                        })}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="font-mono text-xs">
-                          {tx.event_type || 'N/A'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium text-sm">
-                            {tx.buyer_name || "Nome não informado"}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{tx.buyer_email}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-mono text-xs">
-                        {tx.hotmart_product_id}
-                      </TableCell>
-                      <TableCell>{formatCurrency(tx.amount)}</TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className={config.color}>
-                          <StatusIcon className="h-3 w-3 mr-1" />
-                          {config.label}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
+const TransactionsTable = ({ transactions }: { transactions: Transaction[] }) => {
+  const { sortedData, sortKey, sortDirection, handleSort } = useSortableTable(transactions);
+
+  return (
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <SortableTableHead sortKey="processed_at" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Transaction)}>Data</SortableTableHead>
+            <SortableTableHead sortKey="event_type" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Transaction)}>Evento</SortableTableHead>
+            <SortableTableHead sortKey="buyer_name" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Transaction)}>Comprador</SortableTableHead>
+            <SortableTableHead sortKey="hotmart_product_id" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Transaction)}>ID Produto</SortableTableHead>
+            <SortableTableHead sortKey="amount" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Transaction)}>Valor</SortableTableHead>
+            <SortableTableHead sortKey="status" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Transaction)}>Status</SortableTableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {sortedData?.map((tx) => {
+            const config = statusConfig[tx.status] || statusConfig.pending;
+            const StatusIcon = config.icon;
+            return (
+              <TableRow key={tx.id}>
+                <TableCell className="text-sm">
+                  {formatDistanceToNow(new Date(tx.processed_at), { addSuffix: true, locale: ptBR })}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="secondary" className="font-mono text-xs">{tx.event_type || 'N/A'}</Badge>
+                </TableCell>
+                <TableCell>
+                  <div>
+                    <p className="font-medium text-sm">{tx.buyer_name || "Nome não informado"}</p>
+                    <p className="text-xs text-muted-foreground">{tx.buyer_email}</p>
+                  </div>
+                </TableCell>
+                <TableCell className="font-mono text-xs">{tx.hotmart_product_id}</TableCell>
+                <TableCell>{new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(tx.amount || 0)}</TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={config.color}>
+                    <StatusIcon className="h-3 w-3 mr-1" />
+                    {config.label}
+                  </Badge>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
         )}
       </CardContent>
     </Card>
