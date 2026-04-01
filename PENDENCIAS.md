@@ -193,6 +193,14 @@
 - ✅ Testes unitários para UI components (Card, Alert, Tabs, Dialog, Input)
 - ✅ Componentes otimizados (VirtualizedList, OptimizedSelect, OptimizedGrid)
 
+### Abril 2026 (Pacote 18)
+- ✅ Agendamento cron configurável pelo admin (1x-8x/dia)
+- ✅ Análise de sentimento — bots evitam posts sensíveis (luto, emergência)
+- ✅ Auto-moderação por IA — scanner de posts + fila de revisão humana
+- ✅ Edge function `moderate-post` com tool calling estruturado
+- ✅ Posts ocultos automaticamente filtrados do feed público
+- ✅ Painel de auto-moderação com stats e histórico
+
 ### Janeiro 2026 (Sprint 3)
 - ✅ Documentação técnica completa
 - ✅ Refatoração de hooks com factories
