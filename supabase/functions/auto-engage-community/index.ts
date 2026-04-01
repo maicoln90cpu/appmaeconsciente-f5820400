@@ -350,12 +350,43 @@ REGRAS:
 
     const { data: recentPosts } = await supabaseClient
       .from('posts')
-      .select('id, content, categoria, user_id')
+      .select('id, content, categoria, user_id, is_hidden, moderation_status')
       .gte('created_at', sevenDaysAgo.toISOString())
+      .is('is_hidden', false)
       .order('created_at', { ascending: false })
       .limit(30);
 
-    const postsForReplies = [...(recentPosts || [])].sort(() => Math.random() - 0.5).slice(0, maxReplies);
+    // --- SENTIMENT FILTER: skip sensitive posts ---
+    let eligiblePosts = recentPosts || [];
+    if (sentimentFilter) {
+      const filteredPosts: typeof eligiblePosts = [];
+      for (const post of eligiblePosts) {
+        try {
+          const sentimentRes = await fetch(`${supabaseUrl}/functions/v1/moderate-post`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${serviceKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ postContent: post.content, mode: 'analyze' }),
+          });
+          if (sentimentRes.ok) {
+            const analysis = await sentimentRes.json();
+            if (analysis.is_sensitive_for_bots) {
+              console.log(`Skipping sensitive post ${post.id}: ${analysis.reason}`);
+              continue;
+            }
+          }
+          filteredPosts.push(post);
+        } catch {
+          filteredPosts.push(post); // on error, include the post
+        }
+      }
+      eligiblePosts = filteredPosts;
+      console.log(`Sentiment filter: ${recentPosts?.length || 0} → ${eligiblePosts.length} eligible posts`);
+    }
+
+    const postsForReplies = [...eligiblePosts].sort(() => Math.random() - 0.5).slice(0, maxReplies);
     const selectedPersonasForReplies = pickRandomN(PERSONAS, maxReplies);
 
     for (let i = 0; i < postsForReplies.length; i++) {
