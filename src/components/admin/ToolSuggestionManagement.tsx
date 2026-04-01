@@ -180,8 +180,8 @@ export const ToolSuggestionManagement = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <CardTitle>{suggestion.title}</CardTitle>
-                    <Badge variant={getStatusColor(suggestion.status as SuggestionStatus)}>
-                      {getStatusLabel(suggestion.status as SuggestionStatus)}
+                    <Badge variant={getSuggestionStatusBadgeVariant(suggestion.status)}>
+                      {getSuggestionStatusLabel(suggestion.status)}
                     </Badge>
                     {suggestion.reward_granted && (
                       <Badge variant="outline" className="bg-yellow-500/10">
