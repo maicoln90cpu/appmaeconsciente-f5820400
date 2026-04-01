@@ -32,12 +32,12 @@ export function useBundles() {
   const { data: bundles = [], isLoading: loadingBundles } = useQuery({
     queryKey: ["admin", "bundles"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase
         .from("product_bundles" as any)
         .select(`*, main_product:products!main_product_id(title), bonus_product:products!bonus_product_id(title)`)
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false }) as any);
       if (error) throw error;
-      return (data ?? []) as Bundle[];
+      return (data ?? []) as unknown as Bundle[];
     },
   });
 
