@@ -467,6 +467,16 @@ export default function AdminDashboard() {
                     content: <AIEngagementPanel />,
                   },
                   {
+                    value: "cron-schedule",
+                    label: "Agendamento",
+                    content: <CronSchedulePanel />,
+                  },
+                  {
+                    value: "auto-moderation",
+                    label: "Auto-Moderação",
+                    content: <AutoModerationPanel />,
+                  },
+                  {
                     value: "suggestions",
                     label: "Sugestões",
                     content: <ToolSuggestionManagement />,

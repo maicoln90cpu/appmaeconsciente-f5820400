@@ -454,7 +454,7 @@ REGRAS:
     }
 
     // --- 3. ADD LIKES ---
-    const postsToLike = [...(recentPosts || [])].sort(() => Math.random() - 0.5).slice(0, maxLikes);
+    const postsToLike = [...eligiblePosts].sort(() => Math.random() - 0.5).slice(0, maxLikes);
 
     for (const post of postsToLike) {
       try {
