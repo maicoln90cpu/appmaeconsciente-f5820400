@@ -670,7 +670,7 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
               <h2 className="text-xl font-display font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-1">
-                Maternidade Consciente
+                Mãe Consciente
               </h2>
               <p className="text-sm text-muted-foreground">
                 © 2025 Todos os direitos reservados.

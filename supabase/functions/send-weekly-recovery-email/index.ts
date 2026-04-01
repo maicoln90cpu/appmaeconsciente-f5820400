@@ -155,7 +155,7 @@ serve(async (req) => {
 
             <div class="footer">
               <p>Você está recebendo este email porque está usando o Guia de Recuperação Pós-Parto.</p>
-              <p>M.A.E.S. — Materiais Essenciais para Mamães</p>
+              <p>Mãe Consciente — Sua jornada de maternidade</p>
             </div>
           </div>
         </body>

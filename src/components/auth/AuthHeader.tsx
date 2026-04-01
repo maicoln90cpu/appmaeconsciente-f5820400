@@ -13,7 +13,7 @@ export const AuthHeader = ({ mode }: AuthHeaderProps) => (
         <Baby className="h-8 w-8 text-primary" />
       </div>
       <div className="text-center">
-        <CardTitle className="text-2xl">Maternidade Consciente</CardTitle>
+        <CardTitle className="text-2xl">Mãe Consciente</CardTitle>
         <CardDescription className="mt-1">
           {mode === "sign_in" && "Faça login para continuar"}
           {mode === "sign_up" && "Crie sua conta para começar"}

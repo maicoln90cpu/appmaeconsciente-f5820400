@@ -139,13 +139,13 @@ const MinhasConquistas = () => {
   const progressPercentage = (unlockedCount / totalAchievements) * 100;
 
   const shareAllAchievements = () => {
-    const message = `🏆 Minhas Conquistas no M.A.E.S.!\n\n` +
+    const message = `🏆 Minhas Conquistas no Mãe Consciente!\n\n` +
       `${unlockedCount} de ${totalAchievements} conquistas desbloqueadas!\n\n` +
       achievements
         .filter(a => a.unlocked)
         .map(a => `✅ ${a.name}`)
         .join('\n') +
-      `\n\nEstou organizando minha maternidade com o app M.A.E.S.! 💜`;
+      `\n\nEstou organizando minha maternidade com o app Mãe Consciente! 💜`;
     
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');

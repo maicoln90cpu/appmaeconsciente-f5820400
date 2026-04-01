@@ -34,7 +34,7 @@ export const AchievementBadge = ({ achievement }: AchievementBadgeProps) => {
   const Icon = iconMap[achievement.icon];
 
   const shareAchievement = () => {
-    const message = `🏆 Conquistei: ${achievement.name}!\n${achievement.description}\n\nEstou usando o app M.A.E.S. para organizar minha maternidade! 💜`;
+    const message = `🏆 Conquistei: ${achievement.name}!\n${achievement.description}\n\nEstou usando o app Mãe Consciente para organizar minha maternidade! 💜`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };

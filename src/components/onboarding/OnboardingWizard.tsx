@@ -18,7 +18,7 @@ import { useProfile } from "@/hooks/useProfile";
 
 const WIZARD_STEPS = [
   {
-    title: "Bem-vinda ao Maternidade Consciente! 🌸",
+    title: "Bem-vinda ao Mãe Consciente! 🌸",
     description: "Estamos muito felizes em ter você aqui. Vamos te guiar pelos primeiros passos para aproveitar ao máximo nossa plataforma.",
     image: "👶",
   },

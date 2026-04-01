@@ -312,7 +312,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="etapaMaes">Etapa do Método M.A.E.S.</Label>
+              <Label htmlFor="etapaMaes">Etapa do Método</Label>
               <Select value={formData.etapaMaes} onValueChange={(value) => setFormData({ ...formData, etapaMaes: value as EtapaMaes })}>
                 <SelectTrigger>
                   <SelectValue />

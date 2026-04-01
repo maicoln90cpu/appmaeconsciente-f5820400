@@ -352,7 +352,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="mt-10 pt-6 border-t border-border/50">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} Maternidade Consciente. Todos os direitos reservados.
+                © {new Date().getFullYear()} Mãe Consciente. Todos os direitos reservados.
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-xs text-muted-foreground">
