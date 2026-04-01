@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Bot, Upload, RefreshCw, MapPin, Edit2, Check, X
+  Bot, Upload, RefreshCw, MapPin, Edit2, Check, X, Sparkles, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,6 +31,7 @@ export const VirtualUserManagement = () => {
   const queryClient = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<VirtualUser>>({});
+  const [generatingAvatarId, setGeneratingAvatarId] = useState<string | null>(null);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ["virtual-users"],
@@ -103,6 +104,30 @@ export const VirtualUserManagement = () => {
 
     queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
     toast.success("Avatar atualizado!");
+  };
+
+  const handleGenerateAvatar = async (user: VirtualUser) => {
+    setGeneratingAvatarId(user.id);
+    try {
+      const name = user.full_name || "Mãe";
+      const { data, error } = await supabase.functions.invoke("generate-comment", {
+        body: {
+          postContent: `Gere uma descrição curta em inglês para uma foto de perfil realista de: ${name}, mãe brasileira. Selfie casual, iluminação natural, expressão calorosa, fundo desfocado. Apenas a descrição, sem aspas.`,
+          postCategory: "avatar",
+        },
+      });
+
+      if (error || !data?.comment) {
+        toast.error("Não foi possível gerar o prompt para a imagem. Use upload manual.");
+        return;
+      }
+
+      toast.info("💡 Funcionalidade futura: a geração automática de avatar por IA será implementada em breve. Por enquanto, use o upload manual clicando na foto do perfil.", { duration: 6000 });
+    } catch (err: any) {
+      toast.error(`Erro: ${err.message}`);
+    } finally {
+      setGeneratingAvatarId(null);
+    }
   };
 
   const startEditing = (user: VirtualUser) => {
@@ -269,21 +294,38 @@ export const VirtualUserManagement = () => {
                     <Label className="text-xs">{user.is_active ? "Ativo" : "Inativo"}</Label>
                   </div>
 
-                  {editingId === user.id ? (
-                    <div className="flex gap-1">
-                      <Button size="icon" variant="ghost" onClick={saveEditing}>
-                        <Check className="h-4 w-4 text-green-600" />
-                      </Button>
-                      <Button size="icon" variant="ghost" onClick={() => setEditingId(null)}>
-                        <X className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button size="sm" variant="ghost" onClick={() => startEditing(user)}>
-                      <Edit2 className="h-4 w-4 mr-1" />
-                      Editar
-                    </Button>
-                  )}
+                  <div className="flex gap-1">
+                    {editingId === user.id ? (
+                      <>
+                        <Button size="icon" variant="ghost" onClick={saveEditing}>
+                          <Check className="h-4 w-4 text-green-600" />
+                        </Button>
+                        <Button size="icon" variant="ghost" onClick={() => setEditingId(null)}>
+                          <X className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleGenerateAvatar(user)}
+                          disabled={generatingAvatarId === user.id}
+                          title="Gerar foto por IA (em breve)"
+                        >
+                          {generatingAvatarId === user.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Sparkles className="h-4 w-4 text-amber-500" />
+                          )}
+                        </Button>
+                        <Button size="sm" variant="ghost" onClick={() => startEditing(user)}>
+                          <Edit2 className="h-4 w-4 mr-1" />
+                          Editar
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
