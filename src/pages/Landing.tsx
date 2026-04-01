@@ -10,7 +10,7 @@ import patriciaImg from "@/assets/testimonials/patricia-alves.jpg";
 import beatrizImg from "@/assets/testimonials/beatriz-santos.jpg";
 import robertaImg from "@/assets/testimonials/roberta-mendes.jpg";
 import julianaImg from "@/assets/testimonials/juliana-freitas.jpg";
-import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby, Moon, Milk, Syringe, Stethoscope, Brain, Calculator, Apple, Activity, Package, Crown, Gift } from "lucide-react";
+import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby, Moon, Milk, Syringe, Stethoscope, Brain, Calculator, Apple, Activity, Package, Crown, Gift, Calendar, Timer, ClipboardList, Home, Utensils, Camera, CalendarClock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
 import { supabase } from "@/integrations/supabase/client";
