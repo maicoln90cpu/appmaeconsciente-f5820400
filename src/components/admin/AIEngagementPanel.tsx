@@ -151,6 +151,8 @@ export const AIEngagementPanel = () => {
           maxLikes: config.likes_per_run,
           randomTiming: config.random_timing,
           maxDelayMinutes: config.max_delay_minutes,
+          sentimentFilter: true,
+          autoModeration: true,
         },
       });
       if (error) throw error;
