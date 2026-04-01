@@ -354,148 +354,140 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Features Section - Cards with Gradient Icons & 3D Hover */}
+      {/* Ferramentas Gratuitas */}
       <section 
         ref={featuresInView.ref}
         className="py-20 bg-surface-1"
       >
         <div className="container">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
+            <Badge className="mb-4 bg-success/10 text-success border-success/20 px-4 py-1.5 text-sm">
+              <Gift className="h-4 w-4 mr-1.5" />
+              100% Gratuito — Para Sempre
+            </Badge>
             <h3 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Tudo que você precisa em um só lugar
+              Comece sem pagar nada
             </h3>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Ferramentas completas para cada fase da sua jornada maternal
+              Ferramentas completas e gratuitas para começar sua jornada
             </p>
           </div>
           
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {features.map((feature, index) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
+            {freeTools.map((tool, index) => (
               <Card 
-                key={feature.title}
-                className={`group relative overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-500 hover:shadow-elevated ${
+                key={tool.title}
+                className={`group border-success/20 hover:border-success/40 hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 ${
                   featuresInView.isInView ? 'animate-fade-in' : 'opacity-0'
                 }`}
-                style={{ 
-                  animationDelay: featuresInView.isInView ? `${index * 100}ms` : '0ms',
-                  transform: 'perspective(1000px)',
-                }}
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  const x = (e.clientX - rect.left - rect.width / 2) / 20;
-                  const y = (e.clientY - rect.top - rect.height / 2) / 20;
-                  e.currentTarget.style.transform = `perspective(1000px) rotateY(${x}deg) rotateX(${-y}deg)`;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
-                }}
+                style={{ animationDelay: featuresInView.isInView ? `${index * 80}ms` : '0ms' }}
               >
-                <CardContent className="pt-6 pb-6">
-                  {/* Free badge */}
-                  {'free' in feature && feature.free && (
-                    <Badge className="mb-3 bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20">
-                      Grátis
-                    </Badge>
-                  )}
-                  {/* Icon with gradient background */}
-                  <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                    <feature.icon className="h-6 w-6 text-white" />
+                <CardContent className="pt-5 pb-5 text-center">
+                  <div className="inline-flex p-3 rounded-xl bg-success/10 mb-3">
+                    <tool.icon className="h-6 w-6 text-success" />
                   </div>
-                  
-                  <h4 className="text-xl font-display font-semibold mb-2 group-hover:text-primary transition-colors">
-                    {feature.title}
-                  </h4>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {feature.description}
-                  </p>
+                  <h4 className="font-display font-semibold mb-1.5 text-sm">{tool.title}</h4>
+                  <p className="text-muted-foreground text-xs leading-relaxed">{tool.description}</p>
                 </CardContent>
-                
-                {/* Hover gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               </Card>
             ))}
-          </div>
-
-          {/* Extra tools badges */}
-          <div className="mt-12 text-center">
-            <p className="text-sm font-medium text-muted-foreground mb-4">Também incluído na plataforma:</p>
-            <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
-              {extraTools.map((tool, i) => (
-                <div key={i} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 text-sm font-medium shadow-sm hover:border-primary/30 transition-colors">
-                  <tool.icon className="h-4 w-4 text-primary" />
-                  <span>{tool.label}</span>
-                  {'free' in tool && tool.free && (
-                    <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
-                      Grátis
-                    </Badge>
-                  )}
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Ferramentas em Destaque */}
-      <section className="py-20">
-        <div className="container">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Ferramentas em Destaque
-            </h3>
-            <p className="text-lg text-muted-foreground">
-              Experimente 7 dias grátis em todas as ferramentas premium
-            </p>
-          </div>
-          
-          {loading ? (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {[...Array(6)].map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardContent className="pt-6 space-y-4">
-                    <div className="h-8 bg-muted rounded" />
-                    <div className="h-4 bg-muted rounded w-3/4" />
-                    <div className="h-20 bg-muted rounded" />
-                    <div className="h-10 bg-muted rounded" />
-                  </CardContent>
-                </Card>
-              ))}
+      {/* Ferramentas Premium por Fase */}
+      {toolsByPhase.map((phaseGroup, phaseIndex) => (
+        <section key={phaseGroup.phase} className={`py-16 ${phaseIndex % 2 === 0 ? '' : 'bg-surface-1'}`}>
+          <div className="container">
+            <div className="text-center mb-10">
+              <h3 className="text-2xl md:text-3xl font-display font-bold mb-2">
+                {phaseGroup.phase}
+              </h3>
+              <p className="text-muted-foreground">
+                {phaseGroup.subtitle}
+              </p>
             </div>
-          ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-              {featuredMaterials.map((product, index) => (
-                <Card 
-                  key={product.id} 
-                  className="group hover:shadow-elevated hover:-translate-y-1 transition-all duration-300 border-border/50 hover:border-primary/30"
-                >
-                  <CardContent className="pt-6 flex flex-col h-full">
-                    <div className="mb-4">
-                      {product.is_free ? (
-                        <Badge className="bg-success/10 text-success hover:bg-success/20 border-success/20">
-                          Gratuito
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
-                          R$ {product.price?.toFixed(2)}
-                        </Badge>
-                      )}
+
+            <div className={`grid gap-6 max-w-5xl mx-auto ${phaseGroup.tools.length === 1 ? 'max-w-md' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
+              {phaseGroup.tools.map((tool) => (
+                <Card key={tool.title} className="group border-border/50 hover:border-primary/30 hover:shadow-elevated transition-all duration-300 hover:-translate-y-1">
+                  <CardContent className="pt-6 pb-6 flex flex-col h-full">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="inline-flex p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                        <tool.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                        {tool.price}
+                      </Badge>
                     </div>
-                    <h4 className="text-xl font-display font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {product.title}
+                    <h4 className="text-lg font-display font-semibold mb-2 group-hover:text-primary transition-colors">
+                      {tool.title}
                     </h4>
-                    <p className="text-muted-foreground mb-4 flex-1 text-sm leading-relaxed">
-                      {product.short_description || product.description.substring(0, 100) + "..."}
+                    <p className="text-muted-foreground text-sm leading-relaxed mb-4 flex-1">
+                      {tool.description}
                     </p>
-                    <Button className="w-full group-hover:shadow-glow transition-shadow" asChild>
+                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors" asChild>
                       <Link to="/auth">
-                        {product.is_free ? "Acessar Grátis" : "Experimentar Grátis"}
+                        Experimentar 7 dias grátis
                       </Link>
                     </Button>
                   </CardContent>
                 </Card>
               ))}
             </div>
-          )}
+          </div>
+        </section>
+      ))}
+
+      {/* Clube Premium CTA */}
+      <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-primary/10">
+        <div className="container">
+          <Card className="max-w-3xl mx-auto border-primary/30 shadow-elevated overflow-hidden">
+            <div className="bg-gradient-to-r from-primary to-primary/80 px-8 py-4">
+              <div className="flex items-center gap-3">
+                <Crown className="h-6 w-6 text-primary-foreground" />
+                <h3 className="text-xl md:text-2xl font-display font-bold text-primary-foreground">
+                  Clube Mãe Consciente
+                </h3>
+              </div>
+            </div>
+            <CardContent className="pt-8 pb-8 px-8">
+              <div className="text-center mb-6">
+                <p className="text-muted-foreground mb-4">
+                  Acesso total a <strong>todas as ferramentas</strong> da plataforma por um único preço
+                </p>
+                <div className="flex items-baseline justify-center gap-1 mb-2">
+                  <span className="text-4xl md:text-5xl font-display font-bold text-primary">R$ 27</span>
+                  <span className="text-muted-foreground">/mês</span>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Avulso: R$ 80+ | No clube: <strong className="text-primary">tudo por R$ 27</strong>
+                </p>
+              </div>
+              
+              <div className="grid sm:grid-cols-2 gap-3 mb-8">
+                {[
+                  "Todas as ferramentas premium",
+                  "Comunidade exclusiva",
+                  "IA nutricional ilimitada",
+                  "Suporte prioritário",
+                  "Novidades em primeira mão",
+                  "30 dias grátis para testar",
+                ].map((benefit, i) => (
+                  <div key={i} className="flex items-center gap-2 text-sm">
+                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
+                    <span>{benefit}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <Button size="lg" className="w-full shadow-glow text-lg" asChild>
+                <Link to="/auth">
+                  Começar 30 dias grátis <ArrowRight className="h-5 w-5 ml-2" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
