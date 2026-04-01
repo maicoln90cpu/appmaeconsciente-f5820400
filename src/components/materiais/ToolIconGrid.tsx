@@ -1,7 +1,8 @@
 import { 
   Baby, Moon, Ruler, ShoppingBag, Pill, Apple, Syringe, 
   Brain, Stethoscope, Droplets, Wrench, FileText, Heart,
-  Calendar, Timer, ClipboardList, Home,
+  Calendar, Timer, ClipboardList, Home, TrendingUp, 
+  CalendarClock, Utensils, Camera,
   type LucideIcon 
 } from "lucide-react";
 import { Lock } from "lucide-react";
@@ -40,6 +41,10 @@ const slugIconMap: Record<string, LucideIcon> = {
   "checklist-documentos": ClipboardList,
   "checklist-quartinho": Home,
   "timer-mamada": Timer,
+  "diario-crescimento": TrendingUp,
+  "planejador-rotina": CalendarClock,
+  "introducao-alimentar": Utensils,
+  "album-marcos": Camera,
 };
 
 const slugColorMap: Record<string, string> = {
@@ -57,6 +62,10 @@ const slugColorMap: Record<string, string> = {
   "checklist-documentos": "bg-orange-500/10 text-orange-600 dark:text-orange-400",
   "checklist-quartinho": "bg-lime-500/10 text-lime-600 dark:text-lime-400",
   "timer-mamada": "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
+  "diario-crescimento": "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  "planejador-rotina": "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+  "introducao-alimentar": "bg-green-500/10 text-green-600 dark:text-green-400",
+  "album-marcos": "bg-pink-500/10 text-pink-600 dark:text-pink-400",
 };
 
 export const ToolIconGrid = ({ products, hasAccess, isAdmin, onProductClick }: ToolIconGridProps) => {

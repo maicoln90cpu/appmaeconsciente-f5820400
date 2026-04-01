@@ -13,7 +13,7 @@ import { ToolSuggestionDialog } from "@/components/materiais/ToolSuggestionDialo
 
 // Tools relevant per phase — others still show but are deprioritized
 const GESTANTE_SLUGS = new Set(["controle-enxoval", "mala-maternidade", "ferramentas-gestacao", "guia-alimentacao", "calculadora-fraldas", "calculadora-semanas", "checklist-quartinho"]);
-const POS_PARTO_SLUGS = new Set(["rastreador-amamentacao", "diario-sono", "monitor-desenvolvimento", "cartao-vacinacao", "recuperacao-pos-parto", "guia-alimentacao", "checklist-documentos", "timer-mamada"]);
+const POS_PARTO_SLUGS = new Set(["rastreador-amamentacao", "diario-sono", "monitor-desenvolvimento", "cartao-vacinacao", "recuperacao-pos-parto", "guia-alimentacao", "checklist-documentos", "timer-mamada", "diario-crescimento", "planejador-rotina", "introducao-alimentar", "album-marcos"]);
 
 interface Product {
   id: string;

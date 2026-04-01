@@ -54,6 +54,10 @@ const CalculadoraSemanas = lazyWithRetry(() => import("./pages/CalculadoraSemana
 const ChecklistDocumentos = lazyWithRetry(() => import("./pages/ChecklistDocumentos"));
 const ChecklistQuartinho = lazyWithRetry(() => import("./pages/ChecklistQuartinho"));
 const TimerMamada = lazyWithRetry(() => import("./pages/TimerMamada"));
+const DiarioCrescimento = lazyWithRetry(() => import("./pages/DiarioCrescimento"));
+const PlanejadorRotina = lazyWithRetry(() => import("./pages/PlanejadorRotina"));
+const IntroducaoAlimentar = lazyWithRetry(() => import("./pages/IntroducaoAlimentar"));
+const AlbumMarcos = lazyWithRetry(() => import("./pages/AlbumMarcos"));
 const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -180,6 +184,22 @@ const App = () => {
 
               <Route element={<ProductRoute productSlug="timer-mamada" />}>
                 <Route path="/timer-mamada" element={<FeaturePage name="Timer de Mamada"><TimerMamada /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="diario-crescimento" />}>
+                <Route path="/diario-crescimento" element={<FeaturePage name="Diário de Crescimento"><DiarioCrescimento /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="planejador-rotina" />}>
+                <Route path="/planejador-rotina" element={<FeaturePage name="Planejador de Rotina"><PlanejadorRotina /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="introducao-alimentar" />}>
+                <Route path="/introducao-alimentar" element={<FeaturePage name="Introdução Alimentar"><IntroducaoAlimentar /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="album-marcos" />}>
+                <Route path="/album-marcos" element={<FeaturePage name="Álbum de Marcos"><AlbumMarcos /></FeaturePage>} />
               </Route>
             </Route>
 
