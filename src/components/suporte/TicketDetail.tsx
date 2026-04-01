@@ -9,19 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { TICKET_STATUS_CONFIG, type TicketStatus } from "@/lib/ticket-utils";
 
 interface TicketDetailProps {
   ticket: Ticket | null;
   open: boolean;
   onClose: () => void;
 }
-
-const statusConfig = {
-  open: { label: "Aberto", color: "bg-blue-500" },
-  in_progress: { label: "Em Progresso", color: "bg-yellow-500" },
-  resolved: { label: "Resolvido", color: "bg-green-500" },
-  closed: { label: "Fechado", color: "bg-gray-500" },
-};
 
 export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
   const [messages, setMessages] = useState<TicketMessage[]>([]);
@@ -65,8 +59,8 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
           <div className="flex items-start justify-between">
             <DialogTitle>{ticket.subject}</DialogTitle>
             <div className="flex items-center gap-1">
-              <div className={`h-2 w-2 rounded-full ${statusConfig[ticket.status].color}`} />
-              <span className="text-xs">{statusConfig[ticket.status].label}</span>
+              <div className={`h-2 w-2 rounded-full ${TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.dotColor ?? "bg-gray-500"}`} />
+              <span className="text-xs">{TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.label ?? ticket.status}</span>
             </div>
           </div>
         </DialogHeader>

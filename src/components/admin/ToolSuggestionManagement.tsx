@@ -9,8 +9,7 @@ import { useState } from "react";
 import { Loader2, CheckCircle, XCircle, Code, Rocket, Gift, Star } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-
-type SuggestionStatus = "pending" | "approved" | "in_development" | "implemented" | "rejected";
+import { getSuggestionStatusBadgeVariant, getSuggestionStatusLabel, type SuggestionStatus } from "@/lib/ticket-utils";
 
 export const ToolSuggestionManagement = () => {
   const { toast } = useToast();
@@ -94,27 +93,6 @@ export const ToolSuggestionManagement = () => {
     },
   });
 
-  const getStatusColor = (status: SuggestionStatus) => {
-    switch (status) {
-      case "pending": return "secondary";
-      case "approved": return "default";
-      case "in_development": return "outline";
-      case "implemented": return "default";
-      case "rejected": return "destructive";
-      default: return "secondary";
-    }
-  };
-
-  const getStatusLabel = (status: SuggestionStatus) => {
-    switch (status) {
-      case "pending": return "Pendente";
-      case "approved": return "Aprovada";
-      case "in_development": return "Em Desenvolvimento";
-      case "implemented": return "Implementada";
-      case "rejected": return "Rejeitada";
-      default: return status;
-    }
-  };
 
   const filteredSuggestions = suggestions?.filter(s => {
     const matchesStatus = statusFilter === "all" || s.status === statusFilter;
@@ -202,8 +180,8 @@ export const ToolSuggestionManagement = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <CardTitle>{suggestion.title}</CardTitle>
-                    <Badge variant={getStatusColor(suggestion.status as SuggestionStatus)}>
-                      {getStatusLabel(suggestion.status as SuggestionStatus)}
+                    <Badge variant={getSuggestionStatusBadgeVariant(suggestion.status)}>
+                      {getSuggestionStatusLabel(suggestion.status)}
                     </Badge>
                     {suggestion.reward_granted && (
                       <Badge variant="outline" className="bg-yellow-500/10">

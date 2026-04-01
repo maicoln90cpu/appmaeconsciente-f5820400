@@ -3,25 +3,17 @@ import { Badge } from "@/components/ui/badge";
 import { Ticket } from "@/hooks/useTickets";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
+import {
+  TICKET_STATUS_CONFIG,
+  TICKET_PRIORITY_CONFIG,
+  type TicketStatus,
+  type TicketPriority,
+} from "@/lib/ticket-utils";
 
 interface TicketListProps {
   tickets: Ticket[];
   onTicketClick: (ticket: Ticket) => void;
 }
-
-const statusConfig = {
-  open: { label: "Aberto", color: "bg-blue-500", icon: Clock },
-  in_progress: { label: "Em Progresso", color: "bg-yellow-500", icon: AlertCircle },
-  resolved: { label: "Resolvido", color: "bg-green-500", icon: CheckCircle2 },
-  closed: { label: "Fechado", color: "bg-gray-500", icon: XCircle },
-};
-
-const priorityConfig = {
-  low: { label: "Baixa", color: "secondary" },
-  medium: { label: "Média", color: "default" },
-  high: { label: "Alta", color: "destructive" },
-};
 
 export const TicketList = ({ tickets, onTicketClick }: TicketListProps) => {
   if (tickets.length === 0) {
@@ -39,7 +31,9 @@ export const TicketList = ({ tickets, onTicketClick }: TicketListProps) => {
   return (
     <div className="space-y-4">
       {tickets.map((ticket) => {
-        const StatusIcon = statusConfig[ticket.status].icon;
+        const statusCfg = TICKET_STATUS_CONFIG[ticket.status as TicketStatus];
+        const priorityCfg = TICKET_PRIORITY_CONFIG[ticket.priority as TicketPriority];
+        const StatusIcon = statusCfg?.icon;
         const timeAgo = formatDistanceToNow(new Date(ticket.created_at), {
           addSuffix: true,
           locale: ptBR,
@@ -61,14 +55,14 @@ export const TicketList = ({ tickets, onTicketClick }: TicketListProps) => {
                 </div>
                 <div className="flex flex-col gap-2">
                   <Badge
-                    variant={priorityConfig[ticket.priority].color as any}
+                    variant={priorityCfg?.badgeVariant ?? "secondary"}
                     className="whitespace-nowrap"
                   >
-                    {priorityConfig[ticket.priority].label}
+                    {priorityCfg?.label ?? ticket.priority}
                   </Badge>
                   <div className="flex items-center gap-1">
-                    <div className={`h-2 w-2 rounded-full ${statusConfig[ticket.status].color}`} />
-                    <span className="text-xs">{statusConfig[ticket.status].label}</span>
+                    <div className={`h-2 w-2 rounded-full ${statusCfg?.dotColor ?? "bg-gray-500"}`} />
+                    <span className="text-xs">{statusCfg?.label ?? ticket.status}</span>
                   </div>
                 </div>
               </div>

@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { useState } from "react";
 import { MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
+import { getTicketStatusBadgeVariant, getTicketStatusLabel, getTicketPriorityBadgeVariant } from "@/lib/ticket-utils";
 
 export const TicketManagement = () => {
   const queryClient = useQueryClient();
@@ -74,32 +75,6 @@ export const TicketManagement = () => {
     replyMutation.mutate({ ticketId, message: replyMessage });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "open": return "destructive";
-      case "in_progress": return "default";
-      case "resolved": return "secondary";
-      default: return "outline";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "open": return "Aberto";
-      case "in_progress": return "Em progresso";
-      case "resolved": return "Resolvido";
-      default: return status;
-    }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case "high": return "destructive";
-      case "medium": return "default";
-      case "low": return "secondary";
-      default: return "outline";
-    }
-  };
 
   if (isLoading) {
     return <div>Carregando tickets...</div>;
@@ -143,7 +118,7 @@ export const TicketManagement = () => {
                 <TableCell className="max-w-[180px] truncate">{ticket.email}</TableCell>
                 <TableCell className="whitespace-nowrap">{format(new Date(ticket.created_at), "dd/MM/yyyy HH:mm")}</TableCell>
                 <TableCell>
-                  <Badge variant={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
+                  <Badge variant={getTicketPriorityBadgeVariant(ticket.priority)}>{ticket.priority}</Badge>
                 </TableCell>
                 <TableCell>
                   <Select
