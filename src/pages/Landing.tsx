@@ -225,7 +225,7 @@ const Landing = () => {
             >
               <Badge variant="secondary" className="px-4 py-1.5 text-sm font-medium border border-primary/20 bg-primary/5 text-primary animate-pulse-soft">
                 <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                Novo: IA Nutricional
+                Calculadora de Fraldas e Vacinação agora GRÁTIS!
               </Badge>
             </div>
             
