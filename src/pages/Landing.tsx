@@ -350,18 +350,36 @@ const Landing = () => {
               </Card>
             ))}
           </div>
+
+          {/* Extra tools badges */}
+          <div className="mt-12 text-center">
+            <p className="text-sm font-medium text-muted-foreground mb-4">Também incluído na plataforma:</p>
+            <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
+              {extraTools.map((tool, i) => (
+                <div key={i} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 text-sm font-medium shadow-sm hover:border-primary/30 transition-colors">
+                  <tool.icon className="h-4 w-4 text-primary" />
+                  <span>{tool.label}</span>
+                  {'free' in tool && tool.free && (
+                    <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                      Grátis
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Materiais em Destaque */}
+      {/* Ferramentas em Destaque */}
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-16">
             <h3 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Materiais em Destaque
+              Ferramentas em Destaque
             </h3>
             <p className="text-lg text-muted-foreground">
-              Recursos exclusivos para sua jornada
+              Experimente 7 dias grátis em todas as ferramentas premium
             </p>
           </div>
           
