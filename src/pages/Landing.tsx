@@ -698,9 +698,9 @@ const Landing = () => {
               </Link>
             </Button>
             
-            <p className="mt-6 text-sm text-muted-foreground">
-              Sem cartão de crédito • Acesso imediato • Cancele quando quiser
-            </p>
+             <p className="mt-6 text-sm text-muted-foreground">
+               Sem cartão de crédito • 7 dias grátis • Cancele quando quiser
+             </p>
           </div>
         </div>
       </section>
