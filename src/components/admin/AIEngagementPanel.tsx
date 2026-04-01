@@ -61,7 +61,13 @@ export const AIEngagementPanel = () => {
 
   useEffect(() => {
     if (savedConfig) {
-      setConfig(savedConfig);
+      setConfig({
+        posts_per_run: savedConfig.posts_per_run ?? DEFAULT_CONFIG.posts_per_run,
+        replies_per_run: savedConfig.replies_per_run ?? DEFAULT_CONFIG.replies_per_run,
+        likes_per_run: savedConfig.likes_per_run ?? DEFAULT_CONFIG.likes_per_run,
+        random_timing: savedConfig.random_timing ?? DEFAULT_CONFIG.random_timing,
+        max_delay_minutes: savedConfig.max_delay_minutes ?? DEFAULT_CONFIG.max_delay_minutes,
+      });
     }
   }, [savedConfig]);
 
