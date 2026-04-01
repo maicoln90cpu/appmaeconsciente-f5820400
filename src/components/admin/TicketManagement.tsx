@@ -118,7 +118,7 @@ export const TicketManagement = () => {
                 <TableCell className="max-w-[180px] truncate">{ticket.email}</TableCell>
                 <TableCell className="whitespace-nowrap">{format(new Date(ticket.created_at), "dd/MM/yyyy HH:mm")}</TableCell>
                 <TableCell>
-                  <Badge variant={getPriorityColor(ticket.priority)}>{ticket.priority}</Badge>
+                  <Badge variant={getTicketPriorityBadgeVariant(ticket.priority)}>{ticket.priority}</Badge>
                 </TableCell>
                 <TableCell>
                   <Select
