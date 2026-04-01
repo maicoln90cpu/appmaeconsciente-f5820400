@@ -103,74 +103,39 @@ const freeTools = [
   },
 ];
 
-const toolsByPhase = [
-  {
-    phase: "🤰 Para Gestantes",
-    subtitle: "Ferramentas para quem está esperando o bebê",
-    tools: [
-      {
-        icon: Baby,
-        title: "Ferramentas de Gestação",
-        description: "Calculadora de DPP, contador de movimentos fetais, checklist de exames, plano de parto e galeria de ultrassons.",
-        price: "R$ 10,90",
-        slug: "ferramentas-gestacao",
-      },
-      {
-        icon: Package,
-        title: "Controle de Enxoval",
-        description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval.",
-        price: "R$ 17,90",
-        slug: "enxoval",
-      },
-      {
-        icon: Apple,
-        title: "Guia de Alimentação",
-        description: "Planos semanais com IA, receitas por trimestre, controle de suplementos e hidratação.",
-        price: "R$ 12,90",
-        slug: "guia-alimentacao",
-      },
-    ],
-  },
-  {
-    phase: "👶 Pós-Parto (0-3 meses)",
-    subtitle: "Para os primeiros meses com seu bebê",
-    tools: [
-      {
-        icon: Milk,
-        title: "Rastreador de Amamentação",
-        description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.",
-        price: "R$ 9,90",
-        slug: "rastreador-amamentacao",
-      },
-      {
-        icon: Moon,
-        title: "Diário de Sono",
-        description: "Registre padrões de sono, receba insights com IA e identifique a melhor rotina.",
-        price: "R$ 8,90",
-        slug: "diario-sono",
-      },
-      {
-        icon: Activity,
-        title: "Recuperação Pós-Parto",
-        description: "Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.",
-        price: "R$ 12,90",
-        slug: "recuperacao-pos-parto",
-      },
-    ],
-  },
-  {
-    phase: "🍼 Bebês (3-12 meses)",
-    subtitle: "Acompanhe o crescimento e desenvolvimento",
-    tools: [
-      {
-        icon: Brain,
-        title: "Monitor de Desenvolvimento",
-        description: "Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.",
-        price: "R$ 9,90",
-        slug: "monitor-desenvolvimento",
-      },
-    ],
-  },
+// Slugs mapped to phases for dynamic pricing
+const phaseToolSlugs = {
+  gestantes: [
+    { icon: Baby, title: "Ferramentas de Gestação", description: "Calculadora de DPP, contador de movimentos fetais, checklist de exames, plano de parto e galeria de ultrassons.", slug: "ferramentas-gestacao" },
+    { icon: Package, title: "Controle de Enxoval", description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval.", slug: "controle-enxoval" },
+    { icon: Apple, title: "Guia de Alimentação", description: "Planos semanais com IA, receitas por trimestre, controle de suplementos e hidratação.", slug: "guia-alimentacao" },
+  ],
+  posParto: [
+    { icon: Milk, title: "Rastreador de Amamentação", description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.", slug: "rastreador-amamentacao" },
+    { icon: Moon, title: "Diário de Sono", description: "Registre padrões de sono, receba insights com IA e identifique a melhor rotina.", slug: "diario-sono" },
+    { icon: Activity, title: "Recuperação Pós-Parto", description: "Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.", slug: "recuperacao-pos-parto" },
+  ],
+  bebes: [
+    { icon: Brain, title: "Monitor de Desenvolvimento", description: "Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.", slug: "monitor-desenvolvimento" },
+  ],
+};
+
+// All premium tools for comparison table
+const comparisonFeatures = [
+  { name: "Calculadora de Fraldas", free: true, premium: true, clube: true },
+  { name: "Cartão de Vacinação", free: true, premium: true, clube: true },
+  { name: "Mala da Maternidade", free: true, premium: true, clube: true },
+  { name: "E-book Guia Rápido", free: true, premium: true, clube: true },
+  { name: "Ferramentas de Gestação", free: false, premium: true, clube: true },
+  { name: "Controle de Enxoval", free: false, premium: true, clube: true },
+  { name: "Guia de Alimentação e IA", free: false, premium: true, clube: true },
+  { name: "Rastreador de Amamentação", free: false, premium: true, clube: true },
+  { name: "Diário de Sono", free: false, premium: true, clube: true },
+  { name: "Recuperação Pós-Parto", free: false, premium: true, clube: true },
+  { name: "Monitor de Desenvolvimento", free: false, premium: true, clube: true },
+  { name: "Comunidade Exclusiva", free: false, premium: false, clube: true },
+  { name: "Suporte Prioritário", free: false, premium: false, clube: true },
+  { name: "Novidades em 1ª mão", free: false, premium: false, clube: true },
 ];
 
 // Custom hook for intersection observer
