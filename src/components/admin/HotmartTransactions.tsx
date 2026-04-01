@@ -167,4 +167,4 @@ const TransactionsTable = ({ transactions }: { transactions: Transaction[] }) =>
       </Table>
     </div>
   );
-;
+};
