@@ -194,7 +194,7 @@ export const TicketManagement = () => {
                   </TableCell>
                 </TableRow>
               )}
-            </>
+            </React.Fragment>
           ))}
         </TableBody>
       </Table>
