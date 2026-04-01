@@ -1,7 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Quote } from "lucide-react";
+
+import fernandaImg from "@/assets/testimonials/fernanda-lima.jpg";
+import marianaImg from "@/assets/testimonials/mariana-costa.jpg";
+import camilaImg from "@/assets/testimonials/camila-rodrigues.jpg";
+import patriciaImg from "@/assets/testimonials/patricia-alves.jpg";
+import anaPaulaImg from "@/assets/testimonials/ana-paula-santos.jpg";
 
 interface Testimonial {
   name: string;
