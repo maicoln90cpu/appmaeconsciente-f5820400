@@ -291,10 +291,11 @@ const Landing = () => {
               style={{ animationDelay: '400ms' }}
             >
               <div className="flex -space-x-2">
-                {['F', 'M', 'C', 'P'].map((letter, i) => (
+                {[fernandaImg, marianaImg, camilaImg, patriciaImg].map((img, i) => (
                   <Avatar key={i} className="w-8 h-8 border-2 border-background">
+                    <AvatarImage src={img} alt="Usuária" loading="lazy" />
                     <AvatarFallback className="text-xs bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold">
-                      {letter}
+                      {['F', 'M', 'C', 'P'][i]}
                     </AvatarFallback>
                   </Avatar>
                 ))}
