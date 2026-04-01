@@ -223,10 +223,10 @@ const Landing = () => {
               className="text-4xl font-display font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6 animate-fade-in"
               style={{ animationDelay: '100ms' }}
             >
-              Sua jornada para uma{" "}
+               Tudo para sua{" "}
               <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                maternidade consciente
-              </span>
+                gestação e pós-parto
+              </span>{" "}em um só app
             </h2>
             
             <p 
