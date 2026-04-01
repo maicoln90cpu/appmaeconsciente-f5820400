@@ -1,6 +1,7 @@
 import { 
   Baby, Moon, Ruler, ShoppingBag, Pill, Apple, Syringe, 
   Brain, Stethoscope, Droplets, Wrench, FileText, Heart,
+  Calendar, Timer, ClipboardList, Home,
   type LucideIcon 
 } from "lucide-react";
 import { Lock } from "lucide-react";
