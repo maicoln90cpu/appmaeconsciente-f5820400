@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import fernandaImg from "@/assets/testimonials/fernanda-lima.jpg";
+import marianaImg from "@/assets/testimonials/mariana-costa.jpg";
+import camilaImg from "@/assets/testimonials/camila-rodrigues.jpg";
+import patriciaImg from "@/assets/testimonials/patricia-alves.jpg";
+import beatrizImg from "@/assets/testimonials/beatriz-santos.jpg";
+import robertaImg from "@/assets/testimonials/roberta-mendes.jpg";
+import julianaImg from "@/assets/testimonials/juliana-freitas.jpg";
 import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby, Moon, Milk, Syringe, Stethoscope, Brain, Calculator, Apple, Activity, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
@@ -23,6 +31,7 @@ interface Testimonial {
   location: string;
   text: string;
   rating: number;
+  avatar: string;
 }
 
 const testimonials: Testimonial[] = [
@@ -30,43 +39,50 @@ const testimonials: Testimonial[] = [
     name: "Fernanda Lima",
     location: "1º filho - São Paulo/SP",
     text: "O Controle de Enxoval me salvou! Consegui rastrear cada item, comparar preços e não esquecer nada. Economizei mais de R$ 3.500 comprando apenas o necessário.",
-    rating: 5
+    rating: 5,
+    avatar: fernandaImg
   },
   {
     name: "Mariana Costa",
     location: "Grávida de 8 meses - Belo Horizonte/MG",
     text: "A Calculadora de Fraldas foi uma revelação! Descobri que fraldas de pano realmente compensam no longo prazo. O cálculo detalhado me deu segurança para investir.",
-    rating: 5
+    rating: 5,
+    avatar: marianaImg
   },
   {
     name: "Camila Rodrigues",
     location: "Mãe de gêmeos - Rio de Janeiro/RJ",
     text: "Com gêmeos, o Diário de Sono foi essencial. Consegui identificar padrões, ajustar rotinas e finalmente dormir melhor. Dashboard visual super intuitivo!",
-    rating: 5
+    rating: 5,
+    avatar: camilaImg
   },
   {
     name: "Patrícia Alves",
     location: "2º filho - Curitiba/PR",
     text: "O Rastreador de Amamentação me ajudou a controlar mamadas, estoque de leite e até prever quando ordenhar. Como segunda mãe, isso foi um luxo de organização!",
-    rating: 5
+    rating: 5,
+    avatar: patriciaImg
   },
   {
     name: "Beatriz Santos",
     location: "Nutricionista e grávida - Salvador/BA",
     text: "O Guia de Alimentação superou minhas expectativas! Planos semanais, receitas por trimestre e controle de suplementos. Tudo validado e seguro.",
-    rating: 5
+    rating: 5,
+    avatar: beatrizImg
   },
   {
     name: "Roberta Mendes",
     location: "Mãe solo - Porto Alegre/RS",
     text: "A comunidade foi meu suporte emocional. Compartilhar dúvidas, ver fotos de outras mães e receber incentivo fez toda diferença na minha jornada solo.",
-    rating: 5
+    rating: 5,
+    avatar: robertaImg
   },
   {
     name: "Juliana Freitas",
     location: "Médica pediatra - Brasília/DF",
     text: "Como pediatra, indico o Cartão de Vacinação Digital! Mães organizadas facilitam meu trabalho. Lembretes, registro de reações e relatórios em PDF são incríveis.",
-    rating: 5
+    rating: 5,
+    avatar: julianaImg
   }
 ];
 
@@ -275,10 +291,11 @@ const Landing = () => {
               style={{ animationDelay: '400ms' }}
             >
               <div className="flex -space-x-2">
-                {['F', 'M', 'C', 'P'].map((letter, i) => (
+                {[fernandaImg, marianaImg, camilaImg, patriciaImg].map((img, i) => (
                   <Avatar key={i} className="w-8 h-8 border-2 border-background">
+                    <AvatarImage src={img} alt="Usuária" loading="lazy" />
                     <AvatarFallback className="text-xs bg-gradient-to-br from-primary/20 to-primary/40 text-primary font-semibold">
-                      {letter}
+                      {['F', 'M', 'C', 'P'][i]}
                     </AvatarFallback>
                   </Avatar>
                 ))}
@@ -465,6 +482,7 @@ const Landing = () => {
                   {/* Avatar with gradient border */}
                   <div className="inline-flex p-1 rounded-full bg-gradient-to-br from-primary to-primary/50 mb-6">
                     <Avatar className="h-20 w-20 border-4 border-background">
+                      <AvatarImage src={testimonials[currentTestimonial].avatar} alt={testimonials[currentTestimonial].name} loading="lazy" />
                       <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary/20 to-primary/40 text-primary">
                         {testimonials[currentTestimonial].name.charAt(0)}
                       </AvatarFallback>
@@ -529,6 +547,7 @@ const Landing = () => {
                   <div className="flex items-center gap-3">
                     <div className="p-0.5 rounded-full bg-gradient-to-br from-primary/50 to-primary/30">
                       <Avatar className="h-10 w-10 border-2 border-background">
+                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} loading="lazy" />
                         <AvatarFallback className="text-sm bg-primary/10 text-primary font-semibold">
                           {testimonial.name.charAt(0)}
                         </AvatarFallback>
@@ -663,10 +682,11 @@ const Landing = () => {
             {/* Social Proof Counter */}
             <div className="inline-flex items-center gap-3 mb-8 px-6 py-3 rounded-full bg-card/80 backdrop-blur border border-border/50 shadow-medium">
               <div className="flex -space-x-2">
-                {['F', 'M', 'C', 'P', 'B'].map((letter, i) => (
+                {[fernandaImg, marianaImg, camilaImg, patriciaImg, beatrizImg].map((img, i) => (
                   <Avatar key={i} className="w-8 h-8 border-2 border-background">
+                    <AvatarImage src={img} alt="Usuária" loading="lazy" />
                     <AvatarFallback className="text-xs bg-gradient-to-br from-primary/30 to-primary/50 text-primary font-semibold">
-                      {letter}
+                      {['F', 'M', 'C', 'P', 'B'][i]}
                     </AvatarFallback>
                   </Avatar>
                 ))}
