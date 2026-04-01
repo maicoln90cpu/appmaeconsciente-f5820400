@@ -16,16 +16,6 @@ import { InstallPrompt } from "@/components/install/InstallPrompt";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState, useRef, useCallback } from "react";
 
-interface Product {
-  id: string;
-  title: string;
-  description: string;
-  short_description: string | null;
-  price: number | null;
-  is_free: boolean;
-  slug: string;
-}
-
 interface Testimonial {
   name: string;
   location: string;
