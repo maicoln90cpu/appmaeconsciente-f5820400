@@ -102,7 +102,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
               className="group flex items-center gap-2 text-base sm:text-lg md:text-xl font-display font-bold shrink-0"
             >
               <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent transition-all group-hover:to-primary/50 truncate">
-                <span className="hidden xs:inline">Maternidade Consciente</span>
+                <span className="hidden xs:inline">Mãe Consciente</span>
                 <span className="xs:hidden">M.C.</span>
               </span>
             </Link>
