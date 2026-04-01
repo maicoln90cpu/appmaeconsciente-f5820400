@@ -326,6 +326,12 @@ const Landing = () => {
                 }}
               >
                 <CardContent className="pt-6 pb-6">
+                  {/* Free badge */}
+                  {'free' in feature && feature.free && (
+                    <Badge className="mb-3 bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20">
+                      Grátis
+                    </Badge>
+                  )}
                   {/* Icon with gradient background */}
                   <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                     <feature.icon className="h-6 w-6 text-white" />
