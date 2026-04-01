@@ -424,10 +424,99 @@ const Landing = () => {
         </section>
       ))}
 
-      {/* Clube Premium CTA */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-primary/10">
+      {/* Tabela Comparativa + Clube Premium */}
+      <section 
+        ref={comparisonInView.ref}
+        className="py-20 bg-gradient-to-br from-primary/5 via-background to-primary/10"
+      >
         <div className="container">
-          <Card className="max-w-3xl mx-auto border-primary/30 shadow-elevated overflow-hidden">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl md:text-4xl font-display font-bold mb-4">
+              Compare e escolha o melhor para você
+            </h3>
+            <p className="text-lg text-muted-foreground">
+              Gratuito, avulso ou acesso total — você decide
+            </p>
+          </div>
+
+          {/* Comparison Table */}
+          <div className={`max-w-4xl mx-auto mb-12 ${comparisonInView.isInView ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="overflow-x-auto rounded-xl border border-border/50 shadow-elevated">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left p-4 font-display font-semibold text-muted-foreground">Recurso</th>
+                    <th className="text-center p-4 font-display font-semibold w-24">
+                      <div className="flex flex-col items-center gap-1">
+                        <Gift className="h-5 w-5 text-success" />
+                        <span>Grátis</span>
+                        <span className="text-xs text-muted-foreground font-normal">R$ 0</span>
+                      </div>
+                    </th>
+                    <th className="text-center p-4 font-display font-semibold w-24">
+                      <div className="flex flex-col items-center gap-1">
+                        <Star className="h-5 w-5 text-primary" />
+                        <span>Avulso</span>
+                        <span className="text-xs text-muted-foreground font-normal">por ferramenta</span>
+                      </div>
+                    </th>
+                    <th className="text-center p-4 font-display font-semibold w-28 bg-primary/5 rounded-t-xl">
+                      <div className="flex flex-col items-center gap-1">
+                        <Crown className="h-5 w-5 text-primary" />
+                        <span className="text-primary">Clube</span>
+                        <span className="text-xs text-primary font-bold">R$ {clubePrice.toFixed(0)}/mês</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonFeatures.map((feat, i) => (
+                    <tr key={feat.name} className={`border-b border-border/30 ${i % 2 === 0 ? 'bg-muted/20' : ''}`}>
+                      <td className="p-3 pl-4 text-foreground">{feat.name}</td>
+                      <td className="p-3 text-center">
+                        {feat.free ? (
+                          <CheckCircle2 className="h-5 w-5 text-success mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center">
+                        {feat.premium ? (
+                          <CheckCircle2 className="h-5 w-5 text-primary mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center bg-primary/5">
+                        {feat.clube ? (
+                          <CheckCircle2 className="h-5 w-5 text-primary mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {/* Total row */}
+                  <tr className="bg-muted/30 font-semibold">
+                    <td className="p-4 pl-4 font-display">Custo total/mês</td>
+                    <td className="p-4 text-center text-success font-bold">R$ 0</td>
+                    <td className="p-4 text-center text-muted-foreground">
+                      R$ {totalAvulso > 0 ? totalAvulso.toFixed(2).replace('.', ',') : '80+'}
+                    </td>
+                    <td className="p-4 text-center bg-primary/5 text-primary font-bold text-lg">
+                      R$ {clubePrice.toFixed(0)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-center text-xs text-muted-foreground mt-3">
+              * Premium avulso: cada ferramenta comprada individualmente. Clube: acesso total por preço único.
+            </p>
+          </div>
+
+          {/* Clube CTA Card */}
+          <Card className="max-w-2xl mx-auto border-primary/30 shadow-elevated overflow-hidden">
             <div className="bg-gradient-to-r from-primary to-primary/80 px-8 py-4">
               <div className="flex items-center gap-3">
                 <Crown className="h-6 w-6 text-primary-foreground" />
@@ -436,36 +525,14 @@ const Landing = () => {
                 </h3>
               </div>
             </div>
-            <CardContent className="pt-8 pb-8 px-8">
-              <div className="text-center mb-6">
-                <p className="text-muted-foreground mb-4">
-                  Acesso total a <strong>todas as ferramentas</strong> da plataforma por um único preço
-                </p>
-                <div className="flex items-baseline justify-center gap-1 mb-2">
-                  <span className="text-4xl md:text-5xl font-display font-bold text-primary">R$ 27</span>
-                  <span className="text-muted-foreground">/mês</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Avulso: R$ 80+ | No clube: <strong className="text-primary">tudo por R$ 27</strong>
-                </p>
+            <CardContent className="pt-6 pb-6 px-8 text-center">
+              <div className="flex items-baseline justify-center gap-1 mb-2">
+                <span className="text-4xl font-display font-bold text-primary">R$ {clubePrice.toFixed(0)}</span>
+                <span className="text-muted-foreground">/mês</span>
               </div>
-              
-              <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                {[
-                  "Todas as ferramentas premium",
-                  "Comunidade exclusiva",
-                  "IA nutricional ilimitada",
-                  "Suporte prioritário",
-                  "Novidades em primeira mão",
-                  "30 dias grátis para testar",
-                ].map((benefit, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-              
+              <p className="text-sm text-muted-foreground mb-6">
+                Economize <strong className="text-primary">R$ {totalAvulso > 0 ? (totalAvulso - clubePrice).toFixed(0) : '50+'}</strong> comparado a comprar avulso • 30 dias grátis
+              </p>
               <Button size="lg" className="w-full shadow-glow text-lg" asChild>
                 <Link to="/auth">
                   Começar 30 dias grátis <ArrowRight className="h-5 w-5 ml-2" />
