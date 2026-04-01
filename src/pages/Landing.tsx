@@ -39,43 +39,50 @@ const testimonials: Testimonial[] = [
     name: "Fernanda Lima",
     location: "1º filho - São Paulo/SP",
     text: "O Controle de Enxoval me salvou! Consegui rastrear cada item, comparar preços e não esquecer nada. Economizei mais de R$ 3.500 comprando apenas o necessário.",
-    rating: 5
+    rating: 5,
+    avatar: fernandaImg
   },
   {
     name: "Mariana Costa",
     location: "Grávida de 8 meses - Belo Horizonte/MG",
     text: "A Calculadora de Fraldas foi uma revelação! Descobri que fraldas de pano realmente compensam no longo prazo. O cálculo detalhado me deu segurança para investir.",
-    rating: 5
+    rating: 5,
+    avatar: marianaImg
   },
   {
     name: "Camila Rodrigues",
     location: "Mãe de gêmeos - Rio de Janeiro/RJ",
     text: "Com gêmeos, o Diário de Sono foi essencial. Consegui identificar padrões, ajustar rotinas e finalmente dormir melhor. Dashboard visual super intuitivo!",
-    rating: 5
+    rating: 5,
+    avatar: camilaImg
   },
   {
     name: "Patrícia Alves",
     location: "2º filho - Curitiba/PR",
     text: "O Rastreador de Amamentação me ajudou a controlar mamadas, estoque de leite e até prever quando ordenhar. Como segunda mãe, isso foi um luxo de organização!",
-    rating: 5
+    rating: 5,
+    avatar: patriciaImg
   },
   {
     name: "Beatriz Santos",
     location: "Nutricionista e grávida - Salvador/BA",
     text: "O Guia de Alimentação superou minhas expectativas! Planos semanais, receitas por trimestre e controle de suplementos. Tudo validado e seguro.",
-    rating: 5
+    rating: 5,
+    avatar: beatrizImg
   },
   {
     name: "Roberta Mendes",
     location: "Mãe solo - Porto Alegre/RS",
     text: "A comunidade foi meu suporte emocional. Compartilhar dúvidas, ver fotos de outras mães e receber incentivo fez toda diferença na minha jornada solo.",
-    rating: 5
+    rating: 5,
+    avatar: robertaImg
   },
   {
     name: "Juliana Freitas",
     location: "Médica pediatra - Brasília/DF",
     text: "Como pediatra, indico o Cartão de Vacinação Digital! Mães organizadas facilitam meu trabalho. Lembretes, registro de reações e relatórios em PDF são incríveis.",
-    rating: 5
+    rating: 5,
+    avatar: julianaImg
   }
 ];
 
