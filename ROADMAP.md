@@ -1,4 +1,4 @@
-# 🗺️ ROADMAP - Maternidade Consciente
+# 🗺️ ROADMAP - Mãe Consciente
 
 **Última atualização:** Janeiro 2026  
 **Próxima revisão:** Abril 2026

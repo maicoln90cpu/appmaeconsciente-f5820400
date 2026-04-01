@@ -714,7 +714,7 @@ const Landing = () => {
                 Mãe Consciente
               </h2>
               <p className="text-sm text-muted-foreground">
-                © 2025 Todos os direitos reservados.
+                © {new Date().getFullYear()} Mãe Consciente. Todos os direitos reservados.
               </p>
             </div>
             <div className="flex gap-6">
