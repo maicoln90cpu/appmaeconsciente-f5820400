@@ -546,6 +546,7 @@ const Landing = () => {
                   <div className="flex items-center gap-3">
                     <div className="p-0.5 rounded-full bg-gradient-to-br from-primary/50 to-primary/30">
                       <Avatar className="h-10 w-10 border-2 border-background">
+                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} loading="lazy" />
                         <AvatarFallback className="text-sm bg-primary/10 text-primary font-semibold">
                           {testimonial.name.charAt(0)}
                         </AvatarFallback>
