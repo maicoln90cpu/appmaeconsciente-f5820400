@@ -2799,6 +2799,47 @@ export type Database = {
           },
         ]
       }
+      post_moderation_logs: {
+        Row: {
+          action: string
+          created_at: string
+          flagged_categories: string[] | null
+          id: string
+          post_id: string
+          reason: string | null
+          reviewed_by: string | null
+          sentiment_score: number | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          flagged_categories?: string[] | null
+          id?: string
+          post_id: string
+          reason?: string | null
+          reviewed_by?: string | null
+          sentiment_score?: number | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          flagged_categories?: string[] | null
+          id?: string
+          post_id?: string
+          reason?: string | null
+          reviewed_by?: string | null
+          sentiment_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_moderation_logs_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_reports: {
         Row: {
           admin_notes: string | null
@@ -3037,6 +3078,8 @@ export type Database = {
           display_name: string | null
           id: string
           image_urls: string[] | null
+          is_hidden: boolean | null
+          moderation_status: string | null
           tags: string[] | null
           updated_at: string
           user_id: string
@@ -3048,6 +3091,8 @@ export type Database = {
           display_name?: string | null
           id?: string
           image_urls?: string[] | null
+          is_hidden?: boolean | null
+          moderation_status?: string | null
           tags?: string[] | null
           updated_at?: string
           user_id: string
@@ -3059,6 +3104,8 @@ export type Database = {
           display_name?: string | null
           id?: string
           image_urls?: string[] | null
+          is_hidden?: boolean | null
+          moderation_status?: string | null
           tags?: string[] | null
           updated_at?: string
           user_id?: string
