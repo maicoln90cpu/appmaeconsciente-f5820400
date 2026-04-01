@@ -41,6 +41,10 @@ const slugIconMap: Record<string, LucideIcon> = {
   "checklist-documentos": ClipboardList,
   "checklist-quartinho": Home,
   "timer-mamada": Timer,
+  "diario-crescimento": TrendingUp,
+  "planejador-rotina": CalendarClock,
+  "introducao-alimentar": Utensils,
+  "album-marcos": Camera,
 };
 
 const slugColorMap: Record<string, string> = {
