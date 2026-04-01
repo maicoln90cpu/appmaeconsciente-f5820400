@@ -6,106 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// ─── 12 PERSONAS DISTINTAS ───
-const PERSONAS = [
-  {
-    name: 'Rafaela Santos',
-    email: 'rafaela@maes.virtual',
-    cidade: 'São Paulo', estado: 'SP',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rafaela&backgroundColor=b6e3f4',
-    profile: 'Mãe de gêmeos de 8 meses, 28 anos. Prática e direta, sem rodeios. Escreve frases curtas e objetivas. Fala sobre logística de cuidar de dois bebês ao mesmo tempo.',
-    style: 'Frases curtas. Vai direto ao ponto. Sem floreios.',
-  },
-  {
-    name: 'Débora Lima',
-    email: 'debora@maes.virtual',
-    cidade: 'Rio de Janeiro', estado: 'RJ',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Debora&backgroundColor=ffd5dc',
-    profile: 'Mãe de 3 filhos (12, 7 e 2 anos), 35 anos. Veterana que já viu de tudo. Dá conselhos curtos baseados em experiência real.',
-    style: 'Tom de quem já passou por isso mil vezes. Conselhos práticos sem julgamento.',
-  },
-  {
-    name: 'Thaís Oliveira',
-    email: 'thais@maes.virtual',
-    cidade: 'Belo Horizonte', estado: 'MG',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Thais&backgroundColor=c0aede',
-    profile: 'Mãe de primeira viagem, bebê de 3 meses, 22 anos. Insegura, faz muitas perguntas. Busca validação.',
-    style: 'Faz perguntas. Expressa dúvidas. Pede opiniões. Usa "será que...?" e "alguém mais...?"',
-  },
-  {
-    name: 'Priscila Ferreira',
-    email: 'priscila@maes.virtual',
-    cidade: 'Curitiba', estado: 'PR',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priscila&backgroundColor=d1f4d1',
-    profile: 'Enfermeira e mãe de menina de 1 ano, 31 anos. Técnica mas acessível. Dá informações embasadas sem ser pedante.',
-    style: 'Menciona dados ou orientações médicas de forma acessível. Ex: "a pediatra explicou que..."',
-  },
-  {
-    name: 'Aline Costa',
-    email: 'aline@maes.virtual',
-    cidade: 'Salvador', estado: 'BA',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aline&backgroundColor=ffdfbf',
-    profile: 'Grávida de 7 meses do primeiro filho, 27 anos. Ansiosa com o parto, pesquisa muito. Fala sobre enxoval, preparação e expectativas.',
-    style: 'Animada mas ansiosa. Conta sobre preparativos. Pergunta sobre experiências de parto.',
-  },
-  {
-    name: 'Luciana Martins',
-    email: 'luciana@maes.virtual',
-    cidade: 'Porto Alegre', estado: 'RS',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luciana&backgroundColor=e8d5b7',
-    profile: 'Mãe de adolescente de 15 anos + bebê de 1 ano, 40 anos. Perspectiva madura, compara as duas experiências de maternidade.',
-    style: 'Reflexiva, compara "na época do meu mais velho" com agora. Calma e ponderada.',
-  },
-  {
-    name: 'Bruna Souza',
-    email: 'bruna@maes.virtual',
-    cidade: 'Recife', estado: 'PE',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bruna&backgroundColor=ffc9de',
-    profile: 'Mãe solo de menino de 6 meses, 25 anos. Fala sobre conciliar trabalho e maternidade sozinha. Forte e determinada.',
-    style: 'Realista sem ser pessimista. Compartilha perrengues do dia a dia. Orgulho discreto.',
-  },
-  {
-    name: 'Camila Rocha',
-    email: 'camila@maes.virtual',
-    cidade: 'Florianópolis', estado: 'SC',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=CamilaR&backgroundColor=baffc9',
-    profile: 'Adepta de criação com apego, mãe de menina de 2 anos, 33 anos. Gentil mas firme nas opiniões sobre criação respeitosa.',
-    style: 'Gentil, usa "aqui em casa a gente faz assim...". Sugere sem impor. Cita livros às vezes.',
-  },
-  {
-    name: 'Vanessa Almeida',
-    email: 'vanessa@maes.virtual',
-    cidade: 'Goiânia', estado: 'GO',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vanessa&backgroundColor=ffd6a5',
-    profile: 'Mãe de menino de 2 anos muito agitado, 29 anos. Bem-humorada, conta causos engraçados, leva a maternidade com leveza.',
-    style: 'Bem-humorada, conta situações engraçadas. Usa risos e expressões coloquiais tipo "miga", "tô rindo".',
-  },
-  {
-    name: 'Isabela Mendes',
-    email: 'isabela@maes.virtual',
-    cidade: 'Brasília', estado: 'DF',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabela&backgroundColor=a0c4ff',
-    profile: 'Nutricionista e mãe de bebê de 9 meses, 34 anos. Foca em alimentação e introdução alimentar. Compartilha receitas e dicas nutricionais.',
-    style: 'Fala sobre comida, receitas, BLW, introdução alimentar. Prática nas dicas de alimentação.',
-  },
-  {
-    name: 'Renata Vieira',
-    email: 'renata@maes.virtual',
-    cidade: 'Campinas', estado: 'SP',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Renata&backgroundColor=caffbf',
-    profile: 'Fisioterapeuta e mãe de bebê de 4 meses, 26 anos. Fala sobre recuperação pós-parto, exercícios e corpo.',
-    style: 'Dá dicas de exercícios e recuperação. Encoraja sem pressionar. Linguagem acessível.',
-  },
-  {
-    name: 'Patrícia Campos',
-    email: 'patricia@maes.virtual',
-    cidade: 'Fortaleza', estado: 'CE',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Patricia&backgroundColor=fdcfe8',
-    profile: 'Psicóloga perinatal e mãe de menina de 1 ano e meio, 38 anos. Foca em saúde mental materna. Acolhedora sem ser clínica.',
-    style: 'Acolhe sentimentos. Normaliza dificuldades sem minimizar. Sugere buscar ajuda quando necessário.',
-  },
-];
-
 // ─── 20+ TEMAS ULTRA-ESPECÍFICOS ───
 const POST_THEMES = [
   { tema: 'sono do bebê que só dorme no colo e resistência ao berço', categoria: 'dúvida' },
@@ -171,48 +71,33 @@ function pickRandomN<T>(arr: T[], n: number): T[] {
   return shuffled.slice(0, n);
 }
 
-async function getOrCreateVirtualUsers(supabaseClient: any) {
-  const { data: existing } = await supabaseClient
-    .from('profiles')
-    .select('id, email')
-    .eq('is_virtual', true)
-    .eq('is_active', true)
-    .limit(20);
-
-  if (existing && existing.length >= 10) return existing;
-
-  const created: any[] = existing ? [...existing] : [];
-  const existingEmails = new Set(created.map((u: any) => u.email));
-
-  for (const persona of PERSONAS) {
-    if (existingEmails.has(persona.email)) continue;
-    try {
-      const { data: authUser, error: authError } = await supabaseClient.auth.admin.createUser({
-        email: persona.email,
-        email_confirm: true,
-        password: crypto.randomUUID(),
-        user_metadata: { display_name: persona.name },
-      });
-      if (!authError && authUser.user) {
-        await supabaseClient.from('profiles').update({
-          cidade: persona.cidade,
-          estado: persona.estado,
-          perfil_completo: true,
-          is_virtual: true,
-          foto_perfil_url: persona.avatar,
-          full_name: persona.name,
-        }).eq('id', authUser.user.id);
-        created.push({ id: authUser.user.id, email: persona.email });
-      }
-    } catch (e) {
-      console.log('Error creating virtual user:', persona.email, e);
-    }
-  }
-  return created;
+interface VirtualProfile {
+  id: string;
+  email: string;
+  full_name: string | null;
+  personality: string | null;
+  personality_style: string | null;
 }
 
-function getPersonaByEmail(email: string) {
-  return PERSONAS.find(p => p.email === email) || pickRandom(PERSONAS);
+async function getActiveVirtualUsers(supabaseClient: any): Promise<VirtualProfile[]> {
+  const { data, error } = await supabaseClient
+    .from('profiles')
+    .select('id, email, full_name, personality, personality_style')
+    .eq('is_virtual', true)
+    .eq('is_active', true);
+
+  if (error) {
+    console.error('Error fetching virtual users:', error);
+    return [];
+  }
+  return data || [];
+}
+
+function buildPersonaPrompt(user: VirtualProfile): string {
+  const name = user.full_name || user.email.split('@')[0];
+  const profile = user.personality || 'Mãe brasileira participando de uma comunidade de gestantes e mães.';
+  const style = user.personality_style || 'Natural e informal.';
+  return `Você é ${name}. ${profile}\nEstilo de escrita: ${style}`;
 }
 
 async function generateAIContent(apiKey: string, systemPrompt: string, userPrompt: string): Promise<string | null> {
@@ -271,17 +156,20 @@ serve(async (req) => {
 
     const randomDelay = async () => {
       if (!randomTiming) return;
-      const delay = Math.floor(Math.random() * Math.min(maxDelayMinutes, 30) * 60 * 1000) + 60000; // 1min to maxDelay
+      const delay = Math.floor(Math.random() * Math.min(maxDelayMinutes, 30) * 60 * 1000) + 60000;
       console.log(`Random delay: ${Math.round(delay / 1000)}s`);
       await new Promise(r => setTimeout(r, delay));
     };
 
     console.log(`AI Engagement: ${maxPosts} posts, ${maxReplies} replies, ${maxLikes} likes`);
 
-    const virtualUsers = await getOrCreateVirtualUsers(supabaseClient);
+    // ─── FETCH PERSONAS FROM DATABASE ───
+    const virtualUsers = await getActiveVirtualUsers(supabaseClient);
     if (!virtualUsers || virtualUsers.length === 0) {
-      throw new Error('No virtual users available');
+      throw new Error('No active virtual users found. Create virtual users in Admin > Usuários Virtuais.');
     }
+
+    console.log(`Loaded ${virtualUsers.length} virtual users from database`);
 
     let postsCreated = 0;
     let repliesCreated = 0;
@@ -290,16 +178,15 @@ serve(async (req) => {
 
     // --- 1. CREATE NEW POSTS ---
     const selectedThemes = pickRandomN(POST_THEMES, maxPosts);
-    const selectedPersonasForPosts = pickRandomN(PERSONAS, maxPosts);
+    const selectedUsers = pickRandomN(virtualUsers, maxPosts);
 
     for (let i = 0; i < maxPosts; i++) {
       try {
         const theme = selectedThemes[i] || pickRandom(POST_THEMES);
-        const persona = selectedPersonasForPosts[i] || pickRandom(PERSONAS);
-        const virtualUser = virtualUsers.find((u: any) => u.email === persona.email) || pickRandom(virtualUsers);
+        const user = selectedUsers[i] || pickRandom(virtualUsers);
+        const personaPrompt = buildPersonaPrompt(user);
 
-        const systemPrompt = `Você é ${persona.name}. ${persona.profile}
-Estilo de escrita: ${persona.style}
+        const systemPrompt = `${personaPrompt}
 Você está postando em uma comunidade brasileira de mães e gestantes.
 Escreva APENAS em português brasileiro informal.
 ${BANNED_PHRASES}`;
@@ -320,10 +207,10 @@ REGRAS:
         const { data: newPost, error: postError } = await supabaseClient
           .from('posts')
           .insert({
-            user_id: virtualUser.id,
+            user_id: user.id,
             content: postContent,
             categoria: theme.categoria,
-            display_name: persona.name,
+            display_name: user.full_name || user.email.split('@')[0],
             tags: [],
           })
           .select('id')
@@ -334,10 +221,10 @@ REGRAS:
           engagementLogs.push({
             post_id: newPost.id,
             action_type: 'post',
-            virtual_user_id: virtualUser.id,
+            virtual_user_id: user.id,
             content: postContent.substring(0, 200),
           });
-          console.log(`Created post by ${persona.name}: ${newPost.id}`);
+          console.log(`Created post by ${user.full_name}: ${newPost.id}`);
         }
 
         await randomDelay();
@@ -358,7 +245,7 @@ REGRAS:
       .order('created_at', { ascending: false })
       .limit(30);
 
-    // --- SENTIMENT FILTER: skip sensitive posts ---
+    // --- SENTIMENT FILTER ---
     let eligiblePosts = recentPosts || [];
     if (sentimentFilter) {
       const filteredPosts: typeof eligiblePosts = [];
@@ -381,7 +268,7 @@ REGRAS:
           }
           filteredPosts.push(post);
         } catch {
-          filteredPosts.push(post); // on error, include the post
+          filteredPosts.push(post);
         }
       }
       eligiblePosts = filteredPosts;
@@ -389,28 +276,26 @@ REGRAS:
     }
 
     const postsForReplies = [...eligiblePosts].sort(() => Math.random() - 0.5).slice(0, maxReplies);
-    const selectedPersonasForReplies = pickRandomN(PERSONAS, maxReplies);
+    const selectedUsersForReplies = pickRandomN(virtualUsers, maxReplies);
 
     for (let i = 0; i < postsForReplies.length; i++) {
       try {
         const post = postsForReplies[i];
-        const persona = selectedPersonasForReplies[i] || pickRandom(PERSONAS);
-        const virtualUser = virtualUsers.find((u: any) => u.email === persona.email) || pickRandom(virtualUsers);
+        const user = selectedUsersForReplies[i] || pickRandom(virtualUsers);
 
-        // Don't reply to own posts
-        if (virtualUser.id === post.user_id) continue;
+        if (user.id === post.user_id) continue;
 
         const { data: existingComment } = await supabaseClient
           .from('post_comments')
           .select('id')
           .eq('post_id', post.id)
-          .eq('user_id', virtualUser.id)
+          .eq('user_id', user.id)
           .maybeSingle();
 
         if (existingComment) continue;
 
-        const systemPrompt = `Você é ${persona.name}. ${persona.profile}
-Estilo de escrita: ${persona.style}
+        const personaPrompt = buildPersonaPrompt(user);
+        const systemPrompt = `${personaPrompt}
 Você está respondendo a um post em uma comunidade brasileira de mães.
 ${BANNED_PHRASES}`;
 
@@ -432,7 +317,7 @@ REGRAS:
           .from('post_comments')
           .insert({
             post_id: post.id,
-            user_id: virtualUser.id,
+            user_id: user.id,
             comment: comment,
           });
 
@@ -441,10 +326,10 @@ REGRAS:
           engagementLogs.push({
             post_id: post.id,
             action_type: 'comment',
-            virtual_user_id: virtualUser.id,
+            virtual_user_id: user.id,
             content: comment.substring(0, 200),
           });
-          console.log(`Reply by ${persona.name} on post ${post.id}`);
+          console.log(`Reply by ${user.full_name} on post ${post.id}`);
         }
 
         await randomDelay();

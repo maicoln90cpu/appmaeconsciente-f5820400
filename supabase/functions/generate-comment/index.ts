@@ -38,11 +38,14 @@ serve(withErrorHandling(async (req) => {
     return createErrorResponse('CONFIG_ERROR', req, 'LOVABLE_API_KEY not configured');
   }
 
-  // Build persona-aware system prompt
+  // Build persona-aware system prompt using DB fields
   let systemPrompt: string;
   if (persona) {
-    systemPrompt = `Você é ${persona.name}. ${persona.profile || ''}
-Estilo de escrita: ${persona.style || 'Natural e informal.'}
+    const name = persona.full_name || persona.name || 'Mãe';
+    const profile = persona.personality || persona.profile || '';
+    const style = persona.personality_style || persona.style || 'Natural e informal.';
+    systemPrompt = `Você é ${name}. ${profile}
+Estilo de escrita: ${style}
 Você está comentando em uma comunidade brasileira de mães e gestantes.
 Escreva APENAS em português brasileiro informal.`;
   } else {
