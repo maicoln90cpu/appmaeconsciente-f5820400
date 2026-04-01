@@ -3344,6 +3344,8 @@ export type Database = {
           onboarding_completed: boolean | null
           onboarding_completed_at: string | null
           perfil_completo: boolean | null
+          personality: string | null
+          personality_style: string | null
           peso_atual: number | null
           possui_filhos: boolean | null
           postpartum_notes: string | null
@@ -3377,6 +3379,8 @@ export type Database = {
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           perfil_completo?: boolean | null
+          personality?: string | null
+          personality_style?: string | null
           peso_atual?: number | null
           possui_filhos?: boolean | null
           postpartum_notes?: string | null
@@ -3410,6 +3414,8 @@ export type Database = {
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           perfil_completo?: boolean | null
+          personality?: string | null
+          personality_style?: string | null
           peso_atual?: number | null
           possui_filhos?: boolean | null
           postpartum_notes?: string | null
