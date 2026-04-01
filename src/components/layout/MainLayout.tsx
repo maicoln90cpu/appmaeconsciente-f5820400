@@ -283,7 +283,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
                 </span>
               </Link>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                Sua jornada para uma maternidade consciente e econômica.
+                Tudo para sua gestação e pós-parto em um só app.
               </p>
               <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <Heart className="h-4 w-4 text-primary" />
