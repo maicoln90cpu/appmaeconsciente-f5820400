@@ -1,6 +1,6 @@
 # 📋 PRD - Product Requirements Document
 
-## Maternidade Consciente
+## Mãe Consciente
 
 **Versão:** 1.2  
 **Data:** Janeiro 2026  

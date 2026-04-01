@@ -1,4 +1,4 @@
-# 🍼 Maternidade Consciente
+# 🍼 Mãe Consciente
 
 Uma plataforma PWA completa para auxiliar mães durante a gravidez, parto e pós-parto.
 
@@ -24,7 +24,7 @@ Uma plataforma PWA completa para auxiliar mães durante a gravidez, parto e pós
 
 ## 🎯 Sobre o Projeto
 
-Maternidade Consciente é uma aplicação web progressiva (PWA) que oferece ferramentas completas para gestantes e mães:
+Mãe Consciente é uma aplicação web progressiva (PWA) que oferece ferramentas completas para gestantes e mães:
 
 - **Planejamento de Enxoval** - Gestão completa de itens, orçamento e compartilhamento
 - **Diário do Bebê** - Rastreamento de alimentação, sono e desenvolvimento

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby } from "lucide-react";
+import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby, Moon, Milk, Syringe, Stethoscope, Brain, Calculator, Apple, Activity, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
 import { supabase } from "@/integrations/supabase/client";
@@ -72,41 +72,51 @@ const testimonials: Testimonial[] = [
 
 const features = [
   {
-    icon: Users,
-    title: "Comunidade",
-    description: "Conecte-se com outras mães, compartilhe experiências, fotos e aprenda juntas nessa jornada especial.",
-    gradient: "from-pink-500 to-rose-500"
-  },
-  {
-    icon: BookOpen,
-    title: "Materiais",
-    description: "Ferramentas práticas e conteúdos exclusivos para planejar seu enxoval, orçamento e muito mais.",
+    icon: Package,
+    title: "Controle de Enxoval",
+    description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval do bebê.",
     gradient: "from-violet-500 to-purple-500"
   },
   {
-    icon: HeadphonesIcon,
-    title: "Suporte",
-    description: "Tire suas dúvidas com nossa equipe especializada sempre que precisar de ajuda.",
-    gradient: "from-blue-500 to-cyan-500"
+    icon: Moon,
+    title: "Diário de Sono",
+    description: "Registre padrões de sono do bebê, receba insights com IA e identifique a melhor rotina.",
+    gradient: "from-indigo-500 to-blue-500"
   },
   {
-    icon: ShieldCheck,
-    title: "Segurança",
-    description: "Seus dados protegidos com criptografia de ponta. Privacidade é nossa prioridade.",
-    gradient: "from-emerald-500 to-teal-500"
-  },
-  {
-    icon: TrendingUp,
-    title: "Economia",
-    description: "Economize até R$ 5.000 no enxoval com nossas ferramentas de comparação e planejamento.",
-    gradient: "from-amber-500 to-orange-500"
+    icon: Milk,
+    title: "Amamentação",
+    description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.",
+    gradient: "from-pink-500 to-rose-500"
   },
   {
     icon: Baby,
-    title: "Desenvolvimento",
-    description: "Acompanhe marcos do desenvolvimento do bebê com alertas personalizados e dicas de estímulo.",
-    gradient: "from-fuchsia-500 to-pink-500"
+    title: "Ferramentas de Gestação",
+    description: "Contador de movimentos fetais, checklist de exames, plano de parto e calculadora de DPP.",
+    gradient: "from-amber-500 to-orange-500"
+  },
+  {
+    icon: Brain,
+    title: "Monitor de Desenvolvimento",
+    description: "Acompanhe marcos do bebê mês a mês com alertas, banco de estímulos e relatório para o pediatra.",
+    gradient: "from-emerald-500 to-teal-500"
+  },
+  {
+    icon: Calculator,
+    title: "Calculadora de Fraldas",
+    description: "Simule custos descartável vs pano, compare marcas e descubra quanto vai gastar — 100% GRÁTIS.",
+    gradient: "from-fuchsia-500 to-pink-500",
+    free: true
   }
+];
+
+const extraTools = [
+  { icon: Syringe, label: "Vacinação Digital", free: true },
+  { icon: Activity, label: "Recuperação Pós-Parto" },
+  { icon: Apple, label: "IA Nutricional" },
+  { icon: Users, label: "Comunidade Ativa" },
+  { icon: Stethoscope, label: "Guia Alimentação" },
+  { icon: Heart, label: "Bem-estar da Mãe" },
 ];
 
 // Custom hook for intersection observer
@@ -215,7 +225,7 @@ const Landing = () => {
             >
               <Badge variant="secondary" className="px-4 py-1.5 text-sm font-medium border border-primary/20 bg-primary/5 text-primary animate-pulse-soft">
                 <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                Novo: IA Nutricional
+                Calculadora de Fraldas e Vacinação agora GRÁTIS!
               </Badge>
             </div>
             
@@ -233,8 +243,15 @@ const Landing = () => {
               className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in"
               style={{ animationDelay: '200ms' }}
             >
-              Ferramentas inteligentes, comunidade acolhedora e suporte especializado para você planejar cada detalhe com economia e sem desperdícios.
-            </p>
+               Sono, amamentação, enxoval, gestação, desenvolvimento e muito mais — com IA integrada, comunidade ativa e suporte especializado.
+             </p>
+
+             <p 
+               className="text-sm text-primary font-medium mb-8 animate-fade-in"
+               style={{ animationDelay: '250ms' }}
+             >
+               ✨ 7 dias grátis em todas as ferramentas premium
+             </p>
             
             <div 
               className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in"
@@ -309,6 +326,12 @@ const Landing = () => {
                 }}
               >
                 <CardContent className="pt-6 pb-6">
+                  {/* Free badge */}
+                  {'free' in feature && feature.free && (
+                    <Badge className="mb-3 bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20">
+                      Grátis
+                    </Badge>
+                  )}
                   {/* Icon with gradient background */}
                   <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                     <feature.icon className="h-6 w-6 text-white" />
@@ -327,18 +350,36 @@ const Landing = () => {
               </Card>
             ))}
           </div>
+
+          {/* Extra tools badges */}
+          <div className="mt-12 text-center">
+            <p className="text-sm font-medium text-muted-foreground mb-4">Também incluído na plataforma:</p>
+            <div className="flex flex-wrap justify-center gap-3 max-w-3xl mx-auto">
+              {extraTools.map((tool, i) => (
+                <div key={i} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 text-sm font-medium shadow-sm hover:border-primary/30 transition-colors">
+                  <tool.icon className="h-4 w-4 text-primary" />
+                  <span>{tool.label}</span>
+                  {'free' in tool && tool.free && (
+                    <Badge className="ml-1 text-[10px] px-1.5 py-0 bg-emerald-500/10 text-emerald-600 border-emerald-500/20">
+                      Grátis
+                    </Badge>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Materiais em Destaque */}
+      {/* Ferramentas em Destaque */}
       <section className="py-20">
         <div className="container">
           <div className="text-center mb-16">
             <h3 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Materiais em Destaque
+              Ferramentas em Destaque
             </h3>
             <p className="text-lg text-muted-foreground">
-              Recursos exclusivos para sua jornada
+              Experimente 7 dias grátis em todas as ferramentas premium
             </p>
           </div>
           
@@ -657,9 +698,9 @@ const Landing = () => {
               </Link>
             </Button>
             
-            <p className="mt-6 text-sm text-muted-foreground">
-              Sem cartão de crédito • Acesso imediato • Cancele quando quiser
-            </p>
+             <p className="mt-6 text-sm text-muted-foreground">
+               Sem cartão de crédito • 7 dias grátis • Cancele quando quiser
+             </p>
           </div>
         </div>
       </section>
@@ -673,7 +714,7 @@ const Landing = () => {
                 Mãe Consciente
               </h2>
               <p className="text-sm text-muted-foreground">
-                © 2025 Todos os direitos reservados.
+                © {new Date().getFullYear()} Mãe Consciente. Todos os direitos reservados.
               </p>
             </div>
             <div className="flex gap-6">

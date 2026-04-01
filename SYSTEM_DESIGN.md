@@ -1,6 +1,6 @@
 # 🏛️ System Design Document
 
-## Maternidade Consciente
+## Mãe Consciente
 
 **Versão:** 1.0  
 **Data:** Janeiro 2026  

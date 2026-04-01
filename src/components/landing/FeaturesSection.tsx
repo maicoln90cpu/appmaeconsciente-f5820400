@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, ShieldCheck, TrendingUp, Baby, Star, Users, BookOpen, HeadphonesIcon } from "lucide-react";
+import { Heart, ShieldCheck, TrendingUp, Baby, Star, Users, BookOpen, HeadphonesIcon, Sparkles } from "lucide-react";
 
 interface Feature {
   icon: React.ReactNode;
@@ -25,22 +25,19 @@ const features: Feature[] = [
     description: "Nossas usuárias economizam em média R$ 2.000+ no enxoval do bebê"
   },
   {
-    icon: <Baby className="h-8 w-8" />,
-    title: "Suporte Especializado",
-    description: "Equipe preparada para ajudar em cada etapa da sua jornada maternal"
+    icon: <Sparkles className="h-8 w-8" />,
+    title: "IA Integrada",
+    description: "Insights inteligentes para sono, alimentação e desenvolvimento do seu bebê"
   }
 ];
 
 const stats = [
   { value: "10.000+", label: "Mães Atendidas", icon: <Users className="h-6 w-6" /> },
-  { value: "50.000+", label: "Itens Rastreados", icon: <BookOpen className="h-6 w-6" /> },
+  { value: "15+", label: "Ferramentas", icon: <BookOpen className="h-6 w-6" /> },
   { value: "4.9★", label: "Avaliação Média", icon: <Star className="h-6 w-6" /> },
   { value: "24/7", label: "Suporte Ativo", icon: <HeadphonesIcon className="h-6 w-6" /> }
 ];
 
-/**
- * Custom hook for intersection observer
- */
 function useInView(threshold = 0.2) {
   const ref = useRef<HTMLElement>(null);
   const [isInView, setIsInView] = useState(false);
