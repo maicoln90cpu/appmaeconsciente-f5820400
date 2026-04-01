@@ -93,27 +93,6 @@ export const ToolSuggestionManagement = () => {
     },
   });
 
-  const getStatusColor = (status: SuggestionStatus) => {
-    switch (status) {
-      case "pending": return "secondary";
-      case "approved": return "default";
-      case "in_development": return "outline";
-      case "implemented": return "default";
-      case "rejected": return "destructive";
-      default: return "secondary";
-    }
-  };
-
-  const getStatusLabel = (status: SuggestionStatus) => {
-    switch (status) {
-      case "pending": return "Pendente";
-      case "approved": return "Aprovada";
-      case "in_development": return "Em Desenvolvimento";
-      case "implemented": return "Implementada";
-      case "rejected": return "Rejeitada";
-      default: return status;
-    }
-  };
 
   const filteredSuggestions = suggestions?.filter(s => {
     const matchesStatus = statusFilter === "all" || s.status === statusFilter;
