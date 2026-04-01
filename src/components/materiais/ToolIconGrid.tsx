@@ -36,6 +36,10 @@ const slugIconMap: Record<string, LucideIcon> = {
   "cartao-vacinacao": Syringe,
   "recuperacao-pos-parto": Heart,
   "ferramentas-gestacao": Stethoscope,
+  "calculadora-semanas": Calendar,
+  "checklist-documentos": ClipboardList,
+  "checklist-quartinho": Home,
+  "timer-mamada": Timer,
 };
 
 const slugColorMap: Record<string, string> = {
