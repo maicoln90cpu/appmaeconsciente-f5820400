@@ -1,7 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import fernandaImg from "@/assets/testimonials/fernanda-lima.jpg";
+import marianaImg from "@/assets/testimonials/mariana-costa.jpg";
+import camilaImg from "@/assets/testimonials/camila-rodrigues.jpg";
+import patriciaImg from "@/assets/testimonials/patricia-alves.jpg";
+import beatrizImg from "@/assets/testimonials/beatriz-santos.jpg";
+import robertaImg from "@/assets/testimonials/roberta-mendes.jpg";
+import julianaImg from "@/assets/testimonials/juliana-freitas.jpg";
 import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby, Moon, Milk, Syringe, Stethoscope, Brain, Calculator, Apple, Activity, Package } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
