@@ -216,7 +216,7 @@ const ClubePremium = () => {
         <CardContent className="p-8 text-center">
           <h3 className="text-2xl font-bold mb-2">Pronta para aproveitar?</h3>
           <p className="mb-6 opacity-90">
-            Cancele quando quiser, sem burocracia. Sua jornada de maternidade consciente começa agora!
+            Cancele quando quiser, sem burocracia. Sua jornada começa agora!
           </p>
           {!hasClubAccess ? (
             <Button 
