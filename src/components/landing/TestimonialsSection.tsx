@@ -14,6 +14,7 @@ interface Testimonial {
   location: string;
   text: string;
   rating: number;
+  avatar: string;
 }
 
 const testimonials: Testimonial[] = [
