@@ -164,10 +164,65 @@ const useInView = (options = {}) => {
 const Landing = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [prices, setPrices] = useState<Record<string, number | null>>({});
+  const [clubePrice, setClubePrice] = useState<number>(27);
 
   const featuresInView = useInView();
+  const comparisonInView = useInView();
   const testimonialsInView = useInView();
   const ctaInView = useInView();
+
+  // Load prices from database
+  useEffect(() => {
+    const loadPrices = async () => {
+      try {
+        const { data } = await supabase
+          .from("products")
+          .select("slug, price")
+          .eq("is_active", true);
+        if (data) {
+          const map: Record<string, number | null> = {};
+          data.forEach((p) => { map[p.slug] = p.price; });
+          setPrices(map);
+          if (map["clube-premium"]) setClubePrice(map["clube-premium"]!);
+        }
+      } catch (e) {
+        console.error("Erro ao carregar preços:", e);
+      }
+    };
+    loadPrices();
+  }, []);
+
+  // Build toolsByPhase with dynamic prices
+  const toolsByPhase = useMemo(() => {
+    const getPrice = (slug: string) => {
+      const p = prices[slug];
+      return p ? `R$ ${p.toFixed(2).replace('.', ',')}` : "—";
+    };
+    return [
+      {
+        phase: "🤰 Para Gestantes",
+        subtitle: "Ferramentas para quem está esperando o bebê",
+        tools: phaseToolSlugs.gestantes.map(t => ({ ...t, price: getPrice(t.slug) })),
+      },
+      {
+        phase: "👶 Pós-Parto (0-3 meses)",
+        subtitle: "Para os primeiros meses com seu bebê",
+        tools: phaseToolSlugs.posParto.map(t => ({ ...t, price: getPrice(t.slug) })),
+      },
+      {
+        phase: "🍼 Bebês (3-12 meses)",
+        subtitle: "Acompanhe o crescimento e desenvolvimento",
+        tools: phaseToolSlugs.bebes.map(t => ({ ...t, price: getPrice(t.slug) })),
+      },
+    ];
+  }, [prices]);
+
+  // Sum of all individual premium prices
+  const totalAvulso = useMemo(() => {
+    const premiumSlugs = [...phaseToolSlugs.gestantes, ...phaseToolSlugs.posParto, ...phaseToolSlugs.bebes].map(t => t.slug);
+    return premiumSlugs.reduce((sum, slug) => sum + (prices[slug] || 0), 0);
+  }, [prices]);
 
   // Testimonials autoplay
   useEffect(() => {
