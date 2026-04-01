@@ -481,6 +481,7 @@ const Landing = () => {
                   {/* Avatar with gradient border */}
                   <div className="inline-flex p-1 rounded-full bg-gradient-to-br from-primary to-primary/50 mb-6">
                     <Avatar className="h-20 w-20 border-4 border-background">
+                      <AvatarImage src={testimonials[currentTestimonial].avatar} alt={testimonials[currentTestimonial].name} loading="lazy" />
                       <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary/20 to-primary/40 text-primary">
                         {testimonials[currentTestimonial].name.charAt(0)}
                       </AvatarFallback>
