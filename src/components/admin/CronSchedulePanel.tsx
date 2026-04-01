@@ -83,8 +83,14 @@ export const CronSchedulePanel = () => {
         .eq("id", settings.id);
       if (error) throw error;
     },
-    onSuccess: () => {
-      toast.success("Configurações de agendamento salvas!");
+    onSuccess: async () => {
+      // Sync the real pg_cron job with the new config
+      try {
+        await supabase.rpc("sync_cron_schedule");
+        toast.success("Agendamento salvo e cron atualizado automaticamente!");
+      } catch {
+        toast.success("Configurações salvas! (sincronização do cron pendente)");
+      }
       setHasChanges(false);
       queryClient.invalidateQueries({ queryKey: ["cron-config"] });
     },
@@ -187,16 +193,16 @@ export const CronSchedulePanel = () => {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-blue-100"><Calendar className="h-5 w-5 text-blue-600" /></div>
+            <div className="p-2 rounded-lg bg-primary/10"><Calendar className="h-5 w-5 text-primary" /></div>
             <div>
               <p className="font-medium">Como funciona o agendamento</p>
               <p className="text-sm text-muted-foreground mt-1">
-                A automação é executada via cron job nos horários configurados.
-                A cada execução, a IA cria posts, respostas e curtidas conforme
-                os parâmetros definidos na aba "Automação IA". Quando o filtro de
-                sentimento está ativo, posts sobre temas sensíveis (luto, emergência,
-                violência) são ignorados pelos bots.
+                A automação roda automaticamente via <strong>pg_cron</strong> nos horários configurados —
+                sem necessidade de clicar "Executar" manualmente. Ao salvar, o cron job
+                real é atualizado instantaneamente. A cada execução, a IA cria posts,
+                respostas e curtidas conforme os parâmetros definidos na aba "Automação IA".
               </p>
+              <Badge variant="outline" className="mt-2">⚡ 100% Automático via pg_cron + pg_net</Badge>
             </div>
           </div>
         </CardContent>
