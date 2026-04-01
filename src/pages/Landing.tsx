@@ -197,18 +197,12 @@ const useInView = (options = {}) => {
 };
 
 const Landing = () => {
-  const [featuredMaterials, setFeaturedMaterials] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
   const featuresInView = useInView();
   const testimonialsInView = useInView();
   const ctaInView = useInView();
-
-  useEffect(() => {
-    loadFeaturedMaterials();
-  }, []);
 
   // Testimonials autoplay
   useEffect(() => {
@@ -220,25 +214,6 @@ const Landing = () => {
 
     return () => clearInterval(interval);
   }, [isPaused]);
-
-  const loadFeaturedMaterials = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("products")
-        .select("id, title, description, short_description, price, is_free, slug")
-        .eq("is_active", true)
-        .neq("slug", "clube-premium")
-        .order("display_order")
-        .limit(6);
-
-      if (error) throw error;
-      setFeaturedMaterials(data || []);
-    } catch (error) {
-      console.error("Erro ao carregar materiais:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen overflow-x-hidden">
