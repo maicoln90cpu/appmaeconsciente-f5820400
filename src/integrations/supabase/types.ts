@@ -276,6 +276,51 @@ export type Database = {
           },
         ]
       }
+      baby_documents_checklist: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          deadline_info: string | null
+          description: string | null
+          display_order: number
+          document_label: string
+          document_type: string
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          deadline_info?: string | null
+          description?: string | null
+          display_order?: number
+          document_label: string
+          document_type: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          deadline_info?: string | null
+          description?: string | null
+          display_order?: number
+          document_label?: string
+          document_type?: string
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       baby_feeding_logs: {
         Row: {
           baby_name: string | null
@@ -551,6 +596,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      baby_room_checklist: {
+        Row: {
+          category: string
+          completed: boolean
+          created_at: string
+          display_order: number
+          id: string
+          is_custom: boolean
+          item_name: string
+          notes: string | null
+          priority: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          completed?: boolean
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_custom?: boolean
+          item_name: string
+          notes?: string | null
+          priority?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          completed?: boolean
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_custom?: boolean
+          item_name?: string
+          notes?: string | null
+          priority?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       baby_routine_logs: {
         Row: {
