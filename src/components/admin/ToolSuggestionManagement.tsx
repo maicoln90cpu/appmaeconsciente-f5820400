@@ -9,8 +9,7 @@ import { useState } from "react";
 import { Loader2, CheckCircle, XCircle, Code, Rocket, Gift, Star } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-
-type SuggestionStatus = "pending" | "approved" | "in_development" | "implemented" | "rejected";
+import { getSuggestionStatusBadgeVariant, getSuggestionStatusLabel, type SuggestionStatus } from "@/lib/ticket-utils";
 
 export const ToolSuggestionManagement = () => {
   const { toast } = useToast();
