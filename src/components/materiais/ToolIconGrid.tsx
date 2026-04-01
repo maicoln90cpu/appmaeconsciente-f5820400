@@ -53,6 +53,10 @@ const slugColorMap: Record<string, string> = {
   "cartao-vacinacao": "bg-rose-500/10 text-rose-600 dark:text-rose-400",
   "recuperacao-pos-parto": "bg-red-500/10 text-red-600 dark:text-red-400",
   "ferramentas-gestacao": "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
+  "calculadora-semanas": "bg-purple-500/10 text-purple-600 dark:text-purple-400",
+  "checklist-documentos": "bg-orange-500/10 text-orange-600 dark:text-orange-400",
+  "checklist-quartinho": "bg-lime-500/10 text-lime-600 dark:text-lime-400",
+  "timer-mamada": "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
 };
 
 export const ToolIconGrid = ({ products, hasAccess, isAdmin, onProductClick }: ToolIconGridProps) => {
