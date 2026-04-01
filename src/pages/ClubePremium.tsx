@@ -109,7 +109,7 @@ const ClubePremium = () => {
           Mais Econômico
         </Badge>
         <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-          Clube M.A.E.S. Premium
+          Clube Mãe Consciente Premium
         </h1>
         <p className="text-xl text-muted-foreground mb-2">
           Acesso ilimitado a TODOS os materiais
@@ -216,7 +216,7 @@ const ClubePremium = () => {
         <CardContent className="p-8 text-center">
           <h3 className="text-2xl font-bold mb-2">Pronta para aproveitar?</h3>
           <p className="mb-6 opacity-90">
-            Cancele quando quiser, sem burocracia. Sua jornada de maternidade consciente começa agora!
+            Cancele quando quiser, sem burocracia. Sua jornada começa agora!
           </p>
           {!hasClubAccess ? (
             <Button 

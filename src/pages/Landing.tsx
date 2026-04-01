@@ -182,7 +182,7 @@ const Landing = () => {
       <header className="sticky top-0 z-50 border-b border-border/50 glass">
         <div className="container flex h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4">
           <h1 className="text-lg xs:text-xl sm:text-2xl font-display font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent truncate min-w-0 flex-1">
-            <span className="hidden xs:inline">Maternidade Consciente</span>
+            <span className="hidden xs:inline">Mãe Consciente</span>
             <span className="xs:hidden">M.C.</span>
           </h1>
           <div className="flex gap-1.5 sm:gap-2 shrink-0">
@@ -223,10 +223,10 @@ const Landing = () => {
               className="text-4xl font-display font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6 animate-fade-in"
               style={{ animationDelay: '100ms' }}
             >
-              Sua jornada para uma{" "}
+               Tudo para sua{" "}
               <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                maternidade consciente
-              </span>
+                gestação e pós-parto
+              </span>{" "}em um só app
             </h2>
             
             <p 
@@ -670,7 +670,7 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
               <h2 className="text-xl font-display font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-1">
-                Maternidade Consciente
+                Mãe Consciente
               </h2>
               <p className="text-sm text-muted-foreground">
                 © 2025 Todos os direitos reservados.

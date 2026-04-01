@@ -441,9 +441,9 @@ const Index = () => {
       <footer className="border-t bg-muted/30 py-6 mt-12">
         <div className="container mx-auto px-4 text-center space-y-2">
           <p className="text-sm font-medium text-foreground">
-            Guia do Enxoval Consciente — Aplicação do Método M.A.E.S.
+            Guia do Enxoval Consciente — Mãe Consciente
           </p>
-          <p className="text-xs text-muted-foreground">© 2025 Isabela Santos | Maternidade Real e Consciente.</p>
+          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Mãe Consciente. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

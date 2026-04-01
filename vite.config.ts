@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => ({
       registerType: "prompt",
       includeAssets: ["favicon.ico", "robots.txt", "icon-192.png", "icon-512.png"],
       manifest: {
-        name: "Maternidade Consciente",
-        short_name: "MaternidadeApp",
-        description: "Sua jornada para uma maternidade consciente e econômica",
+        name: "Mãe Consciente",
+        short_name: "MãeConsciente",
+        description: "Tudo para sua gestação e pós-parto em um só app",
         theme_color: "#F8EDEE",
         background_color: "#FFFDF9",
         display: "standalone",

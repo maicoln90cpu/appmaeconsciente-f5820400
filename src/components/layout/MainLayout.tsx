@@ -102,7 +102,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
               className="group flex items-center gap-2 text-base sm:text-lg md:text-xl font-display font-bold shrink-0"
             >
               <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent transition-all group-hover:to-primary/50 truncate">
-                <span className="hidden xs:inline">Maternidade Consciente</span>
+                <span className="hidden xs:inline">Mãe Consciente</span>
                 <span className="xs:hidden">M.C.</span>
               </span>
             </Link>
@@ -279,11 +279,11 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             <div className="md:col-span-1">
               <Link to="/" className="inline-block">
                 <span className="text-lg font-display font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  Maternidade Consciente
+                  Mãe Consciente
                 </span>
               </Link>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                Sua jornada para uma maternidade consciente e econômica.
+                Tudo para sua gestação e pós-parto em um só app.
               </p>
               <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <Heart className="h-4 w-4 text-primary" />
@@ -352,7 +352,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="mt-10 pt-6 border-t border-border/50">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} Maternidade Consciente. Todos os direitos reservados.
+                © {new Date().getFullYear()} Mãe Consciente. Todos os direitos reservados.
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-xs text-muted-foreground">

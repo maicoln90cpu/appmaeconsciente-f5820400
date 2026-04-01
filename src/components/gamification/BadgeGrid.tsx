@@ -126,7 +126,7 @@ const BadgeDetailDialog = memo(({ badge, isUnlocked, unlockedAt, open, onOpenCha
   const Icon = iconMap[badge.icon] || Award;
   
   const shareBadge = () => {
-    const message = `🏆 Desbloqueei a conquista "${badge.name}" no M.A.E.S.!\n\n${badge.description}\n\n+${badge.xp_reward} XP 💜`;
+    const message = `🏆 Desbloqueei a conquista "${badge.name}" no Mãe Consciente!\n\n${badge.description}\n\n+${badge.xp_reward} XP 💜`;
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
