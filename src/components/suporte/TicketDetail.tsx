@@ -9,19 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { TICKET_STATUS_CONFIG, type TicketStatus } from "@/lib/ticket-utils";
 
 interface TicketDetailProps {
   ticket: Ticket | null;
   open: boolean;
   onClose: () => void;
 }
-
-const statusConfig = {
-  open: { label: "Aberto", color: "bg-blue-500" },
-  in_progress: { label: "Em Progresso", color: "bg-yellow-500" },
-  resolved: { label: "Resolvido", color: "bg-green-500" },
-  closed: { label: "Fechado", color: "bg-gray-500" },
-};
 
 export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
   const [messages, setMessages] = useState<TicketMessage[]>([]);
