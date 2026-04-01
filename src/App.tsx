@@ -50,6 +50,10 @@ const CartaoVacinacao = lazyWithRetry(() => import("./pages/CartaoVacinacao"));
 const RecuperacaoPosPartoPage = lazyWithRetry(() => import("./pages/RecuperacaoPosPartoPage"));
 const MonitorDesenvolvimento = lazyWithRetry(() => import("./pages/MonitorDesenvolvimento"));
 const FerramentasGestacao = lazyWithRetry(() => import("./pages/FerramentasGestacao"));
+const CalculadoraSemanas = lazyWithRetry(() => import("./pages/CalculadoraSemanas"));
+const ChecklistDocumentos = lazyWithRetry(() => import("./pages/ChecklistDocumentos"));
+const ChecklistQuartinho = lazyWithRetry(() => import("./pages/ChecklistQuartinho"));
+const TimerMamada = lazyWithRetry(() => import("./pages/TimerMamada"));
 const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
