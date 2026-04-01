@@ -1,103 +1,120 @@
 
-
-# Plano: Prompts Calibrados + Nomes/Avatares Variados para Bots
-
-## Resumo
-
-Três melhorias no sistema de engajamento automático:
-1. **Reescrever completamente os prompts** — eliminar padrões repetitivos ("Ai, minha flor", "como eu te entendo") com regras explícitas de diversidade de abertura e tom
-2. **Adicionar personalidades distintas aos bots** — cada bot terá um perfil (idade do bebê, estilo de escrita, temas preferidos) para gerar conteúdo mais variado
-3. **Nomes de exibição + avatares** — expandir de 5 para 12 bots com nomes completos e atribuir uma `foto_perfil_url` usando avatares gerados (DiceBear API ou similar, sem custo)
+# Plano: Fotos Reais nos Depoimentos + Auditoria de Ferramentas por Fase
 
 ---
 
-## Detalhes Técnicos
+## Parte 1: Corrigir fotos dos depoimentos na landing
 
-### 1. Reescrita dos Prompts (auto-engage-community + generate-comment)
+### Problema
+As imagens foram criadas como arquivos `.jpg` mas provavelmente estão vazias ou corrompidas (o diff mostra apenas `<binary>` sem conteúdo real). O componente importa corretamente, mas as imagens não renderizam — caindo no fallback (letra inicial).
 
-**Problema atual**: O system prompt genérico ("You are a warm, empathetic Brazilian mother") faz a IA repetir os mesmos padrões: "Ai, minha flor", "como eu te entendo", "meu Gabriel fez a mesma coisa". Todos os comentários soam iguais.
+### Solução
+Criar uma edge function temporária (ou usar a existente `generate-avatar`) para gerar 5 fotos realistas via IA e salvar no storage. Depois, referenciar as URLs do storage no componente ao invés de importar arquivos locais.
 
-**Solução**: Criar um array de **personas** com personalidade, idade do filho, estilo de escrita. A cada geração, sortear uma persona e injetá-la no prompt.
+**Prompt para cada foto** — estilo selfie amadora, luz natural, sem maquiagem pesada, cenários do dia-a-dia (casa, parque, cozinha). Cada uma com variação de idade, tom de pele e cenário:
 
-**Personas** (12 perfis):
-```
-- Rafaela, 28, mãe de gêmeos de 8 meses, prática e direta, usa poucas palavras
-- Débora, 35, mãe de 3, veterana, dá conselhos curtos baseados em experiência
-- Thaís, 22, mãe de primeira viagem, faz muitas perguntas, insegura
-- Priscila, 31, enfermeira, técnica mas acessível, cita fontes quando possível
-- Aline, 27, grávida de 7 meses, ansiosa com o parto, fala do enxoval
-- Luciana, 40, mãe de adolescente + bebê de 1 ano, perspectiva madura
-- Bruna, 25, mãe solo, fala sobre conciliar trabalho e maternidade
-- Camila, 33, adepta de criação com apego, gentil mas firme nas opiniões
-- Vanessa, 29, mãe de menino de 2 anos, bem humorada, conta causos
-- Isabela, 34, nutricionista, foca em alimentação e introdução alimentar
-- Renata, 26, fisioterapeuta, fala sobre recuperação pós-parto e exercícios
-- Patrícia, 38, psicóloga, foca em saúde mental materna
-```
+| Nome | Descrição da foto |
+|------|------------------|
+| Fernanda Lima | Selfie sorrindo, cabelo preso, em casa, ~28 anos |
+| Mariana Costa | Selfie com barriga de grávida visível, luz natural, ~30 anos |
+| Camila Rodrigues | Selfie segurando dois bebês/gêmeos, expressão cansada mas feliz, ~32 anos |
+| Patrícia Alves | Selfie no espelho, casual, criança ao fundo desfocada, ~35 anos |
+| Ana Paula Santos | Selfie ao ar livre, sorriso natural, ~26 anos |
 
-**Regras anti-repetição nos prompts**:
-- Lista explícita de frases PROIBIDAS: "Ai, minha flor", "como eu te entendo", "meu [nome] fez a mesma coisa", "você não está sozinha", "força mamãe"
-- Regra: NUNCA começar com interjeição + vocativo
-- Exigir que cada resposta comece de forma diferente (pergunta, dado, relato direto, discordância respeitosa)
-- Temperature 0.95 → manter para maximizar diversidade
-
-**Prompts de posts** — substituir os 6 tópicos genéricos por ~20 tópicos ultra-específicos:
-```
-- "Meu bebê só dorme no colo, tentei berço e nada"
-- "Alguém mais sentindo culpa por voltar ao trabalho?"
-- "Receita de papinha que meu filho adorou"
-- "Pomada para assadura que realmente funciona"
-- "Como vocês lidam com palpite de sogra?"
-- "Amamentação exclusiva x fórmula: alguém na mesma?"
-- etc. (~20 temas)
-```
-
-### 2. Nomes de Exibição + Avatares
-
-**Migração SQL**: Atualizar os profiles dos bots existentes com `foto_perfil_url` usando DiceBear (SVG gratuito):
-```sql
-UPDATE profiles SET foto_perfil_url = 'https://api.dicebear.com/7.x/initials/svg?seed=Rafaela' WHERE email = 'rafaela@maes.virtual';
-```
-
-**Edge function**: Expandir `virtualProfiles` de 5 para 12, cada um com nome, cidade, estado e avatar URL únicos. O `display_name` será o nome da persona.
-
-**PostCard.tsx**: Atualizar para exibir `post.display_name || post.user_email.split("@")[0]` — já existe o campo `display_name` no tipo `Post`, só não é usado.
-
-**CommentSection.tsx**: Buscar também `display_name` (ou nome do email) dos profiles ao enriquecer comentários, e exibir no avatar/nome.
-
-### 3. generate-comment — Prompt Calibrado
-
-Reescrever o prompt da function `generate-comment` com:
-- Receber `persona` como parâmetro opcional (nome, perfil, estilo)
-- Incluir lista de frases proibidas
-- Variar aberturas obrigatoriamente
+### Implementação
+1. Criar script edge function que gera as 5 imagens via `google/gemini-3.1-flash-image-preview` e salva no bucket `avatars` do storage
+2. Atualizar `TestimonialsSection.tsx` para usar URLs do storage ao invés de imports locais
+3. Remover os arquivos `.jpg` vazios de `src/assets/testimonials/`
 
 ---
 
-## Arquivos Alterados
+## Parte 2: Auditoria de Ferramentas por Fase
 
-| Arquivo | Alteração |
-|---------|-----------|
-| `supabase/functions/auto-engage-community/index.ts` | Personas, prompts reescritos, 12 bots, avatares |
-| `supabase/functions/generate-comment/index.ts` | Prompt calibrado com anti-repetição e persona |
-| `src/components/comunidade/PostCard.tsx` | Usar `display_name` no nome exibido |
-| `src/components/comunidade/CommentSection.tsx` | Buscar `display_name` do profile |
-| Migração SQL | Atualizar `foto_perfil_url` e criar novos bots virtuais |
+### Ferramentas atuais organizadas por fase
+
+**Gestantes (pré-natal)**
+| Ferramenta | Status | Preço |
+|-----------|--------|-------|
+| Ferramentas de Gestação (DPP, contrações, ultrassom, kick counter, exames, plano de parto) | Existe | R$10,90 |
+| Controle de Enxoval | Existe | R$17,90 |
+| Mala da Maternidade | Existe | Grátis |
+| Calculadora de Fraldas | Existe | Grátis |
+| Guia de Alimentação (nutrição gestante) | Existe | R$12,90 |
+| E-book Mala Maternidade | Existe | Grátis |
+
+**Pós-parto imediato (0-3 meses)**
+| Ferramenta | Status | Preço |
+|-----------|--------|-------|
+| Rastreador de Amamentação | Existe | R$9,90 |
+| Diário de Sono | Existe | R$8,90 |
+| Recuperação Pós-Parto | Existe | R$12,90 |
+| Cartão de Vacinação | Existe | Grátis |
+| Monitor de Icterícia | Existe (sub-ferramenta) | Incluído |
+| Diário de Bem-estar da Mãe | Existe (sub-ferramenta) | Incluído |
+
+**Bebês 3-12 meses**
+| Ferramenta | Status | Preço |
+|-----------|--------|-------|
+| Monitor de Desenvolvimento | Existe | R$9,90 |
+| Rastreador de Dentes | Existe (sub-ferramenta) | Incluído |
+| Banco de Estimulação | Existe (sub-ferramenta) | Incluído |
+| Diário de Alergias | Existe (sub-ferramenta) | Incluído |
+| Alimentação do Bebê (introdução alimentar) | Existe (sub-ferramenta) | Incluído |
+
+### Gaps identificados e sugestões
+
+#### Sugestões GRATUITAS (simples, checklists, alto valor viral)
+
+1. **Checklist do Quartinho do Bebê** — lista de itens essenciais para montar o quarto, com categorias (berço, enxoval cama, segurança, decoração). Diferente do enxoval que é geral.
+   - Fase: Gestante
+   - Justificativa: viral no Pinterest/Instagram, atrai tráfego orgânico
+
+2. **Calculadora de Semanas de Gestação** — widget simples que converte semanas em meses, mostra trimestre atual e tamanho do bebê (comparação com frutas).
+   - Fase: Gestante
+   - Justificativa: ferramenta mais buscada no Google por gestantes, excelente SEO
+
+3. **Checklist de Documentos do Bebê** — lista passo-a-passo dos documentos necessários após o nascimento (certidão, CPF, plano de saúde, SUS, passaporte).
+   - Fase: Pós-parto imediato
+   - Justificativa: dúvida universal, resolve problema real
+
+4. **Timer de Mamada Rápido** — cronômetro simples para registrar mamada (sem o dashboard completo do Rastreador de Amamentação). Funciona como "versão free" que converte para premium.
+   - Fase: Pós-parto
+   - Justificativa: entrada gratuita que converte para o Rastreador completo
+
+#### Sugestões PREMIUM (completas, com IA/dashboards)
+
+5. **Diário de Crescimento com Curvas OMS** — registro de peso/altura/perímetro cefálico com gráficos comparativos das curvas da OMS. Alertas automáticos se fora do percentil.
+   - Fase: 0-12 meses
+   - Preço sugerido: R$9,90
+   - Justificativa: gap crítico — existe `GrowthChart.tsx` mas não é um produto standalone
+
+6. **Planejador de Rotina do Bebê** — montador visual de rotina diária (comer-dormir-brincar) por idade, com sugestões de IA e templates prontos.
+   - Fase: 3-12 meses
+   - Preço sugerido: R$8,90
+   - Justificativa: rotina é a maior dor de mães de 3-6 meses
+
+7. **Guia de Introdução Alimentar com IA** — calendário de introdução de alimentos com protocolo BLW/tradicional, receitas por idade, registro de reações alérgicas.
+   - Fase: 6-12 meses
+   - Preço sugerido: R$10,90
+   - Justificativa: já existe `FoodIntroductionDiary` como sub-ferramenta, mas merece ser produto próprio
+
+8. **Registro de Marcos Fotográfico** — álbum de "primeiras vezes" (primeiro sorriso, primeiro dente, primeiros passos) com templates de foto e timeline visual compartilhável.
+   - Fase: 0-12 meses
+   - Preço sugerido: R$7,90
+   - Justificativa: já existe `FirstTimesAlbum.tsx` mas não é produto — alto potencial de compartilhamento viral
+
+### Prioridade recomendada
+- **Implementar primeiro**: Calculadora de Semanas (grátis, SEO) + Diário de Crescimento com Curvas OMS (premium, gap crítico)
+- **Depois**: Checklist Documentos (grátis) + Introdução Alimentar standalone (premium)
 
 ---
 
-## Checklist de Teste Manual
-- [ ] Executar Automação IA no admin e verificar se os posts têm aberturas variadas (não começam igual)
-- [ ] Verificar se comentários NÃO usam "Ai, minha flor" ou padrões repetitivos
-- [ ] Confirmar que cada post/comentário exibe nome e avatar diferente na comunidade
-- [ ] Verificar que bots novos NÃO aparecem na listagem de usuários do admin
+## Etapas de implementação
 
-## Vantagens
-- Comunidade parece ter 12+ pessoas reais com personalidades distintas
-- Conteúdo muito mais diverso e natural
-- Avatares visuais aumentam credibilidade
+**Este plano**: Gerar as 5 fotos reais por IA e corrigir a landing
+**Futuro**: Implementar ferramentas sugeridas conforme prioridade
 
-## Desvantagens
-- Mais bots = mais dados no banco (insignificante)
-- Prompts maiores = custo marginalmente maior por chamada de IA
-
+## Checklist
+- [ ] 5 fotos realistas renderizando no carrossel de depoimentos
+- [ ] Fotos nos mini-cards também visíveis
+- [ ] Nenhuma foto com aparência de IA (sem pele perfeita, sem iluminação de estúdio)
