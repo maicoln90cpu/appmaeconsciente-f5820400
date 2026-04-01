@@ -185,6 +185,22 @@ const App = () => {
               <Route element={<ProductRoute productSlug="timer-mamada" />}>
                 <Route path="/timer-mamada" element={<FeaturePage name="Timer de Mamada"><TimerMamada /></FeaturePage>} />
               </Route>
+
+              <Route element={<ProductRoute productSlug="diario-crescimento" />}>
+                <Route path="/diario-crescimento" element={<FeaturePage name="Diário de Crescimento"><DiarioCrescimento /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="planejador-rotina" />}>
+                <Route path="/planejador-rotina" element={<FeaturePage name="Planejador de Rotina"><PlanejadorRotina /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="introducao-alimentar" />}>
+                <Route path="/introducao-alimentar" element={<FeaturePage name="Introdução Alimentar"><IntroducaoAlimentar /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="album-marcos" />}>
+                <Route path="/album-marcos" element={<FeaturePage name="Álbum de Marcos"><AlbumMarcos /></FeaturePage>} />
+              </Route>
             </Route>
 
             {/* Offline fallback */}
