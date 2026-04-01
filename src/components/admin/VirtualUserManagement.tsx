@@ -110,19 +110,24 @@ export const VirtualUserManagement = () => {
     setGeneratingAvatarId(user.id);
     try {
       const name = user.full_name || "Mãe";
-      const { data, error } = await supabase.functions.invoke("generate-comment", {
-        body: {
-          postContent: `Gere uma descrição curta em inglês para uma foto de perfil realista de: ${name}, mãe brasileira. Selfie casual, iluminação natural, expressão calorosa, fundo desfocado. Apenas a descrição, sem aspas.`,
-          postCategory: "avatar",
-        },
+      toast.info(`Gerando foto por IA para ${name}... Aguarde ~15s`, { duration: 5000 });
+
+      const { data, error } = await supabase.functions.invoke("generate-avatar", {
+        body: { userId: user.id, userName: name },
       });
 
-      if (error || !data?.comment) {
-        toast.error("Não foi possível gerar o prompt para a imagem. Use upload manual.");
+      if (error) {
+        toast.error(`Erro ao gerar avatar: ${error.message}`);
         return;
       }
 
-      toast.info("💡 Funcionalidade futura: a geração automática de avatar por IA será implementada em breve. Por enquanto, use o upload manual clicando na foto do perfil.", { duration: 6000 });
+      if (data?.error) {
+        toast.error(`Erro: ${data.error}`);
+        return;
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
+      toast.success(`✨ Avatar gerado com sucesso para ${name}!`);
     } catch (err: any) {
       toast.error(`Erro: ${err.message}`);
     } finally {
