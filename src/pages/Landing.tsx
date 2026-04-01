@@ -682,10 +682,11 @@ const Landing = () => {
             {/* Social Proof Counter */}
             <div className="inline-flex items-center gap-3 mb-8 px-6 py-3 rounded-full bg-card/80 backdrop-blur border border-border/50 shadow-medium">
               <div className="flex -space-x-2">
-                {['F', 'M', 'C', 'P', 'B'].map((letter, i) => (
+                {[fernandaImg, marianaImg, camilaImg, patriciaImg, beatrizImg].map((img, i) => (
                   <Avatar key={i} className="w-8 h-8 border-2 border-background">
+                    <AvatarImage src={img} alt="Usuária" loading="lazy" />
                     <AvatarFallback className="text-xs bg-gradient-to-br from-primary/30 to-primary/50 text-primary font-semibold">
-                      {letter}
+                      {['F', 'M', 'C', 'P', 'B'][i]}
                     </AvatarFallback>
                   </Avatar>
                 ))}
