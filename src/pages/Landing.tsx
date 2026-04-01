@@ -72,41 +72,51 @@ const testimonials: Testimonial[] = [
 
 const features = [
   {
-    icon: Users,
-    title: "Comunidade",
-    description: "Conecte-se com outras mães, compartilhe experiências, fotos e aprenda juntas nessa jornada especial.",
-    gradient: "from-pink-500 to-rose-500"
-  },
-  {
-    icon: BookOpen,
-    title: "Materiais",
-    description: "Ferramentas práticas e conteúdos exclusivos para planejar seu enxoval, orçamento e muito mais.",
+    icon: Package,
+    title: "Controle de Enxoval",
+    description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval do bebê.",
     gradient: "from-violet-500 to-purple-500"
   },
   {
-    icon: HeadphonesIcon,
-    title: "Suporte",
-    description: "Tire suas dúvidas com nossa equipe especializada sempre que precisar de ajuda.",
-    gradient: "from-blue-500 to-cyan-500"
+    icon: Moon,
+    title: "Diário de Sono",
+    description: "Registre padrões de sono do bebê, receba insights com IA e identifique a melhor rotina.",
+    gradient: "from-indigo-500 to-blue-500"
   },
   {
-    icon: ShieldCheck,
-    title: "Segurança",
-    description: "Seus dados protegidos com criptografia de ponta. Privacidade é nossa prioridade.",
-    gradient: "from-emerald-500 to-teal-500"
-  },
-  {
-    icon: TrendingUp,
-    title: "Economia",
-    description: "Economize até R$ 5.000 no enxoval com nossas ferramentas de comparação e planejamento.",
-    gradient: "from-amber-500 to-orange-500"
+    icon: Milk,
+    title: "Amamentação",
+    description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.",
+    gradient: "from-pink-500 to-rose-500"
   },
   {
     icon: Baby,
-    title: "Desenvolvimento",
-    description: "Acompanhe marcos do desenvolvimento do bebê com alertas personalizados e dicas de estímulo.",
-    gradient: "from-fuchsia-500 to-pink-500"
+    title: "Ferramentas de Gestação",
+    description: "Contador de movimentos fetais, checklist de exames, plano de parto e calculadora de DPP.",
+    gradient: "from-amber-500 to-orange-500"
+  },
+  {
+    icon: Brain,
+    title: "Monitor de Desenvolvimento",
+    description: "Acompanhe marcos do bebê mês a mês com alertas, banco de estímulos e relatório para o pediatra.",
+    gradient: "from-emerald-500 to-teal-500"
+  },
+  {
+    icon: Calculator,
+    title: "Calculadora de Fraldas",
+    description: "Simule custos descartável vs pano, compare marcas e descubra quanto vai gastar — 100% GRÁTIS.",
+    gradient: "from-fuchsia-500 to-pink-500",
+    free: true
   }
+];
+
+const extraTools = [
+  { icon: Syringe, label: "Vacinação Digital", free: true },
+  { icon: Activity, label: "Recuperação Pós-Parto" },
+  { icon: Apple, label: "IA Nutricional" },
+  { icon: Users, label: "Comunidade Ativa" },
+  { icon: Stethoscope, label: "Guia Alimentação" },
+  { icon: Heart, label: "Bem-estar da Mãe" },
 ];
 
 // Custom hook for intersection observer
