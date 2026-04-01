@@ -4781,6 +4781,7 @@ export type Database = {
         Returns: boolean
       }
       refresh_leaderboard: { Args: never; Returns: undefined }
+      sync_cron_schedule: { Args: never; Returns: undefined }
       xp_for_next_level: { Args: { current_level: number }; Returns: number }
     }
     Enums: {
