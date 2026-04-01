@@ -268,4 +268,4 @@
 ---
 
 *Documento mantido por: Development Team*  
-*Última atualização: Janeiro 2026 (Pacote 11 - Auto-save)*
+*Última atualização: Abril 2026 (Pacote 18 - Cron + Sentimento + Auto-Moderação)*
