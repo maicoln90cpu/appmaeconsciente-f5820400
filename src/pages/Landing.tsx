@@ -86,53 +86,101 @@ const testimonials: Testimonial[] = [
   }
 ];
 
-const features = [
-  {
-    icon: Package,
-    title: "Controle de Enxoval",
-    description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval do bebê.",
-    gradient: "from-violet-500 to-purple-500"
-  },
-  {
-    icon: Moon,
-    title: "Diário de Sono",
-    description: "Registre padrões de sono do bebê, receba insights com IA e identifique a melhor rotina.",
-    gradient: "from-indigo-500 to-blue-500"
-  },
-  {
-    icon: Milk,
-    title: "Amamentação",
-    description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.",
-    gradient: "from-pink-500 to-rose-500"
-  },
-  {
-    icon: Baby,
-    title: "Ferramentas de Gestação",
-    description: "Contador de movimentos fetais, checklist de exames, plano de parto e calculadora de DPP.",
-    gradient: "from-amber-500 to-orange-500"
-  },
-  {
-    icon: Brain,
-    title: "Monitor de Desenvolvimento",
-    description: "Acompanhe marcos do bebê mês a mês com alertas, banco de estímulos e relatório para o pediatra.",
-    gradient: "from-emerald-500 to-teal-500"
-  },
+const freeTools = [
   {
     icon: Calculator,
     title: "Calculadora de Fraldas",
-    description: "Simule custos descartável vs pano, compare marcas e descubra quanto vai gastar — 100% GRÁTIS.",
-    gradient: "from-fuchsia-500 to-pink-500",
-    free: true
-  }
+    description: "Simule custos, compare marcas populares e descubra se fraldas de pano compensam.",
+    slug: "calculadora-fraldas",
+  },
+  {
+    icon: Syringe,
+    title: "Cartão de Vacinação Digital",
+    description: "Organize vacinas, receba lembretes automáticos e gere relatórios PDF para o pediatra.",
+    slug: "cartao-vacinacao",
+  },
+  {
+    icon: Package,
+    title: "Checklist Mala Maternidade",
+    description: "Checklist completo das 3 malas por tipo de parto. Funciona offline e exporta em PDF.",
+    slug: "mala-maternidade",
+  },
+  {
+    icon: BookOpen,
+    title: "E-book Guia Rápido",
+    description: "O que realmente levar para o hospital sem exageros e sem esquecer o essencial.",
+    slug: "checklist",
+  },
 ];
 
-const extraTools = [
-  { icon: Syringe, label: "Vacinação Digital", free: true },
-  { icon: Activity, label: "Recuperação Pós-Parto" },
-  { icon: Apple, label: "IA Nutricional" },
-  { icon: Users, label: "Comunidade Ativa" },
-  { icon: Stethoscope, label: "Guia Alimentação" },
-  { icon: Heart, label: "Bem-estar da Mãe" },
+const toolsByPhase = [
+  {
+    phase: "🤰 Para Gestantes",
+    subtitle: "Ferramentas para quem está esperando o bebê",
+    tools: [
+      {
+        icon: Baby,
+        title: "Ferramentas de Gestação",
+        description: "Calculadora de DPP, contador de movimentos fetais, checklist de exames, plano de parto e galeria de ultrassons.",
+        price: "R$ 10,90",
+        slug: "ferramentas-gestacao",
+      },
+      {
+        icon: Package,
+        title: "Controle de Enxoval",
+        description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval.",
+        price: "R$ 17,90",
+        slug: "enxoval",
+      },
+      {
+        icon: Apple,
+        title: "Guia de Alimentação",
+        description: "Planos semanais com IA, receitas por trimestre, controle de suplementos e hidratação.",
+        price: "R$ 12,90",
+        slug: "guia-alimentacao",
+      },
+    ],
+  },
+  {
+    phase: "👶 Pós-Parto (0-3 meses)",
+    subtitle: "Para os primeiros meses com seu bebê",
+    tools: [
+      {
+        icon: Milk,
+        title: "Rastreador de Amamentação",
+        description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.",
+        price: "R$ 9,90",
+        slug: "rastreador-amamentacao",
+      },
+      {
+        icon: Moon,
+        title: "Diário de Sono",
+        description: "Registre padrões de sono, receba insights com IA e identifique a melhor rotina.",
+        price: "R$ 8,90",
+        slug: "diario-sono",
+      },
+      {
+        icon: Activity,
+        title: "Recuperação Pós-Parto",
+        description: "Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.",
+        price: "R$ 12,90",
+        slug: "recuperacao-pos-parto",
+      },
+    ],
+  },
+  {
+    phase: "🍼 Bebês (3-12 meses)",
+    subtitle: "Acompanhe o crescimento e desenvolvimento",
+    tools: [
+      {
+        icon: Brain,
+        title: "Monitor de Desenvolvimento",
+        description: "Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.",
+        price: "R$ 9,90",
+        slug: "monitor-desenvolvimento",
+      },
+    ],
+  },
 ];
 
 // Custom hook for intersection observer
