@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Bot, Upload, Save, RefreshCw, MapPin, Edit2, Check, X
+  Bot, Upload, RefreshCw, MapPin, Edit2, Check, X
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -20,6 +21,8 @@ interface VirtualUser {
   foto_perfil_url: string | null;
   cidade: string | null;
   estado: string | null;
+  personality: string | null;
+  personality_style: string | null;
   is_active: boolean;
   created_at: string;
 }
@@ -34,7 +37,7 @@ export const VirtualUserManagement = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, email, full_name, foto_perfil_url, cidade, estado, is_active, created_at")
+        .select("id, email, full_name, foto_perfil_url, cidade, estado, personality, personality_style, is_active, created_at")
         .eq("is_virtual", true)
         .order("created_at", { ascending: true });
       if (error) throw error;
@@ -108,6 +111,8 @@ export const VirtualUserManagement = () => {
       full_name: user.full_name,
       cidade: user.cidade,
       estado: user.estado,
+      personality: user.personality,
+      personality_style: user.personality_style,
     });
   };
 
@@ -126,11 +131,10 @@ export const VirtualUserManagement = () => {
           Usuários Virtuais
         </h2>
         <p className="text-muted-foreground">
-          Gerencie perfis, avatares e status dos bots da comunidade
+          Gerencie perfis, avatares, personalidades e status dos bots da comunidade
         </p>
       </div>
 
-      {/* Summary */}
       <div className="flex gap-4">
         <Badge variant="outline" className="text-sm py-1 px-3">
           {users?.length || 0} bots cadastrados
@@ -151,8 +155,8 @@ export const VirtualUserManagement = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {users?.map((user) => (
             <Card key={user.id} className={`transition-opacity ${!user.is_active ? "opacity-50" : ""}`}>
-              <CardContent className="pt-6 space-y-4">
-                {/* Avatar + Upload */}
+              <CardContent className="pt-6 space-y-3">
+                {/* Avatar + Name */}
                 <div className="flex items-center gap-4">
                   <div className="relative group">
                     <Avatar className="h-16 w-16">
@@ -174,7 +178,6 @@ export const VirtualUserManagement = () => {
                       />
                     </label>
                   </div>
-
                   <div className="flex-1 min-w-0">
                     {editingId === user.id ? (
                       <Input
@@ -214,6 +217,46 @@ export const VirtualUserManagement = () => {
                       {user.cidade}{user.estado ? `, ${user.estado}` : ""}
                     </p>
                   )
+                )}
+
+                {/* Personality */}
+                {editingId === user.id ? (
+                  <div className="space-y-2">
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Personalidade</Label>
+                      <Textarea
+                        value={editForm.personality || ""}
+                        onChange={(e) => setEditForm({ ...editForm, personality: e.target.value })}
+                        placeholder="Ex: Mãe de primeira viagem, ansiosa mas curiosa..."
+                        className="text-sm min-h-[60px]"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-muted-foreground">Estilo de Escrita</Label>
+                      <Textarea
+                        value={editForm.personality_style || ""}
+                        onChange={(e) => setEditForm({ ...editForm, personality_style: e.target.value })}
+                        placeholder="Ex: Direta e prática, frases curtas..."
+                        className="text-sm min-h-[50px]"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    {user.personality && (
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        <span className="font-medium text-foreground">🧠</span> {user.personality}
+                      </p>
+                    )}
+                    {user.personality_style && (
+                      <p className="text-xs text-muted-foreground line-clamp-2">
+                        <span className="font-medium text-foreground">✍️</span> {user.personality_style}
+                      </p>
+                    )}
+                    {!user.personality && !user.personality_style && (
+                      <p className="text-xs text-muted-foreground italic">Sem personalidade definida</p>
+                    )}
+                  </div>
                 )}
 
                 {/* Actions */}
