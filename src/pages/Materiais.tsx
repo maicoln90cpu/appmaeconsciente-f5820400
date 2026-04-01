@@ -12,8 +12,8 @@ import { PremiumUpgradeModal } from "@/components/materiais/PremiumUpgradeModal"
 import { ToolSuggestionDialog } from "@/components/materiais/ToolSuggestionDialog";
 
 // Tools relevant per phase — others still show but are deprioritized
-const GESTANTE_SLUGS = new Set(["controle-enxoval", "mala-maternidade", "ferramentas-gestacao", "guia-alimentacao", "calculadora-fraldas"]);
-const POS_PARTO_SLUGS = new Set(["rastreador-amamentacao", "diario-sono", "monitor-desenvolvimento", "cartao-vacinacao", "recuperacao-pos-parto", "guia-alimentacao"]);
+const GESTANTE_SLUGS = new Set(["controle-enxoval", "mala-maternidade", "ferramentas-gestacao", "guia-alimentacao", "calculadora-fraldas", "calculadora-semanas", "checklist-quartinho"]);
+const POS_PARTO_SLUGS = new Set(["rastreador-amamentacao", "diario-sono", "monitor-desenvolvimento", "cartao-vacinacao", "recuperacao-pos-parto", "guia-alimentacao", "checklist-documentos", "timer-mamada"]);
 
 interface Product {
   id: string;

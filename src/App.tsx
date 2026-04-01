@@ -50,6 +50,10 @@ const CartaoVacinacao = lazyWithRetry(() => import("./pages/CartaoVacinacao"));
 const RecuperacaoPosPartoPage = lazyWithRetry(() => import("./pages/RecuperacaoPosPartoPage"));
 const MonitorDesenvolvimento = lazyWithRetry(() => import("./pages/MonitorDesenvolvimento"));
 const FerramentasGestacao = lazyWithRetry(() => import("./pages/FerramentasGestacao"));
+const CalculadoraSemanas = lazyWithRetry(() => import("./pages/CalculadoraSemanas"));
+const ChecklistDocumentos = lazyWithRetry(() => import("./pages/ChecklistDocumentos"));
+const ChecklistQuartinho = lazyWithRetry(() => import("./pages/ChecklistQuartinho"));
+const TimerMamada = lazyWithRetry(() => import("./pages/TimerMamada"));
 const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -160,6 +164,22 @@ const App = () => {
 
               <Route element={<ProductRoute productSlug="ferramentas-gestacao" />}>
                 <Route path="/materiais/ferramentas-gestacao" element={<FeaturePage name="Gestação"><FerramentasGestacao /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="calculadora-semanas" />}>
+                <Route path="/calculadora-semanas" element={<FeaturePage name="Calculadora de Semanas"><CalculadoraSemanas /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="checklist-documentos" />}>
+                <Route path="/checklist-documentos" element={<FeaturePage name="Checklist Documentos"><ChecklistDocumentos /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="checklist-quartinho" />}>
+                <Route path="/checklist-quartinho" element={<FeaturePage name="Checklist Quartinho"><ChecklistQuartinho /></FeaturePage>} />
+              </Route>
+
+              <Route element={<ProductRoute productSlug="timer-mamada" />}>
+                <Route path="/timer-mamada" element={<FeaturePage name="Timer de Mamada"><TimerMamada /></FeaturePage>} />
               </Route>
             </Route>
 
