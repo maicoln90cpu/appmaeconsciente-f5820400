@@ -171,7 +171,8 @@ export const AnalyticsDashboard = () => {
     queryFn: async () => {
       const { count: totalProfiles } = await supabase
         .from("profiles")
-        .select("*", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true);
 
       const { count: completedProfiles } = await supabase
         .from("profiles")
