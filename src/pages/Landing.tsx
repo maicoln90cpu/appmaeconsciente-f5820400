@@ -13,7 +13,8 @@ import julianaImg from "@/assets/testimonials/juliana-freitas.jpg";
 import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby, Moon, Milk, Syringe, Stethoscope, Brain, Calculator, Apple, Activity, Package, Crown, Gift } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPrompt } from "@/components/install/InstallPrompt";
-import { useEffect, useState, useRef } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState, useRef, useMemo } from "react";
 
 interface Testimonial {
   name: string;
@@ -102,74 +103,39 @@ const freeTools = [
   },
 ];
 
-const toolsByPhase = [
-  {
-    phase: "🤰 Para Gestantes",
-    subtitle: "Ferramentas para quem está esperando o bebê",
-    tools: [
-      {
-        icon: Baby,
-        title: "Ferramentas de Gestação",
-        description: "Calculadora de DPP, contador de movimentos fetais, checklist de exames, plano de parto e galeria de ultrassons.",
-        price: "R$ 10,90",
-        slug: "ferramentas-gestacao",
-      },
-      {
-        icon: Package,
-        title: "Controle de Enxoval",
-        description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval.",
-        price: "R$ 17,90",
-        slug: "enxoval",
-      },
-      {
-        icon: Apple,
-        title: "Guia de Alimentação",
-        description: "Planos semanais com IA, receitas por trimestre, controle de suplementos e hidratação.",
-        price: "R$ 12,90",
-        slug: "guia-alimentacao",
-      },
-    ],
-  },
-  {
-    phase: "👶 Pós-Parto (0-3 meses)",
-    subtitle: "Para os primeiros meses com seu bebê",
-    tools: [
-      {
-        icon: Milk,
-        title: "Rastreador de Amamentação",
-        description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.",
-        price: "R$ 9,90",
-        slug: "rastreador-amamentacao",
-      },
-      {
-        icon: Moon,
-        title: "Diário de Sono",
-        description: "Registre padrões de sono, receba insights com IA e identifique a melhor rotina.",
-        price: "R$ 8,90",
-        slug: "diario-sono",
-      },
-      {
-        icon: Activity,
-        title: "Recuperação Pós-Parto",
-        description: "Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.",
-        price: "R$ 12,90",
-        slug: "recuperacao-pos-parto",
-      },
-    ],
-  },
-  {
-    phase: "🍼 Bebês (3-12 meses)",
-    subtitle: "Acompanhe o crescimento e desenvolvimento",
-    tools: [
-      {
-        icon: Brain,
-        title: "Monitor de Desenvolvimento",
-        description: "Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.",
-        price: "R$ 9,90",
-        slug: "monitor-desenvolvimento",
-      },
-    ],
-  },
+// Slugs mapped to phases for dynamic pricing
+const phaseToolSlugs = {
+  gestantes: [
+    { icon: Baby, title: "Ferramentas de Gestação", description: "Calculadora de DPP, contador de movimentos fetais, checklist de exames, plano de parto e galeria de ultrassons.", slug: "ferramentas-gestacao" },
+    { icon: Package, title: "Controle de Enxoval", description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval.", slug: "controle-enxoval" },
+    { icon: Apple, title: "Guia de Alimentação", description: "Planos semanais com IA, receitas por trimestre, controle de suplementos e hidratação.", slug: "guia-alimentacao" },
+  ],
+  posParto: [
+    { icon: Milk, title: "Rastreador de Amamentação", description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.", slug: "rastreador-amamentacao" },
+    { icon: Moon, title: "Diário de Sono", description: "Registre padrões de sono, receba insights com IA e identifique a melhor rotina.", slug: "diario-sono" },
+    { icon: Activity, title: "Recuperação Pós-Parto", description: "Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.", slug: "recuperacao-pos-parto" },
+  ],
+  bebes: [
+    { icon: Brain, title: "Monitor de Desenvolvimento", description: "Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.", slug: "monitor-desenvolvimento" },
+  ],
+};
+
+// All premium tools for comparison table
+const comparisonFeatures = [
+  { name: "Calculadora de Fraldas", free: true, premium: true, clube: true },
+  { name: "Cartão de Vacinação", free: true, premium: true, clube: true },
+  { name: "Mala da Maternidade", free: true, premium: true, clube: true },
+  { name: "E-book Guia Rápido", free: true, premium: true, clube: true },
+  { name: "Ferramentas de Gestação", free: false, premium: true, clube: true },
+  { name: "Controle de Enxoval", free: false, premium: true, clube: true },
+  { name: "Guia de Alimentação e IA", free: false, premium: true, clube: true },
+  { name: "Rastreador de Amamentação", free: false, premium: true, clube: true },
+  { name: "Diário de Sono", free: false, premium: true, clube: true },
+  { name: "Recuperação Pós-Parto", free: false, premium: true, clube: true },
+  { name: "Monitor de Desenvolvimento", free: false, premium: true, clube: true },
+  { name: "Comunidade Exclusiva", free: false, premium: false, clube: true },
+  { name: "Suporte Prioritário", free: false, premium: false, clube: true },
+  { name: "Novidades em 1ª mão", free: false, premium: false, clube: true },
 ];
 
 // Custom hook for intersection observer
@@ -198,10 +164,65 @@ const useInView = (options = {}) => {
 const Landing = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [prices, setPrices] = useState<Record<string, number | null>>({});
+  const [clubePrice, setClubePrice] = useState<number>(27);
 
   const featuresInView = useInView();
+  const comparisonInView = useInView();
   const testimonialsInView = useInView();
   const ctaInView = useInView();
+
+  // Load prices from database
+  useEffect(() => {
+    const loadPrices = async () => {
+      try {
+        const { data } = await supabase
+          .from("products")
+          .select("slug, price")
+          .eq("is_active", true);
+        if (data) {
+          const map: Record<string, number | null> = {};
+          data.forEach((p) => { map[p.slug] = p.price; });
+          setPrices(map);
+          if (map["clube-premium"]) setClubePrice(map["clube-premium"]!);
+        }
+      } catch (e) {
+        console.error("Erro ao carregar preços:", e);
+      }
+    };
+    loadPrices();
+  }, []);
+
+  // Build toolsByPhase with dynamic prices
+  const toolsByPhase = useMemo(() => {
+    const getPrice = (slug: string) => {
+      const p = prices[slug];
+      return p ? `R$ ${p.toFixed(2).replace('.', ',')}` : "—";
+    };
+    return [
+      {
+        phase: "🤰 Para Gestantes",
+        subtitle: "Ferramentas para quem está esperando o bebê",
+        tools: phaseToolSlugs.gestantes.map(t => ({ ...t, price: getPrice(t.slug) })),
+      },
+      {
+        phase: "👶 Pós-Parto (0-3 meses)",
+        subtitle: "Para os primeiros meses com seu bebê",
+        tools: phaseToolSlugs.posParto.map(t => ({ ...t, price: getPrice(t.slug) })),
+      },
+      {
+        phase: "🍼 Bebês (3-12 meses)",
+        subtitle: "Acompanhe o crescimento e desenvolvimento",
+        tools: phaseToolSlugs.bebes.map(t => ({ ...t, price: getPrice(t.slug) })),
+      },
+    ];
+  }, [prices]);
+
+  // Sum of all individual premium prices
+  const totalAvulso = useMemo(() => {
+    const premiumSlugs = [...phaseToolSlugs.gestantes, ...phaseToolSlugs.posParto, ...phaseToolSlugs.bebes].map(t => t.slug);
+    return premiumSlugs.reduce((sum, slug) => sum + (prices[slug] || 0), 0);
+  }, [prices]);
 
   // Testimonials autoplay
   useEffect(() => {
@@ -403,10 +424,99 @@ const Landing = () => {
         </section>
       ))}
 
-      {/* Clube Premium CTA */}
-      <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-primary/10">
+      {/* Tabela Comparativa + Clube Premium */}
+      <section 
+        ref={comparisonInView.ref}
+        className="py-20 bg-gradient-to-br from-primary/5 via-background to-primary/10"
+      >
         <div className="container">
-          <Card className="max-w-3xl mx-auto border-primary/30 shadow-elevated overflow-hidden">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl md:text-4xl font-display font-bold mb-4">
+              Compare e escolha o melhor para você
+            </h3>
+            <p className="text-lg text-muted-foreground">
+              Gratuito, avulso ou acesso total — você decide
+            </p>
+          </div>
+
+          {/* Comparison Table */}
+          <div className={`max-w-4xl mx-auto mb-12 ${comparisonInView.isInView ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="overflow-x-auto rounded-xl border border-border/50 shadow-elevated">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left p-4 font-display font-semibold text-muted-foreground">Recurso</th>
+                    <th className="text-center p-4 font-display font-semibold w-24">
+                      <div className="flex flex-col items-center gap-1">
+                        <Gift className="h-5 w-5 text-success" />
+                        <span>Grátis</span>
+                        <span className="text-xs text-muted-foreground font-normal">R$ 0</span>
+                      </div>
+                    </th>
+                    <th className="text-center p-4 font-display font-semibold w-24">
+                      <div className="flex flex-col items-center gap-1">
+                        <Star className="h-5 w-5 text-primary" />
+                        <span>Avulso</span>
+                        <span className="text-xs text-muted-foreground font-normal">por ferramenta</span>
+                      </div>
+                    </th>
+                    <th className="text-center p-4 font-display font-semibold w-28 bg-primary/5 rounded-t-xl">
+                      <div className="flex flex-col items-center gap-1">
+                        <Crown className="h-5 w-5 text-primary" />
+                        <span className="text-primary">Clube</span>
+                        <span className="text-xs text-primary font-bold">R$ {clubePrice.toFixed(0)}/mês</span>
+                      </div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonFeatures.map((feat, i) => (
+                    <tr key={feat.name} className={`border-b border-border/30 ${i % 2 === 0 ? 'bg-muted/20' : ''}`}>
+                      <td className="p-3 pl-4 text-foreground">{feat.name}</td>
+                      <td className="p-3 text-center">
+                        {feat.free ? (
+                          <CheckCircle2 className="h-5 w-5 text-success mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center">
+                        {feat.premium ? (
+                          <CheckCircle2 className="h-5 w-5 text-primary mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center bg-primary/5">
+                        {feat.clube ? (
+                          <CheckCircle2 className="h-5 w-5 text-primary mx-auto" />
+                        ) : (
+                          <span className="text-muted-foreground/40">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {/* Total row */}
+                  <tr className="bg-muted/30 font-semibold">
+                    <td className="p-4 pl-4 font-display">Custo total/mês</td>
+                    <td className="p-4 text-center text-success font-bold">R$ 0</td>
+                    <td className="p-4 text-center text-muted-foreground">
+                      R$ {totalAvulso > 0 ? totalAvulso.toFixed(2).replace('.', ',') : '80+'}
+                    </td>
+                    <td className="p-4 text-center bg-primary/5 text-primary font-bold text-lg">
+                      R$ {clubePrice.toFixed(0)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-center text-xs text-muted-foreground mt-3">
+              * Premium avulso: cada ferramenta comprada individualmente. Clube: acesso total por preço único.
+            </p>
+          </div>
+
+          {/* Clube CTA Card */}
+          <Card className="max-w-2xl mx-auto border-primary/30 shadow-elevated overflow-hidden">
             <div className="bg-gradient-to-r from-primary to-primary/80 px-8 py-4">
               <div className="flex items-center gap-3">
                 <Crown className="h-6 w-6 text-primary-foreground" />
@@ -415,36 +525,14 @@ const Landing = () => {
                 </h3>
               </div>
             </div>
-            <CardContent className="pt-8 pb-8 px-8">
-              <div className="text-center mb-6">
-                <p className="text-muted-foreground mb-4">
-                  Acesso total a <strong>todas as ferramentas</strong> da plataforma por um único preço
-                </p>
-                <div className="flex items-baseline justify-center gap-1 mb-2">
-                  <span className="text-4xl md:text-5xl font-display font-bold text-primary">R$ 27</span>
-                  <span className="text-muted-foreground">/mês</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Avulso: R$ 80+ | No clube: <strong className="text-primary">tudo por R$ 27</strong>
-                </p>
+            <CardContent className="pt-6 pb-6 px-8 text-center">
+              <div className="flex items-baseline justify-center gap-1 mb-2">
+                <span className="text-4xl font-display font-bold text-primary">R$ {clubePrice.toFixed(0)}</span>
+                <span className="text-muted-foreground">/mês</span>
               </div>
-              
-              <div className="grid sm:grid-cols-2 gap-3 mb-8">
-                {[
-                  "Todas as ferramentas premium",
-                  "Comunidade exclusiva",
-                  "IA nutricional ilimitada",
-                  "Suporte prioritário",
-                  "Novidades em primeira mão",
-                  "30 dias grátis para testar",
-                ].map((benefit, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
-                    <span>{benefit}</span>
-                  </div>
-                ))}
-              </div>
-              
+              <p className="text-sm text-muted-foreground mb-6">
+                Economize <strong className="text-primary">R$ {totalAvulso > 0 ? (totalAvulso - clubePrice).toFixed(0) : '50+'}</strong> comparado a comprar avulso • 30 dias grátis
+              </p>
               <Button size="lg" className="w-full shadow-glow text-lg" asChild>
                 <Link to="/auth">
                   Começar 30 dias grátis <ArrowRight className="h-5 w-5 ml-2" />
