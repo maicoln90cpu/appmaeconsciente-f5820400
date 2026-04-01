@@ -265,6 +265,8 @@ serve(async (req) => {
       maxLikes = 4,
       randomTiming = false,
       maxDelayMinutes = 30,
+      sentimentFilter = true,
+      autoModeration = false,
     } = await req.json().catch(() => ({}));
 
     const randomDelay = async () => {
