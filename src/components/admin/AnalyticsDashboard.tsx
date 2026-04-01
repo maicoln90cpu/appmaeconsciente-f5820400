@@ -37,7 +37,8 @@ export const AnalyticsDashboard = () => {
       // Get total users
       const { count: totalUsers } = await supabase
         .from("profiles")
-        .select("*", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true);
 
       // Get users this month
       const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
