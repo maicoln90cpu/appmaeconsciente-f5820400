@@ -1,78 +1,59 @@
-import { useEffect, useState, lazy, Suspense } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserRole } from "@/hooks/useUserRole";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAdminStats } from "@/hooks/useAdminStats";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/useToast";
-import { logger } from "@/lib/logger";
-import { 
-  Users, 
-  Package, 
-  TrendingUp, 
+import {
+  Users,
+  Package,
+  TrendingUp,
   Calendar,
-  Send,
   ArrowLeft,
   LayoutDashboard,
   ShoppingBag,
   MessageSquare,
   Headphones,
-  Settings
+  Settings,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminSubTabs } from "@/components/admin/AdminSubTabs";
 
 // Lazy load all admin components
-const HotmartMappings = lazy(() => import("@/components/admin/HotmartMappings").then(m => ({ default: m.HotmartMappings })));
-const HotmartTransactions = lazy(() => import("@/components/admin/HotmartTransactions").then(m => ({ default: m.HotmartTransactions })));
-const ManualPurchaseResend = lazy(() => import("@/components/admin/ManualPurchaseResend").then(m => ({ default: m.ManualPurchaseResend })));
-const PostModeration = lazy(() => import("@/components/admin/PostModeration").then(m => ({ default: m.PostModeration })));
-const TicketManagement = lazy(() => import("@/components/admin/TicketManagement").then(m => ({ default: m.TicketManagement })));
-const ProductManagement = lazy(() => import("@/components/admin/ProductManagement").then(m => ({ default: m.ProductManagement })));
-const UserManagement = lazy(() => import("@/components/admin/UserManagement").then(m => ({ default: m.UserManagement })));
-const PromotionManagement = lazy(() => import("@/components/admin/PromotionManagement").then(m => ({ default: m.PromotionManagement })));
-const CouponManagement = lazy(() => import("@/components/admin/CouponManagement").then(m => ({ default: m.CouponManagement })));
-const AnalyticsDashboard = lazy(() => import("@/components/admin/AnalyticsDashboard").then(m => ({ default: m.AnalyticsDashboard })));
-const BundleManagement = lazy(() => import("@/components/admin/BundleManagement").then(m => ({ default: m.BundleManagement })));
-const ToolSuggestionManagement = lazy(() => import("@/components/admin/ToolSuggestionManagement").then(m => ({ default: m.ToolSuggestionManagement })));
-const SiteSettings = lazy(() => import("@/components/admin/SiteSettings").then(m => ({ default: m.SiteSettings })));
-const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPanel").then(m => ({ default: m.SecurityAuditPanel })));
-const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then(m => ({ default: m.AdminCharts })));
-const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then(m => ({ default: m.AppHealthDashboard })));
-const AIEngagementPanel = lazy(() => import("@/components/admin/AIEngagementPanel").then(m => ({ default: m.AIEngagementPanel })));
-const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserManagement").then(m => ({ default: m.VirtualUserManagement })));
-const AutoModerationPanel = lazy(() => import("@/components/admin/AutoModerationPanel").then(m => ({ default: m.AutoModerationPanel })));
-const CronSchedulePanel = lazy(() => import("@/components/admin/CronSchedulePanel").then(m => ({ default: m.CronSchedulePanel })));
+const HotmartMappings = lazy(() => import("@/components/admin/HotmartMappings").then((m) => ({ default: m.HotmartMappings })));
+const HotmartTransactions = lazy(() => import("@/components/admin/HotmartTransactions").then((m) => ({ default: m.HotmartTransactions })));
+const ManualPurchaseResend = lazy(() => import("@/components/admin/ManualPurchaseResend").then((m) => ({ default: m.ManualPurchaseResend })));
+const PostModeration = lazy(() => import("@/components/admin/PostModeration").then((m) => ({ default: m.PostModeration })));
+const TicketManagement = lazy(() => import("@/components/admin/TicketManagement").then((m) => ({ default: m.TicketManagement })));
+const ProductManagement = lazy(() => import("@/components/admin/ProductManagement").then((m) => ({ default: m.ProductManagement })));
+const UserManagement = lazy(() => import("@/components/admin/UserManagement").then((m) => ({ default: m.UserManagement })));
+const PromotionManagement = lazy(() => import("@/components/admin/PromotionManagement").then((m) => ({ default: m.PromotionManagement })));
+const CouponManagement = lazy(() => import("@/components/admin/CouponManagement").then((m) => ({ default: m.CouponManagement })));
+const AnalyticsDashboard = lazy(() => import("@/components/admin/AnalyticsDashboard").then((m) => ({ default: m.AnalyticsDashboard })));
+const BundleManagement = lazy(() => import("@/components/admin/BundleManagement").then((m) => ({ default: m.BundleManagement })));
+const ToolSuggestionManagement = lazy(() => import("@/components/admin/ToolSuggestionManagement").then((m) => ({ default: m.ToolSuggestionManagement })));
+const SiteSettings = lazy(() => import("@/components/admin/SiteSettings").then((m) => ({ default: m.SiteSettings })));
+const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPanel").then((m) => ({ default: m.SecurityAuditPanel })));
+const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then((m) => ({ default: m.AdminCharts })));
+const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then((m) => ({ default: m.AppHealthDashboard })));
+const AIEngagementPanel = lazy(() => import("@/components/admin/AIEngagementPanel").then((m) => ({ default: m.AIEngagementPanel })));
+const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserManagement").then((m) => ({ default: m.VirtualUserManagement })));
+const AutoModerationPanel = lazy(() => import("@/components/admin/AutoModerationPanel").then((m) => ({ default: m.AutoModerationPanel })));
+const CronSchedulePanel = lazy(() => import("@/components/admin/CronSchedulePanel").then((m) => ({ default: m.CronSchedulePanel })));
+const AdminNotificationCard = lazy(() => import("@/components/admin/AdminNotificationCard").then((m) => ({ default: m.AdminNotificationCard })));
 
-// Loading fallback component
 const TabLoading = () => (
   <div className="flex items-center justify-center py-12">
     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
   </div>
 );
 
-interface Stats {
-  totalUsers: number;
-  totalItems: number;
-  itemsThisMonth: number;
-  activeUsers: number;
-  categoryData: Array<{ name: string; value: number }>;
-  weeklyGrowth: Array<{ week: string; items: number; users: number }>;
-}
-
 export default function AdminDashboard() {
   const { isAdmin, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { toast } = useToast();
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState({ title: "", message: "" });
-  const [sending, setSending] = useState(false);
-  
+  const { stats, loading } = useAdminStats(isAdmin);
+
   const activeTab = searchParams.get("tab") || "dashboard";
 
   useEffect(() => {
@@ -80,151 +61,6 @@ export default function AdminDashboard() {
       navigate("/materiais");
     }
   }, [isAdmin, roleLoading, navigate]);
-
-  useEffect(() => {
-    if (isAdmin) {
-      loadStats();
-    }
-  }, [isAdmin]);
-
-  const loadStats = async () => {
-    try {
-      // Get total users (exclude virtual/bot users)
-      const { count: totalUsers } = await supabase
-        .from('profiles')
-        .select('*', { count: 'exact', head: true })
-        .neq('is_virtual', true);
-
-      // Get total items
-      const { count: totalItems } = await supabase
-        .from('itens_enxoval')
-        .select('*', { count: 'exact', head: true });
-
-      // Get items this month
-      const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-      const { count: itemsThisMonth } = await supabase
-        .from('itens_enxoval')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', firstDayOfMonth.toISOString());
-
-      // Get category distribution
-      const { data: categoryData } = await supabase
-        .from('itens_enxoval')
-        .select('categoria');
-
-      const categoryCounts: Record<string, number> = {};
-      categoryData?.forEach((item) => {
-        categoryCounts[item.categoria] = (categoryCounts[item.categoria] || 0) + 1;
-      });
-
-      const topCategories = Object.entries(categoryCounts)
-        .map(([name, value]) => ({ name, value }))
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 5);
-
-      // Mock weekly growth data
-      const weeklyGrowth = [
-        { week: 'Sem 1', items: 12, users: 3 },
-        { week: 'Sem 2', items: 18, users: 5 },
-        { week: 'Sem 3', items: 25, users: 7 },
-        { week: 'Sem 4', items: 30, users: 8 },
-      ];
-
-      setStats({
-        totalUsers: totalUsers || 0,
-        totalItems: totalItems || 0,
-        itemsThisMonth: itemsThisMonth || 0,
-        activeUsers: Math.floor((totalUsers || 0) * 0.7),
-        categoryData: topCategories,
-        weeklyGrowth,
-      });
-    } catch (error) {
-      logger.error("Error loading stats", error, { context: "AdminDashboard" });
-      toast({
-        title: "Erro ao carregar estatísticas",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendNotification = async () => {
-    if (!notification.title || !notification.message) {
-      toast({
-        title: "Preencha todos os campos",
-        description: "Título e mensagem são obrigatórios.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSending(true);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) return;
-
-      const { data: notificationData, error } = await supabase
-        .from('notifications')
-        .insert({
-          title: notification.title,
-          message: notification.message,
-          created_by: user.id,
-          is_global: true,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      logger.debug("Notificação criada", { context: "AdminDashboard", data: { id: notificationData.id } });
-
-      const { data: allUsers, error: usersError } = await supabase
-        .from('profiles')
-        .select('id')
-        .neq('id', user.id);
-
-      if (usersError) throw usersError;
-
-      logger.debug("Total de usuários a notificar", { context: "AdminDashboard", data: { count: allUsers?.length } });
-
-      if (allUsers && allUsers.length > 0) {
-        const userNotifications = allUsers.map(u => ({
-          user_id: u.id,
-          notification_id: notificationData.id,
-        }));
-
-        const { error: insertError } = await supabase
-          .from('user_notifications')
-          .insert(userNotifications);
-
-        if (insertError) {
-          logger.error("Erro ao criar user_notifications", insertError, { context: "AdminDashboard" });
-          throw insertError;
-        }
-
-        logger.debug("User notifications criadas com sucesso", { context: "AdminDashboard" });
-      }
-
-      toast({
-        title: "Notificação enviada!",
-        description: `${allUsers?.length || 0} usuários foram notificados.`,
-      });
-
-      setNotification({ title: "", message: "" });
-    } catch (error) {
-      logger.error("Error sending notification", error, { context: "AdminDashboard" });
-      toast({
-        title: "Erro ao enviar notificação",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setSending(false);
-    }
-  };
 
   if (roleLoading || loading) {
     return (
@@ -238,43 +74,6 @@ export default function AdminDashboard() {
   }
 
   if (!isAdmin) return null;
-
-  // Notification content for reuse
-  const NotificationContent = (
-    <Card>
-      <CardHeader>
-        <CardTitle>Enviar Notificação</CardTitle>
-        <CardDescription>
-          Envie uma mensagem para todos os usuários do sistema
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="title">Título</Label>
-          <Input
-            id="title"
-            value={notification.title}
-            onChange={(e) => setNotification({ ...notification, title: e.target.value })}
-            placeholder="Título da notificação"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="message">Mensagem</Label>
-          <Textarea
-            id="message"
-            value={notification.message}
-            onChange={(e) => setNotification({ ...notification, message: e.target.value })}
-            placeholder="Conteúdo da mensagem..."
-            rows={5}
-          />
-        </div>
-        <Button onClick={handleSendNotification} disabled={sending} className="w-full">
-          <Send className="w-4 h-4 mr-2" />
-          {sending ? "Enviando..." : "Enviar para Todos"}
-        </Button>
-      </CardContent>
-    </Card>
-  );
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -299,9 +98,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.totalUsers || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                {stats?.activeUsers || 0} ativos
-              </p>
+              <p className="text-xs text-muted-foreground">{stats?.activeUsers || 0} ativos</p>
             </CardContent>
           </Card>
 
@@ -312,9 +109,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats?.totalItems || 0}</div>
-              <p className="text-xs text-muted-foreground">
-                Todos os usuários
-              </p>
+              <p className="text-xs text-muted-foreground">Todos os usuários</p>
             </CardContent>
           </Card>
 
@@ -337,17 +132,13 @@ export default function AdminDashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {Math.round((stats?.totalItems || 0) / (stats?.totalUsers || 1))}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Itens por usuário
-              </p>
+              <div className="text-2xl font-bold">{Math.round((stats?.totalItems || 0) / (stats?.totalUsers || 1))}</div>
+              <p className="text-xs text-muted-foreground">Itens por usuário</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Main Tabs - 5 Categories */}
+        {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
           <TabsList className="grid w-full grid-cols-5 h-auto p-1">
             <TabsTrigger value="dashboard" className="flex items-center gap-2 py-3">
@@ -372,63 +163,32 @@ export default function AdminDashboard() {
             </TabsTrigger>
           </TabsList>
 
-          {/* Dashboard Tab */}
           <TabsContent value="dashboard">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
                 defaultValue="analytics"
                 tabs={[
-                  {
-                    value: "analytics",
-                    label: "Analytics",
-                    content: <AnalyticsDashboard />,
-                  },
+                  { value: "analytics", label: "Analytics", content: <AnalyticsDashboard /> },
                   {
                     value: "charts",
                     label: "Gráficos",
-                    content: (
-                      <AdminCharts 
-                        categoryData={stats?.categoryData || []}
-                        weeklyGrowth={stats?.weeklyGrowth || []}
-                      />
-                    ),
+                    content: <AdminCharts categoryData={stats?.categoryData || []} weeklyGrowth={stats?.weeklyGrowth || []} />,
                   },
-                  {
-                    value: "health",
-                    label: "Saúde do App",
-                    content: <AppHealthDashboard />,
-                  },
+                  { value: "health", label: "Saúde do App", content: <AppHealthDashboard /> },
                 ]}
               />
             </Suspense>
           </TabsContent>
 
-          {/* Comercial Tab */}
           <TabsContent value="comercial">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
                 defaultValue="products"
                 tabs={[
-                  {
-                    value: "products",
-                    label: "Produtos",
-                    content: <ProductManagement />,
-                  },
-                  {
-                    value: "bundles",
-                    label: "Bundles",
-                    content: <BundleManagement />,
-                  },
-                  {
-                    value: "promotions",
-                    label: "Promoções",
-                    content: <PromotionManagement />,
-                  },
-                  {
-                    value: "coupons",
-                    label: "Cupons",
-                    content: <CouponManagement />,
-                  },
+                  { value: "products", label: "Produtos", content: <ProductManagement /> },
+                  { value: "bundles", label: "Bundles", content: <BundleManagement /> },
+                  { value: "promotions", label: "Promoções", content: <PromotionManagement /> },
+                  { value: "coupons", label: "Cupons", content: <CouponManagement /> },
                   {
                     value: "hotmart",
                     label: "Hotmart",
@@ -445,89 +205,42 @@ export default function AdminDashboard() {
             </Suspense>
           </TabsContent>
 
-          {/* Comunidade Tab */}
           <TabsContent value="comunidade">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
                 defaultValue="posts"
                 tabs={[
-                  {
-                    value: "posts",
-                    label: "Moderação de Posts",
-                    content: <PostModeration />,
-                  },
-                  {
-                    value: "virtual-users",
-                    label: "Usuários Virtuais",
-                    content: <VirtualUserManagement />,
-                  },
-                  {
-                    value: "ai-engagement",
-                    label: "Automação IA",
-                    content: <AIEngagementPanel />,
-                  },
-                  {
-                    value: "cron-schedule",
-                    label: "Agendamento",
-                    content: <CronSchedulePanel />,
-                  },
-                  {
-                    value: "auto-moderation",
-                    label: "Auto-Moderação",
-                    content: <AutoModerationPanel />,
-                  },
-                  {
-                    value: "suggestions",
-                    label: "Sugestões",
-                    content: <ToolSuggestionManagement />,
-                  },
+                  { value: "posts", label: "Moderação de Posts", content: <PostModeration /> },
+                  { value: "virtual-users", label: "Usuários Virtuais", content: <VirtualUserManagement /> },
+                  { value: "ai-engagement", label: "Automação IA", content: <AIEngagementPanel /> },
+                  { value: "cron-schedule", label: "Agendamento", content: <CronSchedulePanel /> },
+                  { value: "auto-moderation", label: "Auto-Moderação", content: <AutoModerationPanel /> },
+                  { value: "suggestions", label: "Sugestões", content: <ToolSuggestionManagement /> },
                 ]}
               />
             </Suspense>
           </TabsContent>
 
-          {/* Atendimento Tab */}
           <TabsContent value="atendimento">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
                 defaultValue="tickets"
                 tabs={[
-                  {
-                    value: "tickets",
-                    label: "Tickets",
-                    content: <TicketManagement />,
-                  },
-                  {
-                    value: "notifications",
-                    label: "Notificações",
-                    content: NotificationContent,
-                  },
+                  { value: "tickets", label: "Tickets", content: <TicketManagement /> },
+                  { value: "notifications", label: "Notificações", content: <AdminNotificationCard /> },
                 ]}
               />
             </Suspense>
           </TabsContent>
 
-          {/* Sistema Tab */}
           <TabsContent value="sistema">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
                 defaultValue="users"
                 tabs={[
-                  {
-                    value: "users",
-                    label: "Usuários",
-                    content: <UserManagement />,
-                  },
-                  {
-                    value: "security",
-                    label: "Segurança",
-                    content: <SecurityAuditPanel />,
-                  },
-                  {
-                    value: "settings",
-                    label: "Configurações",
-                    content: <SiteSettings />,
-                  },
+                  { value: "users", label: "Usuários", content: <UserManagement /> },
+                  { value: "security", label: "Segurança", content: <SecurityAuditPanel /> },
+                  { value: "settings", label: "Configurações", content: <SiteSettings /> },
                 ]}
               />
             </Suspense>
