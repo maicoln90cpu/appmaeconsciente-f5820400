@@ -96,6 +96,30 @@ const freeTools = [
     slug: "mala-maternidade",
   },
   {
+    icon: Calendar,
+    title: "Calculadora de Semanas",
+    description: "Descubra sua semana exata, trimestre, DPP e o tamanho do bebê comparado com frutas.",
+    slug: "calculadora-semanas",
+  },
+  {
+    icon: ClipboardList,
+    title: "Checklist de Documentos",
+    description: "Passo-a-passo de todos os documentos do bebê: certidão, CPF, SUS, RG e mais.",
+    slug: "checklist-documentos",
+  },
+  {
+    icon: Home,
+    title: "Checklist do Quartinho",
+    description: "Monte o quarto do bebê com listas por categoria: berço, banho, segurança e decoração.",
+    slug: "checklist-quartinho",
+  },
+  {
+    icon: Timer,
+    title: "Timer de Mamada Rápido",
+    description: "Cronômetro simples para registrar mamadas sem complicação. Escolha o lado e pronto.",
+    slug: "timer-mamada",
+  },
+  {
     icon: BookOpen,
     title: "E-book Guia Rápido",
     description: "O que realmente levar para o hospital sem exageros e sem esquecer o essencial.",
@@ -114,25 +138,40 @@ const phaseToolSlugs = {
     { icon: Milk, title: "Rastreador de Amamentação", description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.", slug: "rastreador-amamentacao" },
     { icon: Moon, title: "Diário de Sono", description: "Registre padrões de sono, receba insights com IA e identifique a melhor rotina.", slug: "diario-sono" },
     { icon: Activity, title: "Recuperação Pós-Parto", description: "Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.", slug: "recuperacao-pos-parto" },
+    { icon: TrendingUp, title: "Diário de Crescimento", description: "Peso, altura e perímetro cefálico com gráficos das curvas oficiais da OMS.", slug: "diario-crescimento" },
   ],
   bebes: [
     { icon: Brain, title: "Monitor de Desenvolvimento", description: "Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.", slug: "monitor-desenvolvimento" },
+    { icon: CalendarClock, title: "Planejador de Rotina", description: "Monte a rotina diária do bebê com templates por idade e acompanhamento visual.", slug: "planejador-rotina" },
+    { icon: Utensils, title: "Introdução Alimentar", description: "Calendário BLW/Tradicional com registro de reações alérgicas e receitas por idade.", slug: "introducao-alimentar" },
+    { icon: Camera, title: "Álbum de Marcos", description: "Registre cada primeira vez do bebê com fotos, datas e timeline compartilhável.", slug: "album-marcos" },
   ],
 };
 
-// All premium tools for comparison table
+// All features for comparison table
 const comparisonFeatures = [
+  // Free tools
   { name: "Calculadora de Fraldas", free: true, premium: true, clube: true },
   { name: "Cartão de Vacinação", free: true, premium: true, clube: true },
   { name: "Mala da Maternidade", free: true, premium: true, clube: true },
+  { name: "Calculadora de Semanas", free: true, premium: true, clube: true },
+  { name: "Checklist de Documentos", free: true, premium: true, clube: true },
+  { name: "Checklist do Quartinho", free: true, premium: true, clube: true },
+  { name: "Timer de Mamada", free: true, premium: true, clube: true },
   { name: "E-book Guia Rápido", free: true, premium: true, clube: true },
+  // Premium tools
   { name: "Ferramentas de Gestação", free: false, premium: true, clube: true },
   { name: "Controle de Enxoval", free: false, premium: true, clube: true },
   { name: "Guia de Alimentação e IA", free: false, premium: true, clube: true },
   { name: "Rastreador de Amamentação", free: false, premium: true, clube: true },
   { name: "Diário de Sono", free: false, premium: true, clube: true },
   { name: "Recuperação Pós-Parto", free: false, premium: true, clube: true },
+  { name: "Diário de Crescimento (OMS)", free: false, premium: true, clube: true },
   { name: "Monitor de Desenvolvimento", free: false, premium: true, clube: true },
+  { name: "Planejador de Rotina", free: false, premium: true, clube: true },
+  { name: "Introdução Alimentar", free: false, premium: true, clube: true },
+  { name: "Álbum de Marcos", free: false, premium: true, clube: true },
+  // Clube exclusives
   { name: "Comunidade Exclusiva", free: false, premium: false, clube: true },
   { name: "Suporte Prioritário", free: false, premium: false, clube: true },
   { name: "Novidades em 1ª mão", free: false, premium: false, clube: true },
