@@ -243,8 +243,15 @@ const Landing = () => {
               className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in"
               style={{ animationDelay: '200ms' }}
             >
-              Ferramentas inteligentes, comunidade acolhedora e suporte especializado para você planejar cada detalhe com economia e sem desperdícios.
-            </p>
+               Sono, amamentação, enxoval, gestação, desenvolvimento e muito mais — com IA integrada, comunidade ativa e suporte especializado.
+             </p>
+
+             <p 
+               className="text-sm text-primary font-medium mb-8 animate-fade-in"
+               style={{ animationDelay: '250ms' }}
+             >
+               ✨ 7 dias grátis em todas as ferramentas premium
+             </p>
             
             <div 
               className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in"
