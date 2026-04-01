@@ -72,6 +72,7 @@ export const usePosts = () => {
           categoria,
           tags
         `)
+        .is("is_hidden", false)
         .order("created_at", { ascending: false })
         .range(from, to);
 
