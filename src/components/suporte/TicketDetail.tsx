@@ -59,8 +59,8 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
           <div className="flex items-start justify-between">
             <DialogTitle>{ticket.subject}</DialogTitle>
             <div className="flex items-center gap-1">
-              <div className={`h-2 w-2 rounded-full ${statusConfig[ticket.status].color}`} />
-              <span className="text-xs">{statusConfig[ticket.status].label}</span>
+              <div className={`h-2 w-2 rounded-full ${TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.dotColor ?? "bg-gray-500"}`} />
+              <span className="text-xs">{TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.label ?? ticket.status}</span>
             </div>
           </div>
         </DialogHeader>
