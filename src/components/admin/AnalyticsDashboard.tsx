@@ -45,6 +45,7 @@ export const AnalyticsDashboard = () => {
       const { count: newUsersThisMonth } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true)
         .gte("created_at", firstDayOfMonth.toISOString());
 
       // Get active products
