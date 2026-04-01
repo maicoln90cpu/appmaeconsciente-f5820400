@@ -37,13 +37,15 @@ export const AnalyticsDashboard = () => {
       // Get total users
       const { count: totalUsers } = await supabase
         .from("profiles")
-        .select("*", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true);
 
       // Get users this month
       const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
       const { count: newUsersThisMonth } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true)
         .gte("created_at", firstDayOfMonth.toISOString());
 
       // Get active products
@@ -99,6 +101,7 @@ export const AnalyticsDashboard = () => {
       const { data } = await supabase
         .from("profiles")
         .select("created_at")
+        .neq("is_virtual", true)
         .order("created_at");
 
       if (!data) return [];
@@ -168,11 +171,13 @@ export const AnalyticsDashboard = () => {
     queryFn: async () => {
       const { count: totalProfiles } = await supabase
         .from("profiles")
-        .select("*", { count: "exact", head: true });
+        .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true);
 
       const { count: completedProfiles } = await supabase
         .from("profiles")
         .select("*", { count: "exact", head: true })
+        .neq("is_virtual", true)
         .eq("perfil_completo", true);
 
       const { count: hasItems } = await supabase.rpc("count_users_with_items" as any).single();

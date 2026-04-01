@@ -14,10 +14,11 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SortableTableHead } from "@/components/ui/sortable-table-head";
+import { useSortableTable } from "@/hooks/useSortableTable";
 
 interface Product {
   id: string;
@@ -246,67 +247,75 @@ export const ProductManagement = () => {
       )}
 
       {/* Product Table */}
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Título</TableHead>
-                <TableHead>Slug</TableHead>
-                <TableHead>Preço</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Trial</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products?.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                    Nenhum produto cadastrado
-                  </TableCell>
-                </TableRow>
-              )}
-              {products?.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.title}</TableCell>
-                  <TableCell className="text-muted-foreground text-xs">/{product.slug}</TableCell>
-                  <TableCell>
-                    {product.is_free ? (
-                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">Gratuito</Badge>
-                    ) : (
-                      <span className="text-sm">R$ {product.price?.toFixed(2)}</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={product.is_active ? "default" : "outline"}>
-                      {product.is_active ? "Ativo" : "Inativo"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {product.trial_enabled ? (
-                      <Badge variant="secondary">{product.trial_days}d</Badge>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex gap-1 justify-end">
-                      <Button variant="ghost" size="icon" onClick={() => handleEdit(product)} disabled={isEditing}>
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => deleteMutation.mutate(product.id)} disabled={isEditing} className="text-destructive hover:text-destructive">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <ProductTable products={products} isEditing={isEditing} onEdit={handleEdit} onDelete={(id) => deleteMutation.mutate(id)} />
     </div>
+  );
+};
+
+const ProductTable = ({ products, isEditing, onEdit, onDelete }: { products: Product[] | undefined; isEditing: boolean; onEdit: (p: Product) => void; onDelete: (id: string) => void }) => {
+  const { sortedData, sortKey, sortDirection, handleSort } = useSortableTable(products);
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <SortableTableHead sortKey="title" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Título</SortableTableHead>
+              <SortableTableHead sortKey="slug" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Slug</SortableTableHead>
+              <SortableTableHead sortKey="price" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Preço</SortableTableHead>
+              <SortableTableHead sortKey="is_active" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Status</SortableTableHead>
+              <SortableTableHead sortKey="trial_enabled" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Trial</SortableTableHead>
+              <SortableTableHead className="text-right">Ações</SortableTableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {(!sortedData || sortedData.length === 0) && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                  Nenhum produto cadastrado
+                </TableCell>
+              </TableRow>
+            )}
+            {sortedData?.map((product) => (
+              <TableRow key={product.id}>
+                <TableCell className="font-medium">{product.title}</TableCell>
+                <TableCell className="text-muted-foreground text-xs">/{product.slug}</TableCell>
+                <TableCell>
+                  {product.is_free ? (
+                    <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">Gratuito</Badge>
+                  ) : (
+                    <span className="text-sm">R$ {product.price?.toFixed(2)}</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Badge variant={product.is_active ? "default" : "outline"}>
+                    {product.is_active ? "Ativo" : "Inativo"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {product.trial_enabled ? (
+                    <Badge variant="secondary">{product.trial_days}d</Badge>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">—</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex gap-1 justify-end">
+                    <Button variant="ghost" size="icon" onClick={() => onEdit(product)} disabled={isEditing}>
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => onDelete(product.id)} disabled={isEditing} className="text-destructive hover:text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 };
 
