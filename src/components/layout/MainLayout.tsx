@@ -279,7 +279,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             <div className="md:col-span-1">
               <Link to="/" className="inline-block">
                 <span className="text-lg font-display font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-                  Maternidade Consciente
+                  Mãe Consciente
                 </span>
               </Link>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
