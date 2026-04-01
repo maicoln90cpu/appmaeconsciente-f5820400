@@ -135,8 +135,8 @@ export const TicketManagement = () => {
         </TableHeader>
         <TableBody>
           {sortedData?.map((ticket) => (
-            <>
-              <TableRow key={ticket.id}>
+            <React.Fragment key={ticket.id}>
+              <TableRow>
                 <TableCell className="font-medium max-w-[200px] truncate">{ticket.subject}</TableCell>
                 <TableCell>{ticket.name}</TableCell>
                 <TableCell className="max-w-[180px] truncate">{ticket.email}</TableCell>
