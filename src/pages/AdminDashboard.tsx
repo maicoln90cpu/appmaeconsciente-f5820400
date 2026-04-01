@@ -44,6 +44,8 @@ const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then(m =
 const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then(m => ({ default: m.AppHealthDashboard })));
 const AIEngagementPanel = lazy(() => import("@/components/admin/AIEngagementPanel").then(m => ({ default: m.AIEngagementPanel })));
 const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserManagement").then(m => ({ default: m.VirtualUserManagement })));
+const AutoModerationPanel = lazy(() => import("@/components/admin/AutoModerationPanel").then(m => ({ default: m.AutoModerationPanel })));
+const CronSchedulePanel = lazy(() => import("@/components/admin/CronSchedulePanel").then(m => ({ default: m.CronSchedulePanel })));
 
 // Loading fallback component
 const TabLoading = () => (
