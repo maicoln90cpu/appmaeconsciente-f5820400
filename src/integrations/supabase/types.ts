@@ -1485,6 +1485,7 @@ export type Database = {
           auto_publish: boolean | null
           categories_list: Json | null
           created_at: string
+          cron_days: number[] | null
           cron_schedule: string | null
           default_author: string | null
           id: string
@@ -1500,6 +1501,7 @@ export type Database = {
           auto_publish?: boolean | null
           categories_list?: Json | null
           created_at?: string
+          cron_days?: number[] | null
           cron_schedule?: string | null
           default_author?: string | null
           id?: string
@@ -1515,6 +1517,7 @@ export type Database = {
           auto_publish?: boolean | null
           categories_list?: Json | null
           created_at?: string
+          cron_days?: number[] | null
           cron_schedule?: string | null
           default_author?: string | null
           id?: string
