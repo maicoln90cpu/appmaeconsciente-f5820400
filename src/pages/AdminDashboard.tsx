@@ -214,6 +214,20 @@ export default function AdminDashboard() {
             </Suspense>
           </TabsContent>
 
+          <TabsContent value="blog">
+            <Suspense fallback={<TabLoading />}>
+              <AdminSubTabs
+                defaultValue="posts"
+                tabs={[
+                  { value: "posts", label: "Posts", content: <BlogPostManagement /> },
+                  { value: "settings", label: "Configurações", content: <BlogSettingsPanel /> },
+                  { value: "images", label: "Estilos de Imagem", content: <BlogImagePrompts /> },
+                  { value: "logs", label: "Logs de Geração", content: <BlogGenerationLogs /> },
+                ]}
+              />
+            </Suspense>
+          </TabsContent>
+
           <TabsContent value="comunidade">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
