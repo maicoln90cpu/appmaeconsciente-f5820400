@@ -5099,6 +5099,7 @@ export type Database = {
       }
       increment_blog_views: { Args: { p_slug: string }; Returns: undefined }
       refresh_leaderboard: { Args: never; Returns: undefined }
+      sync_blog_cron_schedule: { Args: never; Returns: undefined }
       sync_cron_schedule: { Args: never; Returns: undefined }
       xp_for_next_level: { Args: { current_level: number }; Returns: number }
     }
