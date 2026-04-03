@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Calendar, Baby, ArrowLeft, Share2, Sparkles } from "lucide-react";
+import { Calendar, Baby, ArrowLeft, Share2, Sparkles, Hourglass } from "lucide-react";
 import { differenceInDays, addDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
