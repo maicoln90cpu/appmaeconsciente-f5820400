@@ -50,9 +50,9 @@ export const BlogGenerationLogs = () => {
   const totalTokens = (logs || []).reduce((sum, l) => sum + (l.total_tokens || 0), 0);
 
   const statusIcon = (status: string) => {
-    if (status === "success") return <CheckCircle className="w-4 h-4 text-emerald-500" />;
+    if (status === "success") return <CheckCircle className="w-4 h-4 text-primary" />;
     if (status === "error") return <XCircle className="w-4 h-4 text-destructive" />;
-    return <Clock className="w-4 h-4 text-amber-500" />;
+    return <Clock className="w-4 h-4 text-muted-foreground" />;
   };
 
   if (isLoading) return <div className="flex justify-center py-8"><RefreshCw className="animate-spin h-5 w-5" /></div>;
