@@ -46,6 +46,7 @@ const BlogPostManagement = lazy(() => import("@/components/admin/BlogPostManagem
 const BlogSettingsPanel = lazy(() => import("@/components/admin/BlogSettingsPanel").then((m) => ({ default: m.BlogSettingsPanel })));
 const BlogGenerationLogs = lazy(() => import("@/components/admin/BlogGenerationLogs").then((m) => ({ default: m.BlogGenerationLogs })));
 const BlogImagePrompts = lazy(() => import("@/components/admin/BlogImagePrompts").then((m) => ({ default: m.BlogImagePrompts })));
+const BlogCronPanel = lazy(() => import("@/components/admin/BlogCronPanel").then((m) => ({ default: m.BlogCronPanel })));
 
 const TabLoading = () => (
   <div className="flex items-center justify-center py-12">
