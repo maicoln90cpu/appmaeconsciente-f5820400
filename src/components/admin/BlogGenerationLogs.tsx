@@ -76,7 +76,7 @@ export const BlogGenerationLogs = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[40px]"></TableHead>
-                  <SortableTableHead field="created_at" label="Data" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} className="w-[120px]" />
+                  <SortableTableHead sortKey="created_at" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={handleSort} className="w-[120px]">Data</SortableTableHead>
                   <TableHead>Modelo</TableHead>
                   <TableHead className="w-[90px]">Tokens</TableHead>
                   <TableHead className="w-[80px]">Custo</TableHead>

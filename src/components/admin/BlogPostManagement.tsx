@@ -214,10 +214,10 @@ export const BlogPostManagement = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <SortableTableHead field="title" label="Título" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} />
+                    <SortableTableHead sortKey="title" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={handleSort}>Título</SortableTableHead>
                     <TableHead className="w-[100px]">Status</TableHead>
-                    <SortableTableHead field="views_count" label="Views" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} className="w-[80px]" />
-                    <SortableTableHead field="created_at" label="Criado" sortField={sortField} sortDirection={sortDirection} onSort={handleSort} className="w-[100px]" />
+                    <SortableTableHead sortKey="views_count" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={handleSort} className="w-[80px]">Views</SortableTableHead>
+                    <SortableTableHead sortKey="created_at" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={handleSort} className="w-[100px]">Criado</SortableTableHead>
                     <TableHead className="w-[140px] text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
