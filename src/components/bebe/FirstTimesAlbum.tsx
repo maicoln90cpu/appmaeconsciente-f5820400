@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Camera, Plus, Heart, MapPin, Users, Trash2, Star, Calendar, Edit2 } from "lucide-react";
+import { Camera, Plus, Heart, MapPin, Users, Trash2, Star, Calendar, Edit2, Share2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useBabyFirstTimes } from "@/hooks/useBabyGamification";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface FirstTimesAlbumProps {
   babyProfileId?: string;
@@ -326,6 +327,22 @@ interface FirstTimeCardProps {
   onDelete: (id: string) => void;
 }
 
+const handleShareMilestone = async (item: FirstTimeCardProps["item"], getEventIcon: (type: string) => string) => {
+  const icon = getEventIcon(item.event_type);
+  const dateStr = format(new Date(item.event_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+  const text = `${icon} ${item.title}\n📅 ${dateStr}${item.location ? `\n📍 ${item.location}` : ""}${item.description ? `\n\n${item.description}` : ""}\n\n✨ Registrado no Mãe Consciente`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: item.title, text });
+      return;
+    } catch {}
+  }
+  
+  await navigator.clipboard.writeText(text);
+  toast.success("Texto copiado! Cole onde quiser compartilhar 💕");
+};
+
 const FirstTimeCard = ({ item, getEventIcon, onToggleFavorite, onDelete }: FirstTimeCardProps) => {
   const moodIcon = moodOptions.find((m) => m.value === item.mood)?.icon;
 
@@ -371,6 +388,15 @@ const FirstTimeCard = ({ item, getEventIcon, onToggleFavorite, onDelete }: First
           </div>
         </div>
         <div className="flex flex-col gap-1">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8"
+            onClick={() => handleShareMilestone(item, getEventIcon)}
+            title="Compartilhar"
+          >
+            <Share2 className="h-4 w-4 text-muted-foreground" />
+          </Button>
           <Button
             size="icon"
             variant="ghost"

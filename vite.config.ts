@@ -78,7 +78,8 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,webp,jpg,jpeg}"],
+      globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,webp,jpg,jpeg}"],
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         // CORREÇÃO CRÍTICA: Usar index.html (arquivo real pré-cacheado) ao invés de /offline (rota React)
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api/, /^\/auth/],

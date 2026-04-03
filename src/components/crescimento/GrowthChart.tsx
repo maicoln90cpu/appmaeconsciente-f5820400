@@ -31,9 +31,10 @@ import {
   WHO_HEIGHT_GIRLS,
 } from "@/hooks/useGrowthMeasurements";
 import { useVaccination } from "@/hooks/useVaccination";
-import { Plus, Ruler, Scale, TrendingUp, Loader2, Trash2 } from "lucide-react";
+import { Plus, Ruler, Scale, TrendingUp, Loader2, Trash2, FileDown } from "lucide-react";
 import { format, differenceInMonths, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface GrowthChartProps {
@@ -397,7 +398,66 @@ export const GrowthChart = ({ babyProfileId }: GrowthChartProps) => {
         {/* Measurements History */}
         {measurements.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium mb-3">Histórico de Medições</h4>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-medium">Histórico de Medições</h4>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5"
+                onClick={async () => {
+                  try {
+                    const { default: jsPDF } = await import("jspdf");
+                    const { default: autoTable } = await import("jspdf-autotable");
+                    const doc = new jsPDF();
+                    
+                    doc.setFontSize(18);
+                    doc.text("Relatório de Crescimento", 14, 22);
+                    doc.setFontSize(10);
+                    doc.text(`Gerado em ${format(new Date(), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}`, 14, 30);
+                    if (selectedProfile) {
+                      doc.text(`Bebê: ${selectedProfile.baby_name} | Sexo: ${gender === "male" ? "Masculino" : "Feminino"}`, 14, 36);
+                    }
+
+                    // Latest stats
+                    if (latestMeasurement) {
+                      doc.setFontSize(12);
+                      doc.text("Última Medição", 14, 46);
+                      doc.setFontSize(10);
+                      const stats = [];
+                      if (latestMeasurement.weight_kg) stats.push(`Peso: ${latestMeasurement.weight_kg} kg${percentiles?.weight ? ` (Percentil ${percentiles.weight})` : ""}`);
+                      if (latestMeasurement.height_cm) stats.push(`Altura: ${latestMeasurement.height_cm} cm${percentiles?.height ? ` (Percentil ${percentiles.height})` : ""}`);
+                      if (latestMeasurement.head_circumference_cm) stats.push(`P. Cefálico: ${latestMeasurement.head_circumference_cm} cm`);
+                      doc.text(stats.join("  |  "), 14, 52);
+                    }
+
+                    // Table
+                    const tableData = [...measurements].reverse().map(m => [
+                      format(parseISO(m.measurement_date), "dd/MM/yyyy"),
+                      m.weight_kg ? `${m.weight_kg} kg` : "-",
+                      m.height_cm ? `${m.height_cm} cm` : "-",
+                      m.head_circumference_cm ? `${m.head_circumference_cm} cm` : "-",
+                      m.notes || "",
+                    ]);
+
+                    autoTable(doc, {
+                      startY: 58,
+                      head: [["Data", "Peso", "Altura", "P. Cefálico", "Observações"]],
+                      body: tableData,
+                      styles: { fontSize: 9 },
+                      headStyles: { fillColor: [236, 72, 153] },
+                    });
+
+                    doc.save("relatorio-crescimento.pdf");
+                    toast.success("PDF exportado com sucesso!");
+                  } catch (err) {
+                    toast.error("Erro ao gerar PDF");
+                  }
+                }}
+              >
+                <FileDown className="h-3.5 w-3.5" />
+                Exportar PDF
+              </Button>
+            </div>
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {[...measurements].reverse().map((m) => (
                 <div
