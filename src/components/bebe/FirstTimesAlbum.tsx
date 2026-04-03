@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Camera, Plus, Heart, MapPin, Users, Trash2, Star, Calendar, Edit2 } from "lucide-react";
+import { Camera, Plus, Heart, MapPin, Users, Trash2, Star, Calendar, Edit2, Share2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useBabyFirstTimes } from "@/hooks/useBabyGamification";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface FirstTimesAlbumProps {
   babyProfileId?: string;
