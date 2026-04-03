@@ -84,6 +84,7 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
   } = useBabyRoutines(babyProfileId);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const [selectedDays, setSelectedDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
   const [formData, setFormData] = useState({
     title: "",
@@ -92,6 +93,23 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
     duration_minutes: 30,
     notes: "",
   });
+
+  const applyTemplate = (ageKey: keyof typeof AGE_TEMPLATES) => {
+    const template = AGE_TEMPLATES[ageKey];
+    template.routines.forEach(r => {
+      addRoutine({
+        baby_profile_id: babyProfileId,
+        title: r.title,
+        routine_type: r.routine_type,
+        scheduled_time: r.scheduled_time,
+        duration_minutes: r.duration_minutes,
+        days_of_week: [0, 1, 2, 3, 4, 5, 6],
+        notes: null,
+      });
+    });
+    setShowTemplates(false);
+    toast.success(`Template "${template.label}" aplicado com ${template.routines.length} rotinas!`);
+  };
 
   const handleSubmit = () => {
     addRoutine({
