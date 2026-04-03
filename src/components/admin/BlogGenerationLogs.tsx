@@ -62,7 +62,7 @@ export const BlogGenerationLogs = () => {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold">{logs?.length || 0}</p><p className="text-xs text-muted-foreground">Gerações Total</p></CardContent></Card>
-        <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-emerald-600">{successCount}</p><p className="text-xs text-muted-foreground">Sucesso</p></CardContent></Card>
+        <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-primary">{successCount}</p><p className="text-xs text-muted-foreground">Sucesso</p></CardContent></Card>
         <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold text-destructive">{errorCount}</p><p className="text-xs text-muted-foreground">Erros</p></CardContent></Card>
         <Card><CardContent className="p-4 text-center"><p className="text-2xl font-bold">${totalCost.toFixed(4)}</p><p className="text-xs text-muted-foreground">Custo Total</p></CardContent></Card>
       </div>
