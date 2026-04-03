@@ -81,6 +81,16 @@ const ChecklistQuartinho = () => {
   const [loading, setLoading] = useState(true);
   const [newItemText, setNewItemText] = useState<Record<string, string>>({});
   const [filterEssential, setFilterEssential] = useState(false);
+  const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
+  const [editingPrice, setEditingPrice] = useState<string | null>(null);
+
+  // Carregar preços personalizados
+  useEffect(() => {
+    const saved = localStorage.getItem("quartinho_custom_prices");
+    if (saved) {
+      try { setCustomPrices(JSON.parse(saved)); } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
@@ -129,7 +139,17 @@ const ChecklistQuartinho = () => {
   };
 
   const getItemMeta = (name: string): ItemMeta => {
-    return ITEM_META[name] || { price: 0, priority: "optional" as Priority };
+    const base = ITEM_META[name] || { price: 0, priority: "optional" as Priority };
+    const customPrice = customPrices[name];
+    return customPrice !== undefined ? { ...base, price: customPrice } : base;
+  };
+
+  const updateCustomPrice = (name: string, price: number) => {
+    const updated = { ...customPrices, [name]: price };
+    setCustomPrices(updated);
+    localStorage.setItem("quartinho_custom_prices", JSON.stringify(updated));
+    setEditingPrice(null);
+    toast.success("Preço atualizado!");
   };
 
   const totalItems = items.length;
@@ -246,10 +266,26 @@ const ChecklistQuartinho = () => {
                       ) : (
                         <Badge variant="secondary" className="text-[9px]">Opcional</Badge>
                       )}
-                      {meta.price > 0 && (
-                        <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                          ~R${meta.price}
-                        </span>
+                      {editingPrice === item.item_name ? (
+                        <Input
+                          type="number"
+                          defaultValue={meta.price}
+                          className="h-6 w-20 text-[10px] px-1"
+                          autoFocus
+                          onBlur={(e) => updateCustomPrice(item.item_name, Number(e.target.value) || 0)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") updateCustomPrice(item.item_name, Number((e.target as HTMLInputElement).value) || 0);
+                            if (e.key === "Escape") setEditingPrice(null);
+                          }}
+                        />
+                      ) : (
+                        <button
+                          onClick={() => setEditingPrice(item.item_name)}
+                          className="text-[10px] text-muted-foreground whitespace-nowrap hover:text-primary hover:underline cursor-pointer transition-colors"
+                          title="Clique para editar o preço"
+                        >
+                          {customPrices[item.item_name] !== undefined ? "R$" : "~R$"}{meta.price}
+                        </button>
                       )}
                       {item.is_custom && <Badge variant="secondary" className="text-[9px]">Custom</Badge>}
                     </div>
