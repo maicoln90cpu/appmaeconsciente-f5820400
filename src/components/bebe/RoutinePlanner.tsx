@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,9 +9,62 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
-import { Plus, CalendarClock, CheckCircle2, Circle, Trash2 } from "lucide-react";
+import { Plus, CalendarClock, CheckCircle2, Circle, Trash2, Sparkles } from "lucide-react";
 import { useBabyRoutines, ROUTINE_TYPES, DAYS_OF_WEEK } from "@/hooks/useBabyRoutines";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+const AGE_TEMPLATES = {
+  "0-3": {
+    label: "0–3 meses",
+    description: "Recém-nascido: foco em alimentação e sono frequentes",
+    routines: [
+      { title: "Mamada da madrugada", routine_type: "feeding", scheduled_time: "03:00", duration_minutes: 30 },
+      { title: "Mamada da manhã", routine_type: "feeding", scheduled_time: "06:00", duration_minutes: 30 },
+      { title: "Soneca da manhã", routine_type: "sleep", scheduled_time: "08:00", duration_minutes: 90 },
+      { title: "Mamada", routine_type: "feeding", scheduled_time: "09:30", duration_minutes: 30 },
+      { title: "Banho", routine_type: "bath", scheduled_time: "10:00", duration_minutes: 15 },
+      { title: "Soneca da tarde", routine_type: "sleep", scheduled_time: "12:00", duration_minutes: 120 },
+      { title: "Mamada da tarde", routine_type: "feeding", scheduled_time: "14:00", duration_minutes: 30 },
+      { title: "Passeio leve", routine_type: "play", scheduled_time: "16:00", duration_minutes: 20 },
+      { title: "Mamada da noite", routine_type: "feeding", scheduled_time: "18:00", duration_minutes: 30 },
+      { title: "Rotina de sono", routine_type: "sleep", scheduled_time: "19:30", duration_minutes: 30 },
+    ],
+  },
+  "3-6": {
+    label: "3–6 meses",
+    description: "Mais interação: brincadeiras e sonecas mais definidas",
+    routines: [
+      { title: "Mamada da manhã", routine_type: "feeding", scheduled_time: "06:30", duration_minutes: 25 },
+      { title: "Brincadeira no tapete", routine_type: "play", scheduled_time: "07:30", duration_minutes: 30 },
+      { title: "Soneca da manhã", routine_type: "sleep", scheduled_time: "09:00", duration_minutes: 60 },
+      { title: "Mamada", routine_type: "feeding", scheduled_time: "10:00", duration_minutes: 25 },
+      { title: "Estímulo sensorial", routine_type: "play", scheduled_time: "11:00", duration_minutes: 20 },
+      { title: "Soneca da tarde", routine_type: "sleep", scheduled_time: "12:30", duration_minutes: 90 },
+      { title: "Mamada da tarde", routine_type: "feeding", scheduled_time: "14:00", duration_minutes: 25 },
+      { title: "Banho", routine_type: "bath", scheduled_time: "17:00", duration_minutes: 20 },
+      { title: "Mamada da noite", routine_type: "feeding", scheduled_time: "18:30", duration_minutes: 25 },
+      { title: "Hora de dormir", routine_type: "sleep", scheduled_time: "19:00", duration_minutes: 30 },
+    ],
+  },
+  "6-12": {
+    label: "6–12 meses",
+    description: "Introdução alimentar, menos sonecas, mais brincadeiras",
+    routines: [
+      { title: "Mamada + café da manhã", routine_type: "feeding", scheduled_time: "07:00", duration_minutes: 30 },
+      { title: "Brincadeira livre", routine_type: "play", scheduled_time: "08:00", duration_minutes: 40 },
+      { title: "Soneca da manhã", routine_type: "sleep", scheduled_time: "09:30", duration_minutes: 60 },
+      { title: "Lanche da manhã", routine_type: "feeding", scheduled_time: "10:30", duration_minutes: 20 },
+      { title: "Passeio / ar livre", routine_type: "play", scheduled_time: "11:00", duration_minutes: 30 },
+      { title: "Almoço", routine_type: "feeding", scheduled_time: "12:00", duration_minutes: 30 },
+      { title: "Soneca da tarde", routine_type: "sleep", scheduled_time: "13:00", duration_minutes: 90 },
+      { title: "Lanche da tarde", routine_type: "feeding", scheduled_time: "15:00", duration_minutes: 20 },
+      { title: "Brincadeira / estimulação", routine_type: "play", scheduled_time: "16:00", duration_minutes: 30 },
+      { title: "Jantar", routine_type: "feeding", scheduled_time: "17:30", duration_minutes: 30 },
+      { title: "Banho e rotina de sono", routine_type: "bath", scheduled_time: "18:30", duration_minutes: 30 },
+    ],
+  },
+} as const;
 
 interface RoutinePlannerProps {
   babyProfileId?: string;
