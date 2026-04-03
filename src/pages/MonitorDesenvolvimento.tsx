@@ -51,6 +51,16 @@ const MonitorDesenvolvimento = () => {
     if (!hasSeenOnboarding && currentProfile) {
       setShowOnboarding(true);
     }
+    // Load saved alert settings
+    if (currentProfile) {
+      const storageKey = `dev_alert_settings_${currentProfile.id}`;
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        try {
+          setAlertSettings(JSON.parse(saved));
+        } catch {}
+      }
+    }
   }, [currentProfile]);
 
   const handleOnboardingComplete = () => {

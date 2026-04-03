@@ -31,9 +31,10 @@ import {
   WHO_HEIGHT_GIRLS,
 } from "@/hooks/useGrowthMeasurements";
 import { useVaccination } from "@/hooks/useVaccination";
-import { Plus, Ruler, Scale, TrendingUp, Loader2, Trash2 } from "lucide-react";
+import { Plus, Ruler, Scale, TrendingUp, Loader2, Trash2, FileDown } from "lucide-react";
 import { format, differenceInMonths, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface GrowthChartProps {
