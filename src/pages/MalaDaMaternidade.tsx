@@ -238,6 +238,20 @@ const MalaDaMaternidade = () => {
           </TabsContent>
 
           <TabsContent value="checklist" className="space-y-6">
+            {/* Botão marcar todos essenciais */}
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleMarkEssentials}
+                className="gap-2"
+                disabled={items.filter((i) => !i.checked).length === 0}
+              >
+                <CheckCheck className="h-4 w-4" />
+                Marcar todos como prontos
+              </Button>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
