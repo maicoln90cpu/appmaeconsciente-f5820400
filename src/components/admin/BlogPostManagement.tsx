@@ -45,6 +45,7 @@ export const BlogPostManagement = () => {
   const [editPost, setEditPost] = useState<BlogPost | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editExcerpt, setEditExcerpt] = useState("");
+  const [editContent, setEditContent] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [customTopic, setCustomTopic] = useState("");
   const [showTopicDialog, setShowTopicDialog] = useState(false);
