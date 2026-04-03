@@ -117,6 +117,8 @@ const App = () => {
             <Route path="/" element={<div className="animate-fade-in"><Landing /></div>} />
             <Route path="/auth" element={<div className="animate-fade-in"><AuthPage /></div>} />
             <Route path="/shared/:token" element={<div className="animate-fade-in"><SharedEnxoval /></div>} />
+            <Route path="/blog" element={<div className="animate-fade-in"><Blog /></div>} />
+            <Route path="/blog/:slug" element={<div className="animate-fade-in"><BlogPost /></div>} />
             
             {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute />}>
