@@ -181,6 +181,34 @@ const CalculadoraSemanas = () => {
             </CardContent>
           </Card>
 
+          {/* Countdown visual */}
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 mb-4">
+                <Hourglass className="h-5 w-5 text-primary" />
+                <p className="font-semibold text-sm">Contagem Regressiva</p>
+              </div>
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="p-3 rounded-lg bg-background/80 border">
+                  <p className="text-3xl font-bold text-primary">{Math.max(0, result.daysRemaining)}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">dias</p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/80 border">
+                  <p className="text-3xl font-bold text-primary">{Math.max(0, 40 - result.weeks)}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">semanas</p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/80 border">
+                  <p className="text-3xl font-bold text-primary">{Math.max(0, Math.ceil((40 - result.weeks) / 4.33))}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">meses</p>
+                </div>
+              </div>
+              <Progress value={result.progressPercent} className="h-2 mt-4" />
+              <p className="text-center text-[11px] text-muted-foreground mt-2">
+                {result.progressPercent.toFixed(0)}% concluída • DPP: {format(result.dpp, "dd/MM/yyyy", { locale: ptBR })}
+              </p>
+            </CardContent>
+          </Card>
+
           <div className="grid grid-cols-2 gap-4">
             {/* DPP */}
             <Card>
@@ -188,7 +216,6 @@ const CalculadoraSemanas = () => {
                 <Baby className="h-8 w-8 mx-auto text-pink-500" />
                 <p className="text-xs text-muted-foreground">Data Provável do Parto</p>
                 <p className="font-bold text-lg">{format(result.dpp, "dd/MM/yyyy", { locale: ptBR })}</p>
-                <p className="text-xs text-muted-foreground">Faltam {Math.max(0, result.daysRemaining)} dias</p>
               </CardContent>
             </Card>
 
