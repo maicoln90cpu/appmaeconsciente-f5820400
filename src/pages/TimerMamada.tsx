@@ -122,11 +122,45 @@ const TimerMamada = () => {
         </div>
       </div>
 
+      {/* Configuração de intervalo */}
+      <div className="flex items-center justify-between">
+        <Button variant="ghost" size="sm" onClick={() => setShowSettings(!showSettings)} className="text-xs gap-1.5 text-muted-foreground">
+          <Clock className="h-3.5 w-3.5" />
+          Alerta: {alertIntervalHours}h
+        </Button>
+      </div>
+      {showSettings && (
+        <Card className="border-dashed">
+          <CardContent className="py-3 space-y-2">
+            <p className="text-xs font-medium">Intervalo de alerta entre mamadas</p>
+            <div className="flex items-center gap-2">
+              {[1.5, 2, 2.5, 3, 4].map((h) => (
+                <Button
+                  key={h}
+                  size="sm"
+                  variant={alertIntervalHours === h ? "default" : "outline"}
+                  className="text-xs h-8 px-3"
+                  onClick={() => {
+                    setAlertIntervalHours(h);
+                    localStorage.setItem("feeding_alert_interval", String(h));
+                    toast.success(`Alerta ajustado para ${h}h`);
+                    setShowSettings(false);
+                  }}
+                >
+                  {h}h
+                </Button>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground">Você será avisada quando passar desse tempo desde a última mamada</p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Alerta de intervalo */}
       {timeSinceLastFeeding !== null && !isRunning && !saved && (
-        <Card className={`border ${timeSinceLastFeeding >= 3 ? "border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30" : "border-muted"}`}>
+        <Card className={`border ${timeSinceLastFeeding >= alertIntervalHours ? "border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30" : "border-muted"}`}>
           <CardContent className="py-3 flex items-center gap-3">
-            {timeSinceLastFeeding >= 3 ? (
+            {timeSinceLastFeeding >= alertIntervalHours ? (
               <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
             ) : (
               <Clock className="h-5 w-5 text-muted-foreground shrink-0" />
@@ -138,9 +172,9 @@ const TimerMamada = () => {
                   {formatDistanceToNow(new Date(lastFeeding.start_time), { addSuffix: true, locale: ptBR })}
                 </span>
               </p>
-              {timeSinceLastFeeding >= 3 && (
+              {timeSinceLastFeeding >= alertIntervalHours && (
                 <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
-                  Já se passaram mais de 3 horas. Considere oferecer o peito 💛
+                  Já se passaram mais de {alertIntervalHours}h. Considere oferecer o peito 💛
                 </p>
               )}
             </div>
