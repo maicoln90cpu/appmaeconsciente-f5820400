@@ -275,11 +275,11 @@ export const BlogPostManagement = () => {
 
       {/* Edit Dialog */}
       <Dialog open={!!editPost} onOpenChange={(open) => !open && setEditPost(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Editar Post</DialogTitle></DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div><Label>Título</Label><Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} /></div>
-            <div><Label>Resumo</Label><Textarea value={editExcerpt} onChange={(e) => setEditExcerpt(e.target.value)} rows={3} /></div>
+            <div><Label>Resumo</Label><Textarea value={editExcerpt} onChange={(e) => setEditExcerpt(e.target.value)} rows={2} /></div>
             <div>
               <Label>Status</Label>
               <Select value={editStatus} onValueChange={setEditStatus}>
@@ -291,10 +291,16 @@ export const BlogPostManagement = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label>Conteúdo</Label>
+              <Suspense fallback={<div className="h-[400px] flex items-center justify-center border rounded-lg"><RefreshCw className="animate-spin h-5 w-5" /></div>}>
+                <BlogRichTextEditor content={editContent} onChange={setEditContent} />
+              </Suspense>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditPost(null)}>Cancelar</Button>
-            <Button onClick={() => editPost && updateMutation.mutate({ id: editPost.id, title: editTitle, excerpt: editExcerpt, status: editStatus })}>
+            <Button onClick={() => editPost && updateMutation.mutate({ id: editPost.id, title: editTitle, excerpt: editExcerpt, content: editContent, status: editStatus })}>
               Salvar
             </Button>
           </DialogFooter>
