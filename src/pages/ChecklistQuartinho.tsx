@@ -139,7 +139,17 @@ const ChecklistQuartinho = () => {
   };
 
   const getItemMeta = (name: string): ItemMeta => {
-    return ITEM_META[name] || { price: 0, priority: "optional" as Priority };
+    const base = ITEM_META[name] || { price: 0, priority: "optional" as Priority };
+    const customPrice = customPrices[name];
+    return customPrice !== undefined ? { ...base, price: customPrice } : base;
+  };
+
+  const updateCustomPrice = (name: string, price: number) => {
+    const updated = { ...customPrices, [name]: price };
+    setCustomPrices(updated);
+    localStorage.setItem("quartinho_custom_prices", JSON.stringify(updated));
+    setEditingPrice(null);
+    toast.success("Preço atualizado!");
   };
 
   const totalItems = items.length;
