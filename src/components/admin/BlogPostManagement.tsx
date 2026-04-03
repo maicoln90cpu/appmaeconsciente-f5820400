@@ -59,10 +59,9 @@ export const BlogPostManagement = () => {
     },
   });
 
-  const { sortedData, sortField, sortDirection, handleSort } = useSortableTable(
+  const { sortedData, sortKey, sortDirection, handleSort } = useSortableTable(
     posts || [],
-    "created_at",
-    "desc"
+    { key: "created_at", direction: "desc" }
   );
 
   const filtered = sortedData.filter((p) => {
