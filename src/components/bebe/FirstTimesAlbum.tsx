@@ -327,6 +327,22 @@ interface FirstTimeCardProps {
   onDelete: (id: string) => void;
 }
 
+const handleShareMilestone = async (item: FirstTimeCardProps["item"], getEventIcon: (type: string) => string) => {
+  const icon = getEventIcon(item.event_type);
+  const dateStr = format(new Date(item.event_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
+  const text = `${icon} ${item.title}\n📅 ${dateStr}${item.location ? `\n📍 ${item.location}` : ""}${item.description ? `\n\n${item.description}` : ""}\n\n✨ Registrado no Mãe Consciente`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: item.title, text });
+      return;
+    } catch {}
+  }
+  
+  await navigator.clipboard.writeText(text);
+  toast.success("Texto copiado! Cole onde quiser compartilhar 💕");
+};
+
 const FirstTimeCard = ({ item, getEventIcon, onToggleFavorite, onDelete }: FirstTimeCardProps) => {
   const moodIcon = moodOptions.find((m) => m.value === item.mood)?.icon;
 
