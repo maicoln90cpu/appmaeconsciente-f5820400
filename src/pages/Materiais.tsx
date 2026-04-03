@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
-import { Loader2, Star, Lightbulb, Filter } from "lucide-react";
+import { Loader2, Star, Lightbulb, Filter, FileText, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProfile } from "@/hooks/useProfile";
