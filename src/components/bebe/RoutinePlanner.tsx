@@ -325,6 +325,7 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
               </div>
             </DialogContent>
           </Dialog>
+          </div>
         </CardHeader>
 
         <CardContent>
