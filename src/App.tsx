@@ -58,6 +58,8 @@ const DiarioCrescimento = lazyWithRetry(() => import("./pages/DiarioCrescimento"
 const PlanejadorRotina = lazyWithRetry(() => import("./pages/PlanejadorRotina"));
 const IntroducaoAlimentar = lazyWithRetry(() => import("./pages/IntroducaoAlimentar"));
 const AlbumMarcos = lazyWithRetry(() => import("./pages/AlbumMarcos"));
+const Blog = lazyWithRetry(() => import("./pages/Blog"));
+const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
 const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -115,6 +117,8 @@ const App = () => {
             <Route path="/" element={<div className="animate-fade-in"><Landing /></div>} />
             <Route path="/auth" element={<div className="animate-fade-in"><AuthPage /></div>} />
             <Route path="/shared/:token" element={<div className="animate-fade-in"><SharedEnxoval /></div>} />
+            <Route path="/blog" element={<div className="animate-fade-in"><Blog /></div>} />
+            <Route path="/blog/:slug" element={<div className="animate-fade-in"><BlogPost /></div>} />
             
             {/* Protected Routes with Layout */}
             <Route element={<ProtectedRoute />}>

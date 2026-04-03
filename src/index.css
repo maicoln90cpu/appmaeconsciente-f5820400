@@ -664,4 +664,104 @@
   .reduce-motion {
     @apply motion-reduce:transition-none motion-reduce:animate-none;
   }
+
+  /* ============================================
+     BLOG ARTICLE TYPOGRAPHY
+     ============================================ */
+
+  .blog-article-content {
+    font-size: 1.125rem;
+    line-height: 1.85;
+    color: hsl(var(--foreground));
+  }
+
+  .blog-article-content h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+    color: hsl(var(--foreground));
+    scroll-margin-top: 5rem;
+  }
+
+  .blog-article-content h3 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.35;
+    color: hsl(var(--foreground));
+    scroll-margin-top: 5rem;
+  }
+
+  .blog-article-content p {
+    margin-bottom: 1.25rem;
+  }
+
+  .blog-article-content p:first-of-type {
+    font-size: 1.2rem;
+    color: hsl(var(--foreground) / 0.9);
+  }
+
+  .blog-article-content a {
+    color: hsl(var(--primary));
+    text-decoration: none;
+    border-bottom: 1px solid hsl(var(--primary) / 0.3);
+    transition: border-color 0.2s;
+  }
+
+  .blog-article-content a:hover {
+    border-bottom-color: hsl(var(--primary));
+  }
+
+  .blog-article-content blockquote {
+    border-left: 4px solid hsl(var(--primary));
+    padding-left: 1.25rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: hsl(var(--muted-foreground));
+  }
+
+  .blog-article-content ul,
+  .blog-article-content ol {
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .blog-article-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .blog-article-content li::marker {
+    color: hsl(var(--primary));
+  }
+
+  .blog-article-content img {
+    border-radius: var(--radius);
+    margin: 1.5rem 0;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .blog-article-content strong {
+    font-weight: 700;
+    color: hsl(var(--foreground));
+  }
+
+  @media (max-width: 640px) {
+    .blog-article-content {
+      font-size: 1rem;
+      line-height: 1.75;
+    }
+    .blog-article-content h2 {
+      font-size: 1.4rem;
+    }
+    .blog-article-content h3 {
+      font-size: 1.15rem;
+    }
+    .blog-article-content p:first-of-type {
+      font-size: 1.05rem;
+    }
+  }
 }

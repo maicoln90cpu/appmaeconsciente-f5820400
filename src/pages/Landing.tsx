@@ -285,6 +285,9 @@ const Landing = () => {
           </h1>
           <div className="flex gap-1.5 sm:gap-2 shrink-0">
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
+              <Link to="/blog">Blog</Link>
+            </Button>
+            <Button variant="ghost" asChild className="hidden sm:inline-flex">
               <Link to="/auth">Entrar</Link>
             </Button>
             <Button asChild className="gap-1 sm:gap-2 shadow-glow text-xs sm:text-sm px-2.5 sm:px-4 h-8 sm:h-10">
