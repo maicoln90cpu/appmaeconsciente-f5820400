@@ -35,21 +35,22 @@ export function getCorsHeaders(origin?: string | null): Record<string, string> {
  */
 export function getAllowedOrigin(origin?: string | null): string {
   if (!origin) {
-    // Se não houver origem, retorna o primeiro domínio permitido
     return ALLOWED_ORIGINS[0];
   }
   
-  // Verificar origens de produção
+  // Allow all *.lovable.app origins (preview + published)
+  if (origin.endsWith('.lovable.app')) {
+    return origin;
+  }
+  
   if (ALLOWED_ORIGINS.includes(origin)) {
     return origin;
   }
   
-  // Verificar origens de desenvolvimento
   if (DEV_ORIGINS.includes(origin)) {
     return origin;
   }
   
-  // Origin não permitida, retorna domínio de produção principal
   return ALLOWED_ORIGINS[0];
 }
 
