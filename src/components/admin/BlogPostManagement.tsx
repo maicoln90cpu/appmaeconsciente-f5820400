@@ -135,8 +135,8 @@ export const BlogPostManagement = () => {
 
   const statusBadge = (status: string) => {
     const map: Record<string, string> = {
-      published: "bg-emerald-500/10 text-emerald-600 border-emerald-200",
-      draft: "bg-amber-500/10 text-amber-600 border-amber-200",
+      published: "bg-primary/10 text-primary border-primary/20",
+      draft: "bg-accent text-accent-foreground border-accent",
       archived: "bg-muted text-muted-foreground",
     };
     const labels: Record<string, string> = { published: "Publicado", draft: "Rascunho", archived: "Arquivado" };
