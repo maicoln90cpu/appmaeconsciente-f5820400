@@ -392,6 +392,15 @@ const FirstTimeCard = ({ item, getEventIcon, onToggleFavorite, onDelete }: First
             size="icon"
             variant="ghost"
             className="h-8 w-8"
+            onClick={() => handleShareMilestone(item, getEventIcon)}
+            title="Compartilhar"
+          >
+            <Share2 className="h-4 w-4 text-muted-foreground" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8"
             onClick={() => onToggleFavorite(item.id, item.is_favorite)}
           >
             <Heart
