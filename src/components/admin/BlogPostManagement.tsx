@@ -55,7 +55,7 @@ export const BlogPostManagement = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("id, title, slug, status, categories, views_count, reading_time_min, is_ai_generated, created_at, published_at, featured_image_url, excerpt")
+        .select("id, title, slug, status, categories, views_count, reading_time_min, is_ai_generated, created_at, published_at, featured_image_url, excerpt, content")
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
