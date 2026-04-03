@@ -81,6 +81,16 @@ const ChecklistQuartinho = () => {
   const [loading, setLoading] = useState(true);
   const [newItemText, setNewItemText] = useState<Record<string, string>>({});
   const [filterEssential, setFilterEssential] = useState(false);
+  const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
+  const [editingPrice, setEditingPrice] = useState<string | null>(null);
+
+  // Carregar preços personalizados
+  useEffect(() => {
+    const saved = localStorage.getItem("quartinho_custom_prices");
+    if (saved) {
+      try { setCustomPrices(JSON.parse(saved)); } catch {}
+    }
+  }, []);
 
   useEffect(() => {
     if (!user) return;
