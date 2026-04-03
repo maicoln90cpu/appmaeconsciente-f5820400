@@ -223,6 +223,7 @@ export default function AdminDashboard() {
                   { value: "posts", label: "Posts", content: <BlogPostManagement /> },
                   { value: "settings", label: "Configurações", content: <BlogSettingsPanel /> },
                   { value: "images", label: "Estilos de Imagem", content: <BlogImagePrompts /> },
+                  { value: "schedule", label: "Agendamento", content: <BlogCronPanel /> },
                   { value: "logs", label: "Logs de Geração", content: <BlogGenerationLogs /> },
                 ]}
               />
