@@ -1,8 +1,11 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { TrendingDown, TrendingUp, Award } from "lucide-react";
+import { TrendingDown, TrendingUp, Award, Pencil, RotateCcw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
 import {
   Table,
@@ -17,7 +20,15 @@ interface Props {
   estimate: DiaperEstimate | null;
 }
 
-const BRANDS = [
+type SizeKey = "RN" | "P" | "M" | "G" | "XG";
+
+interface BrandData {
+  name: string;
+  pricePerUnit: Record<SizeKey, number>;
+  quality: string;
+}
+
+const DEFAULT_BRANDS: BrandData[] = [
   { name: "Pampers Premium Care", pricePerUnit: { RN: 0.85, P: 0.90, M: 0.95, G: 1.00, XG: 1.10 }, quality: "premium" },
   { name: "Huggies Supreme Care", pricePerUnit: { RN: 0.80, P: 0.85, M: 0.90, G: 0.95, XG: 1.05 }, quality: "premium" },
   { name: "MamyPoko", pricePerUnit: { RN: 0.65, P: 0.70, M: 0.75, G: 0.80, XG: 0.90 }, quality: "standard" },
@@ -26,25 +37,77 @@ const BRANDS = [
   { name: "Cremer Disney", pricePerUnit: { RN: 0.50, P: 0.55, M: 0.60, G: 0.65, XG: 0.75 }, quality: "economic" },
 ];
 
+const STORAGE_KEY = "fraldas_custom_prices";
+
 export const BrandComparison = ({ estimate }: Props) => {
   const [selectedSize, setSelectedSize] = useState<string>("all");
+  const [editingCell, setEditingCell] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
+  const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
+
+  // Load custom prices from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      try {
+        setCustomPrices(JSON.parse(saved));
+      } catch {}
+    }
+  }, []);
+
+  const getPrice = (brandName: string, size: SizeKey): number => {
+    const key = `${brandName}_${size}`;
+    if (customPrices[key] !== undefined) return customPrices[key];
+    const brand = DEFAULT_BRANDS.find(b => b.name === brandName);
+    return brand?.pricePerUnit[size] ?? 0;
+  };
+
+  const isCustom = (brandName: string, size: SizeKey): boolean => {
+    return customPrices[`${brandName}_${size}`] !== undefined;
+  };
+
+  const handlePriceClick = (brandName: string, size: SizeKey) => {
+    const key = `${brandName}_${size}`;
+    setEditingCell(key);
+    setEditValue(getPrice(brandName, size).toFixed(2));
+  };
+
+  const savePrice = (brandName: string, size: SizeKey) => {
+    const value = parseFloat(editValue);
+    if (isNaN(value) || value <= 0) {
+      setEditingCell(null);
+      return;
+    }
+    const key = `${brandName}_${size}`;
+    const updated = { ...customPrices, [key]: value };
+    setCustomPrices(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    setEditingCell(null);
+    toast.success("Preço atualizado!");
+  };
+
+  const resetAllPrices = () => {
+    setCustomPrices({});
+    localStorage.removeItem(STORAGE_KEY);
+    toast.success("Preços restaurados para os valores padrão");
+  };
+
+  const hasCustomPrices = Object.keys(customPrices).length > 0;
 
   const comparison = useMemo(() => {
     if (!estimate) return [];
 
-    return BRANDS.map(brand => {
+    return DEFAULT_BRANDS.map(brand => {
       let totalCost = 0;
-      let monthlyCost = 0;
 
       estimate.estimates.forEach(est => {
-        const size = est.size as keyof typeof brand.pricePerUnit;
+        const size = est.size as SizeKey;
         if (selectedSize === "all" || selectedSize === size) {
-          const cost = est.monthlyQty * brand.pricePerUnit[size];
-          totalCost += cost;
+          totalCost += est.monthlyQty * getPrice(brand.name, size);
         }
       });
 
-      monthlyCost = totalCost / estimate.calculationPeriod;
+      const monthlyCost = totalCost / estimate.calculationPeriod;
 
       return {
         brand: brand.name,
@@ -54,7 +117,7 @@ export const BrandComparison = ({ estimate }: Props) => {
         annualCost: monthlyCost * 12,
       };
     }).sort((a, b) => a.totalCost - b.totalCost);
-  }, [estimate, selectedSize]);
+  }, [estimate, selectedSize, customPrices]);
 
   const savings = useMemo(() => {
     if (comparison.length < 2) return 0;
@@ -71,22 +134,91 @@ export const BrandComparison = ({ estimate }: Props) => {
 
   return (
     <div className="space-y-6">
-      {/* Filtro por Tamanho */}
-      <div className="flex items-center gap-4">
-        <Label htmlFor="sizeFilter">Filtrar por tamanho:</Label>
-        <Select value={selectedSize} onValueChange={setSelectedSize}>
-          <SelectTrigger id="sizeFilter" className="w-40">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {estimate.estimates.map(est => (
-              <SelectItem key={est.size} value={est.size}>
-                Tamanho {est.size}
-              </SelectItem>
+      {/* Filtro + Reset */}
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-4">
+          <Label htmlFor="sizeFilter">Filtrar por tamanho:</Label>
+          <Select value={selectedSize} onValueChange={setSelectedSize}>
+            <SelectTrigger id="sizeFilter" className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {estimate.estimates.map(est => (
+                <SelectItem key={est.size} value={est.size}>
+                  Tamanho {est.size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {hasCustomPrices && (
+          <Button variant="outline" size="sm" onClick={resetAllPrices} className="gap-1.5">
+            <RotateCcw className="h-3.5 w-3.5" />
+            Resetar preços
+          </Button>
+        )}
+      </div>
+
+      {/* Dica de edição */}
+      <div className="bg-muted/50 rounded-lg p-3 text-sm text-muted-foreground flex items-center gap-2">
+        <Pencil className="h-4 w-4 shrink-0" />
+        <span>Clique em qualquer preço na tabela abaixo para editá-lo com os valores da sua região.</span>
+      </div>
+
+      {/* Tabela de Preços por Unidade */}
+      <div className="rounded-lg border overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Marca</TableHead>
+              {(["RN", "P", "M", "G", "XG"] as SizeKey[]).map(size => (
+                <TableHead key={size} className="text-center text-xs">
+                  {size}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {DEFAULT_BRANDS.map(brand => (
+              <TableRow key={brand.name}>
+                <TableCell className="font-medium text-sm">{brand.name}</TableCell>
+                {(["RN", "P", "M", "G", "XG"] as SizeKey[]).map(size => {
+                  const key = `${brand.name}_${size}`;
+                  const editing = editingCell === key;
+                  const custom = isCustom(brand.name, size);
+
+                  return (
+                    <TableCell key={size} className="text-center p-1">
+                      {editing ? (
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={() => savePrice(brand.name, size)}
+                          onKeyDown={(e) => e.key === "Enter" && savePrice(brand.name, size)}
+                          className="h-8 w-20 mx-auto text-center text-sm"
+                          autoFocus
+                        />
+                      ) : (
+                        <button
+                          onClick={() => handlePriceClick(brand.name, size)}
+                          className={`cursor-pointer px-2 py-1 rounded text-sm hover:bg-primary/10 transition-colors ${
+                            custom ? "font-semibold text-primary" : "text-muted-foreground"
+                          }`}
+                        >
+                          R${getPrice(brand.name, size).toFixed(2)}
+                          {custom && <span className="text-[10px] ml-0.5">✎</span>}
+                        </button>
+                      )}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
             ))}
-          </SelectContent>
-        </Select>
+          </TableBody>
+        </Table>
       </div>
 
       {/* Tabela de Comparação */}
