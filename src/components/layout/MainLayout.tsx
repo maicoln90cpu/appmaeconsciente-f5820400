@@ -80,6 +80,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     resources: [
       { path: "/materiais", label: "Ferramentas" },
       { path: "/comunidade", label: "Comunidade" },
+      { path: "/blog", label: "Blog" },
       { path: "/clube-premium", label: "Clube Premium" },
     ],
     support: [

@@ -203,6 +203,21 @@ const Materiais = () => {
         ))}
       </div>
 
+      {/* Blog access card */}
+      <button
+        onClick={() => navigate("/blog")}
+        className="w-full mb-5 p-3 rounded-xl bg-accent/50 border border-border/50 text-left transition-all hover:bg-accent active:scale-[0.99] flex items-center gap-3"
+      >
+        <div className="p-2 rounded-lg bg-primary/10 shrink-0">
+          <FileText className="h-5 w-5 text-primary" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm text-foreground">📖 Blog Mãe Consciente</p>
+          <p className="text-xs text-muted-foreground mt-0.5">Artigos sobre gestação, parto e maternidade</p>
+        </div>
+        <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
+      </button>
+
       {/* Tool icon grid */}
       <ToolIconGrid
         products={displayProducts}
