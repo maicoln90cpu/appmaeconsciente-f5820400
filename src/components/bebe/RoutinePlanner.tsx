@@ -189,13 +189,47 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
             </CardDescription>
           </div>
 
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2">
-                <Plus className="h-4 w-4" />
-                Nova Rotina
-              </Button>
-            </DialogTrigger>
+          <div className="flex gap-2">
+            <Dialog open={showTemplates} onOpenChange={setShowTemplates}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Templates
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Templates por Faixa Etária</DialogTitle>
+                  <DialogDescription>Escolha um modelo pronto para preencher a rotina automaticamente</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3 py-2">
+                  {(Object.keys(AGE_TEMPLATES) as Array<keyof typeof AGE_TEMPLATES>).map(key => {
+                    const tmpl = AGE_TEMPLATES[key];
+                    return (
+                      <button
+                        key={key}
+                        onClick={() => applyTemplate(key)}
+                        className="w-full text-left p-4 rounded-lg border hover:border-primary hover:bg-primary/5 transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold">{tmpl.label}</span>
+                          <Badge variant="secondary">{tmpl.routines.length} rotinas</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">{tmpl.description}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <Button className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Nova Rotina
+                </Button>
+              </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Nova Rotina</DialogTitle>
