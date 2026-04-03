@@ -99,8 +99,8 @@ export const BlogPostManagement = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, title, excerpt, status }: { id: string; title: string; excerpt: string; status: string }) => {
-      const updates: Record<string, unknown> = { title, excerpt, status };
+    mutationFn: async ({ id, title, excerpt, content, status }: { id: string; title: string; excerpt: string; content: string; status: string }) => {
+      const updates: Record<string, unknown> = { title, excerpt, content, status };
       if (status === "published") updates.published_at = new Date().toISOString();
       const { error } = await supabase.from("blog_posts").update(updates).eq("id", id);
       if (error) throw error;
