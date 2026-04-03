@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Headphones,
   Settings,
+  FileText,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AdminSubTabs } from "@/components/admin/AdminSubTabs";
@@ -41,6 +42,10 @@ const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserM
 const AutoModerationPanel = lazy(() => import("@/components/admin/AutoModerationPanel").then((m) => ({ default: m.AutoModerationPanel })));
 const CronSchedulePanel = lazy(() => import("@/components/admin/CronSchedulePanel").then((m) => ({ default: m.CronSchedulePanel })));
 const AdminNotificationCard = lazy(() => import("@/components/admin/AdminNotificationCard").then((m) => ({ default: m.AdminNotificationCard })));
+const BlogPostManagement = lazy(() => import("@/components/admin/BlogPostManagement").then((m) => ({ default: m.BlogPostManagement })));
+const BlogSettingsPanel = lazy(() => import("@/components/admin/BlogSettingsPanel").then((m) => ({ default: m.BlogSettingsPanel })));
+const BlogGenerationLogs = lazy(() => import("@/components/admin/BlogGenerationLogs").then((m) => ({ default: m.BlogGenerationLogs })));
+const BlogImagePrompts = lazy(() => import("@/components/admin/BlogImagePrompts").then((m) => ({ default: m.BlogImagePrompts })));
 
 const TabLoading = () => (
   <div className="flex items-center justify-center py-12">
@@ -140,7 +145,7 @@ export default function AdminDashboard() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
-          <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-6 h-auto p-1">
             <TabsTrigger value="dashboard" className="flex items-center gap-2 py-3">
               <LayoutDashboard className="h-4 w-4" />
               <span className="hidden sm:inline">Dashboard</span>
@@ -148,6 +153,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="comercial" className="flex items-center gap-2 py-3">
               <ShoppingBag className="h-4 w-4" />
               <span className="hidden sm:inline">Comercial</span>
+            </TabsTrigger>
+            <TabsTrigger value="blog" className="flex items-center gap-2 py-3">
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Blog</span>
             </TabsTrigger>
             <TabsTrigger value="comunidade" className="flex items-center gap-2 py-3">
               <MessageSquare className="h-4 w-4" />
@@ -200,6 +209,20 @@ export default function AdminDashboard() {
                       </div>
                     ),
                   },
+                ]}
+              />
+            </Suspense>
+          </TabsContent>
+
+          <TabsContent value="blog">
+            <Suspense fallback={<TabLoading />}>
+              <AdminSubTabs
+                defaultValue="posts"
+                tabs={[
+                  { value: "posts", label: "Posts", content: <BlogPostManagement /> },
+                  { value: "settings", label: "Configurações", content: <BlogSettingsPanel /> },
+                  { value: "images", label: "Estilos de Imagem", content: <BlogImagePrompts /> },
+                  { value: "logs", label: "Logs de Geração", content: <BlogGenerationLogs /> },
                 ]}
               />
             </Suspense>
