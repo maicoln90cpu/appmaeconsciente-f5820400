@@ -42,6 +42,10 @@ const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserM
 const AutoModerationPanel = lazy(() => import("@/components/admin/AutoModerationPanel").then((m) => ({ default: m.AutoModerationPanel })));
 const CronSchedulePanel = lazy(() => import("@/components/admin/CronSchedulePanel").then((m) => ({ default: m.CronSchedulePanel })));
 const AdminNotificationCard = lazy(() => import("@/components/admin/AdminNotificationCard").then((m) => ({ default: m.AdminNotificationCard })));
+const BlogPostManagement = lazy(() => import("@/components/admin/BlogPostManagement").then((m) => ({ default: m.BlogPostManagement })));
+const BlogSettingsPanel = lazy(() => import("@/components/admin/BlogSettingsPanel").then((m) => ({ default: m.BlogSettingsPanel })));
+const BlogGenerationLogs = lazy(() => import("@/components/admin/BlogGenerationLogs").then((m) => ({ default: m.BlogGenerationLogs })));
+const BlogImagePrompts = lazy(() => import("@/components/admin/BlogImagePrompts").then((m) => ({ default: m.BlogImagePrompts })));
 
 const TabLoading = () => (
   <div className="flex items-center justify-center py-12">
