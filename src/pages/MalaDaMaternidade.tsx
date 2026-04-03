@@ -2,13 +2,15 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { ChecklistBag } from "@/components/mala-maternidade/ChecklistBag";
 import { ProgressTracker } from "@/components/mala-maternidade/ProgressTracker";
 import { HospitalSettings } from "@/components/mala-maternidade/HospitalSettings";
 import { ExportPDF } from "@/components/mala-maternidade/ExportPDF";
 import { WeeklyMilestones } from "@/components/mala-maternidade/WeeklyMilestones";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, Calendar, ListChecks, Package } from "lucide-react";
+import { Info, Calendar, ListChecks, Package, CheckCheck, Timer } from "lucide-react";
+import { toast } from "sonner";
 import { useMaternityBag } from "@/hooks/useMaternityBag";
 import { useProfile } from "@/hooks/useProfile";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -153,6 +155,24 @@ const MalaDaMaternidade = () => {
     );
   }
 
+  const handleMarkEssentials = () => {
+    const uncheckedItems = items.filter((i) => !i.checked);
+    if (uncheckedItems.length === 0) {
+      toast.info("Todos os itens já estão marcados!");
+      return;
+    }
+    let count = 0;
+    uncheckedItems.forEach((item) => {
+      updateItem(item.id, { checked: true });
+      count++;
+    });
+    toast.success(`✅ ${count} itens marcados como prontos!`);
+  };
+
+  const weeksRemaining = Math.max(0, 37 - weeksPregnant);
+  const isUrgent = daysUntilReady <= 14 && daysUntilReady > 0;
+  const isOverdue = weeksPregnant >= 37;
+
   return (
     <>
       <div className="container mx-auto py-8 px-4 max-w-6xl">
@@ -163,13 +183,39 @@ const MalaDaMaternidade = () => {
           </p>
         </div>
 
-        {weeksPregnant < 37 && daysUntilReady > 0 && (
-          <Alert className="mb-6 bg-blue-50 border-blue-200 dark:bg-blue-950/30 dark:border-blue-800">
-            <Calendar className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <AlertDescription className="text-blue-800 dark:text-blue-300">
-              {daysUntilDueDate > 0 
-                ? `Faltam aproximadamente ${daysUntilDueDate} dias para a data prevista do parto. Organize sua mala com antecedência!`
-                : "Sua data prevista do parto está próxima ou já passou. Certifique-se de que está tudo pronto!"}
+        {/* Contador regressivo */}
+        {daysUntilReady > 0 && !isOverdue && (
+          <Card className={`mb-6 border-2 ${isUrgent ? "border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/30" : "border-primary/30 bg-primary/5"}`}>
+            <CardContent className="py-5">
+              <div className="flex items-center gap-4">
+                <div className={`p-3 rounded-full shrink-0 ${isUrgent ? "bg-red-100 dark:bg-red-900" : "bg-primary/10"}`}>
+                  <Timer className={`h-6 w-6 ${isUrgent ? "text-red-600 dark:text-red-400" : "text-primary"}`} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
+                    {isUrgent ? "⚠️ Atenção — sua mala deve estar pronta em breve!" : "Sua mala deve estar pronta em"}
+                  </p>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <span className={`text-3xl font-bold ${isUrgent ? "text-red-600 dark:text-red-400" : "text-primary"}`}>
+                      {daysUntilReady}
+                    </span>
+                    <span className="text-lg text-muted-foreground">dias</span>
+                    <span className="text-sm text-muted-foreground">({weeksRemaining} semanas)</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Faltam {daysUntilDueDate > 0 ? daysUntilDueDate : 0} dias para a DPP • {checkedItems}/{totalItems} itens prontos
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {isOverdue && checkedItems < totalItems && (
+          <Alert className="mb-6 border-red-300 bg-red-50 dark:bg-red-950/30 dark:border-red-700">
+            <Timer className="h-4 w-4 text-red-600 dark:text-red-400" />
+            <AlertDescription className="text-red-800 dark:text-red-300">
+              Você já está com {weeksPregnant} semanas! Sua mala já deveria estar pronta. Faltam {totalItems - checkedItems} itens.
             </AlertDescription>
           </Alert>
         )}
@@ -192,6 +238,20 @@ const MalaDaMaternidade = () => {
           </TabsContent>
 
           <TabsContent value="checklist" className="space-y-6">
+            {/* Botão marcar todos essenciais */}
+            <div className="flex justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleMarkEssentials}
+                className="gap-2"
+                disabled={items.filter((i) => !i.checked).length === 0}
+              >
+                <CheckCheck className="h-4 w-4" />
+                Marcar todos como prontos
+              </Button>
+            </div>
+
             <div className="grid md:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
