@@ -1,47 +1,98 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Share2, ShoppingCart, PieChart, Plus } from "lucide-react";
+import { Download, Share2, ShoppingCart, PieChart, Plus, Lightbulb } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
-import { useToast } from "@/hooks/useToast";
 import { Progress } from "@/components/ui/progress";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { usePDFExport } from "@/hooks/usePDFExport";
+import { toast } from "sonner";
 
 interface Props {
   estimate: DiaperEstimate;
 }
 
+const getSavingsTips = (estimate: DiaperEstimate): string[] => {
+  const tips: string[] = [];
+  const sizes = estimate.estimates.map((e) => e.size);
+
+  if (sizes.includes("RN")) {
+    tips.push("⚠️ Compre no máximo 2 pacotes de RN — bebês crescem muito rápido nessa fase!");
+  }
+
+  const biggestSize = estimate.estimates.reduce((a, b) => (a.monthlyQty > b.monthlyQty ? a : b));
+  tips.push(`📦 Foque em estocar tamanho ${biggestSize.size} — é o que você mais vai usar (${biggestSize.monthlyQty} unidades).`);
+
+  if (estimate.totalDiapers > 300) {
+    tips.push("💰 Compre pacotes hiper/mega em promoção — economia de até 30% por fralda!");
+  }
+
+  if (estimate.calculationPeriod >= 6) {
+    tips.push("🛒 Assine clubes de fraldas (ex: Amazon, drogarias) para descontos recorrentes de 10-15%.");
+  }
+
+  tips.push("🌿 Considere usar fraldas de pano durante o dia — pode economizar até 40% no longo prazo.");
+
+  if (estimate.totalDiapers > 500) {
+    tips.push("🎁 Peça fraldas de diferentes tamanhos no chá de bebê — evite acumular só um tamanho.");
+  }
+
+  return tips;
+};
+
 export const ResultsSummary = ({ estimate }: Props) => {
-  const { toast } = useToast();
+  const { generatePDF } = usePDFExport();
   const [addingToEnxoval, setAddingToEnxoval] = useState(false);
 
-  const handleDownloadPDF = () => {
-    toast({
-      title: "Gerando PDF...",
-      description: "Seu relatório personalizado está sendo preparado.",
+  const savingsTips = getSavingsTips(estimate);
+
+  const handleDownloadPDF = async () => {
+    await generatePDF({
+      title: "Relatório de Fraldas",
+      subtitle: `Estimativa para ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? "mês" : "meses"}`,
+      filename: "relatorio-fraldas",
+      sections: [
+        {
+          title: "Dados do Bebê",
+          type: "text",
+          content: [
+            `Idade: ${estimate.babyAge}`,
+            `Peso: ${estimate.babyWeight} kg`,
+            `Período calculado: ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? "mês" : "meses"}`,
+            `Total estimado: ${estimate.totalDiapers} fraldas`,
+          ],
+        },
+        {
+          title: "Distribuição por Tamanho",
+          type: "table",
+          tableHead: ["Tamanho", "Quantidade", "Média/dia", "% do Total"],
+          tableBody: estimate.estimates.map((est) => [
+            est.size,
+            String(est.monthlyQty),
+            String(est.dailyAvg),
+            `${((est.monthlyQty / estimate.totalDiapers) * 100).toFixed(1)}%`,
+          ]),
+          tableColor: [147, 51, 234],
+        },
+        {
+          title: "Dicas de Economia",
+          type: "text",
+          content: savingsTips.map((tip) => tip.replace(/^[^\s]+ /, "")),
+        },
+      ],
+      footer: "Mãe Consciente — Calculadora de Fraldas",
     });
-    
-    // TODO: Implementar geração de PDF real
-    setTimeout(() => {
-      toast({
-        title: "PDF pronto!",
-        description: "O download começará em instantes.",
-      });
-    }, 1500);
   };
 
   const handleShare = () => {
+    const text = `🍼 Calculadora de Fraldas — Mãe Consciente\n\nVou precisar de aproximadamente ${estimate.totalDiapers} fraldas nos próximos ${estimate.calculationPeriod} meses!\n\nDistribuição:\n${estimate.estimates.map((e) => `• ${e.size}: ${e.monthlyQty} unidades`).join("\n")}`;
+
     if (navigator.share) {
-      navigator.share({
-        title: "Minha Calculadora de Fraldas",
-        text: `Vou precisar de aproximadamente ${estimate.totalDiapers} fraldas nos próximos ${estimate.calculationPeriod} meses!`,
-      });
+      navigator.share({ title: "Minha Calculadora de Fraldas", text });
     } else {
-      toast({
-        title: "Link copiado!",
-        description: "Compartilhe seus resultados com quem quiser.",
-      });
+      navigator.clipboard.writeText(text);
+      toast.success("Texto copiado para a área de transferência!");
     }
   };
 
@@ -50,15 +101,10 @@ export const ResultsSummary = ({ estimate }: Props) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({
-          title: "Faça login",
-          description: "Você precisa estar logado para adicionar ao enxoval.",
-          variant: "destructive",
-        });
+        toast.error("Você precisa estar logado para adicionar ao enxoval.");
         return;
       }
 
-      // Adicionar cada tamanho de fralda ao enxoval
       const itemsToAdd = estimate.estimates.map((est) => ({
         user_id: user.id,
         categoria: "Higiene",
@@ -72,23 +118,13 @@ export const ResultsSummary = ({ estimate }: Props) => {
         obs: `Estimativa para ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? 'mês' : 'meses'}. Média: ${est.dailyAvg} fraldas/dia`,
       }));
 
-      const { error } = await supabase
-        .from("itens_enxoval")
-        .insert(itemsToAdd);
-
+      const { error } = await supabase.from("itens_enxoval").insert(itemsToAdd);
       if (error) throw error;
 
-      toast({
-        title: "✅ Adicionado ao Enxoval!",
-        description: `${estimate.estimates.length} itens de fraldas foram adicionados ao seu Controle de Enxoval.`,
-      });
+      toast.success(`${estimate.estimates.length} itens de fraldas adicionados ao enxoval!`);
     } catch (error) {
       console.error("Error adding to enxoval:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível adicionar ao enxoval. Tente novamente.",
-        variant: "destructive",
-      });
+      toast.error("Não foi possível adicionar ao enxoval. Tente novamente.");
     } finally {
       setAddingToEnxoval(false);
     }
@@ -151,6 +187,19 @@ export const ResultsSummary = ({ estimate }: Props) => {
           </div>
         </div>
 
+        {/* Dicas de Economia Contextuais */}
+        <div className="p-4 border border-accent/30 rounded-lg bg-accent/5">
+          <h3 className="font-semibold mb-3 flex items-center gap-2">
+            <Lightbulb className="h-5 w-5 text-accent-foreground" />
+            Dicas de Economia Personalizadas
+          </h3>
+          <div className="space-y-2">
+            {savingsTips.map((tip, i) => (
+              <p key={i} className="text-sm leading-relaxed">{tip}</p>
+            ))}
+          </div>
+        </div>
+
         {/* Lista de Compras Sugerida */}
         <div className="p-4 border rounded-lg bg-muted/50">
           <h3 className="font-semibold mb-3 flex items-center gap-2">
@@ -165,37 +214,20 @@ export const ResultsSummary = ({ estimate }: Props) => {
               </div>
             ))}
           </div>
-          <div className="mt-4 pt-4 border-t">
-            <p className="text-xs text-muted-foreground">
-              💡 <strong>Dica:</strong> Compre pacotes grandes (hiper, mega) para economizar até 30% por unidade!
-            </p>
-          </div>
-        </div>
-
-        {/* Alertas e Dicas */}
-        <div className="space-y-3">
-          <div className="p-3 bg-warning/10 border border-warning/20 rounded-lg text-sm">
-            <strong className="text-warning">⚠️ Cuidado com RN:</strong> Bebês crescem rápido! 
-            Compre no máximo 1-2 pacotes de tamanho RN.
-          </div>
-          <div className="p-3 bg-success/10 border border-success/20 rounded-lg text-sm">
-            <strong className="text-success">✓ Dica de economia:</strong> Foque em comprar mais 
-            fraldas tamanho P e M, que serão usadas por mais tempo.
-          </div>
         </div>
 
         {/* Ações */}
         <div className="space-y-3 pt-4">
-          <Button 
-            variant="default" 
-            onClick={handleAddToEnxoval} 
+          <Button
+            variant="default"
+            onClick={handleAddToEnxoval}
             className="w-full"
             disabled={addingToEnxoval}
           >
             <Plus className="mr-2 h-4 w-4" />
             {addingToEnxoval ? "Adicionando..." : "Adicionar ao Meu Enxoval"}
           </Button>
-          
+
           <div className="grid md:grid-cols-2 gap-3">
             <Button variant="outline" onClick={handleDownloadPDF} className="w-full">
               <Download className="mr-2 h-4 w-4" />
@@ -208,7 +240,7 @@ export const ResultsSummary = ({ estimate }: Props) => {
           </div>
         </div>
 
-        {/* Footer do Relatório */}
+        {/* Footer */}
         <div className="text-center text-xs text-muted-foreground pt-4 border-t">
           <p>
             Estimativas baseadas em médias de consumo. Cada bebê é único e pode ter necessidades diferentes.
