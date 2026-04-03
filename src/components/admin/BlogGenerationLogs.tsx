@@ -39,10 +39,9 @@ export const BlogGenerationLogs = () => {
     },
   });
 
-  const { sortedData, sortField, sortDirection, handleSort } = useSortableTable(
+  const { sortedData, sortKey, sortDirection, handleSort } = useSortableTable(
     logs || [],
-    "created_at",
-    "desc"
+    { key: "created_at", direction: "desc" }
   );
 
   const totalCost = (logs || []).reduce((sum, l) => sum + (l.total_cost_usd || 0), 0);
