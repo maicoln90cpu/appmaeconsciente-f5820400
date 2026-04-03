@@ -134,6 +134,7 @@ export const BlogPostManagement = () => {
     setEditPost(post);
     setEditTitle(post.title);
     setEditExcerpt(post.excerpt || "");
+    setEditContent(post.content || "");
     setEditStatus(post.status);
   };
 
