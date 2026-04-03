@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +19,8 @@ import {
   Plus, Sparkles, Trash2, Eye, EyeOff, ExternalLink, Search, RefreshCw, Pencil
 } from "lucide-react";
 
+const BlogRichTextEditor = lazy(() => import("@/components/admin/BlogRichTextEditor").then((m) => ({ default: m.BlogRichTextEditor })));
+
 interface BlogPost {
   id: string;
   title: string;
@@ -32,6 +34,7 @@ interface BlogPost {
   published_at: string | null;
   featured_image_url: string | null;
   excerpt: string | null;
+  content: string | null;
 }
 
 export const BlogPostManagement = () => {
@@ -42,6 +45,7 @@ export const BlogPostManagement = () => {
   const [editPost, setEditPost] = useState<BlogPost | null>(null);
   const [editTitle, setEditTitle] = useState("");
   const [editExcerpt, setEditExcerpt] = useState("");
+  const [editContent, setEditContent] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [customTopic, setCustomTopic] = useState("");
   const [showTopicDialog, setShowTopicDialog] = useState(false);
@@ -51,7 +55,7 @@ export const BlogPostManagement = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("blog_posts")
-        .select("id, title, slug, status, categories, views_count, reading_time_min, is_ai_generated, created_at, published_at, featured_image_url, excerpt")
+        .select("id, title, slug, status, categories, views_count, reading_time_min, is_ai_generated, created_at, published_at, featured_image_url, excerpt, content")
         .order("created_at", { ascending: false })
         .limit(200);
       if (error) throw error;
@@ -95,8 +99,8 @@ export const BlogPostManagement = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, title, excerpt, status }: { id: string; title: string; excerpt: string; status: string }) => {
-      const updates: Record<string, unknown> = { title, excerpt, status };
+    mutationFn: async ({ id, title, excerpt, content, status }: { id: string; title: string; excerpt: string; content: string; status: string }) => {
+      const updates: Record<string, unknown> = { title, excerpt, content, status };
       if (status === "published") updates.published_at = new Date().toISOString();
       const { error } = await supabase.from("blog_posts").update(updates).eq("id", id);
       if (error) throw error;
@@ -130,6 +134,7 @@ export const BlogPostManagement = () => {
     setEditPost(post);
     setEditTitle(post.title);
     setEditExcerpt(post.excerpt || "");
+    setEditContent(post.content || "");
     setEditStatus(post.status);
   };
 
@@ -270,11 +275,11 @@ export const BlogPostManagement = () => {
 
       {/* Edit Dialog */}
       <Dialog open={!!editPost} onOpenChange={(open) => !open && setEditPost(null)}>
-        <DialogContent>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Editar Post</DialogTitle></DialogHeader>
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div><Label>Título</Label><Input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} /></div>
-            <div><Label>Resumo</Label><Textarea value={editExcerpt} onChange={(e) => setEditExcerpt(e.target.value)} rows={3} /></div>
+            <div><Label>Resumo</Label><Textarea value={editExcerpt} onChange={(e) => setEditExcerpt(e.target.value)} rows={2} /></div>
             <div>
               <Label>Status</Label>
               <Select value={editStatus} onValueChange={setEditStatus}>
@@ -286,10 +291,16 @@ export const BlogPostManagement = () => {
                 </SelectContent>
               </Select>
             </div>
+            <div>
+              <Label>Conteúdo</Label>
+              <Suspense fallback={<div className="h-[400px] flex items-center justify-center border rounded-lg"><RefreshCw className="animate-spin h-5 w-5" /></div>}>
+                <BlogRichTextEditor content={editContent} onChange={setEditContent} />
+              </Suspense>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditPost(null)}>Cancelar</Button>
-            <Button onClick={() => editPost && updateMutation.mutate({ id: editPost.id, title: editTitle, excerpt: editExcerpt, status: editStatus })}>
+            <Button onClick={() => editPost && updateMutation.mutate({ id: editPost.id, title: editTitle, excerpt: editExcerpt, content: editContent, status: editStatus })}>
               Salvar
             </Button>
           </DialogFooter>
