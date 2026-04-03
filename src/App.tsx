@@ -58,6 +58,8 @@ const DiarioCrescimento = lazyWithRetry(() => import("./pages/DiarioCrescimento"
 const PlanejadorRotina = lazyWithRetry(() => import("./pages/PlanejadorRotina"));
 const IntroducaoAlimentar = lazyWithRetry(() => import("./pages/IntroducaoAlimentar"));
 const AlbumMarcos = lazyWithRetry(() => import("./pages/AlbumMarcos"));
+const Blog = lazyWithRetry(() => import("./pages/Blog"));
+const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
 const Offline = lazy(() => import("./pages/Offline"));
 
 const AnalyticsWrapper = ({ children }: { children: React.ReactNode }) => {
