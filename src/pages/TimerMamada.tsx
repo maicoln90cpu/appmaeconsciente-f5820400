@@ -26,8 +26,16 @@ const TimerMamada = () => {
   const [side, setSide] = useState<"left" | "right" | "bottle">("left");
   const [saved, setSaved] = useState(false);
   const [recentFeedings, setRecentFeedings] = useState<RecentFeeding[]>([]);
+  const [alertIntervalHours, setAlertIntervalHours] = useState(3);
+  const [showSettings, setShowSettings] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<Date | null>(null);
+
+  // Carregar configuração de intervalo salva
+  useEffect(() => {
+    const saved = localStorage.getItem("feeding_alert_interval");
+    if (saved) setAlertIntervalHours(Number(saved));
+  }, []);
 
   useEffect(() => {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
