@@ -70,6 +70,7 @@ export function handleCorsOptions(req: Request): Response {
  */
 export function isOriginAllowed(origin?: string | null): boolean {
   if (!origin) return false;
+  if (origin.endsWith('.lovable.app')) return true;
   return ALLOWED_ORIGINS.includes(origin) || DEV_ORIGINS.includes(origin);
 }
 
