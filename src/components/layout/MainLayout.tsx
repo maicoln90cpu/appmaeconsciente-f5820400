@@ -64,6 +64,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     { path: "/dashboard-bebe", label: "Início", icon: Home, preload: routeImports.dashboard },
     { path: "/comunidade", label: "Comunidade", icon: Users, preload: routeImports.comunidade },
     { path: "/materiais", label: "Ferramentas", icon: BookOpen, preload: routeImports.materiais },
+    { path: "/blog", label: "Blog", icon: FileText, preload: routeImports.comunidade },
     { path: "/suporte", label: "Suporte", icon: HeadphonesIcon, preload: routeImports.suporte },
   ];
 
