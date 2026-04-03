@@ -5,6 +5,7 @@
 
 const ALLOWED_ORIGINS = [
   'https://dashboard-enxovalcompleto.lovable.app',
+  'https://appmaeconsciente.lovable.app',
   'https://lovable.dev',
 ];
 
@@ -34,21 +35,22 @@ export function getCorsHeaders(origin?: string | null): Record<string, string> {
  */
 export function getAllowedOrigin(origin?: string | null): string {
   if (!origin) {
-    // Se não houver origem, retorna o primeiro domínio permitido
     return ALLOWED_ORIGINS[0];
   }
   
-  // Verificar origens de produção
+  // Allow all *.lovable.app origins (preview + published)
+  if (origin.endsWith('.lovable.app')) {
+    return origin;
+  }
+  
   if (ALLOWED_ORIGINS.includes(origin)) {
     return origin;
   }
   
-  // Verificar origens de desenvolvimento
   if (DEV_ORIGINS.includes(origin)) {
     return origin;
   }
   
-  // Origin não permitida, retorna domínio de produção principal
   return ALLOWED_ORIGINS[0];
 }
 
@@ -68,6 +70,7 @@ export function handleCorsOptions(req: Request): Response {
  */
 export function isOriginAllowed(origin?: string | null): boolean {
   if (!origin) return false;
+  if (origin.endsWith('.lovable.app')) return true;
   return ALLOWED_ORIGINS.includes(origin) || DEV_ORIGINS.includes(origin);
 }
 
