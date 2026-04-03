@@ -19,6 +19,8 @@ import {
   Plus, Sparkles, Trash2, Eye, EyeOff, ExternalLink, Search, RefreshCw, Pencil
 } from "lucide-react";
 
+const BlogRichTextEditor = lazy(() => import("@/components/admin/BlogRichTextEditor").then((m) => ({ default: m.BlogRichTextEditor })));
+
 interface BlogPost {
   id: string;
   title: string;
@@ -32,6 +34,7 @@ interface BlogPost {
   published_at: string | null;
   featured_image_url: string | null;
   excerpt: string | null;
+  content: string | null;
 }
 
 export const BlogPostManagement = () => {
