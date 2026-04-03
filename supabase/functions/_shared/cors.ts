@@ -5,6 +5,7 @@
 
 const ALLOWED_ORIGINS = [
   'https://dashboard-enxovalcompleto.lovable.app',
+  'https://appmaeconsciente.lovable.app',
   'https://lovable.dev',
 ];
 
