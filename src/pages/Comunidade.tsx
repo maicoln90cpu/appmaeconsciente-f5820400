@@ -77,26 +77,28 @@ const Comunidade = () => {
           </div>
 
           {/* Sidebar - Gamification */}
-          <div className="space-y-6">
-            <Tabs defaultValue="challenges" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="challenges" className="gap-2">
-                  <Target className="h-4 w-4" />
-                  Desafios
-                </TabsTrigger>
-                <TabsTrigger value="leaderboard" className="gap-2">
-                  <Trophy className="h-4 w-4" />
-                  Ranking
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="challenges" className="mt-4">
-                <ChallengesPanel />
-              </TabsContent>
-              <TabsContent value="leaderboard" className="mt-4">
-                <Leaderboard />
-              </TabsContent>
-            </Tabs>
-          </div>
+          {badgesEnabled && (
+            <div className="space-y-6">
+              <Tabs defaultValue="challenges" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="challenges" className="gap-2">
+                    <Target className="h-4 w-4" />
+                    Desafios
+                  </TabsTrigger>
+                  <TabsTrigger value="leaderboard" className="gap-2">
+                    <Trophy className="h-4 w-4" />
+                    Ranking
+                  </TabsTrigger>
+                </TabsList>
+                <TabsContent value="challenges" className="mt-4">
+                  <ChallengesPanel />
+                </TabsContent>
+                <TabsContent value="leaderboard" className="mt-4">
+                  <Leaderboard />
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
         </div>
 
         <CreatePostDialog onPostCreated={createPost} />
