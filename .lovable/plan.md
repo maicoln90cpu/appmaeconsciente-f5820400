@@ -22,3 +22,34 @@
 - [x] Definir idioma padrão (PT-BR) para comentários
 - [x] ~50 arquivos traduzidos (hooks, contexts, lib, main.tsx)
 - [x] Zero erros TypeScript após tradução
+
+---
+
+# Plano: Responsividade e UI/UX (5 Etapas)
+
+## Status: Etapa 1 ✅ | Etapa 2 ⬜ | Etapa 3 ⬜ | Etapa 4 ⬜ | Etapa 5 ⬜
+
+---
+
+## Etapa 1 — Touch Targets 44px ✅
+- [x] Classe utilitária `.touch-target` adicionada ao `index.css` (min-h/min-w 44px)
+- [x] Button `size="icon"` já garante 44px — removidas overrides `h-8 w-8`, `h-7 w-7`, `h-6 w-6` em ~12 componentes user-facing
+- [x] Componentes corrigidos: OnboardingWizard, OnboardingChecklist, SyncQueuePanel, FirstTimesAlbum, UpdatePrompt, FoodIntroductionDiary, StimulationBank, RoutinePlanner, EnxovalMobileCard, ExamChecklist
+- [x] Componentes admin mantidos com tamanhos menores (desktop-only)
+
+## Etapa 2 — Reduced Motion + Animações Seguras ⬜
+- [ ] `@media (prefers-reduced-motion: reduce)` global no `index.css`
+- [ ] Desabilitar `animate-*` e reduzir `transition-*`
+- [ ] Aplicar `motion-safe:` em componentes com animação pesada
+
+## Etapa 3 — Loading States Padronizados ⬜
+- [ ] Verificar/criar `PageLoader` reutilizável
+- [ ] Aplicar em ~10 páginas com `isLoading` sem feedback visual
+
+## Etapa 4 — Empty States Unificados ⬜
+- [ ] Substituir `<p>Nenhum...</p>` pelo componente `EmptyState`
+- [ ] Aplicar em ~15-20 listas/tabelas sem mensagem orientativa
+
+## Etapa 5 — Dark Mode: Cores Hardcoded ⬜
+- [ ] Auditar cores literais (bg-pink-50, text-green-600, etc.)
+- [ ] Adicionar variantes `dark:` nos componentes mais visíveis
