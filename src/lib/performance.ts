@@ -102,7 +102,8 @@ export const trackApiCall = (
   endpoint: string,
   method: string,
   duration: number,
-  status: number
+  status: number,
+  requestId?: string | null
 ): void => {
   const metric: ApiMetric = {
     endpoint,
@@ -123,7 +124,7 @@ export const trackApiCall = (
   if (duration > 2000) {
     logPerformance(`${method} ${endpoint}`, duration, {
       operationType: 'api_call',
-      metadata: { status, method, endpoint },
+      metadata: { status, method, endpoint, requestId: requestId || undefined },
     });
   }
 
