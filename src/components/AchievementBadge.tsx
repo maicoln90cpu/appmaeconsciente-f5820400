@@ -46,7 +46,7 @@ export const AchievementBadge = ({ achievement }: AchievementBadgeProps) => {
       <Card
         className={`cursor-pointer transition-all hover:scale-105 ${
           achievement.unlocked
-            ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 border-yellow-300'
+            ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 border-yellow-300 dark:border-yellow-700'
             : 'opacity-50 grayscale'
         }`}
         onClick={() => achievement.unlocked && setOpen(true)}
@@ -54,14 +54,14 @@ export const AchievementBadge = ({ achievement }: AchievementBadgeProps) => {
         <CardContent className="p-6 text-center">
           <div
             className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-3 ${
-              achievement.unlocked ? 'bg-yellow-500 text-white' : 'bg-muted text-muted-foreground'
+              achievement.unlocked ? 'bg-yellow-500 dark:bg-yellow-600 text-white' : 'bg-muted text-muted-foreground'
             }`}
           >
             <Icon className="h-8 w-8" />
           </div>
           <h3 className="font-semibold text-sm mb-1">{achievement.name}</h3>
           {achievement.unlocked ? (
-            <Badge className="bg-green-500 text-xs">Desbloqueada</Badge>
+            <Badge className="bg-green-500 dark:bg-green-600 text-white text-xs">Desbloqueada</Badge>
           ) : achievement.progress !== undefined && achievement.total !== undefined ? (
             <div className="mt-2">
               <div className="w-full bg-muted rounded-full h-2 mb-1">

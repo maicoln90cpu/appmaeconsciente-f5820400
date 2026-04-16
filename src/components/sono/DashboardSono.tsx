@@ -191,9 +191,9 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
   const getStatusColor = () => {
     if (!currentMilestone) return 'text-muted-foreground';
     const totalHours = stats.totalHours24h;
-    if (totalHours >= currentMilestone.recommended_total_hours_min) return 'text-green-600';
-    if (totalHours >= currentMilestone.recommended_total_hours_min - 2) return 'text-yellow-600';
-    return 'text-red-600';
+    if (totalHours >= currentMilestone.recommended_total_hours_min) return 'text-green-600 dark:text-green-400';
+    if (totalHours >= currentMilestone.recommended_total_hours_min - 2) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-red-600 dark:text-red-400';
   };
 
   return (

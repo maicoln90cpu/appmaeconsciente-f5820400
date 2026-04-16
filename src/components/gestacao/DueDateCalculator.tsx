@@ -93,9 +93,9 @@ export const DueDateCalculator = () => {
 
   // Trimester colors
   const trimesterColors = {
-    1: 'text-pink-500',
-    2: 'text-purple-500',
-    3: 'text-blue-500',
+    1: 'text-pink-500 dark:text-pink-400',
+    2: 'text-purple-500 dark:text-purple-400',
+    3: 'text-blue-500 dark:text-blue-400',
   };
 
   if (isLoading) {

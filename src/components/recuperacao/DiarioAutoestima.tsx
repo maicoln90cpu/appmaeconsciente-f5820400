@@ -101,7 +101,7 @@ export const DiarioAutoestima = () => {
   return (
     <div className="space-y-6">
       {/* Header com mensagem de acolhimento */}
-      <Card className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-950/20 dark:to-purple-950/20 border-pink-200">
+      <Card className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-950/20 dark:to-purple-950/20 border-pink-200 dark:border-pink-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Heart className="h-6 w-6 text-pink-500" />

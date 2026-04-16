@@ -27,10 +27,10 @@ const ONBOARDING_STEPS = [
         <p className="text-foreground">
           Este é um espaço de acompanhamento com amor, não de comparação ou paranoia.
         </p>
-        <Alert className="border-pink-200 bg-pink-50">
-          <AlertCircle className="h-4 w-4 text-pink-600" />
-          <AlertTitle className="text-pink-800">Importante saber</AlertTitle>
-          <AlertDescription className="text-pink-700">
+        <Alert className="border-pink-200 dark:border-pink-800 bg-pink-50 dark:bg-pink-950/20">
+          <AlertCircle className="h-4 w-4 text-pink-600 dark:text-pink-400" />
+          <AlertTitle className="text-pink-800 dark:text-pink-300">Importante saber</AlertTitle>
+          <AlertDescription className="text-pink-700 dark:text-pink-400">
             Cada bebê tem seu próprio ritmo único e especial. As idades apresentadas são referências
             médias, não regras absolutas.
           </AlertDescription>
