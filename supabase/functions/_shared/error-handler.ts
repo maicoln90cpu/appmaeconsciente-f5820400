@@ -56,6 +56,7 @@ export function createErrorResponse(
 ): Response {
   const error = ErrorCodes[errorCode];
   const corsHeaders = getCorsHeaders(req.headers.get('Origin'));
+  const requestId = req.headers.get('x-request-id');
   
   const body = {
     success: false,
@@ -64,10 +65,11 @@ export function createErrorResponse(
       message: error.message,
       ...(details && { details }),
     },
+    ...(requestId && { requestId }),
     timestamp: new Date().toISOString(),
   };
   
-  console.error(`[${error.code}] ${error.message}${details ? `: ${details}` : ''}`);
+  console.error(`[${error.code}]${requestId ? ` [rid:${requestId}]` : ''} ${error.message}${details ? `: ${details}` : ''}`);
   
   return new Response(JSON.stringify(body), {
     status: error.statusCode,
@@ -104,10 +106,15 @@ export function withErrorHandling(
   handler: (req: Request) => Promise<Response>
 ): (req: Request) => Promise<Response> {
   return async (req: Request): Promise<Response> => {
+    const requestId = req.headers.get('x-request-id');
+    if (requestId) {
+      console.log(`[rid:${requestId}] ${req.method} ${new URL(req.url).pathname}`);
+    }
+
     try {
       return await handler(req);
     } catch (error) {
-      console.error('Unhandled error in edge function:', error);
+      console.error(`Unhandled error in edge function${requestId ? ` [rid:${requestId}]` : ''}:`, error);
       
       const message = error instanceof Error ? error.message : 'Erro desconhecido';
       return createErrorResponse('INTERNAL_ERROR', req, message);
@@ -152,12 +159,15 @@ export async function parseRequestBody<T = Record<string, unknown>>(
 export function logEvent(
   level: 'info' | 'warn' | 'error',
   event: string,
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>,
+  req?: Request
 ): void {
+  const requestId = req?.headers.get('x-request-id');
   const logEntry = {
     level,
     event,
     timestamp: new Date().toISOString(),
+    ...(requestId && { requestId }),
     ...(data && { data }),
   };
   
