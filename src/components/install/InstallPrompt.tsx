@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Download, X, Share, PlusSquare, Smartphone } from 'lucide-react';
 
-import { logger } from "@/lib/logger";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { Download, X, Share, PlusSquare, Smartphone } from "lucide-react";
+import { logger } from '@/lib/logger';
+
 
 export const InstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -26,8 +27,8 @@ export const InstallPrompt = () => {
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      
-      const dismissed = localStorage.getItem("install-prompt-dismissed");
+
+      const dismissed = localStorage.getItem('install-prompt-dismissed');
       if (!dismissed) {
         setTimeout(() => setShowPrompt(true), 3000); // Mostrar após 3 segundos
       }
@@ -35,14 +36,14 @@ export const InstallPrompt = () => {
 
     // iOS não dispara beforeinstallprompt, então mostramos instruções manualmente
     if (iOS && !standalone) {
-      const dismissed = localStorage.getItem("install-prompt-dismissed");
+      const dismissed = localStorage.getItem('install-prompt-dismissed');
       if (!dismissed) {
         setTimeout(() => setShowPrompt(true), 3000);
       }
     }
 
-    window.addEventListener("beforeinstallprompt", handler);
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
   const handleInstall = async () => {
@@ -50,18 +51,18 @@ export const InstallPrompt = () => {
 
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    
-    if (outcome === "accepted") {
-      logger.info("PWA installed");
+
+    if (outcome === 'accepted') {
+      logger.info('PWA installed');
     }
-    
+
     setDeferredPrompt(null);
     setShowPrompt(false);
   };
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    localStorage.setItem("install-prompt-dismissed", "true");
+    localStorage.setItem('install-prompt-dismissed', 'true');
   };
 
   if (!showPrompt || isStandalone) return null;
@@ -77,9 +78,7 @@ export const InstallPrompt = () => {
               </div>
               <div>
                 <CardTitle className="text-lg">Instalar App</CardTitle>
-                <CardDescription>
-                  Acesso rápido na tela inicial
-                </CardDescription>
+                <CardDescription>Acesso rápido na tela inicial</CardDescription>
               </div>
             </div>
             <Button size="icon" variant="ghost" onClick={handleDismiss} aria-label="Fechar">
@@ -101,7 +100,9 @@ export const InstallPrompt = () => {
                   <PlusSquare className="h-4 w-4 shrink-0" />
                   Selecione <strong>"Adicionar à Tela de Início"</strong>
                 </li>
-                <li>Toque em <strong>"Adicionar"</strong></li>
+                <li>
+                  Toque em <strong>"Adicionar"</strong>
+                </li>
               </ol>
             </div>
           ) : (

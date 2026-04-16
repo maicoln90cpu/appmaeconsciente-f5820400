@@ -1,13 +1,23 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Trash2, Copy } from "lucide-react";
+import { useState } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { formatDistance } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Trash2, Copy } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -15,14 +25,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { formatDistance } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { toast } from "sonner";
+} from '@/components/ui/table';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface NewCoupon {
   code: string;
-  discount_type: "percentage" | "fixed";
+  discount_type: 'percentage' | 'fixed';
   discount_value: number;
   product_id: string;
   max_uses: number | null;
@@ -32,22 +42,22 @@ interface NewCoupon {
 export const CouponManagement = () => {
   const queryClient = useQueryClient();
   const [newCoupon, setNewCoupon] = useState<NewCoupon>({
-    code: "",
-    discount_type: "percentage",
+    code: '',
+    discount_type: 'percentage',
     discount_value: 10,
-    product_id: "",
+    product_id: '',
     max_uses: null,
-    expires_at: "",
+    expires_at: '',
   });
 
   // Fetch products
   const { data: products } = useQuery({
-    queryKey: ["products"],
+    queryKey: ['products'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("products")
-        .select("id, title")
-        .eq("is_active", true);
+        .from('products')
+        .select('id, title')
+        .eq('is_active', true);
       if (error) throw error;
       return data;
     },
@@ -55,15 +65,17 @@ export const CouponManagement = () => {
 
   // Fetch coupons
   const { data: coupons, isLoading } = useQuery({
-    queryKey: ["coupons"],
+    queryKey: ['coupons'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("coupons")
-        .select(`
+        .from('coupons')
+        .select(
+          `
           *,
           products:product_id (title)
-        `)
-        .order("created_at", { ascending: false });
+        `
+        )
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
     },
@@ -72,11 +84,13 @@ export const CouponManagement = () => {
   // Create coupon
   const createMutation = useMutation({
     mutationFn: async (coupon: NewCoupon) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from("coupons")
+        .from('coupons')
         .insert({
           ...coupon,
           created_by: user.id,
@@ -89,31 +103,31 @@ export const CouponManagement = () => {
       return data;
     },
     onSuccess: () => {
-      toast("Cupom criado com sucesso!");
+      toast('Cupom criado com sucesso!');
       setNewCoupon({
-        code: "",
-        discount_type: "percentage",
+        code: '',
+        discount_type: 'percentage',
         discount_value: 10,
-        product_id: "",
+        product_id: '',
         max_uses: null,
-        expires_at: "",
+        expires_at: '',
       });
-      queryClient.invalidateQueries({ queryKey: ["coupons"] });
+      queryClient.invalidateQueries({ queryKey: ['coupons'] });
     },
     onError: (error: any) => {
-      toast.error("Erro ao criar cupom", { description: error.message });
+      toast.error('Erro ao criar cupom', { description: error.message });
     },
   });
 
   // Delete coupon
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("coupons").delete().eq("id", id);
+      const { error } = await supabase.from('coupons').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast("Cupom deletado");
-      queryClient.invalidateQueries({ queryKey: ["coupons"] });
+      toast('Cupom deletado');
+      queryClient.invalidateQueries({ queryKey: ['coupons'] });
     },
   });
 
@@ -124,7 +138,7 @@ export const CouponManagement = () => {
 
   const copyToClipboard = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast("Código copiado!");
+    toast('Código copiado!');
   };
 
   return (
@@ -142,9 +156,7 @@ export const CouponManagement = () => {
                 <Input
                   id="code"
                   value={newCoupon.code}
-                  onChange={(e) =>
-                    setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })
-                  }
+                  onChange={e => setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })}
                   placeholder="EX: BEMVINDA10"
                 />
                 <Button type="button" variant="outline" onClick={generateRandomCode}>
@@ -157,13 +169,13 @@ export const CouponManagement = () => {
               <Label htmlFor="product">Produto</Label>
               <Select
                 value={newCoupon.product_id}
-                onValueChange={(value) => setNewCoupon({ ...newCoupon, product_id: value })}
+                onValueChange={value => setNewCoupon({ ...newCoupon, product_id: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um produto" />
                 </SelectTrigger>
                 <SelectContent>
-                  {products?.map((product) => (
+                  {products?.map(product => (
                     <SelectItem key={product.id} value={product.id}>
                       {product.title}
                     </SelectItem>
@@ -176,7 +188,7 @@ export const CouponManagement = () => {
               <Label htmlFor="discount_type">Tipo de Desconto</Label>
               <Select
                 value={newCoupon.discount_type}
-                onValueChange={(value: "percentage" | "fixed") =>
+                onValueChange={(value: 'percentage' | 'fixed') =>
                   setNewCoupon({ ...newCoupon, discount_type: value })
                 }
               >
@@ -192,13 +204,13 @@ export const CouponManagement = () => {
 
             <div className="space-y-2">
               <Label htmlFor="discount_value">
-                Valor {newCoupon.discount_type === "percentage" ? "(%)" : "(R$)"}
+                Valor {newCoupon.discount_type === 'percentage' ? '(%)' : '(R$)'}
               </Label>
               <Input
                 id="discount_value"
                 type="number"
                 value={newCoupon.discount_value}
-                onChange={(e) =>
+                onChange={e =>
                   setNewCoupon({ ...newCoupon, discount_value: Number(e.target.value) })
                 }
               />
@@ -209,8 +221,8 @@ export const CouponManagement = () => {
               <Input
                 id="max_uses"
                 type="number"
-                value={newCoupon.max_uses || ""}
-                onChange={(e) =>
+                value={newCoupon.max_uses || ''}
+                onChange={e =>
                   setNewCoupon({
                     ...newCoupon,
                     max_uses: e.target.value ? Number(e.target.value) : null,
@@ -226,7 +238,7 @@ export const CouponManagement = () => {
                 id="expires_at"
                 type="datetime-local"
                 value={newCoupon.expires_at}
-                onChange={(e) => setNewCoupon({ ...newCoupon, expires_at: e.target.value })}
+                onChange={e => setNewCoupon({ ...newCoupon, expires_at: e.target.value })}
               />
             </div>
           </div>
@@ -279,12 +291,12 @@ export const CouponManagement = () => {
                     </TableCell>
                     <TableCell>{coupon.products?.title}</TableCell>
                     <TableCell>
-                      {coupon.discount_type === "percentage"
+                      {coupon.discount_type === 'percentage'
                         ? `${coupon.discount_value}%`
                         : `R$ ${coupon.discount_value}`}
                     </TableCell>
                     <TableCell>
-                      {coupon.current_uses}/{coupon.max_uses || "∞"}
+                      {coupon.current_uses}/{coupon.max_uses || '∞'}
                     </TableCell>
                     <TableCell>
                       {coupon.expires_at
@@ -292,11 +304,11 @@ export const CouponManagement = () => {
                             addSuffix: true,
                             locale: ptBR,
                           })
-                        : "Sem expiração"}
+                        : 'Sem expiração'}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={coupon.is_active ? "default" : "secondary"}>
-                        {coupon.is_active ? "Ativo" : "Inativo"}
+                      <Badge variant={coupon.is_active ? 'default' : 'secondary'}>
+                        {coupon.is_active ? 'Ativo' : 'Inativo'}
                       </Badge>
                     </TableCell>
                     <TableCell>

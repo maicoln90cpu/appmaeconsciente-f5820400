@@ -1,15 +1,35 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
-import { Search, Clock, Users, ChefHat, BookOpen, Heart, ChevronDown, ChevronUp, Save } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useFavorites } from "@/hooks/useFavorites";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState, useEffect } from 'react';
+
+import {
+  Search,
+  Clock,
+  Users,
+  ChefHat,
+  BookOpen,
+  Heart,
+  ChevronDown,
+  ChevronUp,
+  Save,
+} from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useFavorites } from '@/hooks/useFavorites';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface Recipe {
   id: string;
@@ -28,18 +48,18 @@ interface Recipe {
 }
 
 const CATEGORIES = {
-  cafe_manha: "Café da Manhã",
-  almoco: "Almoço",
-  jantar: "Jantar",
-  lanche: "Lanche",
-  sobremesa: "Sobremesa"
+  cafe_manha: 'Café da Manhã',
+  almoco: 'Almoço',
+  jantar: 'Jantar',
+  lanche: 'Lanche',
+  sobremesa: 'Sobremesa',
 };
 
 export function Receitas() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [filteredRecipes, setFilteredRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null);
   const [selectedPrepTime, setSelectedPrepTime] = useState<string | null>(null);
@@ -61,7 +81,9 @@ export function Receitas() {
     try {
       const { data, error } = await supabase
         .from('recipes')
-        .select('id, title, description, category, ingredients, preparation, prep_time, servings, calories, proteins, carbs, fats, nutrients, image_url, tags, trimester_focus, tips, is_public, created_at')
+        .select(
+          'id, title, description, category, ingredients, preparation, prep_time, servings, calories, proteins, carbs, fats, nutrients, image_url, tags, trimester_focus, tips, is_public, created_at'
+        )
         .eq('is_public', true)
         .order('title');
 
@@ -78,9 +100,10 @@ export function Receitas() {
     let filtered = recipes;
 
     if (searchTerm) {
-      filtered = filtered.filter(recipe =>
-        recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        recipe.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        recipe =>
+          recipe.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          recipe.description?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -89,22 +112,19 @@ export function Receitas() {
     }
 
     if (selectedTrimester) {
-      filtered = filtered.filter(recipe => 
-        recipe.trimester_focus && recipe.trimester_focus.includes(parseInt(selectedTrimester))
+      filtered = filtered.filter(
+        recipe =>
+          recipe.trimester_focus && recipe.trimester_focus.includes(parseInt(selectedTrimester))
       );
     }
 
     if (selectedPrepTime) {
       const maxTime = parseInt(selectedPrepTime);
-      filtered = filtered.filter(recipe => 
-        recipe.prep_time && recipe.prep_time <= maxTime
-      );
+      filtered = filtered.filter(recipe => recipe.prep_time && recipe.prep_time <= maxTime);
     }
 
     if (selectedTag) {
-      filtered = filtered.filter(recipe =>
-        recipe.tags && recipe.tags.includes(selectedTag)
-      );
+      filtered = filtered.filter(recipe => recipe.tags && recipe.tags.includes(selectedTag));
     }
 
     setFilteredRecipes(filtered);
@@ -191,7 +211,7 @@ export function Receitas() {
             <Input
               placeholder="Buscar receitas..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -200,7 +220,7 @@ export function Receitas() {
         {/* Filtros de Categoria */}
         <div className="flex gap-2 overflow-x-auto pb-2">
           <Button
-            variant={selectedCategory === null ? "default" : "outline"}
+            variant={selectedCategory === null ? 'default' : 'outline'}
             onClick={() => setSelectedCategory(null)}
             size="sm"
           >
@@ -209,7 +229,7 @@ export function Receitas() {
           {Object.entries(CATEGORIES).map(([key, label]) => (
             <Button
               key={key}
-              variant={selectedCategory === key ? "default" : "outline"}
+              variant={selectedCategory === key ? 'default' : 'outline'}
               onClick={() => setSelectedCategory(key)}
               size="sm"
               className="whitespace-nowrap"
@@ -221,7 +241,10 @@ export function Receitas() {
 
         {/* Filtros Avançados */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Select value={selectedTrimester || ""} onValueChange={(v) => setSelectedTrimester(v || null)}>
+          <Select
+            value={selectedTrimester || ''}
+            onValueChange={v => setSelectedTrimester(v || null)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Trimestre" />
             </SelectTrigger>
@@ -233,7 +256,10 @@ export function Receitas() {
             </SelectContent>
           </Select>
 
-          <Select value={selectedPrepTime || ""} onValueChange={(v) => setSelectedPrepTime(v || null)}>
+          <Select
+            value={selectedPrepTime || ''}
+            onValueChange={v => setSelectedPrepTime(v || null)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Tempo de preparo" />
             </SelectTrigger>
@@ -246,14 +272,16 @@ export function Receitas() {
             </SelectContent>
           </Select>
 
-          <Select value={selectedTag || ""} onValueChange={(v) => setSelectedTag(v || null)}>
+          <Select value={selectedTag || ''} onValueChange={v => setSelectedTag(v || null)}>
             <SelectTrigger>
               <SelectValue placeholder="Tags nutricionais" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="">Todas as tags</SelectItem>
               {allTags.map(tag => (
-                <SelectItem key={tag} value={tag}>{tag}</SelectItem>
+                <SelectItem key={tag} value={tag}>
+                  {tag}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -265,16 +293,16 @@ export function Receitas() {
           <BookOpen className="h-4 w-4" />
           <AlertDescription>
             {recipes.length === 0
-              ? "Em breve teremos receitas deliciosas e nutritivas para você!"
-              : "Nenhuma receita encontrada com os filtros selecionados."}
+              ? 'Em breve teremos receitas deliciosas e nutritivas para você!'
+              : 'Nenhuma receita encontrada com os filtros selecionados.'}
           </AlertDescription>
         </Alert>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
-          {filteredRecipes.map((recipe) => {
+          {filteredRecipes.map(recipe => {
             const isExpanded = expandedRecipes.has(recipe.id);
             const isFav = isFavorite(recipe.id);
-            
+
             return (
               <Card key={recipe.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
@@ -320,29 +348,32 @@ export function Receitas() {
                   </div>
 
                   {/* Informações Nutricionais */}
-                  {recipe.nutrients && (recipe.nutrients.proteins || recipe.nutrients.carbs || recipe.nutrients.fats) && (
-                    <div className="grid grid-cols-3 gap-2 p-3 bg-muted/50 rounded-lg">
-                      {recipe.nutrients.proteins && (
-                        <div className="text-center">
-                          <p className="text-xs text-muted-foreground">Proteínas</p>
-                          <p className="font-semibold text-sm">{recipe.nutrients.proteins}g</p>
-                        </div>
-                      )}
-                      {recipe.nutrients.carbs && (
-                        <div className="text-center">
-                          <p className="text-xs text-muted-foreground">Carboidratos</p>
-                          <p className="font-semibold text-sm">{recipe.nutrients.carbs}g</p>
-                        </div>
-                      )}
-                      {recipe.nutrients.fats && (
-                        <div className="text-center">
-                          <p className="text-xs text-muted-foreground">Gorduras</p>
-                          <p className="font-semibold text-sm">{recipe.nutrients.fats}g</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  
+                  {recipe.nutrients &&
+                    (recipe.nutrients.proteins ||
+                      recipe.nutrients.carbs ||
+                      recipe.nutrients.fats) && (
+                      <div className="grid grid-cols-3 gap-2 p-3 bg-muted/50 rounded-lg">
+                        {recipe.nutrients.proteins && (
+                          <div className="text-center">
+                            <p className="text-xs text-muted-foreground">Proteínas</p>
+                            <p className="font-semibold text-sm">{recipe.nutrients.proteins}g</p>
+                          </div>
+                        )}
+                        {recipe.nutrients.carbs && (
+                          <div className="text-center">
+                            <p className="text-xs text-muted-foreground">Carboidratos</p>
+                            <p className="font-semibold text-sm">{recipe.nutrients.carbs}g</p>
+                          </div>
+                        )}
+                        {recipe.nutrients.fats && (
+                          <div className="text-center">
+                            <p className="text-xs text-muted-foreground">Gorduras</p>
+                            <p className="font-semibold text-sm">{recipe.nutrients.fats}g</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                   {/* Aviso para receitas sem info nutricional */}
                   {!recipe.nutrients && (
                     <div className="p-3 bg-muted/30 rounded-lg">
@@ -354,7 +385,7 @@ export function Receitas() {
 
                   {recipe.trimester_focus && recipe.trimester_focus.length > 0 && (
                     <div className="flex gap-2">
-                      {recipe.trimester_focus.map((trimester) => (
+                      {recipe.trimester_focus.map(trimester => (
                         <Badge key={trimester} variant="outline" className="text-xs">
                           {trimester}º Trimestre
                         </Badge>
@@ -366,9 +397,11 @@ export function Receitas() {
                   <div>
                     <h4 className="font-semibold mb-2">Ingredientes:</h4>
                     <ul className="list-disc list-inside space-y-1 text-sm">
-                      {(isExpanded ? recipe.ingredients : recipe.ingredients.slice(0, 4)).map((ingredient, index) => (
-                        <li key={index}>{ingredient}</li>
-                      ))}
+                      {(isExpanded ? recipe.ingredients : recipe.ingredients.slice(0, 4)).map(
+                        (ingredient, index) => (
+                          <li key={index}>{ingredient}</li>
+                        )
+                      )}
                       {!isExpanded && recipe.ingredients.length > 4 && (
                         <li className="text-muted-foreground">
                           + {recipe.ingredients.length - 4} ingredientes...
@@ -390,7 +423,8 @@ export function Receitas() {
                       ) : (
                         <p className="text-sm text-muted-foreground line-clamp-2">
                           {recipe.preparation[0]}
-                          {recipe.preparation.length > 1 && ` (+ ${recipe.preparation.length - 1} passos)`}
+                          {recipe.preparation.length > 1 &&
+                            ` (+ ${recipe.preparation.length - 1} passos)`}
                         </p>
                       )}
                     </div>
@@ -398,7 +432,7 @@ export function Receitas() {
 
                   {recipe.tags && recipe.tags.length > 0 && (
                     <div className="flex flex-wrap gap-2">
-                      {recipe.tags.map((tag) => (
+                      {recipe.tags.map(tag => (
                         <Badge key={tag} variant="secondary" className="text-xs">
                           {tag}
                         </Badge>
@@ -431,7 +465,9 @@ export function Receitas() {
                     <div className="pt-4 border-t mt-4">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-semibold text-foreground">Minhas Anotações</h4>
+                          <h4 className="text-sm font-semibold text-foreground">
+                            Minhas Anotações
+                          </h4>
                           {editingNotes !== recipe.id && (
                             <Button
                               variant="ghost"
@@ -442,12 +478,12 @@ export function Receitas() {
                             </Button>
                           )}
                         </div>
-                        
+
                         {editingNotes === recipe.id ? (
                           <div className="space-y-2">
                             <Textarea
                               value={noteText}
-                              onChange={(e) => setNoteText(e.target.value)}
+                              onChange={e => setNoteText(e.target.value)}
                               placeholder="Adicione ajustes, substituições, ou observações pessoais sobre esta receita..."
                               className="min-h-[100px]"
                             />
@@ -460,11 +496,7 @@ export function Receitas() {
                                 <Save className="h-4 w-4" />
                                 Salvar
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={handleCancelNotes}
-                              >
+                              <Button size="sm" variant="outline" onClick={handleCancelNotes}>
                                 Cancelar
                               </Button>
                             </div>

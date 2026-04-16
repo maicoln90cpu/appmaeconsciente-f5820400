@@ -1,19 +1,36 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Calendar, MapPin, User, Clock, CheckCircle2, Trash2 } from "lucide-react";
-import { useBabyAppointments, APPOINTMENT_TYPES } from "@/hooks/useBabyAppointments";
-import { format, isToday, isTomorrow, isPast, addDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState } from 'react';
+
+import { format, isToday, isTomorrow, isPast, addDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Calendar, MapPin, User, Clock, CheckCircle2, Trash2 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+
+
+import { useBabyAppointments, APPOINTMENT_TYPES } from '@/hooks/useBabyAppointments';
+
 
 interface AppointmentOrganizerProps {
   babyProfileId?: string;
@@ -33,14 +50,14 @@ export const AppointmentOrganizer = ({ babyProfileId }: AppointmentOrganizerProp
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    appointment_type: "pediatra",
-    doctor_name: "",
-    location: "",
-    scheduled_date: "",
-    scheduled_time: "",
+    title: '',
+    appointment_type: 'pediatra',
+    doctor_name: '',
+    location: '',
+    scheduled_date: '',
+    scheduled_time: '',
     duration_minutes: 30,
-    notes: "",
+    notes: '',
   });
 
   const handleSubmit = () => {
@@ -57,14 +74,14 @@ export const AppointmentOrganizer = ({ babyProfileId }: AppointmentOrganizerProp
     });
 
     setFormData({
-      title: "",
-      appointment_type: "pediatra",
-      doctor_name: "",
-      location: "",
-      scheduled_date: "",
-      scheduled_time: "",
+      title: '',
+      appointment_type: 'pediatra',
+      doctor_name: '',
+      location: '',
+      scheduled_date: '',
+      scheduled_time: '',
       duration_minutes: 30,
-      notes: "",
+      notes: '',
     });
     setIsOpen(false);
   };
@@ -80,7 +97,13 @@ export const AppointmentOrganizer = ({ babyProfileId }: AppointmentOrganizerProp
     return APPOINTMENT_TYPES.find(t => t.value === type) || APPOINTMENT_TYPES[6];
   };
 
-  const AppointmentCard = ({ appointment, showCompleteButton = true }: { appointment: typeof upcomingAppointments[0], showCompleteButton?: boolean }) => {
+  const AppointmentCard = ({
+    appointment,
+    showCompleteButton = true,
+  }: {
+    appointment: (typeof upcomingAppointments)[0];
+    showCompleteButton?: boolean;
+  }) => {
     const typeInfo = getTypeInfo(appointment.appointment_type);
     const dateLabel = getDateLabel(appointment.scheduled_date);
 
@@ -175,7 +198,10 @@ export const AppointmentOrganizer = ({ babyProfileId }: AppointmentOrganizerProp
             </div>
             <div className="space-y-2">
               {todayAppointments.map(apt => (
-                <div key={apt.id} className="flex items-center justify-between bg-background rounded p-2">
+                <div
+                  key={apt.id}
+                  className="flex items-center justify-between bg-background rounded p-2"
+                >
                   <div className="flex items-center gap-2">
                     <span>{getTypeInfo(apt.appointment_type).icon}</span>
                     <span className="font-medium">{apt.title}</span>
@@ -259,7 +285,9 @@ export const AppointmentOrganizer = ({ babyProfileId }: AppointmentOrganizerProp
                     <Input
                       type="date"
                       value={formData.scheduled_date}
-                      onChange={e => setFormData(prev => ({ ...prev, scheduled_date: e.target.value }))}
+                      onChange={e =>
+                        setFormData(prev => ({ ...prev, scheduled_date: e.target.value }))
+                      }
                     />
                   </div>
                   <div className="space-y-2">
@@ -267,7 +295,9 @@ export const AppointmentOrganizer = ({ babyProfileId }: AppointmentOrganizerProp
                     <Input
                       type="time"
                       value={formData.scheduled_time}
-                      onChange={e => setFormData(prev => ({ ...prev, scheduled_time: e.target.value }))}
+                      onChange={e =>
+                        setFormData(prev => ({ ...prev, scheduled_time: e.target.value }))
+                      }
                     />
                   </div>
                 </div>

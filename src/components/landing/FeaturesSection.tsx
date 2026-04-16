@@ -1,6 +1,18 @@
-import { useRef, useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Heart, ShieldCheck, TrendingUp, Baby, Star, Users, BookOpen, HeadphonesIcon, Sparkles } from "lucide-react";
+import { useRef, useState, useEffect } from 'react';
+
+import {
+  Heart,
+  ShieldCheck,
+  TrendingUp,
+  Baby,
+  Star,
+  Users,
+  BookOpen,
+  HeadphonesIcon,
+  Sparkles,
+} from 'lucide-react';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Feature {
   icon: React.ReactNode;
@@ -11,31 +23,32 @@ interface Feature {
 const features: Feature[] = [
   {
     icon: <Heart className="h-8 w-8" />,
-    title: "Feito com Carinho",
-    description: "Cada ferramenta foi desenvolvida pensando nas necessidades reais de mães brasileiras"
+    title: 'Feito com Carinho',
+    description:
+      'Cada ferramenta foi desenvolvida pensando nas necessidades reais de mães brasileiras',
   },
   {
     icon: <ShieldCheck className="h-8 w-8" />,
-    title: "100% Seguro",
-    description: "Seus dados são protegidos com criptografia de ponta e nunca compartilhados"
+    title: '100% Seguro',
+    description: 'Seus dados são protegidos com criptografia de ponta e nunca compartilhados',
   },
   {
     icon: <TrendingUp className="h-8 w-8" />,
-    title: "Economia Comprovada",
-    description: "Nossas usuárias economizam em média R$ 2.000+ no enxoval do bebê"
+    title: 'Economia Comprovada',
+    description: 'Nossas usuárias economizam em média R$ 2.000+ no enxoval do bebê',
   },
   {
     icon: <Sparkles className="h-8 w-8" />,
-    title: "IA Integrada",
-    description: "Insights inteligentes para sono, alimentação e desenvolvimento do seu bebê"
-  }
+    title: 'IA Integrada',
+    description: 'Insights inteligentes para sono, alimentação e desenvolvimento do seu bebê',
+  },
 ];
 
 const stats = [
-  { value: "10.000+", label: "Mães Atendidas", icon: <Users className="h-6 w-6" /> },
-  { value: "15+", label: "Ferramentas", icon: <BookOpen className="h-6 w-6" /> },
-  { value: "4.9★", label: "Avaliação Média", icon: <Star className="h-6 w-6" /> },
-  { value: "24/7", label: "Suporte Ativo", icon: <HeadphonesIcon className="h-6 w-6" /> }
+  { value: '10.000+', label: 'Mães Atendidas', icon: <Users className="h-6 w-6" /> },
+  { value: '15+', label: 'Ferramentas', icon: <BookOpen className="h-6 w-6" /> },
+  { value: '4.9★', label: 'Avaliação Média', icon: <Star className="h-6 w-6" /> },
+  { value: '24/7', label: 'Suporte Ativo', icon: <HeadphonesIcon className="h-6 w-6" /> },
 ];
 
 function useInView(threshold = 0.2) {
@@ -67,7 +80,7 @@ export function FeaturesSection() {
   const featuresInView = useInView(0.2);
 
   return (
-    <section 
+    <section
       ref={featuresInView.ref as React.RefObject<HTMLElement>}
       className="py-20 md:py-28 bg-muted/30"
     >
@@ -83,8 +96,8 @@ export function FeaturesSection() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {features.map((feature, index) => (
-            <Card 
-              key={index} 
+            <Card
+              key={index}
               className={`text-center border-none shadow-soft hover:shadow-medium transition-all duration-300 hover:-translate-y-1 ${
                 featuresInView.isInView ? 'animate-fade-in' : 'opacity-0'
               }`}
@@ -97,9 +110,7 @@ export function FeaturesSection() {
                 <CardTitle className="text-lg">{feature.title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <CardDescription className="text-base">
-                  {feature.description}
-                </CardDescription>
+                <CardDescription className="text-base">{feature.description}</CardDescription>
               </CardContent>
             </Card>
           ))}
@@ -108,8 +119,8 @@ export function FeaturesSection() {
         {/* Stats Section */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className={`text-center p-6 rounded-2xl bg-background shadow-soft ${
                 featuresInView.isInView ? 'animate-fade-in' : 'opacity-0'
               }`}
@@ -121,9 +132,7 @@ export function FeaturesSection() {
               <div className="text-3xl md:text-4xl font-display font-bold text-primary mb-1">
                 {stat.value}
               </div>
-              <div className="text-sm text-muted-foreground">
-                {stat.label}
-              </div>
+              <div className="text-sm text-muted-foreground">{stat.label}</div>
             </div>
           ))}
         </div>

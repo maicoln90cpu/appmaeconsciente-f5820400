@@ -1,14 +1,24 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Clock, Save, Calendar, Zap } from "lucide-react";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Clock, Save, Calendar, Zap } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface CronConfig {
   enabled: boolean;
@@ -43,11 +53,11 @@ export const CronSchedulePanel = () => {
   const [hasChanges, setHasChanges] = useState(false);
 
   const { data: savedConfig } = useQuery({
-    queryKey: ["cron-config"],
+    queryKey: ['cron-config'],
     queryFn: async () => {
       const { data } = await supabase
-        .from("site_settings")
-        .select("automation_config")
+        .from('site_settings')
+        .select('automation_config')
         .limit(1)
         .maybeSingle();
       const ac = (data as any)?.automation_config;
@@ -67,32 +77,32 @@ export const CronSchedulePanel = () => {
   const saveConfig = useMutation({
     mutationFn: async () => {
       const { data: settings } = await supabase
-        .from("site_settings")
-        .select("id, automation_config")
+        .from('site_settings')
+        .select('id, automation_config')
         .limit(1)
         .maybeSingle();
 
-      if (!settings) throw new Error("Settings not found");
+      if (!settings) throw new Error('Settings not found');
 
       const existingConfig = (settings as any).automation_config || {};
       const newConfig = { ...existingConfig, cron: config };
 
       const { error } = await supabase
-        .from("site_settings")
+        .from('site_settings')
         .update({ automation_config: newConfig } as any)
-        .eq("id", settings.id);
+        .eq('id', settings.id);
       if (error) throw error;
     },
     onSuccess: async () => {
       // Sync the real pg_cron job with the new config
       try {
-        await supabase.rpc("sync_cron_schedule");
-        toast.success("Agendamento salvo e cron atualizado automaticamente!");
+        await supabase.rpc('sync_cron_schedule');
+        toast.success('Agendamento salvo e cron atualizado automaticamente!');
       } catch {
-        toast.success("Configurações salvas! (sincronização do cron pendente)");
+        toast.success('Configurações salvas! (sincronização do cron pendente)');
       }
       setHasChanges(false);
-      queryClient.invalidateQueries({ queryKey: ["cron-config"] });
+      queryClient.invalidateQueries({ queryKey: ['cron-config'] });
     },
     onError: (err: any) => toast.error(`Erro: ${err.message}`),
   });
@@ -106,15 +116,18 @@ export const CronSchedulePanel = () => {
           <Calendar className="h-6 w-6 text-primary" />
           Agendamento do Cron
         </h2>
-        <p className="text-muted-foreground">
-          Configure a frequência de execução automática da IA
-        </p>
+        <p className="text-muted-foreground">Configure a frequência de execução automática da IA</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Clock className="h-5 w-5" />Frequência de Execução</CardTitle>
-          <CardDescription>Define quantas vezes por dia a automação roda automaticamente</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Clock className="h-5 w-5" />
+            Frequência de Execução
+          </CardTitle>
+          <CardDescription>
+            Define quantas vezes por dia a automação roda automaticamente
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Enable/Disable */}
@@ -123,22 +136,31 @@ export const CronSchedulePanel = () => {
               <Zap className="h-5 w-5 text-primary" />
               <div>
                 <Label className="text-base font-medium">Automação Ativa</Label>
-                <p className="text-sm text-muted-foreground">Ativar/desativar a execução automática</p>
+                <p className="text-sm text-muted-foreground">
+                  Ativar/desativar a execução automática
+                </p>
               </div>
             </div>
-            <Switch checked={config.enabled} onCheckedChange={(v) => update({ enabled: v })} />
+            <Switch checked={config.enabled} onCheckedChange={v => update({ enabled: v })} />
           </div>
 
           {/* Frequency */}
           <div className="space-y-2">
             <Label>Frequência diária</Label>
-            <Select value={config.frequency} onValueChange={(v) => update({ frequency: v, custom_hours: FREQUENCY_OPTIONS[v]?.hours || [8, 20] })}>
+            <Select
+              value={config.frequency}
+              onValueChange={v =>
+                update({ frequency: v, custom_hours: FREQUENCY_OPTIONS[v]?.hours || [8, 20] })
+              }
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(FREQUENCY_OPTIONS).map(([key, opt]) => (
-                  <SelectItem key={key} value={key}>{opt.label}</SelectItem>
+                  <SelectItem key={key} value={key}>
+                    {opt.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -147,8 +169,10 @@ export const CronSchedulePanel = () => {
               <span className="text-sm text-muted-foreground">Horários: {freq.desc}</span>
             </div>
             <div className="flex flex-wrap gap-1 mt-1">
-              {config.custom_hours.map((h) => (
-                <Badge key={h} variant="secondary">{String(h).padStart(2, '0')}:00</Badge>
+              {config.custom_hours.map(h => (
+                <Badge key={h} variant="secondary">
+                  {String(h).padStart(2, '0')}:00
+                </Badge>
               ))}
             </div>
           </div>
@@ -162,7 +186,10 @@ export const CronSchedulePanel = () => {
                   Bots evitam responder a posts sensíveis (luto, emergência médica, etc.)
                 </p>
               </div>
-              <Switch checked={config.sentiment_filter_enabled} onCheckedChange={(v) => update({ sentiment_filter_enabled: v })} />
+              <Switch
+                checked={config.sentiment_filter_enabled}
+                onCheckedChange={v => update({ sentiment_filter_enabled: v })}
+              />
             </div>
           </div>
 
@@ -175,7 +202,10 @@ export const CronSchedulePanel = () => {
                   IA analisa novos posts e oculta/sinaliza conteúdo impróprio automaticamente
                 </p>
               </div>
-              <Switch checked={config.auto_moderation_enabled} onCheckedChange={(v) => update({ auto_moderation_enabled: v })} />
+              <Switch
+                checked={config.auto_moderation_enabled}
+                onCheckedChange={v => update({ auto_moderation_enabled: v })}
+              />
             </div>
           </div>
 
@@ -193,16 +223,20 @@ export const CronSchedulePanel = () => {
       <Card>
         <CardContent className="pt-6">
           <div className="flex items-start gap-3">
-            <div className="p-2 rounded-lg bg-primary/10"><Calendar className="h-5 w-5 text-primary" /></div>
+            <div className="p-2 rounded-lg bg-primary/10">
+              <Calendar className="h-5 w-5 text-primary" />
+            </div>
             <div>
               <p className="font-medium">Como funciona o agendamento</p>
               <p className="text-sm text-muted-foreground mt-1">
-                A automação roda automaticamente via <strong>pg_cron</strong> nos horários configurados —
-                sem necessidade de clicar "Executar" manualmente. Ao salvar, o cron job
-                real é atualizado instantaneamente. A cada execução, a IA cria posts,
-                respostas e curtidas conforme os parâmetros definidos na aba "Automação IA".
+                A automação roda automaticamente via <strong>pg_cron</strong> nos horários
+                configurados — sem necessidade de clicar "Executar" manualmente. Ao salvar, o cron
+                job real é atualizado instantaneamente. A cada execução, a IA cria posts, respostas
+                e curtidas conforme os parâmetros definidos na aba "Automação IA".
               </p>
-              <Badge variant="outline" className="mt-2">⚡ 100% Automático via pg_cron + pg_net</Badge>
+              <Badge variant="outline" className="mt-2">
+                ⚡ 100% Automático via pg_cron + pg_net
+              </Badge>
             </div>
           </div>
         </CardContent>

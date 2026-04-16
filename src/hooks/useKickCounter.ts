@@ -1,9 +1,14 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import { logger } from "@/lib/logger";
-import { toast } from "sonner";
+import { useState, useRef, useCallback, useEffect } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export interface KickSession {
   id: string;
@@ -32,7 +37,7 @@ export function useKickCounter() {
   useEffect(() => {
     if (isActive) {
       intervalRef.current = setInterval(() => {
-        setElapsedSeconds((s) => s + 1);
+        setElapsedSeconds(s => s + 1);
       }, 1000);
     } else if (intervalRef.current) {
       clearInterval(intervalRef.current);
@@ -45,14 +50,14 @@ export function useKickCounter() {
 
   // Query histórico
   const { data: sessions = [], isLoading } = useQuery({
-    queryKey: ["kick-count-sessions"],
+    queryKey: ['kick-count-sessions'],
     queryFn: async () => {
       const userId = await getAuthenticatedUser();
       const { data, error } = await supabase
-        .from("kick_count_sessions")
-        .select("*")
-        .eq("user_id", userId)
-        .order("started_at", { ascending: false })
+        .from('kick_count_sessions')
+        .select('*')
+        .eq('user_id', userId)
+        .order('started_at', { ascending: false })
         .limit(30);
       if (error) throw error;
       return data as KickSession[];
@@ -64,23 +69,23 @@ export function useKickCounter() {
     mutationFn: async () => {
       const userId = await getAuthenticatedUser();
       const { data, error } = await supabase
-        .from("kick_count_sessions")
+        .from('kick_count_sessions')
         .insert({ user_id: userId, kick_count: 0, target_kicks: 10 })
         .select()
         .single();
       if (error) throw error;
       return data as KickSession;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       setActiveSessionId(data.id);
       setKickCount(0);
       setElapsedSeconds(0);
       setIsActive(true);
-      toast("Sessão iniciada", { description: "Toque cada vez que sentir um movimento 🤰" });
+      toast('Sessão iniciada', { description: 'Toque cada vez que sentir um movimento 🤰' });
     },
-    onError: (e) => {
-      logger.error("Kick session start error", e);
-      toast.error("Erro", { description: "Não foi possível iniciar a sessão" });
+    onError: e => {
+      logger.error('Kick session start error', e);
+      toast.error('Erro', { description: 'Não foi possível iniciar a sessão' });
     },
   });
 
@@ -92,34 +97,34 @@ export function useKickCounter() {
 
     try {
       const { error } = await supabase
-        .from("kick_count_sessions")
+        .from('kick_count_sessions')
         .update({ kick_count: newCount })
-        .eq("id", activeSessionId);
+        .eq('id', activeSessionId);
       if (error) {
-        logger.error("Kick record error", error);
+        logger.error('Kick record error', error);
         setKickCount(kickCount); // rollback UI
-        toast.error("Erro ao salvar chute", { description: "Tente novamente" });
+        toast.error('Erro ao salvar chute', { description: 'Tente novamente' });
       }
     } catch (e) {
-      logger.error("Kick record exception", e);
+      logger.error('Kick record exception', e);
       setKickCount(kickCount); // rollback UI
-      toast.error("Erro ao salvar chute", { description: "Tente novamente" });
+      toast.error('Erro ao salvar chute', { description: 'Tente novamente' });
     }
   }, [activeSessionId, kickCount, toast]);
 
   // Finalizar sessão
   const endSession = useMutation({
     mutationFn: async () => {
-      if (!activeSessionId) throw new Error("No active session");
+      if (!activeSessionId) throw new Error('No active session');
       const durationMinutes = Math.ceil(elapsedSeconds / 60);
       const { data, error } = await supabase
-        .from("kick_count_sessions")
+        .from('kick_count_sessions')
         .update({
           ended_at: new Date().toISOString(),
           kick_count: kickCount,
           duration_minutes: durationMinutes,
         })
-        .eq("id", activeSessionId)
+        .eq('id', activeSessionId)
         .select()
         .single();
       if (error) throw error;
@@ -128,27 +133,26 @@ export function useKickCounter() {
     onSuccess: () => {
       setIsActive(false);
       setActiveSessionId(null);
-      queryClient.invalidateQueries({ queryKey: ["kick-count-sessions"] });
-      toast("Sessão finalizada ✅", { description: `${kickCount} movimentos registrados em ${Math.ceil(elapsedSeconds / 60)} min` });
+      queryClient.invalidateQueries({ queryKey: ['kick-count-sessions'] });
+      toast('Sessão finalizada ✅', {
+        description: `${kickCount} movimentos registrados em ${Math.ceil(elapsedSeconds / 60)} min`,
+      });
     },
-    onError: (e) => {
-      logger.error("Kick session end error", e);
-      toast.error("Erro", { description: "Não foi possível finalizar a sessão" });
+    onError: e => {
+      logger.error('Kick session end error', e);
+      toast.error('Erro', { description: 'Não foi possível finalizar a sessão' });
     },
   });
 
   // Deletar sessão
   const deleteSession = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("kick_count_sessions")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from('kick_count_sessions').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["kick-count-sessions"] });
-      toast("Sessão removida");
+      queryClient.invalidateQueries({ queryKey: ['kick-count-sessions'] });
+      toast('Sessão removida');
     },
   });
 

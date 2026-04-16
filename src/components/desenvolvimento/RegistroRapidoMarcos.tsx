@@ -1,4 +1,10 @@
-import { useState } from "react";
+import { useState } from 'react';
+
+import { CheckCircle2, Calendar } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -6,15 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { DevelopmentMilestoneType } from "@/types/development";
-import { AREA_LABELS, AREA_ICONS } from "@/types/development";
-import { CheckCircle2, Calendar } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { DevelopmentMilestoneType } from '@/types/development';
+import { AREA_LABELS, AREA_ICONS } from '@/types/development';
+
 
 interface RegistroRapidoMarcosProps {
   milestones: DevelopmentMilestoneType[];
@@ -29,7 +33,7 @@ export const RegistroRapidoMarcos = ({
   babyAgeMonths,
   open,
   onOpenChange,
-  onSave
+  onSave,
 }: RegistroRapidoMarcosProps) => {
   const [selectedMilestones, setSelectedMilestones] = useState<Set<string>>(new Set());
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
@@ -41,11 +45,14 @@ export const RegistroRapidoMarcos = ({
   );
 
   // Group by area
-  const milestonesByArea = relevantMilestones.reduce((acc, milestone) => {
-    if (!acc[milestone.area]) acc[milestone.area] = [];
-    acc[milestone.area].push(milestone);
-    return acc;
-  }, {} as Record<string, DevelopmentMilestoneType[]>);
+  const milestonesByArea = relevantMilestones.reduce(
+    (acc, milestone) => {
+      if (!acc[milestone.area]) acc[milestone.area] = [];
+      acc[milestone.area].push(milestone);
+      return acc;
+    },
+    {} as Record<string, DevelopmentMilestoneType[]>
+  );
 
   const handleToggle = (milestoneId: string) => {
     const newSelected = new Set(selectedMilestones);
@@ -89,7 +96,7 @@ export const RegistroRapidoMarcos = ({
                 id="date"
                 type="date"
                 value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
+                onChange={e => setSelectedDate(e.target.value)}
                 max={new Date().toISOString().split('T')[0]}
                 className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
               />
@@ -109,7 +116,7 @@ export const RegistroRapidoMarcos = ({
                   </div>
 
                   <div className="space-y-2 pl-2">
-                    {areaMilestones.map((milestone) => (
+                    {areaMilestones.map(milestone => (
                       <div
                         key={milestone.id}
                         className="flex items-start space-x-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer"
@@ -127,9 +134,7 @@ export const RegistroRapidoMarcos = ({
                           >
                             {milestone.title}
                           </Label>
-                          <p className="text-xs text-muted-foreground">
-                            {milestone.description}
-                          </p>
+                          <p className="text-xs text-muted-foreground">{milestone.description}</p>
                           <Badge variant="secondary" className="text-xs">
                             {milestone.age_min_months}-{milestone.age_max_months} meses
                           </Badge>
@@ -147,15 +152,11 @@ export const RegistroRapidoMarcos = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button 
-            onClick={handleSave}
-            disabled={selectedMilestones.size === 0 || isSubmitting}
-          >
+          <Button onClick={handleSave} disabled={selectedMilestones.size === 0 || isSubmitting}>
             <CheckCircle2 className="h-4 w-4 mr-2" />
-            {isSubmitting 
-              ? "Salvando..." 
-              : `Salvar ${selectedMilestones.size} conquista${selectedMilestones.size !== 1 ? 's' : ''}`
-            }
+            {isSubmitting
+              ? 'Salvando...'
+              : `Salvar ${selectedMilestones.size} conquista${selectedMilestones.size !== 1 ? 's' : ''}`}
           </Button>
         </DialogFooter>
       </DialogContent>

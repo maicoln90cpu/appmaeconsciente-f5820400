@@ -1,22 +1,26 @@
-import { useState } from "react";
+import { useState } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { CheckCircle2, AlertCircle, Lightbulb, Calendar } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { BabyMilestoneRecord } from "@/types/development";
-import { AREA_LABELS, AREA_ICONS } from "@/types/development";
-import { CheckCircle2, AlertCircle, Lightbulb, Calendar } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+
+import { BabyMilestoneRecord } from '@/types/development';
+import { AREA_LABELS, AREA_ICONS } from '@/types/development';
+
 
 interface MilestoneDetailDialogProps {
   record: BabyMilestoneRecord | null;
@@ -29,9 +33,9 @@ export const MilestoneDetailDialog = ({
   record,
   open,
   onOpenChange,
-  onMarkAsAchieved
+  onMarkAsAchieved,
 }: MilestoneDetailDialogProps) => {
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,7 +48,7 @@ export const MilestoneDetailDialog = ({
     setIsSubmitting(true);
     try {
       await onMarkAsAchieved(milestone.id, new Date(selectedDate), notes || undefined);
-      setNotes("");
+      setNotes('');
       onOpenChange(false);
     } finally {
       setIsSubmitting(false);
@@ -63,9 +67,7 @@ export const MilestoneDetailDialog = ({
               </DialogTitle>
               <DialogDescription className="mt-2">
                 <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline">
-                    {AREA_LABELS[milestone.area]}
-                  </Badge>
+                  <Badge variant="outline">{AREA_LABELS[milestone.area]}</Badge>
                   <Badge variant="outline">
                     {milestone.age_min_months}-{milestone.age_max_months} meses
                   </Badge>
@@ -115,9 +117,7 @@ export const MilestoneDetailDialog = ({
             {milestone.pediatrician_alert ? (
               <Alert variant="default" className="border-orange-200 bg-orange-50">
                 <AlertCircle className="h-4 w-4 text-orange-600" />
-                <AlertTitle className="text-orange-900">
-                  Quando conversar com o pediatra
-                </AlertTitle>
+                <AlertTitle className="text-orange-900">Quando conversar com o pediatra</AlertTitle>
                 <AlertDescription className="text-orange-800">
                   {milestone.pediatrician_alert}
                 </AlertDescription>
@@ -139,7 +139,10 @@ export const MilestoneDetailDialog = ({
               <AlertDescription className="text-green-800">
                 {record.achieved_date && (
                   <span>
-                    Registrado em {format(new Date(record.achieved_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                    Registrado em{' '}
+                    {format(new Date(record.achieved_date), "dd 'de' MMMM 'de' yyyy", {
+                      locale: ptBR,
+                    })}
                   </span>
                 )}
                 {record.mother_notes && (
@@ -163,7 +166,7 @@ export const MilestoneDetailDialog = ({
                       id="date"
                       type="date"
                       value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
+                      onChange={e => setSelectedDate(e.target.value)}
                       max={new Date().toISOString().split('T')[0]}
                       className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors"
                     />
@@ -176,18 +179,14 @@ export const MilestoneDetailDialog = ({
                     id="notes"
                     placeholder="Ex: Começou a engatinhar na casa da vovó..."
                     value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                    onChange={e => setNotes(e.target.value)}
                     rows={3}
                   />
                 </div>
 
-                <Button 
-                  onClick={handleMarkAsAchieved}
-                  disabled={isSubmitting}
-                  className="w-full"
-                >
+                <Button onClick={handleMarkAsAchieved} disabled={isSubmitting} className="w-full">
                   <CheckCircle2 className="h-4 w-4 mr-2" />
-                  {isSubmitting ? "Salvando..." : "Registrar conquista"}
+                  {isSubmitting ? 'Salvando...' : 'Registrar conquista'}
                 </Button>
               </div>
             </div>

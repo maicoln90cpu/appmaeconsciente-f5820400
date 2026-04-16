@@ -1,19 +1,31 @@
-import { useState, useEffect } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { 
-  Bot, MessageSquare, Heart, RefreshCw, Sparkles, Clock,
-  CheckCircle2, FileText, Shuffle, Save
-} from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState, useEffect } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  Bot,
+  MessageSquare,
+  Heart,
+  RefreshCw,
+  Sparkles,
+  Clock,
+  CheckCircle2,
+  FileText,
+  Shuffle,
+  Save,
+} from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface EngagementLog {
   id: string;
@@ -48,11 +60,11 @@ export const AIEngagementPanel = () => {
 
   // Load saved config from site_settings
   const { data: savedConfig } = useQuery({
-    queryKey: ["automation-config"],
+    queryKey: ['automation-config'],
     queryFn: async () => {
       const { data } = await supabase
-        .from("site_settings")
-        .select("automation_config")
+        .from('site_settings')
+        .select('automation_config')
         .limit(1)
         .maybeSingle();
       return (data as any)?.automation_config as AutomationConfig | null;
@@ -79,34 +91,34 @@ export const AIEngagementPanel = () => {
   const saveConfig = useMutation({
     mutationFn: async () => {
       const { data: settings } = await supabase
-        .from("site_settings")
-        .select("id")
+        .from('site_settings')
+        .select('id')
         .limit(1)
         .maybeSingle();
 
       if (settings) {
         const { error } = await supabase
-          .from("site_settings")
+          .from('site_settings')
           .update({ automation_config: config } as any)
-          .eq("id", settings.id);
+          .eq('id', settings.id);
         if (error) throw error;
       }
     },
     onSuccess: () => {
-      toast.success("Configurações salvas!");
+      toast.success('Configurações salvas!');
       setHasChanges(false);
-      queryClient.invalidateQueries({ queryKey: ["automation-config"] });
+      queryClient.invalidateQueries({ queryKey: ['automation-config'] });
     },
     onError: (err: any) => toast.error(`Erro: ${err.message}`),
   });
 
   const { data: logs, isLoading: logsLoading } = useQuery({
-    queryKey: ["ai-engagement-logs"],
+    queryKey: ['ai-engagement-logs'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("ai_engagement_logs")
-        .select("id, post_id, virtual_user_id, action_type, content, created_at")
-        .order("created_at", { ascending: false })
+        .from('ai_engagement_logs')
+        .select('id, post_id, virtual_user_id, action_type, content, created_at')
+        .order('created_at', { ascending: false })
         .limit(30);
       if (error) throw error;
       return (data || []) as unknown as EngagementLog[];
@@ -114,27 +126,27 @@ export const AIEngagementPanel = () => {
   });
 
   const { data: stats } = useQuery({
-    queryKey: ["ai-engagement-stats"],
+    queryKey: ['ai-engagement-stats'],
     queryFn: async () => {
       const { count: postsCount } = await supabase
-        .from("ai_engagement_logs" as any)
-        .select("*", { count: "exact", head: true })
-        .eq("action_type", "post");
+        .from('ai_engagement_logs' as any)
+        .select('*', { count: 'exact', head: true })
+        .eq('action_type', 'post');
 
       const { count: commentsCount } = await supabase
-        .from("ai_engagement_logs" as any)
-        .select("*", { count: "exact", head: true })
-        .eq("action_type", "comment");
+        .from('ai_engagement_logs' as any)
+        .select('*', { count: 'exact', head: true })
+        .eq('action_type', 'comment');
 
       const { count: likesCount } = await supabase
-        .from("ai_engagement_logs" as any)
-        .select("*", { count: "exact", head: true })
-        .eq("action_type", "like");
+        .from('ai_engagement_logs' as any)
+        .select('*', { count: 'exact', head: true })
+        .eq('action_type', 'like');
 
       const { data: lastLog } = await supabase
-        .from("ai_engagement_logs" as any)
-        .select("created_at")
-        .order("created_at", { ascending: false })
+        .from('ai_engagement_logs' as any)
+        .select('created_at')
+        .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
@@ -150,7 +162,7 @@ export const AIEngagementPanel = () => {
   const runEngagement = useMutation({
     mutationFn: async () => {
       setIsRunning(true);
-      const { data, error } = await supabase.functions.invoke("auto-engage-community", {
+      const { data, error } = await supabase.functions.invoke('auto-engage-community', {
         body: {
           maxPosts: config.posts_per_run,
           maxReplies: config.replies_per_run,
@@ -164,21 +176,21 @@ export const AIEngagementPanel = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(
         `IA engajou! ${data.posts_created || 0} posts, ${data.replies_created || 0} respostas, ${data.likes_created || 0} curtidas`
       );
-      queryClient.invalidateQueries({ queryKey: ["ai-engagement-logs"] });
-      queryClient.invalidateQueries({ queryKey: ["ai-engagement-stats"] });
+      queryClient.invalidateQueries({ queryKey: ['ai-engagement-logs'] });
+      queryClient.invalidateQueries({ queryKey: ['ai-engagement-stats'] });
     },
     onError: (error: any) => toast.error(`Erro ao executar IA: ${error.message}`),
     onSettled: () => setIsRunning(false),
   });
 
   const actionConfig: Record<string, { icon: typeof MessageSquare; label: string; bg: string }> = {
-    post: { icon: FileText, label: "Post", bg: "bg-purple-100 text-purple-600" },
-    comment: { icon: MessageSquare, label: "Comentário", bg: "bg-blue-100 text-blue-600" },
-    like: { icon: Heart, label: "Curtida", bg: "bg-pink-100 text-pink-600" },
+    post: { icon: FileText, label: 'Post', bg: 'bg-purple-100 text-purple-600' },
+    comment: { icon: MessageSquare, label: 'Comentário', bg: 'bg-blue-100 text-blue-600' },
+    like: { icon: Heart, label: 'Curtida', bg: 'bg-pink-100 text-pink-600' },
   };
 
   return (
@@ -196,15 +208,43 @@ export const AIEngagementPanel = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { icon: FileText, value: stats?.total_posts || 0, label: "Posts IA", bg: "bg-purple-100", iconColor: "text-purple-600" },
-          { icon: MessageSquare, value: stats?.total_comments || 0, label: "Comentários IA", bg: "bg-blue-100", iconColor: "text-blue-600" },
-          { icon: Heart, value: stats?.total_likes || 0, label: "Curtidas IA", bg: "bg-pink-100", iconColor: "text-pink-600" },
-          { icon: Clock, value: stats?.last_run ? format(new Date(stats.last_run), "dd/MM HH:mm", { locale: ptBR }) : "Nunca", label: "Última Execução", bg: "bg-orange-100", iconColor: "text-orange-600" },
+          {
+            icon: FileText,
+            value: stats?.total_posts || 0,
+            label: 'Posts IA',
+            bg: 'bg-purple-100',
+            iconColor: 'text-purple-600',
+          },
+          {
+            icon: MessageSquare,
+            value: stats?.total_comments || 0,
+            label: 'Comentários IA',
+            bg: 'bg-blue-100',
+            iconColor: 'text-blue-600',
+          },
+          {
+            icon: Heart,
+            value: stats?.total_likes || 0,
+            label: 'Curtidas IA',
+            bg: 'bg-pink-100',
+            iconColor: 'text-pink-600',
+          },
+          {
+            icon: Clock,
+            value: stats?.last_run
+              ? format(new Date(stats.last_run), 'dd/MM HH:mm', { locale: ptBR })
+              : 'Nunca',
+            label: 'Última Execução',
+            bg: 'bg-orange-100',
+            iconColor: 'text-orange-600',
+          },
         ].map((s, i) => (
           <Card key={i}>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${s.bg}`}><s.icon className={`h-5 w-5 ${s.iconColor}`} /></div>
+                <div className={`p-2 rounded-lg ${s.bg}`}>
+                  <s.icon className={`h-5 w-5 ${s.iconColor}`} />
+                </div>
                 <div>
                   <p className="text-2xl font-bold">{s.value}</p>
                   <p className="text-sm text-muted-foreground">{s.label}</p>
@@ -218,7 +258,10 @@ export const AIEngagementPanel = () => {
       {/* Controls */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5" />Configurações da Automação</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5" />
+            Configurações da Automação
+          </CardTitle>
           <CardDescription>Ajuste quantidades e comportamento do cron automático</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -226,15 +269,33 @@ export const AIEngagementPanel = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <Label>Posts por execução: {config.posts_per_run}</Label>
-              <Slider value={[config.posts_per_run]} onValueChange={([v]) => updateConfig({ posts_per_run: v })} min={1} max={10} step={1} />
+              <Slider
+                value={[config.posts_per_run]}
+                onValueChange={([v]) => updateConfig({ posts_per_run: v })}
+                min={1}
+                max={10}
+                step={1}
+              />
             </div>
             <div className="space-y-2">
               <Label>Respostas por execução: {config.replies_per_run}</Label>
-              <Slider value={[config.replies_per_run]} onValueChange={([v]) => updateConfig({ replies_per_run: v })} min={1} max={10} step={1} />
+              <Slider
+                value={[config.replies_per_run]}
+                onValueChange={([v]) => updateConfig({ replies_per_run: v })}
+                min={1}
+                max={10}
+                step={1}
+              />
             </div>
             <div className="space-y-2">
               <Label>Curtidas por execução: {config.likes_per_run}</Label>
-              <Slider value={[config.likes_per_run]} onValueChange={([v]) => updateConfig({ likes_per_run: v })} min={1} max={20} step={1} />
+              <Slider
+                value={[config.likes_per_run]}
+                onValueChange={([v]) => updateConfig({ likes_per_run: v })}
+                min={1}
+                max={20}
+                step={1}
+              />
             </div>
           </div>
 
@@ -252,7 +313,7 @@ export const AIEngagementPanel = () => {
               </div>
               <Switch
                 checked={config.random_timing}
-                onCheckedChange={(checked) => updateConfig({ random_timing: checked })}
+                onCheckedChange={checked => updateConfig({ random_timing: checked })}
               />
             </div>
 
@@ -281,11 +342,22 @@ export const AIEngagementPanel = () => {
                 Salvar Configurações
               </Button>
             )}
-            <Button onClick={() => runEngagement.mutate()} disabled={isRunning} className="flex-1 gap-2" size="lg">
+            <Button
+              onClick={() => runEngagement.mutate()}
+              disabled={isRunning}
+              className="flex-1 gap-2"
+              size="lg"
+            >
               {isRunning ? (
-                <><RefreshCw className="h-4 w-4 animate-spin" />Executando IA...</>
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  Executando IA...
+                </>
               ) : (
-                <><Sparkles className="h-4 w-4" />Executar Agora</>
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Executar Agora
+                </>
               )}
             </Button>
           </div>
@@ -295,7 +367,10 @@ export const AIEngagementPanel = () => {
       {/* Log */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><MessageSquare className="h-5 w-5" />Histórico de Ações</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <MessageSquare className="h-5 w-5" />
+            Histórico de Ações
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {logsLoading ? (
@@ -304,7 +379,7 @@ export const AIEngagementPanel = () => {
             </div>
           ) : logs && logs.length > 0 ? (
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {logs.map((log) => {
+              {logs.map(log => {
                 const cfg = actionConfig[log.action_type] || actionConfig.comment;
                 const Icon = cfg.icon;
                 return (
@@ -314,9 +389,11 @@ export const AIEngagementPanel = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <Badge variant="outline" className="text-xs">{cfg.label}</Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {cfg.label}
+                        </Badge>
                         <span className="text-xs text-muted-foreground">
-                          {format(new Date(log.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                          {format(new Date(log.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                         </span>
                       </div>
                       {log.content && <p className="text-sm truncate">{log.content}</p>}

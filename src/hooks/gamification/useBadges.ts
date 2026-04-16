@@ -3,13 +3,17 @@
  * @module hooks/gamification/useBadges
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { useUserLevel } from "./useUserLevel";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { useMemo } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useUserLevel } from './useUserLevel';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Badge {
   id: string;
@@ -42,7 +46,9 @@ export const useBadges = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('badges')
-        .select('id, code, name, description, icon, category, requirement_type, requirement_value, xp_reward, display_order')
+        .select(
+          'id, code, name, description, icon, category, requirement_type, requirement_value, xp_reward, display_order'
+        )
         .eq('is_active', true)
         .order('display_order');
 
@@ -60,10 +66,12 @@ export const useBadges = () => {
     queryKey: userBadgesQueryKey,
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from('user_badges')
-        .select('id, user_id, badge_id, unlocked_at, badge:badges(id, code, name, description, icon, category, requirement_type, requirement_value, xp_reward, display_order)')
+        .select(
+          'id, user_id, badge_id, unlocked_at, badge:badges(id, code, name, description, icon, category, requirement_type, requirement_value, xp_reward, display_order)'
+        )
         .eq('user_id', user.id);
 
       if (error) throw error;
@@ -75,12 +83,15 @@ export const useBadges = () => {
   });
 
   // Badges por categoria (memoizado)
-  const badgesByCategory = useMemo(() => ({
-    contributor: allBadges.filter(b => b.category === 'contributor'),
-    mentor: allBadges.filter(b => b.category === 'mentor'),
-    consistent: allBadges.filter(b => b.category === 'consistent'),
-    explorer: allBadges.filter(b => b.category === 'explorer'),
-  }), [allBadges]);
+  const badgesByCategory = useMemo(
+    () => ({
+      contributor: allBadges.filter(b => b.category === 'contributor'),
+      mentor: allBadges.filter(b => b.category === 'mentor'),
+      consistent: allBadges.filter(b => b.category === 'consistent'),
+      explorer: allBadges.filter(b => b.category === 'explorer'),
+    }),
+    [allBadges]
+  );
 
   // Verificar se badge está desbloqueado
   const isBadgeUnlocked = (badgeCode: string) => {
@@ -104,13 +115,13 @@ export const useBadges = () => {
       }
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data?.badge) {
         queryClient.invalidateQueries({ queryKey: userBadgesQueryKey });
         toast.success(`🏆 Badge desbloqueado: ${data.badge.name}!`, {
           duration: 5000,
         });
-        
+
         // Dar XP pela conquista
         if (data.badge.xp_reward > 0) {
           addXP({

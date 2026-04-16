@@ -1,10 +1,13 @@
-import { useState, useMemo } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Leaf, DollarSign, Clock, TrendingDown } from "lucide-react";
-import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
-import { Progress } from "@/components/ui/progress";
+import { useState, useMemo } from 'react';
+
+import { Leaf, DollarSign, Clock, TrendingDown } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+
+import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
 
 interface Props {
   estimate: DiaperEstimate | null;
@@ -20,26 +23,26 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
 
     // Custo inicial fraldas de pano
     const initialInvestment = clothDiapers * pricePerCloth;
-    
+
     // Custo mensal descartáveis (média de R$0.75 por fralda)
     const disposableMonthlyCost = (estimate.totalDiapers / estimate.calculationPeriod) * 0.75;
-    
+
     // Custo mensal fraldas de pano (apenas lavagens)
     const clothMonthlyCost = washCostPerMonth;
-    
+
     // Economia mensal
     const monthlySavings = disposableMonthlyCost - clothMonthlyCost;
-    
+
     // Ponto de equilíbrio (em meses)
     const breakEvenMonths = Math.ceil(initialInvestment / monthlySavings);
-    
+
     // Economia em 2 anos
-    const savingsIn2Years = (monthlySavings * 24) - initialInvestment;
-    
+    const savingsIn2Years = monthlySavings * 24 - initialInvestment;
+
     // Lavagens por semana (assumindo 3-4)
     const washesPerWeek = 3.5;
     const hoursPerWeek = washesPerWeek * 1.5; // 1.5h por lavagem (lavar+secar+dobrar)
-    
+
     // Impacto ambiental (kg de lixo evitado)
     const wasteAvoided = (estimate.totalDiapers / estimate.calculationPeriod) * 24 * 0.3; // 300g por fralda
 
@@ -79,7 +82,7 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
             min="12"
             max="40"
             value={clothDiapers}
-            onChange={(e) => setClothDiapers(parseInt(e.target.value) || 24)}
+            onChange={e => setClothDiapers(parseInt(e.target.value) || 24)}
           />
           <p className="text-xs text-muted-foreground">Recomendado: 20-30 fraldas</p>
         </div>
@@ -92,7 +95,7 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
             min="20"
             max="100"
             value={pricePerCloth}
-            onChange={(e) => setPricePerCloth(parseInt(e.target.value) || 45)}
+            onChange={e => setPricePerCloth(parseInt(e.target.value) || 45)}
           />
           <p className="text-xs text-muted-foreground">Média: R$ 40-60</p>
         </div>
@@ -105,7 +108,7 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
             min="10"
             max="100"
             value={washCostPerMonth}
-            onChange={(e) => setWashCostPerMonth(parseInt(e.target.value) || 30)}
+            onChange={e => setWashCostPerMonth(parseInt(e.target.value) || 30)}
           />
           <p className="text-xs text-muted-foreground">Água + energia</p>
         </div>
@@ -119,7 +122,9 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Custo mensal:</span>
-              <span className="font-bold text-lg">R$ {simulation.disposableMonthlyCost.toFixed(2)}</span>
+              <span className="font-bold text-lg">
+                R$ {simulation.disposableMonthlyCost.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Custo em 2 anos:</span>
@@ -142,7 +147,9 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Investimento inicial:</span>
-              <span className="font-bold text-warning">R$ {simulation.initialInvestment.toFixed(2)}</span>
+              <span className="font-bold text-warning">
+                R$ {simulation.initialInvestment.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Custo mensal:</span>
@@ -165,7 +172,8 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
           <h3 className="font-semibold text-lg">Ponto de Equilíbrio</h3>
         </div>
         <p className="text-muted-foreground mb-4">
-          O investimento em fraldas de pano se paga em <strong className="text-primary">{simulation.breakEvenMonths} meses</strong>
+          O investimento em fraldas de pano se paga em{' '}
+          <strong className="text-primary">{simulation.breakEvenMonths} meses</strong>
         </p>
         <Progress value={breakEvenProgress} className="h-3" />
         <div className="flex justify-between mt-2 text-sm text-muted-foreground">
@@ -184,9 +192,7 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
             <span className="text-sm font-medium">Economia Mensal</span>
           </div>
           <p className="text-2xl font-bold">R$ {simulation.monthlySavings.toFixed(2)}</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            por mês após ponto de equilíbrio
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">por mês após ponto de equilíbrio</p>
         </div>
 
         {/* Tempo Dedicado */}
@@ -196,9 +202,7 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
             <span className="text-sm font-medium">Tempo Dedicado</span>
           </div>
           <p className="text-2xl font-bold">{simulation.hoursPerWeek.toFixed(1)}h</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            por semana (lavagens)
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">por semana (lavagens)</p>
         </div>
 
         {/* Impacto Ambiental */}
@@ -208,9 +212,7 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
             <span className="text-sm font-medium">Impacto Ambiental</span>
           </div>
           <p className="text-2xl font-bold">{simulation.wasteAvoided.toFixed(0)} kg</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            de lixo evitado em 2 anos
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">de lixo evitado em 2 anos</p>
         </div>
       </div>
 
@@ -219,15 +221,17 @@ export const ClothDiaperSimulator = ({ estimate }: Props) => {
         <h3 className="font-semibold text-lg mb-3 text-success">Vale a Pena?</h3>
         {simulation.savingsIn2Years > 1000 ? (
           <p className="text-muted-foreground">
-            <strong className="text-success">Sim!</strong> Com uma economia de{" "}
-            <strong>R$ {simulation.savingsIn2Years.toFixed(2)}</strong> em 2 anos e{" "}
-            <strong>{simulation.wasteAvoided.toFixed(0)}kg</strong> de lixo evitado, fraldas de pano são uma excelente opção 
-            para quem busca economia e sustentabilidade. O investimento inicial se paga em apenas {simulation.breakEvenMonths} meses!
+            <strong className="text-success">Sim!</strong> Com uma economia de{' '}
+            <strong>R$ {simulation.savingsIn2Years.toFixed(2)}</strong> em 2 anos e{' '}
+            <strong>{simulation.wasteAvoided.toFixed(0)}kg</strong> de lixo evitado, fraldas de pano
+            são uma excelente opção para quem busca economia e sustentabilidade. O investimento
+            inicial se paga em apenas {simulation.breakEvenMonths} meses!
           </p>
         ) : (
           <p className="text-muted-foreground">
-            A economia é moderada (R$ {simulation.savingsIn2Years.toFixed(2)} em 2 anos), mas o impacto ambiental é significativo. 
-            Considere se o tempo dedicado às lavagens ({simulation.hoursPerWeek.toFixed(1)}h/semana) cabe na sua rotina.
+            A economia é moderada (R$ {simulation.savingsIn2Years.toFixed(2)} em 2 anos), mas o
+            impacto ambiental é significativo. Considere se o tempo dedicado às lavagens (
+            {simulation.hoursPerWeek.toFixed(1)}h/semana) cabe na sua rotina.
           </p>
         )}
       </div>

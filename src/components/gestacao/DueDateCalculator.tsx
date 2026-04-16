@@ -2,37 +2,47 @@
  * @fileoverview Calculadora DPP (Data Provável do Parto)
  */
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { usePregnancyInfo, calculateDueDate, calculateGestationalAge, PREGNANCY_MILESTONES } from "@/hooks/usePregnancyInfo";
-import { 
-  Calendar, 
-  Baby, 
-  Clock, 
-  Heart, 
-  CheckCircle2, 
-  Circle, 
-  Loader2, 
+import { useState, useEffect } from 'react';
+
+import { format, parseISO, addDays, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  Calendar,
+  Baby,
+  Clock,
+  Heart,
+  CheckCircle2,
+  Circle,
+  Loader2,
   Calculator,
   Target,
-  Sparkles
-} from "lucide-react";
-import { format, parseISO, addDays, differenceInDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+  Sparkles,
+} from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import {
+  usePregnancyInfo,
+  calculateDueDate,
+  calculateGestationalAge,
+  PREGNANCY_MILESTONES,
+} from '@/hooks/usePregnancyInfo';
+
+
+import { cn } from '@/lib/utils';
 
 export const DueDateCalculator = () => {
-  const [lmpDate, setLmpDate] = useState("");
-  const [ultrasoundDueDate, setUltrasoundDueDate] = useState("");
-  const [dueSource, setDueSource] = useState<"lmp" | "ultrasound">("lmp");
+  const [lmpDate, setLmpDate] = useState('');
+  const [ultrasoundDueDate, setUltrasoundDueDate] = useState('');
+  const [dueSource, setDueSource] = useState<'lmp' | 'ultrasound'>('lmp');
 
   const {
     pregnancyInfo,
@@ -56,13 +66,13 @@ export const DueDateCalculator = () => {
       if (pregnancyInfo.ultrasound_due_date) {
         setUltrasoundDueDate(pregnancyInfo.ultrasound_due_date);
       }
-      setDueSource(pregnancyInfo.due_date_source as "lmp" | "ultrasound" || "lmp");
+      setDueSource((pregnancyInfo.due_date_source as 'lmp' | 'ultrasound') || 'lmp');
     }
   }, [pregnancyInfo]);
 
   const handleCalculate = () => {
-    const dueDate = lmpDate ? format(calculateDueDate(new Date(lmpDate)), "yyyy-MM-dd") : undefined;
-    
+    const dueDate = lmpDate ? format(calculateDueDate(new Date(lmpDate)), 'yyyy-MM-dd') : undefined;
+
     savePregnancyInfo({
       last_menstrual_period: lmpDate || undefined,
       due_date: dueDate,
@@ -79,15 +89,13 @@ export const DueDateCalculator = () => {
   const nextMilestone = getNextMilestone();
 
   // Progress percentage (40 weeks = 100%)
-  const progressPercent = gestationalAge 
-    ? Math.min(100, (gestationalAge.weeks / 40) * 100)
-    : 0;
+  const progressPercent = gestationalAge ? Math.min(100, (gestationalAge.weeks / 40) * 100) : 0;
 
   // Trimester colors
   const trimesterColors = {
-    1: "text-pink-500",
-    2: "text-purple-500",
-    3: "text-blue-500",
+    1: 'text-pink-500',
+    2: 'text-purple-500',
+    3: 'text-blue-500',
   };
 
   if (isLoading) {
@@ -114,12 +122,16 @@ export const DueDateCalculator = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <Tabs defaultValue="lmp" value={dueSource} onValueChange={(v) => setDueSource(v as "lmp" | "ultrasound")}>
+          <Tabs
+            defaultValue="lmp"
+            value={dueSource}
+            onValueChange={v => setDueSource(v as 'lmp' | 'ultrasound')}
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="lmp">Pela DUM</TabsTrigger>
               <TabsTrigger value="ultrasound">Por Ultrassom</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="lmp" className="space-y-4 pt-4">
               <div>
                 <Label htmlFor="lmp">Data da Última Menstruação (DUM)</Label>
@@ -127,24 +139,26 @@ export const DueDateCalculator = () => {
                   id="lmp"
                   type="date"
                   value={lmpDate}
-                  onChange={(e) => setLmpDate(e.target.value)}
+                  onChange={e => setLmpDate(e.target.value)}
                   className="mt-1"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Primeiro dia do último ciclo menstrual
                 </p>
               </div>
-              
+
               {lmpDate && (
                 <div className="p-4 bg-primary/10 rounded-lg">
                   <p className="text-sm text-muted-foreground">DPP Calculada:</p>
                   <p className="text-2xl font-bold text-primary">
-                    {format(calculateDueDate(new Date(lmpDate)), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                    {format(calculateDueDate(new Date(lmpDate)), "dd 'de' MMMM 'de' yyyy", {
+                      locale: ptBR,
+                    })}
                   </p>
                 </div>
               )}
             </TabsContent>
-            
+
             <TabsContent value="ultrasound" className="space-y-4 pt-4">
               <div>
                 <Label htmlFor="ultrasound">DPP pelo Ultrassom</Label>
@@ -152,29 +166,29 @@ export const DueDateCalculator = () => {
                   id="ultrasound"
                   type="date"
                   value={ultrasoundDueDate}
-                  onChange={(e) => setUltrasoundDueDate(e.target.value)}
+                  onChange={e => setUltrasoundDueDate(e.target.value)}
                   className="mt-1"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   Data estimada informada no ultrassom
                 </p>
               </div>
-              
+
               <div>
                 <Label htmlFor="lmp2">DUM (opcional)</Label>
                 <Input
                   id="lmp2"
                   type="date"
                   value={lmpDate}
-                  onChange={(e) => setLmpDate(e.target.value)}
+                  onChange={e => setLmpDate(e.target.value)}
                   className="mt-1"
                 />
               </div>
             </TabsContent>
           </Tabs>
 
-          <Button 
-            className="w-full" 
+          <Button
+            className="w-full"
             onClick={handleCalculate}
             disabled={isSaving || (!lmpDate && !ultrasoundDueDate)}
           >
@@ -193,9 +207,7 @@ export const DueDateCalculator = () => {
               <Baby className="h-12 w-12 mx-auto text-primary" />
               <div className="space-y-1">
                 <p className="text-muted-foreground">Seu bebê chega em aproximadamente</p>
-                <p className="text-5xl font-bold text-primary">
-                  {daysUntilDue} dias
-                </p>
+                <p className="text-5xl font-bold text-primary">{daysUntilDue} dias</p>
                 <p className="text-lg font-medium">
                   {format(parseISO(effectiveDueDate), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
                 </p>
@@ -217,7 +229,13 @@ export const DueDateCalculator = () => {
             {/* Trimester Badge */}
             {trimester && (
               <div className="flex justify-center">
-                <Badge variant="outline" className={cn("text-base px-4 py-1", trimesterColors[trimester as keyof typeof trimesterColors])}>
+                <Badge
+                  variant="outline"
+                  className={cn(
+                    'text-base px-4 py-1',
+                    trimesterColors[trimester as keyof typeof trimesterColors]
+                  )}
+                >
                   {trimester}º Trimestre
                 </Badge>
               </div>
@@ -256,7 +274,9 @@ export const DueDateCalculator = () => {
                   <Sparkles className="h-5 w-5 text-primary" />
                   <span className="font-semibold text-primary">Próximo Marco</span>
                 </div>
-                <p className="font-medium">Semana {nextMilestone.week}: {nextMilestone.title}</p>
+                <p className="font-medium">
+                  Semana {nextMilestone.week}: {nextMilestone.title}
+                </p>
                 <p className="text-sm text-muted-foreground">{nextMilestone.description}</p>
                 <p className="text-xs text-muted-foreground mt-2">
                   Faltam {nextMilestone.week - gestationalAge.weeks} semanas
@@ -266,17 +286,17 @@ export const DueDateCalculator = () => {
 
             <ScrollArea className="h-64">
               <div className="space-y-4">
-                {PREGNANCY_MILESTONES.map((milestone) => {
+                {PREGNANCY_MILESTONES.map(milestone => {
                   const isCompleted = milestone.week <= gestationalAge.weeks;
                   const isCurrent = milestone.week === gestationalAge.weeks;
-                  
+
                   return (
-                    <div 
+                    <div
                       key={milestone.week}
                       className={cn(
-                        "flex items-start gap-3 p-3 rounded-lg transition-colors",
-                        isCompleted && "bg-primary/5",
-                        isCurrent && "bg-primary/10 ring-1 ring-primary"
+                        'flex items-start gap-3 p-3 rounded-lg transition-colors',
+                        isCompleted && 'bg-primary/5',
+                        isCurrent && 'bg-primary/10 ring-1 ring-primary'
                       )}
                     >
                       <div className="flex-shrink-0 mt-0.5">
@@ -290,7 +310,9 @@ export const DueDateCalculator = () => {
                         <div className="flex items-center gap-2">
                           <span className="font-medium">Semana {milestone.week}</span>
                           {isCurrent && (
-                            <Badge variant="default" className="text-xs">Você está aqui</Badge>
+                            <Badge variant="default" className="text-xs">
+                              Você está aqui
+                            </Badge>
                           )}
                         </div>
                         <p className="font-semibold text-sm">{milestone.title}</p>
@@ -312,7 +334,8 @@ export const DueDateCalculator = () => {
             <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
             <h3 className="text-lg font-semibold mb-2">Configure sua DPP</h3>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              Insira a data da sua última menstruação ou a DPP informada pelo seu médico para começar a acompanhar sua gestação.
+              Insira a data da sua última menstruação ou a DPP informada pelo seu médico para
+              começar a acompanhar sua gestação.
             </p>
           </CardContent>
         </Card>

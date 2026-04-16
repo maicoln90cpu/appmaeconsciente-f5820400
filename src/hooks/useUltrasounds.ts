@@ -2,10 +2,11 @@
  * @fileoverview Hook para gerenciar imagens de ultrassom
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface UltrasoundImage {
   id: string;
@@ -39,15 +40,17 @@ export const useUltrasounds = () => {
 
   // Fetch all ultrasounds
   const { data: ultrasounds = [], isLoading } = useQuery({
-    queryKey: ["ultrasounds", user?.id],
+    queryKey: ['ultrasounds', user?.id],
     queryFn: async () => {
       if (!user) return [];
 
       const { data, error } = await supabase
-        .from("ultrasound_images")
-        .select("id, user_id, image_url, gestational_week, ultrasound_date, ultrasound_type, notes, baby_weight_grams, baby_length_cm, is_favorite, created_at, updated_at")
-        .eq("user_id", user.id)
-        .order("gestational_week", { ascending: true });
+        .from('ultrasound_images')
+        .select(
+          'id, user_id, image_url, gestational_week, ultrasound_date, ultrasound_type, notes, baby_weight_grams, baby_length_cm, is_favorite, created_at, updated_at'
+        )
+        .eq('user_id', user.id)
+        .order('gestational_week', { ascending: true });
 
       if (error) throw error;
       return data as UltrasoundImage[];
@@ -57,23 +60,21 @@ export const useUltrasounds = () => {
 
   // Upload image to storage
   const uploadImage = async (file: File): Promise<string> => {
-    if (!user) throw new Error("Not authenticated");
+    if (!user) throw new Error('Not authenticated');
 
     const fileExt = file.name.split('.').pop();
     const fileName = `${user.id}/${Date.now()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("ultrasounds")
+      .from('ultrasounds')
       .upload(fileName, file, {
         cacheControl: '3600',
-        upsert: false
+        upsert: false,
       });
 
     if (uploadError) throw uploadError;
 
-    const { data: urlData } = supabase.storage
-      .from("ultrasounds")
-      .getPublicUrl(fileName);
+    const { data: urlData } = supabase.storage.from('ultrasounds').getPublicUrl(fileName);
 
     return urlData.publicUrl;
   };
@@ -81,10 +82,10 @@ export const useUltrasounds = () => {
   // Add ultrasound
   const addUltrasound = useMutation({
     mutationFn: async (input: UltrasoundInput) => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from("ultrasound_images")
+        .from('ultrasound_images')
         .insert({
           user_id: user.id,
           ...input,
@@ -96,25 +97,25 @@ export const useUltrasounds = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ultrasounds"] });
-      toast.success("Ultrassom adicionado com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ['ultrasounds'] });
+      toast.success('Ultrassom adicionado com sucesso!');
     },
-    onError: (error) => {
-      console.error("Error adding ultrasound:", error);
-      toast.error("Erro ao adicionar ultrassom");
+    onError: error => {
+      console.error('Error adding ultrasound:', error);
+      toast.error('Erro ao adicionar ultrassom');
     },
   });
 
   // Update ultrasound
   const updateUltrasound = useMutation({
     mutationFn: async ({ id, ...input }: Partial<UltrasoundInput> & { id: string }) => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
-        .from("ultrasound_images")
+        .from('ultrasound_images')
         .update(input)
-        .eq("id", id)
-        .eq("user_id", user.id)
+        .eq('id', id)
+        .eq('user_id', user.id)
         .select()
         .single();
 
@@ -122,24 +123,24 @@ export const useUltrasounds = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ultrasounds"] });
-      toast.success("Ultrassom atualizado!");
+      queryClient.invalidateQueries({ queryKey: ['ultrasounds'] });
+      toast.success('Ultrassom atualizado!');
     },
   });
 
   // Delete ultrasound
   const deleteUltrasound = useMutation({
     mutationFn: async (id: string) => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
       // Get the image URL to delete from storage
       const ultrasound = ultrasounds.find(u => u.id === id);
-      
+
       const { error } = await supabase
-        .from("ultrasound_images")
+        .from('ultrasound_images')
         .delete()
-        .eq("id", id)
-        .eq("user_id", user.id);
+        .eq('id', id)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
@@ -148,32 +149,32 @@ export const useUltrasounds = () => {
         try {
           const path = ultrasound.image_url.split('/ultrasounds/')[1];
           if (path) {
-            await supabase.storage.from("ultrasounds").remove([path]);
+            await supabase.storage.from('ultrasounds').remove([path]);
           }
         } catch (e) {
-          console.warn("Could not delete image from storage:", e);
+          console.warn('Could not delete image from storage:', e);
         }
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ultrasounds"] });
-      toast.success("Ultrassom removido!");
+      queryClient.invalidateQueries({ queryKey: ['ultrasounds'] });
+      toast.success('Ultrassom removido!');
     },
   });
 
   // Toggle favorite
   const toggleFavorite = useMutation({
     mutationFn: async (id: string) => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
       const ultrasound = ultrasounds.find(u => u.id === id);
-      if (!ultrasound) throw new Error("Ultrasound not found");
+      if (!ultrasound) throw new Error('Ultrasound not found');
 
       const { data, error } = await supabase
-        .from("ultrasound_images")
+        .from('ultrasound_images')
         .update({ is_favorite: !ultrasound.is_favorite })
-        .eq("id", id)
-        .eq("user_id", user.id)
+        .eq('id', id)
+        .eq('user_id', user.id)
         .select()
         .single();
 
@@ -181,7 +182,7 @@ export const useUltrasounds = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["ultrasounds"] });
+      queryClient.invalidateQueries({ queryKey: ['ultrasounds'] });
     },
   });
 

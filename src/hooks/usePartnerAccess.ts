@@ -1,6 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface PartnerAccess {
   id: string;
@@ -21,12 +22,16 @@ export const usePartnerAccess = () => {
   const { data: partnerAccesses, isLoading } = useQuery({
     queryKey: ['partner-access'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('partner_access')
-        .select('id, user_id, partner_email, access_token, is_active, granted_at, expires_at, last_accessed, created_at, updated_at')
+        .select(
+          'id, user_id, partner_email, access_token, is_active, granted_at, expires_at, last_accessed, created_at, updated_at'
+        )
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -36,26 +41,28 @@ export const usePartnerAccess = () => {
   });
 
   const grantAccess = useMutation({
-    mutationFn: async ({ 
-      partner_email, 
-      expires_in_days 
-    }: { 
-      partner_email: string; 
+    mutationFn: async ({
+      partner_email,
+      expires_in_days,
+    }: {
+      partner_email: string;
       expires_in_days?: number;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const expires_at = expires_in_days 
+      const expires_at = expires_in_days
         ? new Date(Date.now() + expires_in_days * 24 * 60 * 60 * 1000).toISOString()
         : null;
 
       const { data, error } = await supabase
         .from('partner_access')
-        .insert({ 
+        .insert({
           user_id: user.id,
           partner_email,
-          expires_at
+          expires_at,
         })
         .select()
         .single();

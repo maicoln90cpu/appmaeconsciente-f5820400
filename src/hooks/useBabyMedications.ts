@@ -1,8 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import type { Database } from "@/integrations/supabase/types";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import type { Database } from '@/integrations/supabase/types';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 type BabyMedicationRow = Database['public']['Tables']['baby_medications']['Row'];
 type BabyMedicationInsert = Database['public']['Tables']['baby_medications']['Insert'];
@@ -32,7 +36,9 @@ export const useBabyMedications = (babyProfileId?: string) => {
 
       let query = supabase
         .from('baby_medications')
-        .select('id, user_id, baby_profile_id, medication_name, dosage, frequency, times_per_day, time_of_day, start_date, end_date, notes, is_active, created_at, updated_at')
+        .select(
+          'id, user_id, baby_profile_id, medication_name, dosage, frequency, times_per_day, time_of_day, start_date, end_date, notes, is_active, created_at, updated_at'
+        )
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
@@ -80,10 +86,10 @@ export const useBabyMedications = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-medications'] });
-      toast("Sucesso", { description: "Medicamento adicionado" });
+      toast('Sucesso', { description: 'Medicamento adicionado' });
     },
     onError: () => {
-      toast.error("Erro", { description: "Erro ao adicionar medicamento" });
+      toast.error('Erro', { description: 'Erro ao adicionar medicamento' });
     },
   });
 
@@ -101,7 +107,7 @@ export const useBabyMedications = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-medications'] });
-      toast("Sucesso", { description: "Medicamento atualizado" });
+      toast('Sucesso', { description: 'Medicamento atualizado' });
     },
   });
 
@@ -120,7 +126,7 @@ export const useBabyMedications = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-medication-logs-today'] });
-      toast("Sucesso", { description: "Medicamento registrado" });
+      toast('Sucesso', { description: 'Medicamento registrado' });
     },
   });
 
@@ -131,15 +137,15 @@ export const useBabyMedications = (babyProfileId?: string) => {
   const getNextDose = (medication: BabyMedication) => {
     const todayLogsForMed = todayLogs?.filter(log => log.medication_id === medication.id) || [];
     const timesPerDay = medication.times_per_day || 1;
-    
+
     if (todayLogsForMed.length >= timesPerDay) {
       return 'Completo hoje';
     }
-    
+
     if (medication.time_of_day && medication.time_of_day.length > todayLogsForMed.length) {
       return medication.time_of_day[todayLogsForMed.length];
     }
-    
+
     return 'Quando necessário';
   };
 

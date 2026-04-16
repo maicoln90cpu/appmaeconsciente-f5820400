@@ -2,26 +2,10 @@
  * @fileoverview Diário de Introdução Alimentar
  */
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Checkbox } from "@/components/ui/checkbox";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  useFoodIntroduction,
-  FOOD_CATEGORIES,
-  REACTION_TYPES,
-  COMMON_SYMPTOMS,
-  ALLERGENIC_FOODS,
-} from "@/hooks/useFoodIntroduction";
+import { useState } from 'react';
+
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Plus,
   Apple,
@@ -32,10 +16,43 @@ import {
   Loader2,
   Trash2,
   Search,
-} from "lucide-react";
-import { format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+
+import {
+  useFoodIntroduction,
+  FOOD_CATEGORIES,
+  REACTION_TYPES,
+  COMMON_SYMPTOMS,
+  ALLERGENIC_FOODS,
+} from '@/hooks/useFoodIntroduction';
+
+
+import { cn } from '@/lib/utils';
 
 interface FoodIntroductionDiaryProps {
   babyProfileId?: string;
@@ -43,16 +60,16 @@ interface FoodIntroductionDiaryProps {
 
 export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [newFood, setNewFood] = useState({
-    food_name: "",
-    food_category: "frutas",
-    introduction_date: format(new Date(), "yyyy-MM-dd"),
-    reaction_type: "nenhuma",
+    food_name: '',
+    food_category: 'frutas',
+    introduction_date: format(new Date(), 'yyyy-MM-dd'),
+    reaction_type: 'nenhuma',
     reaction_symptoms: [] as string[],
     accepted: true,
-    notes: "",
+    notes: '',
   });
 
   const {
@@ -74,41 +91,41 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
     });
     setIsDialogOpen(false);
     setNewFood({
-      food_name: "",
-      food_category: "frutas",
-      introduction_date: format(new Date(), "yyyy-MM-dd"),
-      reaction_type: "nenhuma",
+      food_name: '',
+      food_category: 'frutas',
+      introduction_date: format(new Date(), 'yyyy-MM-dd'),
+      reaction_type: 'nenhuma',
       reaction_symptoms: [],
       accepted: true,
-      notes: "",
+      notes: '',
     });
   };
 
   const toggleSymptom = (symptom: string) => {
-    setNewFood((prev) => ({
+    setNewFood(prev => ({
       ...prev,
       reaction_symptoms: prev.reaction_symptoms.includes(symptom)
-        ? prev.reaction_symptoms.filter((s) => s !== symptom)
+        ? prev.reaction_symptoms.filter(s => s !== symptom)
         : [...prev.reaction_symptoms, symptom],
     }));
   };
 
-  const filteredLogs = foodLogs.filter((log) => {
+  const filteredLogs = foodLogs.filter(log => {
     const matchesSearch = log.food_name.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || log.food_category === selectedCategory;
+    const matchesCategory = selectedCategory === 'all' || log.food_category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   const getReactionColor = (type: string) => {
     switch (type) {
-      case "leve":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300";
-      case "moderada":
-        return "bg-orange-100 text-orange-800 border-orange-300";
-      case "severa":
-        return "bg-red-100 text-red-800 border-red-300";
+      case 'leve':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+      case 'moderada':
+        return 'bg-orange-100 text-orange-800 border-orange-300';
+      case 'severa':
+        return 'bg-red-100 text-red-800 border-red-300';
       default:
-        return "bg-green-100 text-green-800 border-green-300";
+        return 'bg-green-100 text-green-800 border-green-300';
     }
   };
 
@@ -130,10 +147,15 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
           <AlertTriangle className="h-4 w-4" />
           <AlertTitle>Atenção: Alimentos com reações</AlertTitle>
           <AlertDescription>
-            {foodsWithReactions.length} alimento(s) causaram reações. Evite reintroduzir e consulte o pediatra.
+            {foodsWithReactions.length} alimento(s) causaram reações. Evite reintroduzir e consulte
+            o pediatra.
             <div className="mt-2 flex flex-wrap gap-2">
-              {foodsWithReactions.slice(0, 5).map((food) => (
-                <Badge key={food.id} variant="outline" className={getReactionColor(food.reaction_type)}>
+              {foodsWithReactions.slice(0, 5).map(food => (
+                <Badge
+                  key={food.id}
+                  variant="outline"
+                  className={getReactionColor(food.reaction_type)}
+                >
                   {food.food_name}
                 </Badge>
               ))}
@@ -202,10 +224,10 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                       id="food_name"
                       placeholder="Ex: Banana"
                       value={newFood.food_name}
-                      onChange={(e) => setNewFood({ ...newFood, food_name: e.target.value })}
+                      onChange={e => setNewFood({ ...newFood, food_name: e.target.value })}
                       required
                     />
-                    {ALLERGENIC_FOODS.some((f) =>
+                    {ALLERGENIC_FOODS.some(f =>
                       newFood.food_name.toLowerCase().includes(f.toLowerCase())
                     ) && (
                       <p className="text-xs text-orange-600 mt-1">
@@ -219,13 +241,13 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                       <Label>Categoria</Label>
                       <Select
                         value={newFood.food_category}
-                        onValueChange={(v) => setNewFood({ ...newFood, food_category: v })}
+                        onValueChange={v => setNewFood({ ...newFood, food_category: v })}
                       >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {FOOD_CATEGORIES.map((cat) => (
+                          {FOOD_CATEGORIES.map(cat => (
                             <SelectItem key={cat.value} value={cat.value}>
                               {cat.emoji} {cat.label}
                             </SelectItem>
@@ -238,7 +260,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                       <Input
                         type="date"
                         value={newFood.introduction_date}
-                        onChange={(e) =>
+                        onChange={e =>
                           setNewFood({ ...newFood, introduction_date: e.target.value })
                         }
                         required
@@ -251,7 +273,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                     <div className="flex gap-4 mt-2">
                       <Button
                         type="button"
-                        variant={newFood.accepted ? "default" : "outline"}
+                        variant={newFood.accepted ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setNewFood({ ...newFood, accepted: true })}
                       >
@@ -259,7 +281,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                       </Button>
                       <Button
                         type="button"
-                        variant={!newFood.accepted ? "destructive" : "outline"}
+                        variant={!newFood.accepted ? 'destructive' : 'outline'}
                         size="sm"
                         onClick={() => setNewFood({ ...newFood, accepted: false })}
                       >
@@ -272,13 +294,13 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                     <Label>Reação</Label>
                     <Select
                       value={newFood.reaction_type}
-                      onValueChange={(v) => setNewFood({ ...newFood, reaction_type: v })}
+                      onValueChange={v => setNewFood({ ...newFood, reaction_type: v })}
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {REACTION_TYPES.map((r) => (
+                        {REACTION_TYPES.map(r => (
                           <SelectItem key={r.value} value={r.value}>
                             {r.label}
                           </SelectItem>
@@ -287,11 +309,11 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                     </Select>
                   </div>
 
-                  {newFood.reaction_type !== "nenhuma" && (
+                  {newFood.reaction_type !== 'nenhuma' && (
                     <div>
                       <Label>Sintomas</Label>
                       <div className="grid grid-cols-2 gap-2 mt-2">
-                        {COMMON_SYMPTOMS.map((symptom) => (
+                        {COMMON_SYMPTOMS.map(symptom => (
                           <div key={symptom} className="flex items-center space-x-2">
                             <Checkbox
                               id={symptom}
@@ -312,7 +334,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                     <Textarea
                       placeholder="Ex: Gostou bastante, comeu toda a porção"
                       value={newFood.notes}
-                      onChange={(e) => setNewFood({ ...newFood, notes: e.target.value })}
+                      onChange={e => setNewFood({ ...newFood, notes: e.target.value })}
                     />
                   </div>
 
@@ -341,7 +363,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                     placeholder="Buscar alimento..."
                     className="pl-9"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={e => setSearchQuery(e.target.value)}
                   />
                 </div>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -350,7 +372,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todas</SelectItem>
-                    {FOOD_CATEGORIES.map((cat) => (
+                    {FOOD_CATEGORIES.map(cat => (
                       <SelectItem key={cat.value} value={cat.value}>
                         {cat.emoji} {cat.label}
                       </SelectItem>
@@ -368,18 +390,18 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {filteredLogs.map((log) => {
-                      const category = FOOD_CATEGORIES.find((c) => c.value === log.food_category);
+                    {filteredLogs.map(log => {
+                      const category = FOOD_CATEGORIES.find(c => c.value === log.food_category);
                       return (
                         <div
                           key={log.id}
                           className={cn(
-                            "flex items-center justify-between p-3 rounded-lg border",
-                            log.reaction_type !== "nenhuma" && "border-orange-300 bg-orange-50"
+                            'flex items-center justify-between p-3 rounded-lg border',
+                            log.reaction_type !== 'nenhuma' && 'border-orange-300 bg-orange-50'
                           )}
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-2xl">{category?.emoji || "🍽️"}</span>
+                            <span className="text-2xl">{category?.emoji || '🍽️'}</span>
                             <div>
                               <div className="flex items-center gap-2">
                                 <p className="font-medium">{log.food_name}</p>
@@ -391,7 +413,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                               </div>
                               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <Calendar className="h-3 w-3" />
-                                {format(parseISO(log.introduction_date), "dd/MM/yyyy", {
+                                {format(parseISO(log.introduction_date), 'dd/MM/yyyy', {
                                   locale: ptBR,
                                 })}
                                 {log.accepted ? (
@@ -403,7 +425,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
-                            {log.reaction_type !== "nenhuma" && (
+                            {log.reaction_type !== 'nenhuma' && (
                               <Badge className={getReactionColor(log.reaction_type)}>
                                 {log.reaction_type}
                               </Badge>
@@ -427,8 +449,10 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
 
             <TabsContent value="categories">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {stats.byCategory.map((cat) => (
-                  <Card key={cat.value} className="cursor-pointer hover:bg-muted/50 transition-colors"
+                {stats.byCategory.map(cat => (
+                  <Card
+                    key={cat.value}
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
                     onClick={() => {
                       setSelectedCategory(cat.value);
                     }}

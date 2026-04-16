@@ -1,6 +1,9 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Calculator } from "lucide-react";
+import { useState } from 'react';
+
+import { Calculator } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -8,38 +11,37 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export const SizeCalculator = () => {
   const [open, setOpen] = useState(false);
   const [monthsOld, setMonthsOld] = useState<number>(0);
-  const [result, setResult] = useState<string>("");
+  const [result, setResult] = useState<string>('');
 
   const calculateSize = () => {
-    let size = "";
-    let description = "";
+    let size = '';
+    let description = '';
 
     if (monthsOld === 0) {
-      size = "RN (Recém-Nascido)";
-      description = "Até 3,5kg e 50cm. Use com moderação - bebês crescem rápido!";
+      size = 'RN (Recém-Nascido)';
+      description = 'Até 3,5kg e 50cm. Use com moderação - bebês crescem rápido!';
     } else if (monthsOld <= 2) {
-      size = "P (0-3 meses)";
-      description = "De 3,5kg a 5,5kg e até 60cm. Tamanho ideal para os primeiros meses.";
+      size = 'P (0-3 meses)';
+      description = 'De 3,5kg a 5,5kg e até 60cm. Tamanho ideal para os primeiros meses.';
     } else if (monthsOld <= 5) {
-      size = "M (3-6 meses)";
-      description = "De 5,5kg a 7,5kg e até 68cm. Bebê já está mais ativo!";
+      size = 'M (3-6 meses)';
+      description = 'De 5,5kg a 7,5kg e até 68cm. Bebê já está mais ativo!';
     } else if (monthsOld <= 9) {
-      size = "G (6-9 meses)";
-      description = "De 7,5kg a 9,5kg e até 75cm. Fase de muito movimento.";
+      size = 'G (6-9 meses)';
+      description = 'De 7,5kg a 9,5kg e até 75cm. Fase de muito movimento.';
     } else if (monthsOld <= 12) {
-      size = "GG (9-12 meses)";
-      description = "De 9,5kg a 12kg e até 80cm. Quase completando 1 aninho!";
+      size = 'GG (9-12 meses)';
+      description = 'De 9,5kg a 12kg e até 80cm. Quase completando 1 aninho!';
     } else {
-      size = "1 ano ou mais";
-      description = "Consulte tabelas específicas por idade. Cada bebê cresce em seu ritmo único!";
+      size = '1 ano ou mais';
+      description = 'Consulte tabelas específicas por idade. Cada bebê cresce em seu ritmo único!';
     }
 
     setResult(`${size}\n${description}`);
@@ -60,7 +62,7 @@ export const SizeCalculator = () => {
             Descubra qual tamanho de roupa é ideal para a idade do bebê.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
             <Label htmlFor="months">Idade do bebê (em meses)</Label>
@@ -70,7 +72,7 @@ export const SizeCalculator = () => {
               min="0"
               max="24"
               value={monthsOld}
-              onChange={(e) => setMonthsOld(Number(e.target.value))}
+              onChange={e => setMonthsOld(Number(e.target.value))}
               placeholder="Ex: 3"
             />
           </div>

@@ -1,18 +1,49 @@
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { CalendarDays, ChevronLeft, ChevronRight, Milk, Moon, Pill, Calendar, Apple, Frown, CalendarClock } from "lucide-react";
-import { useVaccination } from "@/hooks/useVaccination";
-import { useBabyAppointments } from "@/hooks/useBabyAppointments";
-import { useBabyMedications } from "@/hooks/useBabyMedications";
-import { useBabyRoutines } from "@/hooks/useBabyRoutines";
-import { useBabyColic } from "@/hooks/useBabyColic";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameDay, addMonths, subMonths, isToday } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { useState, useMemo } from 'react';
+
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameDay,
+  addMonths,
+  subMonths,
+  isToday,
+} from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Milk,
+  Moon,
+  Pill,
+  Calendar,
+  Apple,
+  Frown,
+  CalendarClock,
+} from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+import { useBabyColic } from '@/hooks/useBabyColic';
+import { useBabyMedications } from '@/hooks/useBabyMedications';
+import { useBabyRoutines } from '@/hooks/useBabyRoutines';
+import { useVaccination } from '@/hooks/useVaccination';
+
+
+import { cn } from '@/lib/utils';
 
 interface UnifiedCalendarProps {
   babyProfileId?: string;
@@ -89,9 +120,10 @@ export const UnifiedCalendar = ({ babyProfileId }: UnifiedCalendarProps) => {
   const selectedDateEvents = selectedDate ? getEventsForDay(selectedDate) : [];
 
   // Filter events
-  const filteredEvents = filterType === 'all' 
-    ? selectedDateEvents 
-    : selectedDateEvents.filter(e => e.type === filterType);
+  const filteredEvents =
+    filterType === 'all'
+      ? selectedDateEvents
+      : selectedDateEvents.filter(e => e.type === filterType);
 
   // Navigation
   const goToPreviousMonth = () => setCurrentMonth(prev => subMonths(prev, 1));
@@ -114,11 +146,9 @@ export const UnifiedCalendar = ({ babyProfileId }: UnifiedCalendarProps) => {
                 <CalendarDays className="h-5 w-5 text-primary" />
                 Calendário Unificado
               </CardTitle>
-              <CardDescription>
-                Visualize todas as atividades em um só lugar
-              </CardDescription>
+              <CardDescription>Visualize todas as atividades em um só lugar</CardDescription>
             </div>
-            <Select value={filterType} onValueChange={(v) => setFilterType(v as EventType | 'all')}>
+            <Select value={filterType} onValueChange={v => setFilterType(v as EventType | 'all')}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Filtrar" />
               </SelectTrigger>
@@ -140,7 +170,7 @@ export const UnifiedCalendar = ({ babyProfileId }: UnifiedCalendarProps) => {
             </Button>
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-semibold capitalize">
-                {format(currentMonth, "MMMM yyyy", { locale: ptBR })}
+                {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
               </h3>
               <Button variant="ghost" size="sm" onClick={goToToday}>
                 Hoje
@@ -177,17 +207,14 @@ export const UnifiedCalendar = ({ babyProfileId }: UnifiedCalendarProps) => {
                   key={day.toISOString()}
                   onClick={() => setSelectedDate(day)}
                   className={cn(
-                    "h-12 rounded-lg flex flex-col items-center justify-center relative transition-colors",
-                    isSelected && "bg-primary text-primary-foreground",
-                    !isSelected && isTodayDate && "bg-accent",
-                    !isSelected && !isTodayDate && "hover:bg-muted"
+                    'h-12 rounded-lg flex flex-col items-center justify-center relative transition-colors',
+                    isSelected && 'bg-primary text-primary-foreground',
+                    !isSelected && isTodayDate && 'bg-accent',
+                    !isSelected && !isTodayDate && 'hover:bg-muted'
                   )}
                 >
-                  <span className={cn(
-                    "text-sm",
-                    isTodayDate && !isSelected && "font-bold"
-                  )}>
-                    {format(day, "d")}
+                  <span className={cn('text-sm', isTodayDate && !isSelected && 'font-bold')}>
+                    {format(day, 'd')}
                   </span>
                   {hasEvents && (
                     <div className="flex gap-0.5 mt-0.5">
@@ -195,11 +222,11 @@ export const UnifiedCalendar = ({ babyProfileId }: UnifiedCalendarProps) => {
                         <div
                           key={i}
                           className={cn(
-                            "w-1.5 h-1.5 rounded-full",
-                            event.type === 'appointment' && "bg-blue-500",
-                            event.type === 'colic' && "bg-rose-500",
-                            event.type === 'medication' && "bg-green-500",
-                            event.type === 'routine' && "bg-violet-500"
+                            'w-1.5 h-1.5 rounded-full',
+                            event.type === 'appointment' && 'bg-blue-500',
+                            event.type === 'colic' && 'bg-rose-500',
+                            event.type === 'medication' && 'bg-green-500',
+                            event.type === 'routine' && 'bg-violet-500'
                           )}
                         />
                       ))}
@@ -214,7 +241,9 @@ export const UnifiedCalendar = ({ babyProfileId }: UnifiedCalendarProps) => {
           <div className="border-t pt-4">
             <h4 className="font-medium mb-3 flex items-center gap-2">
               <CalendarDays className="h-4 w-4" />
-              {selectedDate ? format(selectedDate, "dd 'de' MMMM", { locale: ptBR }) : 'Selecione um dia'}
+              {selectedDate
+                ? format(selectedDate, "dd 'de' MMMM", { locale: ptBR })
+                : 'Selecione um dia'}
             </h4>
 
             <ScrollArea className="h-[200px]">
@@ -223,23 +252,23 @@ export const UnifiedCalendar = ({ babyProfileId }: UnifiedCalendarProps) => {
                   {filteredEvents.map(event => (
                     <div
                       key={event.id}
-                      className={cn(
-                        "flex items-center gap-3 p-3 rounded-lg border",
-                        event.color
-                      )}
+                      className={cn('flex items-center gap-3 p-3 rounded-lg border', event.color)}
                     >
                       <event.icon className="h-4 w-4 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm truncate">{event.title}</p>
-                        {event.time && (
-                          <p className="text-xs opacity-80">{event.time}</p>
-                        )}
+                        {event.time && <p className="text-xs opacity-80">{event.time}</p>}
                       </div>
                       <Badge variant="outline" className="text-xs capitalize">
-                        {event.type === 'appointment' ? 'Consulta' :
-                         event.type === 'colic' ? 'Cólica' :
-                         event.type === 'medication' ? 'Medicamento' :
-                         event.type === 'routine' ? 'Rotina' : event.type}
+                        {event.type === 'appointment'
+                          ? 'Consulta'
+                          : event.type === 'colic'
+                            ? 'Cólica'
+                            : event.type === 'medication'
+                              ? 'Medicamento'
+                              : event.type === 'routine'
+                                ? 'Rotina'
+                                : event.type}
                       </Badge>
                     </div>
                   ))}

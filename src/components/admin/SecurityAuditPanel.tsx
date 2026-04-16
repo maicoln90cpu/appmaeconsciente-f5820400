@@ -1,29 +1,21 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  Shield, 
-  AlertTriangle, 
-  Activity, 
-  Users, 
-  Trash2, 
+import { useState } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+import { format, subDays, startOfDay, endOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  Shield,
+  AlertTriangle,
+  Activity,
+  Users,
+  Trash2,
   Download,
   RefreshCw,
   Search,
   Clock,
   Globe,
-  Smartphone
-} from "lucide-react";
-import { format, subDays, startOfDay, endOfDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
+  Smartphone,
+} from 'lucide-react';
 import {
   AreaChart,
   Area,
@@ -37,99 +29,150 @@ import {
   PieChart,
   Pie,
   Cell,
-} from "recharts";
+} from 'recharts';
 
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--destructive))', 'hsl(var(--warning))', 'hsl(var(--secondary))', 'hsl(var(--accent))'];
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { supabase } from '@/integrations/supabase/client';
+
+const COLORS = [
+  'hsl(var(--primary))',
+  'hsl(var(--destructive))',
+  'hsl(var(--warning))',
+  'hsl(var(--secondary))',
+  'hsl(var(--accent))',
+];
 
 const severityColors: Record<string, string> = {
-  critical: "destructive",
-  error: "destructive",
-  warning: "outline",
-  info: "secondary",
+  critical: 'destructive',
+  error: 'destructive',
+  warning: 'outline',
+  info: 'secondary',
 };
 
 const actionTypeLabels: Record<string, string> = {
-  role_change: "Alteração de Papel",
-  data_deletion: "Exclusão de Dados",
-  product_access: "Acesso a Produto",
-  admin_action: "Ação Admin",
-  auth_failure: "Falha de Autenticação",
-  user_creation: "Criação de Usuário",
-  data_export: "Exportação de Dados",
+  role_change: 'Alteração de Papel',
+  data_deletion: 'Exclusão de Dados',
+  product_access: 'Acesso a Produto',
+  admin_action: 'Ação Admin',
+  auth_failure: 'Falha de Autenticação',
+  user_creation: 'Criação de Usuário',
+  data_export: 'Exportação de Dados',
 };
 
 export function SecurityAuditPanel() {
-  const [dateRange, setDateRange] = useState("7");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedSeverity, setSelectedSeverity] = useState<string>("all");
-  const [activeTab, setActiveTab] = useState("overview");
+  const [dateRange, setDateRange] = useState('7');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSeverity, setSelectedSeverity] = useState<string>('all');
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Fetch security audit logs
-  const { data: auditLogs, isLoading: logsLoading, refetch: refetchLogs } = useQuery({
+  const {
+    data: auditLogs,
+    isLoading: logsLoading,
+    refetch: refetchLogs,
+  } = useQuery({
     queryKey: ['security-audit-logs', dateRange],
     queryFn: async () => {
       const startDate = subDays(new Date(), parseInt(dateRange));
       const { data, error } = await supabase
         .from('security_audit_logs')
-        .select('id, user_id, event_type, event_description, severity, ip_address, user_agent, metadata, created_at')
+        .select(
+          'id, user_id, event_type, event_description, severity, ip_address, user_agent, metadata, created_at'
+        )
         .gte('created_at', startDate.toISOString())
         .order('created_at', { ascending: false })
         .limit(500);
-      
+
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   // Fetch user access logs
-  const { data: accessLogs, isLoading: accessLoading, refetch: refetchAccess } = useQuery({
+  const {
+    data: accessLogs,
+    isLoading: accessLoading,
+    refetch: refetchAccess,
+  } = useQuery({
     queryKey: ['user-access-logs', dateRange],
     queryFn: async () => {
       const startDate = subDays(new Date(), parseInt(dateRange));
       const { data, error } = await supabase
         .from('user_access_logs')
-        .select('id, user_id, accessed_at, ip_address, user_agent, action_type, resource_path, product_id, session_id, metadata')
+        .select(
+          'id, user_id, accessed_at, ip_address, user_agent, action_type, resource_path, product_id, session_id, metadata'
+        )
         .gte('accessed_at', startDate.toISOString())
         .order('accessed_at', { ascending: false })
         .limit(500);
-      
+
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   // Fetch data deletion logs
-  const { data: deletionLogs, isLoading: deletionLoading, refetch: refetchDeletion } = useQuery({
+  const {
+    data: deletionLogs,
+    isLoading: deletionLoading,
+    refetch: refetchDeletion,
+  } = useQuery({
     queryKey: ['data-deletion-logs', dateRange],
     queryFn: async () => {
       const startDate = subDays(new Date(), parseInt(dateRange));
       const { data, error } = await supabase
         .from('data_deletion_logs')
-        .select('id, user_id, user_email, status, tables_deleted, requested_at, completed_at, error_message')
+        .select(
+          'id, user_id, user_email, status, tables_deleted, requested_at, completed_at, error_message'
+        )
         .gte('requested_at', startDate.toISOString())
         .order('requested_at', { ascending: false });
-      
+
       if (error) throw error;
       return data || [];
-    }
+    },
   });
 
   // Calculate statistics
   const stats = {
     totalEvents: (auditLogs?.length || 0) + (accessLogs?.length || 0),
-    criticalEvents: auditLogs?.filter(log => log.severity === 'critical' || log.severity === 'error').length || 0,
+    criticalEvents:
+      auditLogs?.filter(log => log.severity === 'critical' || log.severity === 'error').length || 0,
     deletionRequests: deletionLogs?.length || 0,
-    uniqueUsers: new Set([
-      ...(auditLogs?.map(log => log.user_id) || []),
-      ...(accessLogs?.map(log => log.user_id) || [])
-    ].filter(Boolean)).size,
+    uniqueUsers: new Set(
+      [
+        ...(auditLogs?.map(log => log.user_id) || []),
+        ...(accessLogs?.map(log => log.user_id) || []),
+      ].filter(Boolean)
+    ).size,
   };
 
   // Process data for charts
   const activityByDay = (() => {
     const days = parseInt(dateRange);
     const result: Record<string, { date: string; security: number; access: number }> = {};
-    
+
     for (let i = 0; i < days; i++) {
       const date = format(subDays(new Date(), i), 'dd/MM');
       result[date] = { date, security: 0, access: 0 };
@@ -156,18 +199,19 @@ export function SecurityAuditPanel() {
     });
     return Object.entries(counts).map(([name, value]) => ({
       name: actionTypeLabels[name] || name,
-      value
+      value,
     }));
   })();
 
   const filteredAuditLogs = auditLogs?.filter(log => {
-    const matchesSearch = searchTerm === "" || 
+    const matchesSearch =
+      searchTerm === '' ||
       log.event_type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.event_description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.ip_address?.includes(searchTerm);
-    
-    const matchesSeverity = selectedSeverity === "all" || log.severity === selectedSeverity;
-    
+
+    const matchesSeverity = selectedSeverity === 'all' || log.severity === selectedSeverity;
+
     return matchesSearch && matchesSeverity;
   });
 
@@ -219,9 +263,7 @@ export function SecurityAuditPanel() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalEvents}</div>
-            <p className="text-xs text-muted-foreground">
-              Últimos {dateRange} dias
-            </p>
+            <p className="text-xs text-muted-foreground">Últimos {dateRange} dias</p>
           </CardContent>
         </Card>
 
@@ -232,9 +274,7 @@ export function SecurityAuditPanel() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-destructive">{stats.criticalEvents}</div>
-            <p className="text-xs text-muted-foreground">
-              Requerem atenção
-            </p>
+            <p className="text-xs text-muted-foreground">Requerem atenção</p>
           </CardContent>
         </Card>
 
@@ -245,9 +285,7 @@ export function SecurityAuditPanel() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.deletionRequests}</div>
-            <p className="text-xs text-muted-foreground">
-              Solicitações de exclusão
-            </p>
+            <p className="text-xs text-muted-foreground">Solicitações de exclusão</p>
           </CardContent>
         </Card>
 
@@ -258,9 +296,7 @@ export function SecurityAuditPanel() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.uniqueUsers}</div>
-            <p className="text-xs text-muted-foreground">
-              Com atividade no período
-            </p>
+            <p className="text-xs text-muted-foreground">Com atividade no período</p>
           </CardContent>
         </Card>
       </div>
@@ -288,23 +324,23 @@ export function SecurityAuditPanel() {
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip />
-                    <Area 
-                      type="monotone" 
-                      dataKey="security" 
+                    <Area
+                      type="monotone"
+                      dataKey="security"
                       stackId="1"
-                      stroke="hsl(var(--destructive))" 
+                      stroke="hsl(var(--destructive))"
                       fill="hsl(var(--destructive))"
                       fillOpacity={0.3}
-                      name="Segurança" 
+                      name="Segurança"
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="access" 
+                    <Area
+                      type="monotone"
+                      dataKey="access"
                       stackId="1"
-                      stroke="hsl(var(--primary))" 
+                      stroke="hsl(var(--primary))"
                       fill="hsl(var(--primary))"
                       fillOpacity={0.3}
-                      name="Acessos" 
+                      name="Acessos"
                     />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -327,7 +363,7 @@ export function SecurityAuditPanel() {
                       outerRadius={100}
                       fill="hsl(var(--primary))"
                       dataKey="value"
-                      label={(entry) => entry.name}
+                      label={entry => entry.name}
                     >
                       {eventsByType.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -350,35 +386,38 @@ export function SecurityAuditPanel() {
             </CardHeader>
             <CardContent>
               <ScrollArea className="h-[300px]">
-                {auditLogs?.filter(log => log.severity === 'critical' || log.severity === 'error').slice(0, 10).map((log) => (
-                  <div key={log.id} className="flex items-start gap-4 p-3 border-b last:border-0">
-                    <div className="flex-shrink-0">
-                      <Badge variant={severityColors[log.severity || 'info'] as any}>
-                        {log.severity?.toUpperCase()}
-                      </Badge>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {actionTypeLabels[log.event_type || ''] || log.event_type}
-                      </p>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {log.event_description}
-                      </p>
-                      <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {format(new Date(log.created_at), "dd/MM HH:mm", { locale: ptBR })}
-                        </span>
-                        {log.ip_address && (
+                {auditLogs
+                  ?.filter(log => log.severity === 'critical' || log.severity === 'error')
+                  .slice(0, 10)
+                  .map(log => (
+                    <div key={log.id} className="flex items-start gap-4 p-3 border-b last:border-0">
+                      <div className="flex-shrink-0">
+                        <Badge variant={severityColors[log.severity || 'info'] as any}>
+                          {log.severity?.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">
+                          {actionTypeLabels[log.event_type || ''] || log.event_type}
+                        </p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {log.event_description}
+                        </p>
+                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
-                            <Globe className="h-3 w-3" />
-                            {log.ip_address}
+                            <Clock className="h-3 w-3" />
+                            {format(new Date(log.created_at), 'dd/MM HH:mm', { locale: ptBR })}
                           </span>
-                        )}
+                          {log.ip_address && (
+                            <span className="flex items-center gap-1">
+                              <Globe className="h-3 w-3" />
+                              {log.ip_address}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )) || (
+                  )) || (
                   <p className="text-center text-muted-foreground py-4">
                     Nenhum evento crítico encontrado
                   </p>
@@ -403,7 +442,7 @@ export function SecurityAuditPanel() {
                   <Input
                     placeholder="Buscar por ação, detalhes ou IP..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={e => setSearchTerm(e.target.value)}
                     className="pl-10"
                   />
                 </div>
@@ -435,10 +474,12 @@ export function SecurityAuditPanel() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredAuditLogs?.map((log) => (
+                    {filteredAuditLogs?.map(log => (
                       <TableRow key={log.id}>
                         <TableCell className="whitespace-nowrap">
-                          {format(new Date(log.created_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}
+                          {format(new Date(log.created_at), 'dd/MM/yyyy HH:mm:ss', {
+                            locale: ptBR,
+                          })}
                         </TableCell>
                         <TableCell>
                           <Badge variant={severityColors[log.severity || 'info'] as any}>
@@ -451,9 +492,7 @@ export function SecurityAuditPanel() {
                         <TableCell className="max-w-[300px] truncate">
                           {log.event_description}
                         </TableCell>
-                        <TableCell className="font-mono text-sm">
-                          {log.ip_address || '-'}
-                        </TableCell>
+                        <TableCell className="font-mono text-sm">{log.ip_address || '-'}</TableCell>
                         <TableCell className="max-w-[200px] truncate text-xs">
                           {log.user_agent || '-'}
                         </TableCell>
@@ -491,10 +530,12 @@ export function SecurityAuditPanel() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {accessLogs?.map((log) => (
+                    {accessLogs?.map(log => (
                       <TableRow key={log.id}>
                         <TableCell className="whitespace-nowrap">
-                          {format(new Date(log.accessed_at), "dd/MM/yyyy HH:mm:ss", { locale: ptBR })}
+                          {format(new Date(log.accessed_at), 'dd/MM/yyyy HH:mm:ss', {
+                            locale: ptBR,
+                          })}
                         </TableCell>
                         <TableCell className="font-mono text-sm truncate max-w-[100px]">
                           {log.user_id?.slice(0, 8)}...
@@ -503,9 +544,7 @@ export function SecurityAuditPanel() {
                           {log.product_id?.slice(0, 8)}...
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
-                            {log.action_type || 'view'}
-                          </Badge>
+                          <Badge variant="outline">{log.action_type || 'view'}</Badge>
                         </TableCell>
                         <TableCell className="max-w-[200px] truncate">
                           {log.resource_path || '-'}
@@ -550,31 +589,39 @@ export function SecurityAuditPanel() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {deletionLogs?.map((log) => (
+                    {deletionLogs?.map(log => (
                       <TableRow key={log.id}>
                         <TableCell className="whitespace-nowrap">
-                          {format(new Date(log.requested_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                          {format(new Date(log.requested_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                         </TableCell>
                         <TableCell>{log.user_email || '-'}</TableCell>
                         <TableCell>
-                          <Badge variant={
-                            log.status === 'completed' ? 'default' : 
-                            log.status === 'failed' ? 'destructive' : 
-                            'secondary'
-                          }>
-                            {log.status === 'completed' ? 'Concluído' :
-                             log.status === 'failed' ? 'Falhou' :
-                             log.status === 'pending' ? 'Pendente' : log.status}
+                          <Badge
+                            variant={
+                              log.status === 'completed'
+                                ? 'default'
+                                : log.status === 'failed'
+                                  ? 'destructive'
+                                  : 'secondary'
+                            }
+                          >
+                            {log.status === 'completed'
+                              ? 'Concluído'
+                              : log.status === 'failed'
+                                ? 'Falhou'
+                                : log.status === 'pending'
+                                  ? 'Pendente'
+                                  : log.status}
                           </Badge>
                         </TableCell>
                         <TableCell className="whitespace-nowrap">
-                          {log.completed_at 
-                            ? format(new Date(log.completed_at), "dd/MM/yyyy HH:mm", { locale: ptBR })
+                          {log.completed_at
+                            ? format(new Date(log.completed_at), 'dd/MM/yyyy HH:mm', {
+                                locale: ptBR,
+                              })
                             : '-'}
                         </TableCell>
-                        <TableCell>
-                          {log.tables_deleted?.length || 0} tabelas
-                        </TableCell>
+                        <TableCell>{log.tables_deleted?.length || 0} tabelas</TableCell>
                         <TableCell className="max-w-[200px] truncate text-destructive">
                           {log.error_message || '-'}
                         </TableCell>

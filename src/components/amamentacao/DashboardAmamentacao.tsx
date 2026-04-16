@@ -1,14 +1,31 @@
-import { useMemo, useEffect, useState } from "react";
-import { Card } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
-import { Baby, Droplets, Timer, TrendingUp, AlertCircle } from "lucide-react";
-import { differenceInMinutes, format, startOfDay, subDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import type { BabyFeedingLog } from "@/types/babyFeeding";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useMemo, useEffect, useState } from 'react';
+
+import { differenceInMinutes, format, startOfDay, subDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Baby, Droplets, Timer, TrendingUp, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+} from 'recharts';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+import type { BabyFeedingLog } from '@/types/babyFeeding';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface DashboardAmamentacaoProps {
   feedingLogs: BabyFeedingLog[];
@@ -20,15 +37,17 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
 
   useEffect(() => {
     const loadLastSleep = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data } = await supabase
-        .from("baby_sleep_logs")
-        .select("sleep_end")
-        .eq("user_id", user.id)
-        .not("sleep_end", "is", null)
-        .order("sleep_end", { ascending: false })
+        .from('baby_sleep_logs')
+        .select('sleep_end')
+        .eq('user_id', user.id)
+        .not('sleep_end', 'is', null)
+        .order('sleep_end', { ascending: false })
         .limit(1)
         .single();
 
@@ -41,11 +60,10 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
   }, []);
 
   const today = new Date();
-  
+
   const lowProduction = useMemo(() => {
-    const last3Days = feedingLogs.filter(log => 
-      new Date(log.start_time) > subDays(today, 3) && 
-      log.feeding_type === 'breastfeeding'
+    const last3Days = feedingLogs.filter(
+      log => new Date(log.start_time) > subDays(today, 3) && log.feeding_type === 'breastfeeding'
     );
     return last3Days.length < 18;
   }, [feedingLogs]);
@@ -58,22 +76,22 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
   const stats = useMemo(() => {
     const today = startOfDay(new Date());
     const last7Days = subDays(today, 7);
-    
-    const todayLogs = feedingLogs.filter(log => 
-      new Date(log.start_time) >= today
-    );
-    
-    const weekLogs = feedingLogs.filter(log => 
-      new Date(log.start_time) >= last7Days
-    );
+
+    const todayLogs = feedingLogs.filter(log => new Date(log.start_time) >= today);
+
+    const weekLogs = feedingLogs.filter(log => new Date(log.start_time) >= last7Days);
 
     // KPIs
     const feedingsToday = todayLogs.length;
-    const avgDuration = todayLogs.filter(l => l.duration_minutes).length > 0
-      ? Math.round(todayLogs.reduce((sum, l) => sum + (l.duration_minutes || 0), 0) / todayLogs.filter(l => l.duration_minutes).length)
-      : 0;
+    const avgDuration =
+      todayLogs.filter(l => l.duration_minutes).length > 0
+        ? Math.round(
+            todayLogs.reduce((sum, l) => sum + (l.duration_minutes || 0), 0) /
+              todayLogs.filter(l => l.duration_minutes).length
+          )
+        : 0;
     const totalVolume = todayLogs.reduce((sum, l) => sum + (l.volume_ml || 0), 0);
-    
+
     // Tempo entre mamadas
     const intervals = [];
     for (let i = 0; i < todayLogs.length - 1; i++) {
@@ -83,9 +101,10 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
       );
       intervals.push(Math.abs(diff));
     }
-    const avgInterval = intervals.length > 0
-      ? Math.round(intervals.reduce((a, b) => a + b, 0) / intervals.length)
-      : 0;
+    const avgInterval =
+      intervals.length > 0
+        ? Math.round(intervals.reduce((a, b) => a + b, 0) / intervals.length)
+        : 0;
 
     // Gráfico de barras - mamadas por dia (últimos 7 dias)
     const feedingsByDay = [];
@@ -96,21 +115,21 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
         return logDate.getTime() === day.getTime();
       });
       feedingsByDay.push({
-        day: format(day, "dd/MM", { locale: ptBR }),
+        day: format(day, 'dd/MM', { locale: ptBR }),
         mamadas: dayLogs.length,
       });
     }
 
     // Gráfico de pizza - proporção tipo de leite
-    const bottleLogs = weekLogs.filter(l => l.feeding_type === "bottle");
-    const breastMilk = bottleLogs.filter(l => l.milk_type === "breast_milk").length;
-    const formula = bottleLogs.filter(l => l.milk_type === "formula").length;
-    const mixed = bottleLogs.filter(l => l.milk_type === "mixed").length;
-    
+    const bottleLogs = weekLogs.filter(l => l.feeding_type === 'bottle');
+    const breastMilk = bottleLogs.filter(l => l.milk_type === 'breast_milk').length;
+    const formula = bottleLogs.filter(l => l.milk_type === 'formula').length;
+    const mixed = bottleLogs.filter(l => l.milk_type === 'mixed').length;
+
     const milkTypeData = [
-      { name: "Leite Materno", value: breastMilk, color: "#F8D7DA" },
-      { name: "Fórmula", value: formula, color: "#BACBD2" },
-      { name: "Misto", value: mixed, color: "#FFF8F3" },
+      { name: 'Leite Materno', value: breastMilk, color: '#F8D7DA' },
+      { name: 'Fórmula', value: formula, color: '#BACBD2' },
+      { name: 'Misto', value: mixed, color: '#FFF8F3' },
     ].filter(item => item.value > 0);
 
     // Gráfico de linha - volume total por dia
@@ -123,7 +142,7 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
       });
       const totalVol = dayLogs.reduce((sum, l) => sum + (l.volume_ml || 0), 0);
       volumeByDay.push({
-        day: format(day, "dd/MM", { locale: ptBR }),
+        day: format(day, 'dd/MM', { locale: ptBR }),
         volume: totalVol,
       });
     }
@@ -146,7 +165,11 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <span>Produção de leite abaixo do esperado. Confira receitas lactogênicas!</span>
-            <Button variant="outline" size="sm" onClick={() => navigate('/materiais/guia-alimentacao?tab=receitas')}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/materiais/guia-alimentacao?tab=receitas')}
+            >
               Ver Receitas
             </Button>
           </AlertDescription>
@@ -234,7 +257,7 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={(entry) => `${entry.name}: ${entry.value}`}
+                  label={entry => `${entry.name}: ${entry.value}`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
@@ -270,9 +293,7 @@ export const DashboardAmamentacao = ({ feedingLogs }: DashboardAmamentacaoProps)
 
       {/* Mensagem Motivacional */}
       <Card className="p-6 bg-primary/5 border-primary/20">
-        <p className="text-center italic">
-          ✨ Confie no seu instinto, você está indo muito bem!
-        </p>
+        <p className="text-center italic">✨ Confie no seu instinto, você está indo muito bem!</p>
       </Card>
     </div>
   );

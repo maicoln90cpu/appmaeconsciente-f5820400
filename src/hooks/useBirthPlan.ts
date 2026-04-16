@@ -1,8 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import { logger } from "@/lib/logger";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export interface BirthPlan {
   id: string;
@@ -28,19 +32,21 @@ export interface BirthPlan {
   updated_at: string;
 }
 
-export type BirthPlanInput = Omit<BirthPlan, "id" | "user_id" | "created_at" | "updated_at">;
+export type BirthPlanInput = Omit<BirthPlan, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
 
 export function useBirthPlan() {
   const queryClient = useQueryClient();
 
   const { data: plan, isLoading } = useQuery({
-    queryKey: ["birth-plan"],
+    queryKey: ['birth-plan'],
     queryFn: async (): Promise<BirthPlan | null> => {
       const userId = await getAuthenticatedUser();
       const { data, error } = await supabase
-        .from("birth_plans")
-        .select("id, user_id, delivery_type, hospital_name, companion_name, companion_backup, pediatrician_name, anesthesia, episiotomy_preference, skin_to_skin, delayed_cord_clamping, breastfeed_first_hour, photos_video, lighting_preference, music_playlist, placenta_preference, special_requests, emergency_notes, due_date, created_at, updated_at")
-        .eq("user_id", userId)
+        .from('birth_plans')
+        .select(
+          'id, user_id, delivery_type, hospital_name, companion_name, companion_backup, pediatrician_name, anesthesia, episiotomy_preference, skin_to_skin, delayed_cord_clamping, breastfeed_first_hour, photos_video, lighting_preference, music_playlist, placenta_preference, special_requests, emergency_notes, due_date, created_at, updated_at'
+        )
+        .eq('user_id', userId)
         .maybeSingle();
       if (error) throw error;
       return data as BirthPlan | null;
@@ -52,16 +58,16 @@ export function useBirthPlan() {
       const userId = await getAuthenticatedUser();
       if (plan) {
         const { data, error } = await supabase
-          .from("birth_plans")
+          .from('birth_plans')
           .update(input)
-          .eq("id", plan.id)
+          .eq('id', plan.id)
           .select()
           .single();
         if (error) throw error;
         return data as BirthPlan;
       } else {
         const { data, error } = await supabase
-          .from("birth_plans")
+          .from('birth_plans')
           .insert({ ...input, user_id: userId })
           .select()
           .single();
@@ -70,12 +76,12 @@ export function useBirthPlan() {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["birth-plan"] });
-      toast("Plano de parto salvo ✅", { description: "Suas preferências foram registradas" });
+      queryClient.invalidateQueries({ queryKey: ['birth-plan'] });
+      toast('Plano de parto salvo ✅', { description: 'Suas preferências foram registradas' });
     },
-    onError: (e) => {
-      logger.error("Birth plan save error", e);
-      toast.error("Erro", { description: "Não foi possível salvar o plano" });
+    onError: e => {
+      logger.error('Birth plan save error', e);
+      toast.error('Erro', { description: 'Não foi possível salvar o plano' });
     },
   });
 

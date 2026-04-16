@@ -1,6 +1,7 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export const UserLoading = () => (
   <div className="space-y-4">
@@ -31,7 +32,7 @@ export const UserError = ({ error, onRetry }: UserErrorProps) => (
         <div className="text-destructive mb-4 text-4xl">⚠️</div>
         <h3 className="text-lg font-semibold mb-2">Erro ao carregar usuários</h3>
         <p className="text-muted-foreground text-center mb-4">
-          {error?.message || "Ocorreu um erro desconhecido"}
+          {error?.message || 'Ocorreu um erro desconhecido'}
         </p>
         <Button onClick={onRetry}>
           <RefreshCw className="h-4 w-4 mr-2" />

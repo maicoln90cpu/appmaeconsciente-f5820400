@@ -1,10 +1,14 @@
-import { useQuery, useMutation, useQueryClient, QueryKey } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import { logger } from "@/lib/logger";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient, QueryKey } from '@tanstack/react-query';
+import { toast } from 'sonner';
 
-type OrderDirection = "asc" | "desc";
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
+type OrderDirection = 'asc' | 'desc';
 
 interface CRUDMessages {
   addSuccess?: string;
@@ -39,13 +43,13 @@ interface CRUDOptions<T> {
 /**
  * Factory para criar hooks de CRUD genéricos com React Query.
  * Elimina código duplicado em hooks que seguem o padrão query + add + update + delete.
- * 
+ *
  * ## Hooks Migrados para esta Factory:
  * - useBabyAppointments (consultas/agendamentos do bebê)
  * - useBabyColic (registros de cólica)
  * - useGrowthMeasurements (medições de crescimento)
  * - usePostpartumAppointments (consultas pós-parto)
- * 
+ *
  * ## Hooks que NÃO devem ser migrados (lógica complexa):
  * - useBabyMedications (múltiplas queries, lógica de logs)
  * - useBabyRoutines (múltiplas queries, filtragem por dia)
@@ -58,12 +62,12 @@ interface CRUDOptions<T> {
  * - useBodyImageLog (upload de arquivos)
  * - useRecoveryChecklist (template de semanas)
  * - useDevelopmentMilestones (cálculos complexos, upsert)
- * 
+ *
  * @example
  * // Definir o tipo da entidade
  * type EmotionalLog = Database['public']['Tables']['emotional_logs']['Row'];
  * type EmotionalLogInsert = Database['public']['Tables']['emotional_logs']['Insert'];
- * 
+ *
  * export const useEmotionalLogsBase = createSupabaseCRUD<EmotionalLog, EmotionalLogInsert>({
  *   tableName: 'emotional_logs',
  *   queryKey: ['emotional-logs'],
@@ -73,15 +77,14 @@ interface CRUDOptions<T> {
  *   },
  * });
  */
-export function createSupabaseCRUD<
-  T extends { id: string },
-  InsertT = Partial<T>
->(options: CRUDOptions<T>) {
+export function createSupabaseCRUD<T extends { id: string }, InsertT = Partial<T>>(
+  options: CRUDOptions<T>
+) {
   const {
     tableName,
     queryKey,
-    orderBy = "created_at",
-    orderDirection = "desc",
+    orderBy = 'created_at',
+    orderDirection = 'desc',
     additionalFilters = {},
     onAddSuccess,
     onUpdateSuccess,
@@ -98,10 +101,7 @@ export function createSupabaseCRUD<
       queryFn: async (): Promise<T[]> => {
         const userId = await getAuthenticatedUser();
 
-        let query = (supabase
-          .from(tableName as any)
-          .select("*") as any)
-          .eq("user_id", userId);
+        let query = (supabase.from(tableName as any).select('*') as any).eq('user_id', userId);
 
         // Aplicar filtros adicionais
         Object.entries(additionalFilters).forEach(([key, value]) => {
@@ -109,8 +109,8 @@ export function createSupabaseCRUD<
         });
 
         // Ordenação
-        const { data, error } = await query.order(orderBy, { ascending: orderDirection === "asc" });
-        
+        const { data, error } = await query.order(orderBy, { ascending: orderDirection === 'asc' });
+
         if (error) throw error;
         return data as T[];
       },
@@ -130,14 +130,14 @@ export function createSupabaseCRUD<
         if (error) throw error;
         return data as T;
       },
-      onSuccess: (data) => {
+      onSuccess: data => {
         queryClient.invalidateQueries({ queryKey });
-        toast("Sucesso", { description: messages.addSuccess ?? "Item adicionado com sucesso" });
+        toast('Sucesso', { description: messages.addSuccess ?? 'Item adicionado com sucesso' });
         onAddSuccess?.(data);
       },
-      onError: (error) => {
-        logger.error("Add error", error, { context: "createSupabaseCRUD", data: { tableName } });
-        toast.error("Erro", { description: messages.addError ?? "Erro ao adicionar item" });
+      onError: error => {
+        logger.error('Add error', error, { context: 'createSupabaseCRUD', data: { tableName } });
+        toast.error('Erro', { description: messages.addError ?? 'Erro ao adicionar item' });
       },
     });
 
@@ -147,21 +147,21 @@ export function createSupabaseCRUD<
         const { data, error } = await (supabase
           .from(tableName as any)
           .update(updates as any)
-          .eq("id", id)
+          .eq('id', id)
           .select()
           .single() as any);
 
         if (error) throw error;
         return data as T;
       },
-      onSuccess: (data) => {
+      onSuccess: data => {
         queryClient.invalidateQueries({ queryKey });
-        toast("Sucesso", { description: messages.updateSuccess ?? "Item atualizado com sucesso" });
+        toast('Sucesso', { description: messages.updateSuccess ?? 'Item atualizado com sucesso' });
         onUpdateSuccess?.(data);
       },
-      onError: (error) => {
-        logger.error("Update error", error, { context: "createSupabaseCRUD", data: { tableName } });
-        toast.error("Erro", { description: messages.updateError ?? "Erro ao atualizar item" });
+      onError: error => {
+        logger.error('Update error', error, { context: 'createSupabaseCRUD', data: { tableName } });
+        toast.error('Erro', { description: messages.updateError ?? 'Erro ao atualizar item' });
       },
     });
 
@@ -171,19 +171,19 @@ export function createSupabaseCRUD<
         const { error } = await (supabase
           .from(tableName as any)
           .delete()
-          .eq("id", id) as any);
+          .eq('id', id) as any);
 
         if (error) throw error;
         return id;
       },
-      onSuccess: (id) => {
+      onSuccess: id => {
         queryClient.invalidateQueries({ queryKey });
-        toast("Sucesso", { description: messages.deleteSuccess ?? "Item removido com sucesso" });
+        toast('Sucesso', { description: messages.deleteSuccess ?? 'Item removido com sucesso' });
         onDeleteSuccess?.(id);
       },
-      onError: (error) => {
-        logger.error("Delete error", error, { context: "createSupabaseCRUD", data: { tableName } });
-        toast.error("Erro", { description: messages.deleteError ?? "Erro ao remover item" });
+      onError: error => {
+        logger.error('Delete error', error, { context: 'createSupabaseCRUD', data: { tableName } });
+        toast.error('Erro', { description: messages.deleteError ?? 'Erro ao remover item' });
       },
     });
 

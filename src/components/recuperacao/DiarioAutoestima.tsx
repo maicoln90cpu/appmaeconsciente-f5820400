@@ -1,15 +1,31 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useBodyImageLog } from "@/hooks/postpartum";
-import { Heart, Camera, Smile, Meh, Frown, Lock, Users, Globe, Trash2 } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Heart, Camera, Smile, Meh, Frown, Lock, Users, Globe, Trash2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useBodyImageLog } from '@/hooks/postpartum';
+
 
 export const DiarioAutoestima = () => {
   const { logs, isLoading, addLog, deleteLog } = useBodyImageLog();
@@ -57,17 +73,23 @@ export const DiarioAutoestima = () => {
 
   const getMoodIcon = (mood: string | null) => {
     switch (mood) {
-      case 'positive': return <Smile className="h-5 w-5 text-green-500" />;
-      case 'challenging': return <Frown className="h-5 w-5 text-orange-500" />;
-      default: return <Meh className="h-5 w-5 text-muted-foreground" />;
+      case 'positive':
+        return <Smile className="h-5 w-5 text-green-500" />;
+      case 'challenging':
+        return <Frown className="h-5 w-5 text-orange-500" />;
+      default:
+        return <Meh className="h-5 w-5 text-muted-foreground" />;
     }
   };
 
   const getPrivacyIcon = (privacy: string) => {
     switch (privacy) {
-      case 'partner': return <Users className="h-4 w-4" />;
-      case 'community': return <Globe className="h-4 w-4" />;
-      default: return <Lock className="h-4 w-4" />;
+      case 'partner':
+        return <Users className="h-4 w-4" />;
+      case 'community':
+        return <Globe className="h-4 w-4" />;
+      default:
+        return <Lock className="h-4 w-4" />;
     }
   };
 
@@ -85,7 +107,8 @@ export const DiarioAutoestima = () => {
             Diário de Autoestima
           </CardTitle>
           <CardDescription className="text-base">
-            💕 Seu corpo está se transformando — registre e celebre cada momento dessa jornada de amor próprio.
+            💕 Seu corpo está se transformando — registre e celebre cada momento dessa jornada de
+            amor próprio.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -107,7 +130,7 @@ export const DiarioAutoestima = () => {
                     id="date"
                     type="date"
                     value={formData.date}
-                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    onChange={e => setFormData({ ...formData, date: e.target.value })}
                   />
                 </div>
 
@@ -117,22 +140,17 @@ export const DiarioAutoestima = () => {
                     id="title"
                     placeholder="Ex: Me sentindo mais forte hoje"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="photo">Foto (opcional)</Label>
-                  <Input
-                    id="photo"
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoChange}
-                  />
+                  <Input id="photo" type="file" accept="image/*" onChange={handlePhotoChange} />
                   {previewUrl && (
-                    <img 
-                      src={previewUrl} 
-                      alt="Preview" 
+                    <img
+                      src={previewUrl}
+                      alt="Preview"
                       className="mt-2 max-h-48 rounded-lg object-cover"
                     />
                   )}
@@ -140,7 +158,10 @@ export const DiarioAutoestima = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="mood">Como você se sente?</Label>
-                  <Select value={formData.mood} onValueChange={(value: any) => setFormData({ ...formData, mood: value })}>
+                  <Select
+                    value={formData.mood}
+                    onValueChange={(value: any) => setFormData({ ...formData, mood: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -158,14 +179,17 @@ export const DiarioAutoestima = () => {
                     id="notes"
                     placeholder="Escreva seus pensamentos, conquistas ou desafios de hoje..."
                     value={formData.notes}
-                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    onChange={e => setFormData({ ...formData, notes: e.target.value })}
                     rows={4}
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="privacy">Privacidade</Label>
-                  <Select value={formData.privacy} onValueChange={(value: any) => setFormData({ ...formData, privacy: value })}>
+                  <Select
+                    value={formData.privacy}
+                    onValueChange={(value: any) => setFormData({ ...formData, privacy: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -188,7 +212,7 @@ export const DiarioAutoestima = () => {
       {/* Timeline de registros */}
       <div className="grid gap-4">
         {logs && logs.length > 0 ? (
-          logs.map((log) => (
+          logs.map(log => (
             <Card key={log.id} className="overflow-hidden">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
@@ -198,36 +222,33 @@ export const DiarioAutoestima = () => {
                       {log.title || format(new Date(log.date), "d 'de' MMMM", { locale: ptBR })}
                     </CardTitle>
                     <CardDescription className="flex items-center gap-2">
-                      <span>{format(new Date(log.date), "dd/MM/yyyy")}</span>
+                      <span>{format(new Date(log.date), 'dd/MM/yyyy')}</span>
                       <span>•</span>
                       {getPrivacyIcon(log.privacy)}
                       <span className="text-xs">
-                        {log.privacy === 'private' ? 'Privado' : 
-                         log.privacy === 'partner' ? 'Compartilhado com parceiro' : 'Público'}
+                        {log.privacy === 'private'
+                          ? 'Privado'
+                          : log.privacy === 'partner'
+                            ? 'Compartilhado com parceiro'
+                            : 'Público'}
                       </span>
                     </CardDescription>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteLog(log.id)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => deleteLog(log.id)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </CardHeader>
               <CardContent>
                 {log.photo_url && (
-                  <img 
-                    src={log.photo_url} 
-                    alt="Registro" 
+                  <img
+                    src={log.photo_url}
+                    alt="Registro"
                     className="w-full max-h-96 object-cover rounded-lg mb-3"
                   />
                 )}
                 {log.notes && (
-                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                    {log.notes}
-                  </p>
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap">{log.notes}</p>
                 )}
               </CardContent>
             </Card>
@@ -236,9 +257,7 @@ export const DiarioAutoestima = () => {
           <Card>
             <CardContent className="py-12 text-center">
               <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground mb-2">
-                Ainda não há registros no seu diário
-              </p>
+              <p className="text-muted-foreground mb-2">Ainda não há registros no seu diário</p>
               <p className="text-sm text-muted-foreground">
                 Comece a registrar sua jornada de autoestima e transformação 💕
               </p>

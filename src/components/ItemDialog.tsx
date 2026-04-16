@@ -1,18 +1,57 @@
-import { useState, useEffect, useCallback } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus } from "lucide-react";
-import { EnxovalItem, Category, Necessity, Status, Size, Origin, EtapaMaes, Classificacao, Emocao } from "@/types/enxoval";
-import { calculatePriority, calculateSubtotalPlanned, calculateSubtotalPaid, calculateSavings, calculateSavingsPercent } from "@/lib/calculations";
-import { TagsInput } from "@/components/TagsInput";
-import { sanitizeUrl } from "@/lib/url-validator";
-import { useAutoSave } from "@/hooks/useAutoSave";
-import { DraftIndicator } from "@/components/ui/draft-indicator";
-import { toast } from "sonner";
+import { useState, useEffect, useCallback } from 'react';
+
+import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { DraftIndicator } from '@/components/ui/draft-indicator';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+
+
+import { TagsInput } from '@/components/TagsInput';
+
+import { useAutoSave } from '@/hooks/useAutoSave';
+
+import {
+  calculatePriority,
+  calculateSubtotalPlanned,
+  calculateSubtotalPaid,
+  calculateSavings,
+  calculateSavingsPercent,
+} from '@/lib/calculations';
+import { sanitizeUrl } from '@/lib/url-validator';
+
+import {
+  EnxovalItem,
+  Category,
+  Necessity,
+  Status,
+  Size,
+  Origin,
+  EtapaMaes,
+  Classificacao,
+  Emocao,
+} from '@/types/enxoval';
+
+
+
+
 
 interface ItemDialogProps {
   onAdd?: (item: EnxovalItem) => void;
@@ -22,28 +61,21 @@ interface ItemDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-const categories: Category[] = [
-  "Roupas",
-  "Higiene",
-  "Quarto",
-  "Alimentação",
-  "Mãe",
-  "Extras"
-];
+const categories: Category[] = ['Roupas', 'Higiene', 'Quarto', 'Alimentação', 'Mãe', 'Extras'];
 
-const necessities: Necessity[] = ["Necessário", "Depois", "Não"];
-const statuses: Status[] = ["A comprar", "Comprado"];
-const sizes: Size[] = ["RN", "P", "M", "G", "Opcional"];
-const origins = ["Novo", "Usado", "Brechó"];
-const etapasMaes: EtapaMaes[] = ["Mapear", "Avaliar", "Enxugar", "Sustentar"];
-const classificacoes: Classificacao[] = ["Essencial", "Pode Esperar", "Supérfluo"];
-const emocoes: Emocao[] = ["😌 útil", "💸 impulso", "🧡 amor"];
+const necessities: Necessity[] = ['Necessário', 'Depois', 'Não'];
+const statuses: Status[] = ['A comprar', 'Comprado'];
+const sizes: Size[] = ['RN', 'P', 'M', 'G', 'Opcional'];
+const origins = ['Novo', 'Usado', 'Brechó'];
+const etapasMaes: EtapaMaes[] = ['Mapear', 'Avaliar', 'Enxugar', 'Sustentar'];
+const classificacoes: Classificacao[] = ['Essencial', 'Pode Esperar', 'Supérfluo'];
+const emocoes: Emocao[] = ['😌 útil', '💸 impulso', '🧡 amor'];
 
 type FormData = {
   category: Category;
   item: string;
   necessity: Necessity;
-  size: Size | "";
+  size: Size | '';
   plannedQty: number;
   plannedPrice: number;
   boughtQty: number;
@@ -58,16 +90,16 @@ type FormData = {
   dataLimiteTroca: string;
   notes: string;
   etapaMaes: EtapaMaes;
-  classificacao: Classificacao | "";
-  emocao: Emocao | "";
+  classificacao: Classificacao | '';
+  emocao: Emocao | '';
   tags: string[];
 };
 
 const defaultFormData: FormData = {
-  category: "Roupas",
-  item: "",
-  necessity: "Necessário",
-  size: "",
+  category: 'Roupas',
+  item: '',
+  necessity: 'Necessário',
+  size: '',
   plannedQty: 0,
   plannedPrice: 0,
   boughtQty: 0,
@@ -75,19 +107,25 @@ const defaultFormData: FormData = {
   frete: 0,
   desconto: 0,
   precoReferencia: 0,
-  store: "",
-  link: "",
-  status: "A comprar",
-  origin: "",
-  dataLimiteTroca: "",
-  notes: "",
-  etapaMaes: "Mapear",
-  classificacao: "",
-  emocao: "",
-  tags: []
+  store: '',
+  link: '',
+  status: 'A comprar',
+  origin: '',
+  dataLimiteTroca: '',
+  notes: '',
+  etapaMaes: 'Mapear',
+  classificacao: '',
+  emocao: '',
+  tags: [],
 };
 
-export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, onOpenChange }: ItemDialogProps) => {
+export const ItemDialog = ({
+  onAdd,
+  onEdit,
+  editingItem,
+  open: controlledOpen,
+  onOpenChange,
+}: ItemDialogProps) => {
   const [internalOpen, setInternalOpen] = useState(false);
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setIsOpen = onOpenChange || setInternalOpen;
@@ -107,10 +145,13 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
     type: 'enxoval-item',
     enabled: !editingItem && isOpen,
     debounceMs: 1500,
-    minDataCheck: (data) => !!(data.item && (data.item as string).length > 2),
-    onDraftLoaded: (data) => {
+    minDataCheck: data => !!(data.item && (data.item as string).length > 2),
+    onDraftLoaded: data => {
       // Remove metadata fields before setting form data
-      const { __userId, __savedAt, ...cleanData } = data as FormData & { __userId?: string; __savedAt?: number };
+      const { __userId, __savedAt, ...cleanData } = data as FormData & {
+        __userId?: string;
+        __savedAt?: number;
+      };
       setFormData(prev => ({ ...prev, ...cleanData }));
     },
   });
@@ -123,10 +164,13 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
   }, [formData, editingItem, isOpen, triggerAutoSave]);
 
   // Handle draft load
-  const handleLoadDraft = useCallback(async (id: string) => {
-    await loadDraftById(id);
-    toast("Rascunho carregado", { description: "Os dados do rascunho foram restaurados." });
-  }, [loadDraftById, toast]);
+  const handleLoadDraft = useCallback(
+    async (id: string) => {
+      await loadDraftById(id);
+      toast('Rascunho carregado', { description: 'Os dados do rascunho foram restaurados.' });
+    },
+    [loadDraftById, toast]
+  );
 
   useEffect(() => {
     if (editingItem) {
@@ -134,7 +178,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         category: editingItem.category,
         item: editingItem.item,
         necessity: editingItem.necessity,
-        size: editingItem.size || "",
+        size: editingItem.size || '',
         plannedQty: editingItem.plannedQty,
         plannedPrice: editingItem.plannedPrice,
         boughtQty: editingItem.boughtQty,
@@ -142,16 +186,16 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         frete: editingItem.frete,
         desconto: editingItem.desconto,
         precoReferencia: editingItem.precoReferencia,
-        store: editingItem.store || "",
-        link: editingItem.link || "",
+        store: editingItem.store || '',
+        link: editingItem.link || '',
         status: editingItem.status,
-        origin: editingItem.origin || "",
-        dataLimiteTroca: editingItem.dataLimiteTroca || "",
-        notes: editingItem.notes || "",
-        etapaMaes: editingItem.etapaMaes || "Mapear",
-        classificacao: editingItem.classificacao || "",
-        emocao: editingItem.emocao || "",
-        tags: editingItem.tags || []
+        origin: editingItem.origin || '',
+        dataLimiteTroca: editingItem.dataLimiteTroca || '',
+        notes: editingItem.notes || '',
+        etapaMaes: editingItem.etapaMaes || 'Mapear',
+        classificacao: editingItem.classificacao || '',
+        emocao: editingItem.emocao || '',
+        tags: editingItem.tags || [],
       });
     } else if (!isOpen) {
       // Reset form when dialog closes and not editing
@@ -161,20 +205,28 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validar URL se fornecida
     if (formData.link && formData.link.trim()) {
       const safeUrl = sanitizeUrl(formData.link);
       if (!safeUrl) {
-        toast.error("URL inválida", { description: "A URL fornecida contém caracteres perigosos ou é inválida. Use apenas links HTTP/HTTPS." });
+        toast.error('URL inválida', {
+          description:
+            'A URL fornecida contém caracteres perigosos ou é inválida. Use apenas links HTTP/HTTPS.',
+        });
         return;
       }
       formData.link = safeUrl;
     }
-    
+
     const priority = calculatePriority(formData.necessity);
     const subtotalPlanned = calculateSubtotalPlanned(formData.plannedQty, formData.plannedPrice);
-    const subtotalPaid = calculateSubtotalPaid(formData.boughtQty, formData.unitPricePaid, formData.frete, formData.desconto);
+    const subtotalPaid = calculateSubtotalPaid(
+      formData.boughtQty,
+      formData.unitPricePaid,
+      formData.frete,
+      formData.desconto
+    );
     const savings = calculateSavings(subtotalPlanned, subtotalPaid);
     const savingsPercent = calculateSavingsPercent(subtotalPlanned, subtotalPaid);
 
@@ -206,7 +258,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         etapaMaes: formData.etapaMaes as EtapaMaes | undefined,
         classificacao: formData.classificacao || undefined,
         emocao: formData.emocao || undefined,
-        tags: formData.tags
+        tags: formData.tags,
       };
       onEdit(updatedItem);
     } else if (onAdd) {
@@ -238,7 +290,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
         etapaMaes: formData.etapaMaes as EtapaMaes | undefined,
         classificacao: formData.classificacao || undefined,
         emocao: formData.emocao || undefined,
-        tags: formData.tags
+        tags: formData.tags,
       };
       onAdd(newItem);
     }
@@ -261,7 +313,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between gap-4">
-            <DialogTitle>{editingItem ? "Editar Item" : "Adicionar Novo Item"}</DialogTitle>
+            <DialogTitle>{editingItem ? 'Editar Item' : 'Adicionar Novo Item'}</DialogTitle>
             {!editingItem && (
               <DraftIndicator
                 isSaving={isSaving}
@@ -279,24 +331,29 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Categoria</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value as Category })}>
+              <Select
+                value={formData.category}
+                onValueChange={value => setFormData({ ...formData, category: value as Category })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  {categories.map(cat => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="item">Item</Label>
               <Input
                 id="item"
                 value={formData.item}
-                onChange={(e) => setFormData({ ...formData, item: e.target.value })}
+                onChange={e => setFormData({ ...formData, item: e.target.value })}
                 required
               />
             </div>
@@ -305,13 +362,18 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="etapaMaes">Etapa do Método</Label>
-              <Select value={formData.etapaMaes} onValueChange={(value) => setFormData({ ...formData, etapaMaes: value as EtapaMaes })}>
+              <Select
+                value={formData.etapaMaes}
+                onValueChange={value => setFormData({ ...formData, etapaMaes: value as EtapaMaes })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {etapasMaes.map((etapa) => (
-                    <SelectItem key={etapa} value={etapa}>{etapa}</SelectItem>
+                  {etapasMaes.map(etapa => (
+                    <SelectItem key={etapa} value={etapa}>
+                      {etapa}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -319,16 +381,21 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 Use este campo para identificar em qual fase do método este item se encaixa
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="necessity">Necessidade</Label>
-              <Select value={formData.necessity} onValueChange={(value) => setFormData({ ...formData, necessity: value as Necessity })}>
+              <Select
+                value={formData.necessity}
+                onValueChange={value => setFormData({ ...formData, necessity: value as Necessity })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {necessities.map((nec) => (
-                    <SelectItem key={nec} value={nec}>{nec}</SelectItem>
+                  {necessities.map(nec => (
+                    <SelectItem key={nec} value={nec}>
+                      {nec}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -338,58 +405,81 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label htmlFor="classificacao">Classificação do Item</Label>
-              <Select value={formData.classificacao} onValueChange={(value) => setFormData({ ...formData, classificacao: value as Classificacao })}>
+              <Select
+                value={formData.classificacao}
+                onValueChange={value =>
+                  setFormData({ ...formData, classificacao: value as Classificacao })
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Opcional" />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {classificacoes.map((classif) => (
-                    <SelectItem key={classif} value={classif}>{classif}</SelectItem>
+                  {classificacoes.map(classif => (
+                    <SelectItem key={classif} value={classif}>
+                      {classif}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Essencial: o bebê realmente precisa agora. Pode Esperar: compre depois de testar. Supérfluo: evite ou substitua
+                Essencial: o bebê realmente precisa agora. Pode Esperar: compre depois de testar.
+                Supérfluo: evite ou substitua
               </p>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="size">Tamanho</Label>
-              <Select value={formData.size} onValueChange={(value) => setFormData({ ...formData, size: value as Size })}>
+              <Select
+                value={formData.size}
+                onValueChange={value => setFormData({ ...formData, size: value as Size })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Opcional" />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {sizes.map((size) => (
-                    <SelectItem key={size} value={size}>{size}</SelectItem>
+                  {sizes.map(size => (
+                    <SelectItem key={size} value={size}>
+                      {size}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value as Status })}>
+              <Select
+                value={formData.status}
+                onValueChange={value => setFormData({ ...formData, status: value as Status })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {statuses.map((status) => (
-                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                  {statuses.map(status => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="emocao">Emoção Associada (opcional)</Label>
-              <Select value={formData.emocao} onValueChange={(value) => setFormData({ ...formData, emocao: value as Emocao })}>
+              <Select
+                value={formData.emocao}
+                onValueChange={value => setFormData({ ...formData, emocao: value as Emocao })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Opcional" />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {emocoes.map((emoc) => (
-                    <SelectItem key={emoc} value={emoc}>{emoc}</SelectItem>
+                  {emocoes.map(emoc => (
+                    <SelectItem key={emoc} value={emoc}>
+                      {emoc}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -407,10 +497,10 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 type="number"
                 min="0"
                 value={formData.plannedQty}
-                onChange={(e) => setFormData({ ...formData, plannedQty: Number(e.target.value) })}
+                onChange={e => setFormData({ ...formData, plannedQty: Number(e.target.value) })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="plannedPrice">Preço Planejado (R$)</Label>
               <Input
@@ -419,7 +509,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 min="0"
                 step="0.01"
                 value={formData.plannedPrice}
-                onChange={(e) => setFormData({ ...formData, plannedPrice: Number(e.target.value) })}
+                onChange={e => setFormData({ ...formData, plannedPrice: Number(e.target.value) })}
               />
             </div>
           </div>
@@ -432,10 +522,10 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 type="number"
                 min="0"
                 value={formData.boughtQty}
-                onChange={(e) => setFormData({ ...formData, boughtQty: Number(e.target.value) })}
+                onChange={e => setFormData({ ...formData, boughtQty: Number(e.target.value) })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="unitPricePaid">Preço Unit. Pago (R$)</Label>
               <Input
@@ -444,7 +534,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 min="0"
                 step="0.01"
                 value={formData.unitPricePaid}
-                onChange={(e) => setFormData({ ...formData, unitPricePaid: Number(e.target.value) })}
+                onChange={e => setFormData({ ...formData, unitPricePaid: Number(e.target.value) })}
               />
             </div>
           </div>
@@ -458,10 +548,10 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 min="0"
                 step="0.01"
                 value={formData.frete}
-                onChange={(e) => setFormData({ ...formData, frete: Number(e.target.value) })}
+                onChange={e => setFormData({ ...formData, frete: Number(e.target.value) })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="desconto">Desconto (R$)</Label>
               <Input
@@ -470,7 +560,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 min="0"
                 step="0.01"
                 value={formData.desconto}
-                onChange={(e) => setFormData({ ...formData, desconto: Number(e.target.value) })}
+                onChange={e => setFormData({ ...formData, desconto: Number(e.target.value) })}
               />
               <p className="text-xs text-muted-foreground">
                 Informe descontos obtidos em cupons, promoções ou kits
@@ -485,7 +575,9 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 min="0"
                 step="0.01"
                 value={formData.precoReferencia}
-                onChange={(e) => setFormData({ ...formData, precoReferencia: Number(e.target.value) })}
+                onChange={e =>
+                  setFormData({ ...formData, precoReferencia: Number(e.target.value) })
+                }
               />
               <p className="text-xs text-muted-foreground">
                 Preço médio do mercado — use para medir sua economia real
@@ -496,13 +588,18 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="origin">Origem</Label>
-              <Select value={formData.origin} onValueChange={(value) => setFormData({ ...formData, origin: value })}>
+              <Select
+                value={formData.origin}
+                onValueChange={value => setFormData({ ...formData, origin: value })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Opcional" />
                 </SelectTrigger>
                 <SelectContent className="bg-card">
-                  {origins.map((orig) => (
-                    <SelectItem key={orig} value={orig}>{orig}</SelectItem>
+                  {origins.map(orig => (
+                    <SelectItem key={orig} value={orig}>
+                      {orig}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -514,7 +611,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 id="dataLimiteTroca"
                 type="date"
                 value={formData.dataLimiteTroca}
-                onChange={(e) => setFormData({ ...formData, dataLimiteTroca: e.target.value })}
+                onChange={e => setFormData({ ...formData, dataLimiteTroca: e.target.value })}
               />
             </div>
           </div>
@@ -526,10 +623,10 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 id="store"
                 placeholder="Digite o nome da loja ou site"
                 value={formData.store}
-                onChange={(e) => setFormData({ ...formData, store: e.target.value })}
+                onChange={e => setFormData({ ...formData, store: e.target.value })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="link">Link</Label>
               <Input
@@ -537,7 +634,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
                 type="url"
                 placeholder="Cole aqui o link do produto"
                 value={formData.link}
-                onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                onChange={e => setFormData({ ...formData, link: e.target.value })}
               />
             </div>
           </div>
@@ -548,21 +645,18 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
               id="notes"
               placeholder="Ex: modelo, cor, condição, se vale esperar promoção."
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
             />
           </div>
 
-          <TagsInput
-            tags={formData.tags}
-            onChange={(tags) => setFormData({ ...formData, tags })}
-          />
+          <TagsInput tags={formData.tags} onChange={tags => setFormData({ ...formData, tags })} />
 
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit">{editingItem ? "Salvar" : "Adicionar"}</Button>
+            <Button type="submit">{editingItem ? 'Salvar' : 'Adicionar'}</Button>
           </div>
         </form>
       </DialogContent>

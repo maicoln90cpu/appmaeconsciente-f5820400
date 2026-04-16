@@ -3,11 +3,13 @@
  * @module hooks/useProfile
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { logger } from "@/lib/logger";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { logger } from '@/lib/logger';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Interface que representa o perfil completo do usuário
@@ -77,13 +79,15 @@ const fetchProfile = async (userId: string | undefined): Promise<Profile | null>
   if (!userId) return null;
 
   const { data, error } = await supabase
-    .from("profiles")
-    .select("id, email, full_name, whatsapp, idade, sexo, foto_perfil_url, meses_gestacao, possui_filhos, idades_filhos, cidade, estado, data_prevista_parto, data_inicio_planejamento, peso_atual, altura_cm, perfil_completo, delivery_date, delivery_type, postpartum_notes, onboarding_completed, onboarding_completed_at, fase_maternidade, simple_mode, created_at, updated_at")
-    .eq("id", userId)
+    .from('profiles')
+    .select(
+      'id, email, full_name, whatsapp, idade, sexo, foto_perfil_url, meses_gestacao, possui_filhos, idades_filhos, cidade, estado, data_prevista_parto, data_inicio_planejamento, peso_atual, altura_cm, perfil_completo, delivery_date, delivery_type, postpartum_notes, onboarding_completed, onboarding_completed_at, fase_maternidade, simple_mode, created_at, updated_at'
+    )
+    .eq('id', userId)
     .maybeSingle();
 
   if (error) {
-    logger.error("Error loading profile", error, { context: "useProfile" });
+    logger.error('Error loading profile', error, { context: 'useProfile' });
     return null;
   }
 
@@ -98,7 +102,11 @@ export const useProfile = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: profile, isLoading: loading, refetch } = useQuery({
+  const {
+    data: profile,
+    isLoading: loading,
+    refetch,
+  } = useQuery({
     queryKey: QueryKeys.profile(user?.id ?? ''),
     queryFn: () => fetchProfile(user?.id),
     enabled: !!user?.id,
@@ -108,17 +116,14 @@ export const useProfile = () => {
 
   const updateMutation = useMutation({
     mutationFn: async (updates: Partial<Profile>) => {
-      if (!user?.id) throw new Error("Not authenticated");
+      if (!user?.id) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from("profiles")
-        .update(updates)
-        .eq("id", user.id);
+      const { error } = await supabase.from('profiles').update(updates).eq('id', user.id);
 
       if (error) throw error;
       return updates;
     },
-    onSuccess: (updates) => {
+    onSuccess: updates => {
       // Optimistically update the cache
       queryClient.setQueryData(QueryKeys.profile(user?.id ?? ''), (old: Profile | null) => {
         if (!old) return old;
@@ -135,8 +140,8 @@ export const useProfile = () => {
       await updateMutation.mutateAsync(updates);
       return { error: null };
     } catch (error) {
-      logger.error("Error in updateProfile", error, { context: "useProfile" });
-      return { error: error instanceof Error ? error.message : "Failed to update profile" };
+      logger.error('Error in updateProfile', error, { context: 'useProfile' });
+      return { error: error instanceof Error ? error.message : 'Failed to update profile' };
     }
   };
 
@@ -144,10 +149,10 @@ export const useProfile = () => {
     refetch();
   };
 
-  return { 
-    profile: profile ?? null, 
-    loading, 
-    updateProfile, 
-    reloadProfile 
+  return {
+    profile: profile ?? null,
+    loading,
+    updateProfile,
+    reloadProfile,
   };
 };

@@ -1,7 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface SiteSettings {
   id: string;
@@ -25,24 +27,26 @@ export const useSiteSettings = () => {
     queryKey,
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("site_settings")
-        .select("id, gtm_id, support_whatsapp, custom_domain, support_email, system_timezone, ai_insights_enabled, badges_enabled, created_at, updated_at")
+        .from('site_settings')
+        .select(
+          'id, gtm_id, support_whatsapp, custom_domain, support_email, system_timezone, ai_insights_enabled, badges_enabled, created_at, updated_at'
+        )
         .limit(1)
         .maybeSingle();
 
       if (error) throw error;
-      
+
       if (!data) {
         const { data: newData, error: insertError } = await supabase
-          .from("site_settings")
+          .from('site_settings')
           .insert({ gtm_id: 'GTM-K9TPFGCJ' })
           .select()
           .single();
-        
+
         if (insertError) throw insertError;
         return newData as unknown as SiteSettings;
       }
-      
+
       return data as unknown as SiteSettings;
     },
     staleTime: QueryCacheConfig.reference.staleTime,
@@ -50,15 +54,17 @@ export const useSiteSettings = () => {
   });
 
   const updateSettingsMutation = useMutation({
-    mutationFn: async (updates: Partial<Omit<SiteSettings, "id" | "created_at" | "updated_at">>) => {
+    mutationFn: async (
+      updates: Partial<Omit<SiteSettings, 'id' | 'created_at' | 'updated_at'>>
+    ) => {
       if (!settings?.id) {
-        throw new Error("Settings not loaded");
+        throw new Error('Settings not loaded');
       }
 
       const { data, error } = await supabase
-        .from("site_settings")
+        .from('site_settings')
         .update(updates)
-        .eq("id", settings.id)
+        .eq('id', settings.id)
         .select()
         .maybeSingle();
 
@@ -67,10 +73,12 @@ export const useSiteSettings = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast("Configurações atualizadas", { description: "As configurações foram salvas com sucesso." });
+      toast('Configurações atualizadas', {
+        description: 'As configurações foram salvas com sucesso.',
+      });
     },
-    onError: (error) => {
-      toast.error("Erro ao atualizar", { description: error.message });
+    onError: error => {
+      toast.error('Erro ao atualizar', { description: error.message });
     },
   });
 

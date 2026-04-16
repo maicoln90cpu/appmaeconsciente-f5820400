@@ -3,11 +3,13 @@
  * @module hooks/gamification/useLeaderboard
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface LeaderboardEntry {
   user_id: string;
@@ -30,7 +32,9 @@ export const useLeaderboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leaderboard_cache')
-        .select('user_id, display_name, xp_total, level, max_streak, badges_count, weekly_xp, rank_position')
+        .select(
+          'user_id, display_name, xp_total, level, max_streak, badges_count, weekly_xp, rank_position'
+        )
         .order('rank_position');
 
       if (error) throw error;
@@ -47,7 +51,7 @@ export const useLeaderboard = () => {
     queryKey: optInQueryKey,
     queryFn: async () => {
       if (!user) return false;
-      
+
       const { data, error } = await supabase
         .from('profiles')
         .select('leaderboard_opt_in')
@@ -78,12 +82,9 @@ export const useLeaderboard = () => {
       if (error) throw error;
       return optIn;
     },
-    onSuccess: (optIn) => {
+    onSuccess: optIn => {
       queryClient.invalidateQueries({ queryKey: optInQueryKey });
-      toast.success(optIn 
-        ? 'Você agora aparece no ranking!' 
-        : 'Você foi removido do ranking'
-      );
+      toast.success(optIn ? 'Você agora aparece no ranking!' : 'Você foi removido do ranking');
     },
   });
 

@@ -1,7 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface BodyImageLog {
   id: string;
@@ -52,16 +54,14 @@ export const useBodyImageLog = () => {
       if (log.photo) {
         const fileExt = log.photo.name.split('.').pop();
         const fileName = `${userId}/${Date.now()}.${fileExt}`;
-        
+
         const { error: uploadError } = await supabase.storage
           .from('body-image-photos')
           .upload(fileName, log.photo);
 
         if (uploadError) throw uploadError;
 
-        const { data: urlData } = supabase.storage
-          .from('body-image-photos')
-          .getPublicUrl(fileName);
+        const { data: urlData } = supabase.storage.from('body-image-photos').getPublicUrl(fileName);
 
         photo_url = urlData.publicUrl;
       }
@@ -85,18 +85,15 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast("💕 Sucesso", { description: "Registro de autoestima salvo" });
+      toast('💕 Sucesso', { description: 'Registro de autoestima salvo' });
     },
     onError: () => {
-      toast.error("Erro", { description: "Erro ao salvar registro" });
+      toast.error('Erro', { description: 'Erro ao salvar registro' });
     },
   });
 
   const updateLog = useMutation({
-    mutationFn: async ({ 
-      id, 
-      ...updates 
-    }: Partial<BodyImageLog> & { id: string }) => {
+    mutationFn: async ({ id, ...updates }: Partial<BodyImageLog> & { id: string }) => {
       const { data, error } = await supabase
         .from('body_image_log')
         .update(updates)
@@ -109,7 +106,7 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast("Sucesso", { description: "Registro atualizado" });
+      toast('Sucesso', { description: 'Registro atualizado' });
     },
   });
 
@@ -127,22 +124,17 @@ export const useBodyImageLog = () => {
       if (log?.photo_url) {
         const fileName = log.photo_url.split('/').pop();
         if (fileName) {
-          await supabase.storage
-            .from('body-image-photos')
-            .remove([`${userId}/${fileName}`]);
+          await supabase.storage.from('body-image-photos').remove([`${userId}/${fileName}`]);
         }
       }
 
-      const { error } = await supabase
-        .from('body_image_log')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('body_image_log').delete().eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast("Sucesso", { description: "Registro removido" });
+      toast('Sucesso', { description: 'Registro removido' });
     },
   });
 

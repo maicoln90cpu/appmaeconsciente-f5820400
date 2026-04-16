@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate } from 'react-router-dom';
 
 /**
  * Dashboard antigo — agora redireciona para a home unificada /dashboard-bebe

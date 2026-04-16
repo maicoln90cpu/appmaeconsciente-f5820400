@@ -1,6 +1,6 @@
 // Background Sync utility for offline form submissions
-import { analytics } from "./analytics";
-import { logger } from "./logger";
+import { analytics } from './analytics';
+import { logger } from './logger';
 
 interface SyncTask {
   id: string;
@@ -10,7 +10,7 @@ interface SyncTask {
   retries: number;
 }
 
-const SYNC_QUEUE_KEY = "background_sync_queue";
+const SYNC_QUEUE_KEY = 'background_sync_queue';
 const MAX_RETRIES = 3;
 
 class BackgroundSyncManager {
@@ -30,7 +30,7 @@ class BackgroundSyncManager {
         this.queue = JSON.parse(stored);
       }
     } catch (error) {
-      console.error("Failed to load sync queue:", error);
+      console.error('Failed to load sync queue:', error);
       this.queue = [];
     }
   }
@@ -39,16 +39,16 @@ class BackgroundSyncManager {
     try {
       localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(this.queue));
     } catch (error) {
-      console.error("Failed to save sync queue:", error);
+      console.error('Failed to save sync queue:', error);
     }
   }
 
   private setupOnlineListener() {
     this.onlineHandler = () => {
-      logger.info("Connection restored, processing sync queue...");
+      logger.info('Connection restored, processing sync queue...');
       this.processQueue();
     };
-    window.addEventListener("online", this.onlineHandler);
+    window.addEventListener('online', this.onlineHandler);
   }
 
   /**
@@ -57,7 +57,7 @@ class BackgroundSyncManager {
    */
   destroy() {
     if (this.onlineHandler) {
-      window.removeEventListener("online", this.onlineHandler);
+      window.removeEventListener('online', this.onlineHandler);
       this.onlineHandler = null;
     }
   }
@@ -75,7 +75,7 @@ class BackgroundSyncManager {
     this.saveQueue();
 
     analytics.track({
-      name: "background_sync_queued",
+      name: 'background_sync_queued',
       properties: { type, taskId: task.id },
     });
 
@@ -99,18 +99,18 @@ class BackgroundSyncManager {
         await this.executeTask(task);
         this.queue.shift(); // Remove successful task
         analytics.track({
-          name: "background_sync_success",
+          name: 'background_sync_success',
           properties: { type: task.type, taskId: task.id },
         });
       } catch (error) {
-        console.error("Failed to execute sync task:", error);
+        console.error('Failed to execute sync task:', error);
         task.retries++;
 
         if (task.retries >= MAX_RETRIES) {
-          console.error("Max retries reached for task:", task);
+          console.error('Max retries reached for task:', task);
           this.queue.shift(); // Remove failed task
           analytics.track({
-            name: "background_sync_failed",
+            name: 'background_sync_failed',
             properties: { type: task.type, taskId: task.id, error: String(error) },
           });
         } else {
@@ -126,13 +126,13 @@ class BackgroundSyncManager {
   }
 
   private async executeTask(task: SyncTask): Promise<void> {
-    const event = new CustomEvent("background-sync-execute", {
+    const event = new CustomEvent('background-sync-execute', {
       detail: task,
     });
     window.dispatchEvent(event);
 
     // Wait a bit for the handler to process
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, 100));
   }
 
   getQueueLength(): number {
@@ -147,7 +147,7 @@ class BackgroundSyncManager {
 
 // Singleton com proteção contra duplicação em HMR
 function createBackgroundSync(): BackgroundSyncManager {
-  const key = "__backgroundSyncManager";
+  const key = '__backgroundSyncManager';
   const existing = (globalThis as any)[key] as BackgroundSyncManager | undefined;
   if (existing) {
     existing.destroy();

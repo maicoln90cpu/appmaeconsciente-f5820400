@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 /**
  * Hook that provides an AbortController signal, automatically aborting on unmount.
@@ -34,7 +34,5 @@ export function useAbortController() {
  * Helper to check if an error is an abort error (safe to ignore).
  */
 export function isAbortError(error: unknown): boolean {
-  return (
-    error instanceof DOMException && error.name === "AbortError"
-  );
+  return error instanceof DOMException && error.name === 'AbortError';
 }

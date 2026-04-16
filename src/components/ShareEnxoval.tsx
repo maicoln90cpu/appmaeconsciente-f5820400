@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Share2, Copy, Check, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from 'react';
+
+import { Share2, Copy, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,47 +11,49 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export const ShareEnxoval = () => {
   const [open, setOpen] = useState(false);
-  const [shareUrl, setShareUrl] = useState("");
+  const [shareUrl, setShareUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const generateShareLink = async () => {
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Gerar token único
       const token = crypto.randomUUID();
-      
+
       // Link expira em 7 dias
       const expiresAt = new Date();
       expiresAt.setDate(expiresAt.getDate() + 7);
 
-      const { error } = await supabase
-        .from("shared_enxoval_links")
-        .insert({
-          user_id: user.id,
-          token: token,
-          expires_at: expiresAt.toISOString(),
-        });
+      const { error } = await supabase.from('shared_enxoval_links').insert({
+        user_id: user.id,
+        token: token,
+        expires_at: expiresAt.toISOString(),
+      });
 
       if (error) throw error;
 
       const url = `${window.location.origin}/shared/${token}`;
       setShareUrl(url);
 
-      toast("Link criado!", { description: "O link expira em 7 dias." });
+      toast('Link criado!', { description: 'O link expira em 7 dias.' });
     } catch (error) {
-      console.error("Erro ao criar link:", error);
-      toast.error("Erro", { description: "Não foi possível criar o link de compartilhamento." });
+      console.error('Erro ao criar link:', error);
+      toast.error('Erro', { description: 'Não foi possível criar o link de compartilhamento.' });
     } finally {
       setLoading(false);
     }
@@ -59,25 +63,25 @@ export const ShareEnxoval = () => {
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    
-    toast("Copiado!", { description: "Link copiado para a área de transferência." });
+
+    toast('Copiado!', { description: 'Link copiado para a área de transferência.' });
   };
 
   const revokeLink = async () => {
     try {
-      const token = shareUrl.split("/").pop();
-      
+      const token = shareUrl.split('/').pop();
+
       const { error } = await supabase
-        .from("shared_enxoval_links")
+        .from('shared_enxoval_links')
         .update({ is_active: false })
-        .eq("token", token);
+        .eq('token', token);
 
       if (error) throw error;
 
-      setShareUrl("");
-      toast("Link revogado", { description: "O link de compartilhamento foi desativado." });
+      setShareUrl('');
+      toast('Link revogado', { description: 'O link de compartilhamento foi desativado.' });
     } catch (_error) {
-      toast.error("Erro", { description: "Não foi possível revogar o link." });
+      toast.error('Erro', { description: 'Não foi possível revogar o link.' });
     }
   };
 
@@ -96,11 +100,11 @@ export const ShareEnxoval = () => {
             Crie um link temporário para compartilhar sua lista com familiares e amigos.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 pt-4">
           {!shareUrl ? (
             <Button onClick={generateShareLink} disabled={loading} className="w-full">
-              {loading ? "Gerando..." : "Gerar Link de Compartilhamento"}
+              {loading ? 'Gerando...' : 'Gerar Link de Compartilhamento'}
             </Button>
           ) : (
             <>
@@ -112,7 +116,7 @@ export const ShareEnxoval = () => {
                     variant="outline"
                     size="icon"
                     onClick={copyToClipboard}
-                    aria-label={copied ? "Link copiado" : "Copiar link"}
+                    aria-label={copied ? 'Link copiado' : 'Copiar link'}
                   >
                     {copied ? (
                       <Check className="h-4 w-4 text-success" />
@@ -121,16 +125,10 @@ export const ShareEnxoval = () => {
                     )}
                   </Button>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Este link expira em 7 dias.
-                </p>
+                <p className="text-sm text-muted-foreground">Este link expira em 7 dias.</p>
               </div>
-              
-              <Button
-                variant="destructive"
-                onClick={revokeLink}
-                className="w-full gap-2"
-              >
+
+              <Button variant="destructive" onClick={revokeLink} className="w-full gap-2">
                 <X className="h-4 w-4" />
                 Revogar Link
               </Button>

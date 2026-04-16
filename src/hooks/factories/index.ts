@@ -1,1 +1,1 @@
-export { createSupabaseCRUD } from "./createSupabaseCRUD";
+export { createSupabaseCRUD } from './createSupabaseCRUD';

@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo } from 'react';
 
-export type SortDirection = "asc" | "desc";
+export type SortDirection = 'asc' | 'desc';
 
 export interface SortConfig<T> {
   key: keyof T;
@@ -10,7 +10,7 @@ export interface SortConfig<T> {
 export function useTableSort<T>(
   data: T[] | undefined,
   defaultKey: keyof T,
-  defaultDirection: SortDirection = "desc"
+  defaultDirection: SortDirection = 'desc'
 ) {
   const [sortConfig, setSortConfig] = useState<SortConfig<T>>({
     key: defaultKey,
@@ -18,9 +18,9 @@ export function useTableSort<T>(
   });
 
   const handleSort = (key: keyof T) => {
-    setSortConfig((prev) => ({
+    setSortConfig(prev => ({
       key,
-      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
 
@@ -33,7 +33,7 @@ export function useTableSort<T>(
       if (aVal == null) return 1;
       if (bVal == null) return -1;
       const cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-      return sortConfig.direction === "asc" ? cmp : -cmp;
+      return sortConfig.direction === 'asc' ? cmp : -cmp;
     });
   }, [data, sortConfig]);
 

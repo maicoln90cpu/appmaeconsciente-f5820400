@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { Navigate, Outlet, useParams } from "react-router-dom";
+import { Loader2, Lock } from 'lucide-react';
+import { Navigate, Outlet, useParams } from 'react-router-dom';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { supabase } from "@/integrations/supabase/client";
 
-import { analytics } from "@/lib/analytics";
-import { logger } from "@/lib/logger";
+import { analytics } from '@/lib/analytics';
+import { logger } from '@/lib/logger';
 
-import { Loader2, Lock } from "lucide-react";
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface ProductRouteProps {
   productSlug: string;
@@ -27,8 +28,10 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
 
   const checkAccess = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         setLoading(false);
         return;
@@ -64,9 +67,11 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
       }
 
       const { data: productData } = await supabase
-        .from("products")
-        .select("id, title, slug, description, price, is_active, is_free, destination_url, payment_url, trial_enabled, trial_days")
-        .eq("slug", productSlug)
+        .from('products')
+        .select(
+          'id, title, slug, description, price, is_active, is_free, destination_url, payment_url, trial_enabled, trial_days'
+        )
+        .eq('slug', productSlug)
         .single();
 
       if (!productData) {
@@ -79,14 +84,14 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
       if (productData.is_free) {
         // Auto-grant access for free products
         const { data: existingAccess } = await supabase
-          .from("user_product_access")
-          .select("id")
-          .eq("user_id", user.id)
-          .eq("product_id", productData.id)
+          .from('user_product_access')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('product_id', productData.id)
           .maybeSingle();
 
         if (!existingAccess) {
-          await supabase.from("user_product_access").insert({
+          await supabase.from('user_product_access').insert({
             user_id: user.id,
             product_id: productData.id,
           });
@@ -95,10 +100,10 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
         setHasAccess(true);
       } else {
         const { data: accessData } = await supabase
-          .from("user_product_access")
-          .select("id, expires_at")
-          .eq("user_id", user.id)
-          .eq("product_id", productData.id)
+          .from('user_product_access')
+          .select('id, expires_at')
+          .eq('user_id', user.id)
+          .eq('product_id', productData.id)
           .maybeSingle();
 
         if (!accessData) {
@@ -109,7 +114,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
           if (accessData.expires_at) {
             const expirationDate = new Date(accessData.expires_at);
             const now = new Date();
-            
+
             if (now > expirationDate) {
               setHasAccess(false);
               setProduct({ ...productData, access_data: accessData });
@@ -127,7 +132,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
       // Track product access and log
       if (hasAccess) {
         analytics.productAccess(productSlug);
-        
+
         // Registrar acesso para auditoria
         if (productData) {
           try {
@@ -141,7 +146,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
         }
       }
     } catch (error) {
-      console.error("Error checking product access:", error);
+      console.error('Error checking product access:', error);
     } finally {
       setLoading(false);
     }
@@ -157,8 +162,9 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
 
   if (!hasAccess) {
     const accessData = product?.access_data;
-    const isExpired = accessData && accessData.expires_at && new Date() > new Date(accessData.expires_at);
-    
+    const isExpired =
+      accessData && accessData.expires_at && new Date() > new Date(accessData.expires_at);
+
     return (
       <div className="flex items-center justify-center p-4 min-h-[50vh]">
         <Card className="max-w-md">
@@ -167,26 +173,23 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
               <Lock className="h-6 w-6 text-muted-foreground" />
             </div>
             <CardTitle className="text-center">
-              {isExpired ? "Acesso Expirado" : "Acesso Restrito"}
+              {isExpired ? 'Acesso Expirado' : 'Acesso Restrito'}
             </CardTitle>
             <CardDescription className="text-center">
               {product?.is_free
-                ? "Você precisa estar logado para acessar este material."
+                ? 'Você precisa estar logado para acessar este material.'
                 : isExpired
-                ? `Seu acesso a este material expirou${accessData.expires_at ? ` em ${new Date(accessData.expires_at).toLocaleDateString()}` : ''}.`
-                : "Este material está disponível apenas para assinantes."}
+                  ? `Seu acesso a este material expirou${accessData.expires_at ? ` em ${new Date(accessData.expires_at).toLocaleDateString()}` : ''}.`
+                  : 'Este material está disponível apenas para assinantes.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Button onClick={() => window.location.href = "/materiais"}>
+            <Button onClick={() => (window.location.href = '/materiais')}>
               Ver Todos os Materiais
             </Button>
             {!product?.is_free && product?.payment_url && (
-              <Button 
-                variant="default"
-                onClick={() => window.open(product.payment_url, '_blank')}
-              >
-                {isExpired ? "Renovar Acesso" : "Comprar Agora"}
+              <Button variant="default" onClick={() => window.open(product.payment_url, '_blank')}>
+                {isExpired ? 'Renovar Acesso' : 'Comprar Agora'}
               </Button>
             )}
           </CardContent>

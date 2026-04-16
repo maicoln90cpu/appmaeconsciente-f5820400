@@ -1,22 +1,17 @@
-import { useMemo } from "react";
-import { 
-  Baby, 
-  Moon, 
-  Pill, 
-  Clock, 
-  Calendar,
-  TrendingUp,
-  AlertCircle 
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useBabySleep } from "@/hooks/useBabySleep";
-import { useBabyFeeding } from "@/hooks/useBabyFeeding";
-import { useBabyColic } from "@/hooks/useBabyColic";
-import { useBabyMedications } from "@/hooks/useBabyMedications";
-import { useBabyAppointments } from "@/hooks/useBabyAppointments";
-import { format, isToday, isTomorrow, differenceInHours, startOfDay, endOfDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useMemo } from 'react';
+
+import { format, isToday, isTomorrow, differenceInHours, startOfDay, endOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Baby, Moon, Pill, Clock, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+import { useBabyColic } from '@/hooks/useBabyColic';
+import { useBabyFeeding } from '@/hooks/useBabyFeeding';
+import { useBabyMedications } from '@/hooks/useBabyMedications';
+import { useBabySleep } from '@/hooks/useBabySleep';
 
 export const BabySummaryWidget = () => {
   const { sleepLogs } = useBabySleep();
@@ -31,43 +26,47 @@ export const BabySummaryWidget = () => {
     const todayEnd = endOfDay(today);
 
     // Sleep stats
-    const todaySleep = sleepLogs?.filter(log => {
-      const logDate = new Date(log.sleep_start);
-      return logDate >= todayStart && logDate <= todayEnd;
-    }) || [];
+    const todaySleep =
+      sleepLogs?.filter(log => {
+        const logDate = new Date(log.sleep_start);
+        return logDate >= todayStart && logDate <= todayEnd;
+      }) || [];
     const totalSleepMinutes = todaySleep.reduce((acc, log) => acc + (log.duration_minutes || 0), 0);
     const sleepHours = Math.floor(totalSleepMinutes / 60);
     const sleepMins = totalSleepMinutes % 60;
 
     // Feeding stats
-    const todayFeedings = feedingLogs?.filter(log => {
-      const logDate = new Date(log.start_time);
-      return logDate >= todayStart && logDate <= todayEnd;
-    }) || [];
+    const todayFeedings =
+      feedingLogs?.filter(log => {
+        const logDate = new Date(log.start_time);
+        return logDate >= todayStart && logDate <= todayEnd;
+      }) || [];
 
     // Colic stats
-    const todayColic = colicLogs?.filter(log => {
-      const logDate = new Date(log.start_time);
-      return logDate >= todayStart && logDate <= todayEnd;
-    }) || [];
+    const todayColic =
+      colicLogs?.filter(log => {
+        const logDate = new Date(log.start_time);
+        return logDate >= todayStart && logDate <= todayEnd;
+      }) || [];
 
     // Active medications
     const activeMeds = medications?.filter(med => med.is_active) || [];
 
     // Upcoming appointments (next 7 days)
-    const upcomingAppts = appointments?.filter(apt => {
-      const aptDate = new Date(apt.scheduled_date);
-      const diffDays = Math.ceil((aptDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      return diffDays >= 0 && diffDays <= 7 && !apt.completed;
-    }).sort((a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime()) || [];
+    const upcomingAppts =
+      appointments
+        ?.filter(apt => {
+          const aptDate = new Date(apt.scheduled_date);
+          const diffDays = Math.ceil((aptDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          return diffDays >= 0 && diffDays <= 7 && !apt.completed;
+        })
+        .sort(
+          (a, b) => new Date(a.scheduled_date).getTime() - new Date(b.scheduled_date).getTime()
+        ) || [];
 
     // Last feeding time
-    const lastFeeding = todayFeedings.length > 0 
-      ? new Date(todayFeedings[0].start_time)
-      : null;
-    const hoursSinceFeeding = lastFeeding 
-      ? differenceInHours(today, lastFeeding)
-      : null;
+    const lastFeeding = todayFeedings.length > 0 ? new Date(todayFeedings[0].start_time) : null;
+    const hoursSinceFeeding = lastFeeding ? differenceInHours(today, lastFeeding) : null;
 
     return {
       sleepHours,
@@ -84,9 +83,9 @@ export const BabySummaryWidget = () => {
 
   const formatAppointmentDate = (dateStr: string) => {
     const date = new Date(dateStr);
-    if (isToday(date)) return "Hoje";
-    if (isTomorrow(date)) return "Amanhã";
-    return format(date, "dd/MM", { locale: ptBR });
+    if (isToday(date)) return 'Hoje';
+    if (isTomorrow(date)) return 'Amanhã';
+    return format(date, 'dd/MM', { locale: ptBR });
   };
 
   return (
@@ -130,7 +129,9 @@ export const BabySummaryWidget = () => {
             </div>
             <div className="min-w-0">
               <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Remédios</p>
-              <p className="font-semibold text-xs sm:text-sm truncate">{todayStats.activeMeds} ativos</p>
+              <p className="font-semibold text-xs sm:text-sm truncate">
+                {todayStats.activeMeds} ativos
+              </p>
             </div>
           </div>
 
@@ -142,10 +143,9 @@ export const BabySummaryWidget = () => {
             <div className="min-w-0">
               <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Última</p>
               <p className="font-semibold text-xs sm:text-sm truncate">
-                {todayStats.hoursSinceFeeding !== null 
+                {todayStats.hoursSinceFeeding !== null
                   ? `${todayStats.hoursSinceFeeding}h atrás`
-                  : "—"
-                }
+                  : '—'}
               </p>
             </div>
           </div>
@@ -169,10 +169,10 @@ export const BabySummaryWidget = () => {
               Próximas Consultas
             </p>
             <div className="flex flex-wrap gap-2">
-              {todayStats.upcomingAppts.slice(0, 3).map((apt) => (
-                <Badge 
-                  key={apt.id} 
-                  variant={isToday(new Date(apt.scheduled_date)) ? "default" : "secondary"}
+              {todayStats.upcomingAppts.slice(0, 3).map(apt => (
+                <Badge
+                  key={apt.id}
+                  variant={isToday(new Date(apt.scheduled_date)) ? 'default' : 'secondary'}
                   className="text-xs"
                 >
                   {formatAppointmentDate(apt.scheduled_date)}: {apt.title}

@@ -1,10 +1,14 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Loader2, Dumbbell } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
-import { useAbortController, isAbortError } from "@/hooks/useAbortController";
+import { useState } from 'react';
+
+import { Loader2, Dumbbell } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+
+import { useAbortController, isAbortError } from '@/hooks/useAbortController';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface GenerateExercisesButtonProps {
   onSuccess: () => void;
@@ -12,7 +16,11 @@ interface GenerateExercisesButtonProps {
   needsProfile?: boolean;
 }
 
-export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfile }: GenerateExercisesButtonProps) {
+export function GenerateExercisesButton({
+  onSuccess,
+  onNeedsProfile,
+  needsProfile,
+}: GenerateExercisesButtonProps) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const getSignal = useAbortController();
@@ -22,17 +30,19 @@ export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfil
       onNeedsProfile();
       return;
     }
-    
+
     setLoading(true);
     setProgress(0);
 
     try {
       const progressInterval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 10, 90));
+        setProgress(prev => Math.min(prev + 10, 90));
       }, 300);
 
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Não autenticado");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
 
       const signal = getSignal();
 
@@ -41,7 +51,7 @@ export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfil
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
           },
           signal,
@@ -56,23 +66,29 @@ export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfil
         throw new Error(errorData.error || `Erro ${response.status}`);
       }
 
-      toast.success("Exercícios gerados com sucesso!");
+      toast.success('Exercícios gerados com sucesso!');
       onSuccess();
     } catch (error: any) {
       if (isAbortError(error)) return;
       console.error('Erro ao gerar exercícios:', error);
-      
-      if (error.message?.includes('Limite de gerações atingido') || error.message?.includes('429')) {
-        toast.error("Limite semanal atingido", {
-          description: "Você já gerou exercícios esta semana. Tente novamente na próxima semana.",
+
+      if (
+        error.message?.includes('Limite de gerações atingido') ||
+        error.message?.includes('429')
+      ) {
+        toast.error('Limite semanal atingido', {
+          description: 'Você já gerou exercícios esta semana. Tente novamente na próxima semana.',
         });
-      } else if (error.message?.includes('Unauthorized') || error.message?.includes('Não autenticado')) {
-        toast.error("Sessão expirada", {
-          description: "Faça login novamente para continuar.",
+      } else if (
+        error.message?.includes('Unauthorized') ||
+        error.message?.includes('Não autenticado')
+      ) {
+        toast.error('Sessão expirada', {
+          description: 'Faça login novamente para continuar.',
         });
       } else {
-        toast.error("Erro ao gerar exercícios", {
-          description: error.message || "Tente novamente em alguns instantes.",
+        toast.error('Erro ao gerar exercícios', {
+          description: error.message || 'Tente novamente em alguns instantes.',
         });
       }
     } finally {
@@ -83,12 +99,7 @@ export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfil
 
   return (
     <div className="space-y-2">
-      <Button 
-        onClick={handleGenerate} 
-        disabled={loading}
-        variant="outline"
-        className="w-full"
-      >
+      <Button onClick={handleGenerate} disabled={loading} variant="outline" className="w-full">
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -104,9 +115,7 @@ export function GenerateExercisesButton({ onSuccess, onNeedsProfile, needsProfil
       {loading && (
         <div className="space-y-1">
           <Progress value={progress} />
-          <p className="text-xs text-center text-muted-foreground">
-            Criando exercícios seguros...
-          </p>
+          <p className="text-xs text-center text-muted-foreground">Criando exercícios seguros...</p>
         </div>
       )}
     </div>

@@ -1,41 +1,47 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Trash2, Eye, Sparkles } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { useState } from "react";
+import { useState } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { Trash2, Eye, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export const PostModeration = () => {
   const queryClient = useQueryClient();
   const [isSeeding, setIsSeeding] = useState(false);
 
   const { data: posts, isLoading } = useQuery({
-    queryKey: ["admin-posts"],
+    queryKey: ['admin-posts'],
     queryFn: async () => {
       // Passo 1: Buscar posts
       const { data: postsData, error } = await supabase
-        .from("posts")
-        .select("id, user_id, content, categoria, display_name, image_urls, is_hidden, moderation_status, tags, created_at, updated_at")
-        .order("created_at", { ascending: false });
+        .from('posts')
+        .select(
+          'id, user_id, content, categoria, display_name, image_urls, is_hidden, moderation_status, tags, created_at, updated_at'
+        )
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       if (!postsData) return [];
 
       // Passo 2: Enriquecer com perfis
       const enrichedPosts = await Promise.all(
-        postsData.map(async (post) => {
+        postsData.map(async post => {
           const { data: profile } = await supabase
-            .from("profiles")
-            .select("email, foto_perfil_url")
-            .eq("id", post.user_id)
+            .from('profiles')
+            .select('email, foto_perfil_url')
+            .eq('id', post.user_id)
             .maybeSingle();
 
           return {
             ...post,
-            profiles: profile || { email: "Usuário desconhecido", foto_perfil_url: null }
+            profiles: profile || { email: 'Usuário desconhecido', foto_perfil_url: null },
           };
         })
       );
@@ -46,22 +52,22 @@ export const PostModeration = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (postId: string) => {
-      const { error } = await supabase.from("posts").delete().eq("id", postId);
+      const { error } = await supabase.from('posts').delete().eq('id', postId);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
-      toast.success("Post deletado com sucesso");
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] });
+      toast.success('Post deletado com sucesso');
     },
     onError: () => {
-      toast.error("Erro ao deletar post");
+      toast.error('Erro ao deletar post');
     },
   });
 
   const handleSeedCommunity = async () => {
     try {
       setIsSeeding(true);
-      toast.loading("Povoando comunidade...");
+      toast.loading('Povoando comunidade...');
 
       const { data, error } = await supabase.functions.invoke('seed-community');
 
@@ -71,7 +77,7 @@ export const PostModeration = () => {
       toast.success(
         `Comunidade povoada! ${data.profiles_created || 0} perfis, ${data.posts_created || 0} posts, ${data.comments_created || 0} comentários`
       );
-      queryClient.invalidateQueries({ queryKey: ["admin-posts"] });
+      queryClient.invalidateQueries({ queryKey: ['admin-posts'] });
     } catch (error: any) {
       toast.dismiss();
       toast.error(`Erro ao povoar comunidade: ${error.message}`);
@@ -89,8 +95,8 @@ export const PostModeration = () => {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Moderação de Posts</h2>
-        <Button 
-          onClick={handleSeedCommunity} 
+        <Button
+          onClick={handleSeedCommunity}
           disabled={isSeeding}
           variant="default"
           className="gap-2"
@@ -100,16 +106,16 @@ export const PostModeration = () => {
         </Button>
       </div>
       <div className="grid gap-4">
-        {posts?.map((post) => (
+        {posts?.map(post => (
           <Card key={post.id}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-sm">
-                    {(post.profiles as any)?.email || "Usuário desconhecido"}
+                    {(post.profiles as any)?.email || 'Usuário desconhecido'}
                   </CardTitle>
                   <Badge variant="outline">
-                    {format(new Date(post.created_at), "dd/MM/yyyy HH:mm")}
+                    {format(new Date(post.created_at), 'dd/MM/yyyy HH:mm')}
                   </Badge>
                 </div>
                 <Button

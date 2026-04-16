@@ -1,18 +1,35 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Pill, Clock, CheckCircle2, AlertCircle } from "lucide-react";
-import { useBabyMedications, MEDICATION_FREQUENCIES } from "@/hooks/useBabyMedications";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Pill, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+
+
+import { useBabyMedications, MEDICATION_FREQUENCIES } from '@/hooks/useBabyMedications';
+
 
 interface MedicationTimerProps {
   babyProfileId?: string;
@@ -31,14 +48,14 @@ export const MedicationTimer = ({ babyProfileId }: MedicationTimerProps) => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
-    medication_name: "",
-    dosage: "",
-    frequency: "once_daily",
+    medication_name: '',
+    dosage: '',
+    frequency: 'once_daily',
     times_per_day: 1,
-    time_of_day: ["08:00"],
+    time_of_day: ['08:00'],
     start_date: new Date().toISOString().split('T')[0],
-    end_date: "",
-    notes: "",
+    end_date: '',
+    notes: '',
   });
 
   const handleSubmit = () => {
@@ -55,14 +72,14 @@ export const MedicationTimer = ({ babyProfileId }: MedicationTimerProps) => {
     });
 
     setFormData({
-      medication_name: "",
-      dosage: "",
-      frequency: "once_daily",
+      medication_name: '',
+      dosage: '',
+      frequency: 'once_daily',
       times_per_day: 1,
-      time_of_day: ["08:00"],
+      time_of_day: ['08:00'],
       start_date: new Date().toISOString().split('T')[0],
-      end_date: "",
-      notes: "",
+      end_date: '',
+      notes: '',
     });
     setIsOpen(false);
   };
@@ -77,20 +94,22 @@ export const MedicationTimer = ({ babyProfileId }: MedicationTimerProps) => {
 
   const handleFrequencyChange = (value: string) => {
     const timesMap: Record<string, number> = {
-      'once_daily': 1,
-      'twice_daily': 2,
-      'three_daily': 3,
-      'four_daily': 4,
-      'every_8h': 3,
-      'every_6h': 4,
-      'as_needed': 1,
+      once_daily: 1,
+      twice_daily: 2,
+      three_daily: 3,
+      four_daily: 4,
+      every_8h: 3,
+      every_6h: 4,
+      as_needed: 1,
     };
 
     const times = timesMap[value] || 1;
-    const timeSlots = Array(times).fill('').map((_, i) => {
-      const hour = Math.floor(8 + (i * (14 / times)));
-      return `${hour.toString().padStart(2, '0')}:00`;
-    });
+    const timeSlots = Array(times)
+      .fill('')
+      .map((_, i) => {
+        const hour = Math.floor(8 + i * (14 / times));
+        return `${hour.toString().padStart(2, '0')}:00`;
+      });
 
     setFormData(prev => ({
       ...prev,
@@ -136,7 +155,9 @@ export const MedicationTimer = ({ babyProfileId }: MedicationTimerProps) => {
                   <Label>Nome do Medicamento *</Label>
                   <Input
                     value={formData.medication_name}
-                    onChange={e => setFormData(prev => ({ ...prev, medication_name: e.target.value }))}
+                    onChange={e =>
+                      setFormData(prev => ({ ...prev, medication_name: e.target.value }))
+                    }
                     placeholder="Ex: Vitamina D"
                   />
                 </div>
@@ -237,7 +258,9 @@ export const MedicationTimer = ({ babyProfileId }: MedicationTimerProps) => {
                     <div
                       key={med.id}
                       className={`p-4 rounded-lg border transition-colors ${
-                        isGiven ? 'bg-emerald-50 border-emerald-200' : 'bg-background hover:bg-muted/50'
+                        isGiven
+                          ? 'bg-emerald-50 border-emerald-200'
+                          : 'bg-background hover:bg-muted/50'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -280,9 +303,7 @@ export const MedicationTimer = ({ babyProfileId }: MedicationTimerProps) => {
                       </div>
 
                       {med.notes && (
-                        <p className="text-sm text-muted-foreground mt-2 italic">
-                          📝 {med.notes}
-                        </p>
+                        <p className="text-sm text-muted-foreground mt-2 italic">📝 {med.notes}</p>
                       )}
                     </div>
                   );

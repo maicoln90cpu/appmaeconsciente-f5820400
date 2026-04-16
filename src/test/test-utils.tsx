@@ -1,16 +1,17 @@
 /**
  * @fileoverview Utilitários para testes de componentes React
  * @module test/test-utils
- * 
+ *
  * Provê wrappers customizados do render que incluem providers necessários
  * e funções auxiliares para testes.
  */
 
-import React, { ReactElement, ReactNode } from "react";
-import { render, RenderOptions } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { vi } from "vitest";
+import React, { ReactElement, ReactNode } from 'react';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render, RenderOptions } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import { vi } from 'vitest';
 
 /**
  * Cria um QueryClient configurado para testes
@@ -45,11 +46,11 @@ export const mockAuthContext = {
  * Mock de usuário autenticado
  */
 export const mockAuthenticatedUser = {
-  id: "test-user-id",
-  email: "test@example.com",
+  id: 'test-user-id',
+  email: 'test@example.com',
   app_metadata: {},
   user_metadata: {},
-  aud: "authenticated",
+  aud: 'authenticated',
   created_at: new Date().toISOString(),
 };
 
@@ -57,10 +58,10 @@ export const mockAuthenticatedUser = {
  * Mock de sessão autenticada
  */
 export const mockSession = {
-  access_token: "test-access-token",
-  refresh_token: "test-refresh-token",
+  access_token: 'test-access-token',
+  refresh_token: 'test-refresh-token',
   expires_in: 3600,
-  token_type: "bearer",
+  token_type: 'bearer',
   user: mockAuthenticatedUser,
 };
 
@@ -83,28 +84,26 @@ const AllTheProviders = ({ children }: WrapperProps) => {
 
 /**
  * Render customizado que inclui todos os providers
- * 
+ *
  * @param ui - Componente a ser renderizado
  * @param options - Opções adicionais do render
  * @returns Objeto com funções de query e utilitários
- * 
+ *
  * @example
  * ```tsx
  * import { renderWithProviders, screen } from '@/test/test-utils';
- * 
+ *
  * test('renders component', () => {
  *   renderWithProviders(<MyComponent />);
  *   expect(screen.getByText('Hello')).toBeInTheDocument();
  * });
  * ```
  */
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, "wrapper">
-) => render(ui, { wrapper: AllTheProviders, ...options });
+const customRender = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
+  render(ui, { wrapper: AllTheProviders, ...options });
 
 // Re-exporta tudo do testing-library
-export * from "@testing-library/react";
+export * from '@testing-library/react';
 export { customRender as render };
 
 /**
@@ -135,7 +134,7 @@ export const createSupabaseMock = () => ({
   storage: {
     from: vi.fn().mockReturnValue({
       upload: vi.fn().mockResolvedValue({ data: null, error: null }),
-      getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: "" } }),
+      getPublicUrl: vi.fn().mockReturnValue({ data: { publicUrl: '' } }),
     }),
   },
 });
@@ -143,5 +142,4 @@ export const createSupabaseMock = () => ({
 /**
  * Helper para esperar estado de loading terminar
  */
-export const waitForLoadingToFinish = () =>
-  new Promise((resolve) => setTimeout(resolve, 0));
+export const waitForLoadingToFinish = () => new Promise(resolve => setTimeout(resolve, 0));

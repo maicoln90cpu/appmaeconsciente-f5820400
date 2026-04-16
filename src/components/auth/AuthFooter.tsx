@@ -1,4 +1,4 @@
-import type { AuthMode } from "@/hooks/useAuthForm";
+import type { AuthMode } from '@/hooks/useAuthForm';
 
 interface AuthFooterProps {
   mode: AuthMode;
@@ -7,20 +7,20 @@ interface AuthFooterProps {
 
 export const AuthFooter = ({ mode, onModeChange }: AuthFooterProps) => (
   <div className="mt-6 text-center space-y-2">
-    {mode === "sign_in" && (
+    {mode === 'sign_in' && (
       <>
         <button
           type="button"
-          onClick={() => onModeChange("forgot_password")}
+          onClick={() => onModeChange('forgot_password')}
           className="text-sm text-muted-foreground hover:text-primary transition-colors"
         >
           Esqueceu sua senha?
         </button>
         <div className="text-sm text-muted-foreground">
-          Não tem uma conta?{" "}
+          Não tem uma conta?{' '}
           <button
             type="button"
-            onClick={() => onModeChange("sign_up")}
+            onClick={() => onModeChange('sign_up')}
             className="text-primary hover:underline font-medium"
           >
             Crie uma
@@ -29,12 +29,12 @@ export const AuthFooter = ({ mode, onModeChange }: AuthFooterProps) => (
       </>
     )}
 
-    {mode === "sign_up" && (
+    {mode === 'sign_up' && (
       <div className="text-sm text-muted-foreground">
-        Já tem uma conta?{" "}
+        Já tem uma conta?{' '}
         <button
           type="button"
-          onClick={() => onModeChange("sign_in")}
+          onClick={() => onModeChange('sign_in')}
           className="text-primary hover:underline font-medium"
         >
           Entre
@@ -42,12 +42,12 @@ export const AuthFooter = ({ mode, onModeChange }: AuthFooterProps) => (
       </div>
     )}
 
-    {mode === "forgot_password" && (
+    {mode === 'forgot_password' && (
       <div className="text-sm text-muted-foreground">
-        Lembrou a senha?{" "}
+        Lembrou a senha?{' '}
         <button
           type="button"
-          onClick={() => onModeChange("sign_in")}
+          onClick={() => onModeChange('sign_in')}
           className="text-primary hover:underline font-medium"
         >
           Voltar ao login

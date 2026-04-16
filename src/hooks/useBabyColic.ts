@@ -3,9 +3,11 @@
  * Migrado para usar createSupabaseCRUD
  */
 
-import { useMemo } from "react";
-import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
-import type { Database } from "@/integrations/supabase/types";
+import { useMemo } from 'react';
+
+import { createSupabaseCRUD } from '@/hooks/factories/createSupabaseCRUD';
+
+import type { Database } from '@/integrations/supabase/types';
 
 type BabyColicsRow = Database['public']['Tables']['baby_colic_logs']['Row'];
 type BabyColicsInsert = Database['public']['Tables']['baby_colic_logs']['Insert'];
@@ -51,10 +53,13 @@ const useColicBase = createSupabaseCRUD<BabyColicsRow, BabyColicsInsert>({
 
 function getMostCommon(arr: string[]): string | null {
   if (arr.length === 0) return null;
-  const counts = arr.reduce((acc, item) => {
-    acc[item] = (acc[item] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const counts = arr.reduce(
+    (acc, item) => {
+      acc[item] = (acc[item] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
   return Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
 }
 
@@ -72,9 +77,11 @@ export const useBabyColic = (babyProfileId?: string) => {
     if (!colicLogs || colicLogs.length === 0) return null;
 
     const logsWithDuration = colicLogs.filter(l => l.duration_minutes);
-    const avgDuration = logsWithDuration.length > 0 
-      ? logsWithDuration.reduce((acc, l) => acc + (l.duration_minutes || 0), 0) / logsWithDuration.length
-      : 0;
+    const avgDuration =
+      logsWithDuration.length > 0
+        ? logsWithDuration.reduce((acc, l) => acc + (l.duration_minutes || 0), 0) /
+          logsWithDuration.length
+        : 0;
 
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);

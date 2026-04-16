@@ -1,32 +1,48 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
-import { Loader2, CheckCircle, XCircle, Code, Rocket, Gift, Star } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { getSuggestionStatusBadgeVariant, getSuggestionStatusLabel, type SuggestionStatus } from "@/lib/ticket-utils";
-import { toast } from "sonner";
+import { useState } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Loader2, CheckCircle, XCircle, Code, Rocket, Gift, Star } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+
+import {
+  getSuggestionStatusBadgeVariant,
+  getSuggestionStatusLabel,
+  type SuggestionStatus,
+} from '@/lib/ticket-utils';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export const ToolSuggestionManagement = () => {
   const queryClient = useQueryClient();
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [feedbackMap, setFeedbackMap] = useState<Record<string, string>>({});
 
   const { data: suggestions, isLoading } = useQuery({
-    queryKey: ["admin-tool-suggestions"],
+    queryKey: ['admin-tool-suggestions'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("tool_suggestions")
-        .select(`
+        .from('tool_suggestions')
+        .select(
+          `
           *,
           profiles:user_id (email)
-        `)
-        .order("created_at", { ascending: false });
+        `
+        )
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
@@ -34,43 +50,53 @@ export const ToolSuggestionManagement = () => {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status, feedback }: { id: string; status: SuggestionStatus; feedback?: string }) => {
+    mutationFn: async ({
+      id,
+      status,
+      feedback,
+    }: {
+      id: string;
+      status: SuggestionStatus;
+      feedback?: string;
+    }) => {
       const updateData: any = { status };
       if (feedback) {
         updateData.admin_feedback = feedback;
       }
 
-      const { error } = await supabase
-        .from("tool_suggestions")
-        .update(updateData)
-        .eq("id", id);
+      const { error } = await supabase.from('tool_suggestions').update(updateData).eq('id', id);
 
       if (error) throw error;
 
       // Update related ticket status
       await supabase
-        .from("support_tickets")
-        .update({ 
-          status: status === "rejected" ? "closed" : status === "implemented" ? "resolved" : "in_progress" 
+        .from('support_tickets')
+        .update({
+          status:
+            status === 'rejected'
+              ? 'closed'
+              : status === 'implemented'
+                ? 'resolved'
+                : 'in_progress',
         })
-        .eq("related_suggestion_id", id);
+        .eq('related_suggestion_id', id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-tool-suggestions"] });
-      toast("Status atualizado com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ['admin-tool-suggestions'] });
+      toast('Status atualizado com sucesso!');
       setFeedbackMap({});
     },
     onError: () => {
-      toast.error("Erro ao atualizar status");
+      toast.error('Erro ao atualizar status');
     },
   });
 
   const grantRewardMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
-        .from("tool_suggestions")
+        .from('tool_suggestions')
         .update({ reward_granted: true })
-        .eq("id", id);
+        .eq('id', id);
 
       if (error) throw error;
 
@@ -78,17 +104,18 @@ export const ToolSuggestionManagement = () => {
       // Isso será feito via Edge Function quando o sistema de referral estiver pronto
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-tool-suggestions"] });
-      toast("Recompensa concedida com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ['admin-tool-suggestions'] });
+      toast('Recompensa concedida com sucesso!');
     },
     onError: () => {
-      toast.error("Erro ao conceder recompensa");
+      toast.error('Erro ao conceder recompensa');
     },
   });
 
   const filteredSuggestions = suggestions?.filter(s => {
-    const matchesStatus = statusFilter === "all" || s.status === statusFilter;
-    const matchesSearch = !searchTerm || 
+    const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
+    const matchesSearch =
+      !searchTerm ||
       s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       s.main_idea.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
@@ -96,9 +123,9 @@ export const ToolSuggestionManagement = () => {
 
   const stats = {
     total: suggestions?.length || 0,
-    pending: suggestions?.filter(s => s.status === "pending").length || 0,
-    approved: suggestions?.filter(s => s.status === "approved").length || 0,
-    implemented: suggestions?.filter(s => s.status === "implemented").length || 0,
+    pending: suggestions?.filter(s => s.status === 'pending').length || 0,
+    approved: suggestions?.filter(s => s.status === 'approved').length || 0,
+    implemented: suggestions?.filter(s => s.status === 'implemented').length || 0,
   };
 
   if (isLoading) {
@@ -158,14 +185,14 @@ export const ToolSuggestionManagement = () => {
         <Input
           placeholder="Buscar por título ou ideia..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
       </div>
 
       {/* Suggestions List */}
       <div className="space-y-4">
-        {filteredSuggestions?.map((suggestion) => (
+        {filteredSuggestions?.map(suggestion => (
           <Card key={suggestion.id}>
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -183,7 +210,7 @@ export const ToolSuggestionManagement = () => {
                     )}
                   </div>
                   <CardDescription>
-                    Por: {(suggestion.profiles as any)?.email} • 
+                    Por: {(suggestion.profiles as any)?.email} •
                     {new Date(suggestion.created_at).toLocaleDateString('pt-BR')}
                   </CardDescription>
                 </div>
@@ -217,7 +244,9 @@ export const ToolSuggestionManagement = () => {
                   <p className="text-xs font-semibold mb-1">Integrações:</p>
                   <div className="flex flex-wrap gap-1">
                     {suggestion.integrations?.map((int: string) => (
-                      <Badge key={int} variant="outline" className="text-xs">{int}</Badge>
+                      <Badge key={int} variant="outline" className="text-xs">
+                        {int}
+                      </Badge>
                     ))}
                   </div>
                 </div>
@@ -225,7 +254,9 @@ export const ToolSuggestionManagement = () => {
                   <p className="text-xs font-semibold mb-1">Fases:</p>
                   <div className="flex flex-wrap gap-1">
                     {suggestion.phases?.map((phase: string) => (
-                      <Badge key={phase} variant="secondary" className="text-xs">{phase}</Badge>
+                      <Badge key={phase} variant="secondary" className="text-xs">
+                        {phase}
+                      </Badge>
                     ))}
                   </div>
                 </div>
@@ -242,8 +273,10 @@ export const ToolSuggestionManagement = () => {
               <div className="border-t pt-4 space-y-3">
                 <Textarea
                   placeholder="Feedback para o usuário (opcional)..."
-                  value={feedbackMap[suggestion.id] || ""}
-                  onChange={(e) => setFeedbackMap(prev => ({ ...prev, [suggestion.id]: e.target.value }))}
+                  value={feedbackMap[suggestion.id] || ''}
+                  onChange={e =>
+                    setFeedbackMap(prev => ({ ...prev, [suggestion.id]: e.target.value }))
+                  }
                   rows={2}
                 />
 
@@ -251,11 +284,13 @@ export const ToolSuggestionManagement = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => updateStatusMutation.mutate({
-                      id: suggestion.id,
-                      status: "approved",
-                      feedback: feedbackMap[suggestion.id]
-                    })}
+                    onClick={() =>
+                      updateStatusMutation.mutate({
+                        id: suggestion.id,
+                        status: 'approved',
+                        feedback: feedbackMap[suggestion.id],
+                      })
+                    }
                     disabled={updateStatusMutation.isPending}
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
@@ -265,11 +300,13 @@ export const ToolSuggestionManagement = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => updateStatusMutation.mutate({
-                      id: suggestion.id,
-                      status: "in_development",
-                      feedback: feedbackMap[suggestion.id]
-                    })}
+                    onClick={() =>
+                      updateStatusMutation.mutate({
+                        id: suggestion.id,
+                        status: 'in_development',
+                        feedback: feedbackMap[suggestion.id],
+                      })
+                    }
                     disabled={updateStatusMutation.isPending}
                   >
                     <Code className="mr-2 h-4 w-4" />
@@ -279,11 +316,13 @@ export const ToolSuggestionManagement = () => {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => updateStatusMutation.mutate({
-                      id: suggestion.id,
-                      status: "implemented",
-                      feedback: feedbackMap[suggestion.id]
-                    })}
+                    onClick={() =>
+                      updateStatusMutation.mutate({
+                        id: suggestion.id,
+                        status: 'implemented',
+                        feedback: feedbackMap[suggestion.id],
+                      })
+                    }
                     disabled={updateStatusMutation.isPending}
                   >
                     <Rocket className="mr-2 h-4 w-4" />
@@ -293,18 +332,20 @@ export const ToolSuggestionManagement = () => {
                   <Button
                     size="sm"
                     variant="destructive"
-                    onClick={() => updateStatusMutation.mutate({
-                      id: suggestion.id,
-                      status: "rejected",
-                      feedback: feedbackMap[suggestion.id] || "Sugestão rejeitada"
-                    })}
+                    onClick={() =>
+                      updateStatusMutation.mutate({
+                        id: suggestion.id,
+                        status: 'rejected',
+                        feedback: feedbackMap[suggestion.id] || 'Sugestão rejeitada',
+                      })
+                    }
                     disabled={updateStatusMutation.isPending}
                   >
                     <XCircle className="mr-2 h-4 w-4" />
                     Rejeitar
                   </Button>
 
-                  {suggestion.status === "approved" && !suggestion.reward_granted && (
+                  {suggestion.status === 'approved' && !suggestion.reward_granted && (
                     <Button
                       size="sm"
                       variant="default"

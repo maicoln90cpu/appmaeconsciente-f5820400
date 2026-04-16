@@ -1,19 +1,26 @@
 // NOTA: MainLayout é aplicado globalmente no App.tsx - NÃO adicionar aqui
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { ChecklistBag } from "@/components/mala-maternidade/ChecklistBag";
-import { ProgressTracker } from "@/components/mala-maternidade/ProgressTracker";
-import { HospitalSettings } from "@/components/mala-maternidade/HospitalSettings";
-import { ExportPDF } from "@/components/mala-maternidade/ExportPDF";
-import { WeeklyMilestones } from "@/components/mala-maternidade/WeeklyMilestones";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, Calendar, ListChecks, Package, CheckCheck, Timer } from "lucide-react";
-import { toast } from "sonner";
-import { useMaternityBag } from "@/hooks/useMaternityBag";
-import { useProfile } from "@/hooks/useProfile";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState, useEffect } from 'react';
+
+import { Info, Calendar, ListChecks, Package, CheckCheck, Timer } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { ChecklistBag } from '@/components/mala-maternidade/ChecklistBag';
+import { ExportPDF } from '@/components/mala-maternidade/ExportPDF';
+import { HospitalSettings } from '@/components/mala-maternidade/HospitalSettings';
+import { ProgressTracker } from '@/components/mala-maternidade/ProgressTracker';
+import { WeeklyMilestones } from '@/components/mala-maternidade/WeeklyMilestones';
+
+
+
+import { useMaternityBag } from '@/hooks/useMaternityBag';
+import { useProfile } from '@/hooks/useProfile';
+
 
 interface ChecklistItem {
   id: string;
@@ -29,37 +36,37 @@ interface ChecklistItem {
 const MalaDaMaternidade = () => {
   const { categories, items, loading, updateItem, addItem, getItemsByCategory } = useMaternityBag();
   const { profile } = useProfile();
-  const [selectedHospital, setSelectedHospital] = useState<string>("");
-  const [deliveryType, setDeliveryType] = useState<string>("normal");
+  const [selectedHospital, setSelectedHospital] = useState<string>('');
+  const [deliveryType, setDeliveryType] = useState<string>('normal');
   const [weeksPregnant, setWeeksPregnant] = useState<number>(32);
 
   useEffect(() => {
     // Load settings from localStorage (only for hospital and weeks)
-    const savedHospital = localStorage.getItem("checklist-hospital");
-    const savedDeliveryType = localStorage.getItem("checklist-delivery-type");
-    const savedWeeks = localStorage.getItem("checklist-weeks");
+    const savedHospital = localStorage.getItem('checklist-hospital');
+    const savedDeliveryType = localStorage.getItem('checklist-delivery-type');
+    const savedWeeks = localStorage.getItem('checklist-weeks');
 
     if (savedHospital) setSelectedHospital(savedHospital);
     if (savedDeliveryType) setDeliveryType(savedDeliveryType);
     if (savedWeeks) setWeeksPregnant(parseInt(savedWeeks));
-    
+
     // Use profile data if available
     if (profile?.delivery_type) {
       setDeliveryType(profile.delivery_type);
     }
     if (profile?.meses_gestacao) {
-      const weeks = Math.floor((profile.meses_gestacao * 4.33)); // Convert months to weeks
+      const weeks = Math.floor(profile.meses_gestacao * 4.33); // Convert months to weeks
       setWeeksPregnant(weeks);
     }
   }, [profile]);
 
   // Convert database items to ChecklistItem format for each category
   const getCategoryItems = (categoryName: string): ChecklistItem[] => {
-    const category = categories.find((cat) => cat.name === categoryName);
+    const category = categories.find(cat => cat.name === categoryName);
     if (!category) return [];
 
     const categoryItems = getItemsByCategory(category.id);
-    return categoryItems.map((item) => ({
+    return categoryItems.map(item => ({
       id: item.id,
       name: item.name,
       quantity: item.quantity.toString(),
@@ -71,22 +78,22 @@ const MalaDaMaternidade = () => {
     }));
   };
 
-  const motherItems = getCategoryItems("Mãe");
-  const babyItems = getCategoryItems("Bebê");
-  const companionItems = getCategoryItems("Acompanhante");
+  const motherItems = getCategoryItems('Mãe');
+  const babyItems = getCategoryItems('Bebê');
+  const companionItems = getCategoryItems('Acompanhante');
 
   const handleItemUpdate = (categoryName: string, updatedItems: ChecklistItem[]) => {
-    const category = categories.find((cat) => cat.name === categoryName);
+    const category = categories.find(cat => cat.name === categoryName);
     if (!category) return;
 
     // Update items in database
-    updatedItems.forEach((item) => {
-      const existingItem = items.find((i) => i.id === item.id);
+    updatedItems.forEach(item => {
+      const existingItem = items.find(i => i.id === item.id);
       if (existingItem) {
         // Update existing item
         updateItem(item.id, {
           name: item.name,
-          quantity: parseInt(item.quantity || "1"),
+          quantity: parseInt(item.quantity || '1'),
           checked: item.checked,
           notes: item.note,
           cesarean_only: item.cesareanOnly || false,
@@ -97,7 +104,7 @@ const MalaDaMaternidade = () => {
         addItem(
           category.id,
           item.name,
-          parseInt(item.quantity || "1"),
+          parseInt(item.quantity || '1'),
           item.cesareanOnly || false,
           item.normalOnly || false
         );
@@ -106,34 +113,34 @@ const MalaDaMaternidade = () => {
   };
 
   const handleMotherUpdate = (updatedItems: ChecklistItem[]) => {
-    handleItemUpdate("Mãe", updatedItems);
+    handleItemUpdate('Mãe', updatedItems);
   };
 
   const handleBabyUpdate = (updatedItems: ChecklistItem[]) => {
-    handleItemUpdate("Bebê", updatedItems);
+    handleItemUpdate('Bebê', updatedItems);
   };
 
   const handleCompanionUpdate = (updatedItems: ChecklistItem[]) => {
-    handleItemUpdate("Acompanhante", updatedItems);
+    handleItemUpdate('Acompanhante', updatedItems);
   };
 
   const handleHospitalChange = (hospital: string) => {
     setSelectedHospital(hospital);
-    localStorage.setItem("checklist-hospital", hospital);
+    localStorage.setItem('checklist-hospital', hospital);
   };
 
   const handleDeliveryTypeChange = (type: string) => {
     setDeliveryType(type);
-    localStorage.setItem("checklist-delivery-type", type);
+    localStorage.setItem('checklist-delivery-type', type);
   };
 
   const handleWeeksChange = (weeks: number) => {
     setWeeksPregnant(weeks);
-    localStorage.setItem("checklist-weeks", weeks.toString());
+    localStorage.setItem('checklist-weeks', weeks.toString());
   };
 
   const totalItems = motherItems.length + babyItems.length + companionItems.length;
-  const checkedItems = 
+  const checkedItems =
     motherItems.filter(i => i.checked).length +
     babyItems.filter(i => i.checked).length +
     companionItems.filter(i => i.checked).length;
@@ -156,13 +163,13 @@ const MalaDaMaternidade = () => {
   }
 
   const handleMarkEssentials = () => {
-    const uncheckedItems = items.filter((i) => !i.checked);
+    const uncheckedItems = items.filter(i => !i.checked);
     if (uncheckedItems.length === 0) {
-      toast.info("Todos os itens já estão marcados!");
+      toast.info('Todos os itens já estão marcados!');
       return;
     }
     let count = 0;
-    uncheckedItems.forEach((item) => {
+    uncheckedItems.forEach(item => {
       updateItem(item.id, { checked: true });
       count++;
     });
@@ -185,25 +192,38 @@ const MalaDaMaternidade = () => {
 
         {/* Contador regressivo */}
         {daysUntilReady > 0 && !isOverdue && (
-          <Card className={`mb-6 border-2 ${isUrgent ? "border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/30" : "border-primary/30 bg-primary/5"}`}>
+          <Card
+            className={`mb-6 border-2 ${isUrgent ? 'border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/30' : 'border-primary/30 bg-primary/5'}`}
+          >
             <CardContent className="py-5">
               <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-full shrink-0 ${isUrgent ? "bg-red-100 dark:bg-red-900" : "bg-primary/10"}`}>
-                  <Timer className={`h-6 w-6 ${isUrgent ? "text-red-600 dark:text-red-400" : "text-primary"}`} />
+                <div
+                  className={`p-3 rounded-full shrink-0 ${isUrgent ? 'bg-red-100 dark:bg-red-900' : 'bg-primary/10'}`}
+                >
+                  <Timer
+                    className={`h-6 w-6 ${isUrgent ? 'text-red-600 dark:text-red-400' : 'text-primary'}`}
+                  />
                 </div>
                 <div className="flex-1">
                   <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
-                    {isUrgent ? "⚠️ Atenção — sua mala deve estar pronta em breve!" : "Sua mala deve estar pronta em"}
+                    {isUrgent
+                      ? '⚠️ Atenção — sua mala deve estar pronta em breve!'
+                      : 'Sua mala deve estar pronta em'}
                   </p>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className={`text-3xl font-bold ${isUrgent ? "text-red-600 dark:text-red-400" : "text-primary"}`}>
+                    <span
+                      className={`text-3xl font-bold ${isUrgent ? 'text-red-600 dark:text-red-400' : 'text-primary'}`}
+                    >
                       {daysUntilReady}
                     </span>
                     <span className="text-lg text-muted-foreground">dias</span>
-                    <span className="text-sm text-muted-foreground">({weeksRemaining} semanas)</span>
+                    <span className="text-sm text-muted-foreground">
+                      ({weeksRemaining} semanas)
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Faltam {daysUntilDueDate > 0 ? daysUntilDueDate : 0} dias para a DPP • {checkedItems}/{totalItems} itens prontos
+                    Faltam {daysUntilDueDate > 0 ? daysUntilDueDate : 0} dias para a DPP •{' '}
+                    {checkedItems}/{totalItems} itens prontos
                   </p>
                 </div>
               </div>
@@ -215,7 +235,8 @@ const MalaDaMaternidade = () => {
           <Alert className="mb-6 border-red-300 bg-red-50 dark:bg-red-950/30 dark:border-red-700">
             <Timer className="h-4 w-4 text-red-600 dark:text-red-400" />
             <AlertDescription className="text-red-800 dark:text-red-300">
-              Você já está com {weeksPregnant} semanas! Sua mala já deveria estar pronta. Faltam {totalItems - checkedItems} itens.
+              Você já está com {weeksPregnant} semanas! Sua mala já deveria estar pronta. Faltam{' '}
+              {totalItems - checkedItems} itens.
             </AlertDescription>
           </Alert>
         )}
@@ -245,7 +266,7 @@ const MalaDaMaternidade = () => {
                 size="sm"
                 onClick={handleMarkEssentials}
                 className="gap-2"
-                disabled={items.filter((i) => !i.checked).length === 0}
+                disabled={items.filter(i => !i.checked).length === 0}
               >
                 <CheckCheck className="h-4 w-4" />
                 Marcar todos como prontos
@@ -307,7 +328,8 @@ const MalaDaMaternidade = () => {
                   Bebê ({babyItems.filter(i => i.checked).length}/{babyItems.length})
                 </TabsTrigger>
                 <TabsTrigger value="companion">
-                  Acompanhante ({companionItems.filter(i => i.checked).length}/{companionItems.length})
+                  Acompanhante ({companionItems.filter(i => i.checked).length}/
+                  {companionItems.length})
                 </TabsTrigger>
               </TabsList>
 

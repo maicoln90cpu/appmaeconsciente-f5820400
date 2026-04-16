@@ -1,12 +1,19 @@
-import { useState, useMemo, useEffect } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { TrendingDown, TrendingUp, Award, Pencil, RotateCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
+import { useState, useMemo, useEffect } from 'react';
+
+import { TrendingDown, TrendingUp, Award, Pencil, RotateCcw } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -14,13 +21,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
+
+import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
 
 interface Props {
   estimate: DiaperEstimate | null;
 }
 
-type SizeKey = "RN" | "P" | "M" | "G" | "XG";
+type SizeKey = 'RN' | 'P' | 'M' | 'G' | 'XG';
 
 interface BrandData {
   name: string;
@@ -29,20 +38,44 @@ interface BrandData {
 }
 
 const DEFAULT_BRANDS: BrandData[] = [
-  { name: "Pampers Premium Care", pricePerUnit: { RN: 0.85, P: 0.90, M: 0.95, G: 1.00, XG: 1.10 }, quality: "premium" },
-  { name: "Huggies Supreme Care", pricePerUnit: { RN: 0.80, P: 0.85, M: 0.90, G: 0.95, XG: 1.05 }, quality: "premium" },
-  { name: "MamyPoko", pricePerUnit: { RN: 0.65, P: 0.70, M: 0.75, G: 0.80, XG: 0.90 }, quality: "standard" },
-  { name: "Pom Pom Derma Protek", pricePerUnit: { RN: 0.70, P: 0.75, M: 0.80, G: 0.85, XG: 0.95 }, quality: "standard" },
-  { name: "Pampers Supersec", pricePerUnit: { RN: 0.55, P: 0.60, M: 0.65, G: 0.70, XG: 0.80 }, quality: "economic" },
-  { name: "Cremer Disney", pricePerUnit: { RN: 0.50, P: 0.55, M: 0.60, G: 0.65, XG: 0.75 }, quality: "economic" },
+  {
+    name: 'Pampers Premium Care',
+    pricePerUnit: { RN: 0.85, P: 0.9, M: 0.95, G: 1.0, XG: 1.1 },
+    quality: 'premium',
+  },
+  {
+    name: 'Huggies Supreme Care',
+    pricePerUnit: { RN: 0.8, P: 0.85, M: 0.9, G: 0.95, XG: 1.05 },
+    quality: 'premium',
+  },
+  {
+    name: 'MamyPoko',
+    pricePerUnit: { RN: 0.65, P: 0.7, M: 0.75, G: 0.8, XG: 0.9 },
+    quality: 'standard',
+  },
+  {
+    name: 'Pom Pom Derma Protek',
+    pricePerUnit: { RN: 0.7, P: 0.75, M: 0.8, G: 0.85, XG: 0.95 },
+    quality: 'standard',
+  },
+  {
+    name: 'Pampers Supersec',
+    pricePerUnit: { RN: 0.55, P: 0.6, M: 0.65, G: 0.7, XG: 0.8 },
+    quality: 'economic',
+  },
+  {
+    name: 'Cremer Disney',
+    pricePerUnit: { RN: 0.5, P: 0.55, M: 0.6, G: 0.65, XG: 0.75 },
+    quality: 'economic',
+  },
 ];
 
-const STORAGE_KEY = "fraldas_custom_prices";
+const STORAGE_KEY = 'fraldas_custom_prices';
 
 export const BrandComparison = ({ estimate }: Props) => {
-  const [selectedSize, setSelectedSize] = useState<string>("all");
+  const [selectedSize, setSelectedSize] = useState<string>('all');
   const [editingCell, setEditingCell] = useState<string | null>(null);
-  const [editValue, setEditValue] = useState("");
+  const [editValue, setEditValue] = useState('');
   const [customPrices, setCustomPrices] = useState<Record<string, number>>({});
 
   // Load custom prices from localStorage
@@ -83,13 +116,13 @@ export const BrandComparison = ({ estimate }: Props) => {
     setCustomPrices(updated);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     setEditingCell(null);
-    toast.success("Preço atualizado!");
+    toast.success('Preço atualizado!');
   };
 
   const resetAllPrices = () => {
     setCustomPrices({});
     localStorage.removeItem(STORAGE_KEY);
-    toast.success("Preços restaurados para os valores padrão");
+    toast.success('Preços restaurados para os valores padrão');
   };
 
   const hasCustomPrices = Object.keys(customPrices).length > 0;
@@ -102,7 +135,7 @@ export const BrandComparison = ({ estimate }: Props) => {
 
       estimate.estimates.forEach(est => {
         const size = est.size as SizeKey;
-        if (selectedSize === "all" || selectedSize === size) {
+        if (selectedSize === 'all' || selectedSize === size) {
           totalCost += est.monthlyQty * getPrice(brand.name, size);
         }
       });
@@ -163,7 +196,9 @@ export const BrandComparison = ({ estimate }: Props) => {
       {/* Dica de edição */}
       <div className="bg-muted/50 rounded-lg p-3 text-sm text-muted-foreground flex items-center gap-2">
         <Pencil className="h-4 w-4 shrink-0" />
-        <span>Clique em qualquer preço na tabela abaixo para editá-lo com os valores da sua região.</span>
+        <span>
+          Clique em qualquer preço na tabela abaixo para editá-lo com os valores da sua região.
+        </span>
       </div>
 
       {/* Tabela de Preços por Unidade */}
@@ -172,7 +207,7 @@ export const BrandComparison = ({ estimate }: Props) => {
           <TableHeader>
             <TableRow>
               <TableHead>Marca</TableHead>
-              {(["RN", "P", "M", "G", "XG"] as SizeKey[]).map(size => (
+              {(['RN', 'P', 'M', 'G', 'XG'] as SizeKey[]).map(size => (
                 <TableHead key={size} className="text-center text-xs">
                   {size}
                 </TableHead>
@@ -183,7 +218,7 @@ export const BrandComparison = ({ estimate }: Props) => {
             {DEFAULT_BRANDS.map(brand => (
               <TableRow key={brand.name}>
                 <TableCell className="font-medium text-sm">{brand.name}</TableCell>
-                {(["RN", "P", "M", "G", "XG"] as SizeKey[]).map(size => {
+                {(['RN', 'P', 'M', 'G', 'XG'] as SizeKey[]).map(size => {
                   const key = `${brand.name}_${size}`;
                   const editing = editingCell === key;
                   const custom = isCustom(brand.name, size);
@@ -195,9 +230,9 @@ export const BrandComparison = ({ estimate }: Props) => {
                           type="number"
                           step="0.01"
                           value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
+                          onChange={e => setEditValue(e.target.value)}
                           onBlur={() => savePrice(brand.name, size)}
-                          onKeyDown={(e) => e.key === "Enter" && savePrice(brand.name, size)}
+                          onKeyDown={e => e.key === 'Enter' && savePrice(brand.name, size)}
                           className="h-8 w-20 mx-auto text-center text-sm"
                           autoFocus
                         />
@@ -205,7 +240,7 @@ export const BrandComparison = ({ estimate }: Props) => {
                         <button
                           onClick={() => handlePriceClick(brand.name, size)}
                           className={`cursor-pointer px-2 py-1 rounded text-sm hover:bg-primary/10 transition-colors ${
-                            custom ? "font-semibold text-primary" : "text-muted-foreground"
+                            custom ? 'font-semibold text-primary' : 'text-muted-foreground'
                           }`}
                         >
                           R${getPrice(brand.name, size).toFixed(2)}
@@ -229,24 +264,32 @@ export const BrandComparison = ({ estimate }: Props) => {
               <TableHead>Marca</TableHead>
               <TableHead>Qualidade</TableHead>
               <TableHead className="text-right">Custo Mensal</TableHead>
-              <TableHead className="text-right">Custo Total ({estimate.calculationPeriod}m)</TableHead>
+              <TableHead className="text-right">
+                Custo Total ({estimate.calculationPeriod}m)
+              </TableHead>
               <TableHead className="text-right">Custo Anual</TableHead>
               <TableHead className="text-center">Ranking</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {comparison.map((item, index) => (
-              <TableRow key={item.brand} className={index === 0 ? "bg-success/10" : ""}>
+              <TableRow key={item.brand} className={index === 0 ? 'bg-success/10' : ''}>
                 <TableCell className="font-medium">{item.brand}</TableCell>
                 <TableCell>
-                  <Badge variant={
-                    item.quality === "premium" ? "default" : 
-                    item.quality === "standard" ? "secondary" : 
-                    "outline"
-                  }>
-                    {item.quality === "premium" ? "Premium" : 
-                     item.quality === "standard" ? "Padrão" : 
-                     "Econômica"}
+                  <Badge
+                    variant={
+                      item.quality === 'premium'
+                        ? 'default'
+                        : item.quality === 'standard'
+                          ? 'secondary'
+                          : 'outline'
+                    }
+                  >
+                    {item.quality === 'premium'
+                      ? 'Premium'
+                      : item.quality === 'standard'
+                        ? 'Padrão'
+                        : 'Econômica'}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right font-medium">
@@ -255,9 +298,7 @@ export const BrandComparison = ({ estimate }: Props) => {
                 <TableCell className="text-right font-medium">
                   R$ {item.totalCost.toFixed(2)}
                 </TableCell>
-                <TableCell className="text-right">
-                  R$ {item.annualCost.toFixed(2)}
-                </TableCell>
+                <TableCell className="text-right">R$ {item.annualCost.toFixed(2)}</TableCell>
                 <TableCell className="text-center">
                   {index === 0 && (
                     <Badge className="bg-success">
@@ -265,9 +306,7 @@ export const BrandComparison = ({ estimate }: Props) => {
                       Melhor
                     </Badge>
                   )}
-                  {index === comparison.length - 1 && (
-                    <Badge variant="outline">Mais cara</Badge>
-                  )}
+                  {index === comparison.length - 1 && <Badge variant="outline">Mais cara</Badge>}
                 </TableCell>
               </TableRow>
             ))}
@@ -283,8 +322,10 @@ export const BrandComparison = ({ estimate }: Props) => {
             <span className="font-semibold text-lg">Economia Potencial</span>
           </div>
           <p className="text-muted-foreground">
-            Escolhendo <strong>{comparison[0].brand}</strong> em vez de <strong>{comparison[comparison.length - 1].brand}</strong>, 
-            você economiza <strong className="text-success">R$ {savings.toFixed(2)}</strong> em {estimate.calculationPeriod} meses!
+            Escolhendo <strong>{comparison[0].brand}</strong> em vez de{' '}
+            <strong>{comparison[comparison.length - 1].brand}</strong>, você economiza{' '}
+            <strong className="text-success">R$ {savings.toFixed(2)}</strong> em{' '}
+            {estimate.calculationPeriod} meses!
           </p>
         </div>
       )}
@@ -296,8 +337,8 @@ export const BrandComparison = ({ estimate }: Props) => {
           <span className="font-semibold">Dica de Economia</span>
         </div>
         <p className="text-muted-foreground">
-          Comprar pacotes maiores (mega, hiper) reduz o custo por fralda em até 30%. 
-          Planeje compras mensais em vez de semanais!
+          Comprar pacotes maiores (mega, hiper) reduz o custo por fralda em até 30%. Planeje compras
+          mensais em vez de semanais!
         </p>
       </div>
     </div>

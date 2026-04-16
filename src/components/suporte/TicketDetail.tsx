@@ -1,15 +1,20 @@
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Ticket, TicketMessage, useTickets } from "@/hooks/useTickets";
-import { supabase } from "@/integrations/supabase/client";
-import { Send } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { TICKET_STATUS_CONFIG, type TicketStatus } from "@/lib/ticket-utils";
+import { useState, useEffect } from 'react';
+
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Send } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { Ticket, TicketMessage, useTickets } from '@/hooks/useTickets';
+
+import { TICKET_STATUS_CONFIG, type TicketStatus } from '@/lib/ticket-utils';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface TicketDetailProps {
   ticket: Ticket | null;
@@ -19,7 +24,7 @@ interface TicketDetailProps {
 
 export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
   const [messages, setMessages] = useState<TicketMessage[]>([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState('');
   const { addMessage } = useTickets();
 
   useEffect(() => {
@@ -32,10 +37,10 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
     if (!ticket) return;
 
     const { data, error } = await supabase
-      .from("ticket_messages")
-      .select("*")
-      .eq("ticket_id", ticket.id)
-      .order("created_at", { ascending: true });
+      .from('ticket_messages')
+      .select('*')
+      .eq('ticket_id', ticket.id)
+      .order('created_at', { ascending: true });
 
     if (!error && data) {
       setMessages(data);
@@ -46,7 +51,7 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
     if (!ticket || !newMessage.trim()) return;
 
     await addMessage(ticket.id, newMessage);
-    setNewMessage("");
+    setNewMessage('');
     loadMessages();
   };
 
@@ -59,8 +64,12 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
           <div className="flex items-start justify-between">
             <DialogTitle>{ticket.subject}</DialogTitle>
             <div className="flex items-center gap-1">
-              <div className={`h-2 w-2 rounded-full ${TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.dotColor ?? "bg-gray-500"}`} />
-              <span className="text-xs">{TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.label ?? ticket.status}</span>
+              <div
+                className={`h-2 w-2 rounded-full ${TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.dotColor ?? 'bg-gray-500'}`}
+              />
+              <span className="text-xs">
+                {TICKET_STATUS_CONFIG[ticket.status as TicketStatus]?.label ?? ticket.status}
+              </span>
             </div>
           </div>
         </DialogHeader>
@@ -80,18 +89,16 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
           {messages.length > 0 && (
             <ScrollArea className="h-64">
               <div className="space-y-3 pr-4">
-                {messages.map((message) => (
+                {messages.map(message => (
                   <div
                     key={message.id}
                     className={`p-3 rounded-lg ${
-                      message.is_admin_reply
-                        ? "bg-primary/10 ml-8"
-                        : "bg-muted mr-8"
+                      message.is_admin_reply ? 'bg-primary/10 ml-8' : 'bg-muted mr-8'
                     }`}
                   >
                     <div className="flex items-start justify-between mb-1">
                       <span className="text-xs font-semibold">
-                        {message.is_admin_reply ? "Suporte" : "Você"}
+                        {message.is_admin_reply ? 'Suporte' : 'Você'}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {formatDistanceToNow(new Date(message.created_at), {
@@ -107,13 +114,13 @@ export const TicketDetail = ({ ticket, open, onClose }: TicketDetailProps) => {
             </ScrollArea>
           )}
 
-          {ticket.status !== "closed" && (
+          {ticket.status !== 'closed' && (
             <div className="flex gap-2">
               <Input
                 placeholder="Digite sua mensagem..."
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                onChange={e => setNewMessage(e.target.value)}
+                onKeyPress={e => e.key === 'Enter' && handleSendMessage()}
                 maxLength={1000}
               />
               <Button size="icon" onClick={handleSendMessage} aria-label="Enviar mensagem">

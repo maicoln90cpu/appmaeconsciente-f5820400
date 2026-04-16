@@ -1,14 +1,19 @@
-import { useState, useEffect, useRef } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSubmitGuard } from "@/hooks/useSubmitGuard";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { supabase } from "@/integrations/supabase/client";
-import { Droplets, Plus, Trash2, Target } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState, useEffect, useRef } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Droplets, Plus, Trash2, Target } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+
+import { useSubmitGuard } from '@/hooks/useSubmitGuard';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface WaterIntake {
   id: string;
@@ -26,25 +31,25 @@ const QUICK_AMOUNTS = [200, 300, 500, 750];
 export function RastreadorHidratacao() {
   const [todayIntake, setTodayIntake] = useState<WaterIntake[]>([]);
   const [goal, setGoal] = useState<number>(2000);
-  const [customAmount, setCustomAmount] = useState("");
+  const [customAmount, setCustomAmount] = useState('');
   const [loading, setLoading] = useState(true);
   const [isAdding, guardedAddWater] = useSubmitGuard(async (amount: number) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
-        .from('water_intake')
-        .insert({
-          user_id: user.id,
-          amount_ml: amount
-        });
+      const { error } = await supabase.from('water_intake').insert({
+        user_id: user.id,
+        amount_ml: amount,
+      });
 
       if (error) throw error;
 
       toast.success(`${amount}ml adicionados!`);
       loadData();
-      setCustomAmount("");
+      setCustomAmount('');
     } catch (error) {
       console.error('Erro ao adicionar água:', error);
       toast.error('Erro ao registrar consumo de água');
@@ -57,7 +62,9 @@ export function RastreadorHidratacao() {
 
   const loadData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Carregar meta
@@ -71,13 +78,11 @@ export function RastreadorHidratacao() {
         setGoal(goalData.daily_goal_ml);
       } else {
         // Criar meta padrão
-        await supabase
-          .from('water_goals')
-          .insert({ user_id: user.id, daily_goal_ml: 2000 });
+        await supabase.from('water_goals').insert({ user_id: user.id, daily_goal_ml: 2000 });
       }
 
       // Carregar consumo de hoje
-      const today = format(new Date(), "yyyy-MM-dd");
+      const today = format(new Date(), 'yyyy-MM-dd');
       const { data: intakeData, error } = await supabase
         .from('water_intake')
         .select('id, user_id, date, time, amount_ml, created_at')
@@ -97,10 +102,7 @@ export function RastreadorHidratacao() {
 
   const deleteIntake = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('water_intake')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('water_intake').delete().eq('id', id);
 
       if (error) throw error;
 
@@ -114,15 +116,15 @@ export function RastreadorHidratacao() {
 
   const updateGoal = async (newGoal: number) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
-        .from('water_goals')
-        .upsert({
-          user_id: user.id,
-          daily_goal_ml: newGoal
-        });
+      const { error } = await supabase.from('water_goals').upsert({
+        user_id: user.id,
+        daily_goal_ml: newGoal,
+      });
 
       if (error) throw error;
 
@@ -165,17 +167,13 @@ export function RastreadorHidratacao() {
               <div className="text-4xl font-bold mb-2">
                 {totalToday} <span className="text-xl text-muted-foreground">ml</span>
               </div>
-              <p className="text-sm text-muted-foreground">
-                de {goal}ml (meta diária)
-              </p>
+              <p className="text-sm text-muted-foreground">de {goal}ml (meta diária)</p>
             </div>
 
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>{Math.round(progress)}% da meta</span>
-                <span className="text-muted-foreground">
-                  Faltam {remainingML}ml
-                </span>
+                <span className="text-muted-foreground">Faltam {remainingML}ml</span>
               </div>
               <Progress value={progress} className="h-3" />
             </div>
@@ -194,10 +192,10 @@ export function RastreadorHidratacao() {
                 <span className="text-sm font-medium">Meta Diária</span>
               </div>
               <div className="flex gap-2">
-                {[1500, 2000, 2500, 3000].map((amount) => (
+                {[1500, 2000, 2500, 3000].map(amount => (
                   <Button
                     key={amount}
-                    variant={goal === amount ? "default" : "outline"}
+                    variant={goal === amount ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => updateGoal(amount)}
                   >
@@ -213,15 +211,13 @@ export function RastreadorHidratacao() {
         <Card>
           <CardHeader>
             <CardTitle>Adicionar Consumo</CardTitle>
-            <CardDescription>
-              Registre quantos ml de água você bebeu
-            </CardDescription>
+            <CardDescription>Registre quantos ml de água você bebeu</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
               <p className="text-sm font-medium mb-3">Quantidades Rápidas</p>
               <div className="grid grid-cols-2 gap-2">
-                {QUICK_AMOUNTS.map((amount) => (
+                {QUICK_AMOUNTS.map(amount => (
                   <Button
                     key={amount}
                     variant="outline"
@@ -245,7 +241,7 @@ export function RastreadorHidratacao() {
                   type="number"
                   placeholder="Ex: 350"
                   value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
+                  onChange={e => setCustomAmount(e.target.value)}
                   min="1"
                 />
                 <Button
@@ -275,7 +271,7 @@ export function RastreadorHidratacao() {
             </p>
           ) : (
             <div className="space-y-2">
-              {todayIntake.map((intake) => (
+              {todayIntake.map(intake => (
                 <div
                   key={intake.id}
                   className="flex items-center justify-between p-3 rounded-lg border"
@@ -284,16 +280,10 @@ export function RastreadorHidratacao() {
                     <Droplets className="h-4 w-4 text-blue-500" />
                     <div>
                       <p className="font-medium">{intake.amount_ml}ml</p>
-                      <p className="text-xs text-muted-foreground">
-                        {intake.time}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{intake.time}</p>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteIntake(intake.id)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => deleteIntake(intake.id)}>
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>

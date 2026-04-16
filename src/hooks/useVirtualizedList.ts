@@ -40,7 +40,7 @@ interface VirtualItem {
 /**
  * Hook for virtualizing long lists
  * Dramatically improves performance for lists with 100+ items
- * 
+ *
  * @example
  * ```tsx
  * const { virtualItems, totalHeight, containerRef } = useVirtualizedList({
@@ -48,7 +48,7 @@ interface VirtualItem {
  *   itemHeight: 60,
  *   overscan: 5,
  * });
- * 
+ *
  * return (
  *   <div ref={containerRef} style={{ height: 400, overflow: 'auto' }}>
  *     <div style={{ height: totalHeight, position: 'relative' }}>
@@ -86,7 +86,7 @@ export function useVirtualizedList({
   // Generate virtual items
   const virtualItems = useMemo(() => {
     const items: VirtualItem[] = [];
-    
+
     for (let i = visibleRange.start; i <= visibleRange.end; i++) {
       items.push({
         index: i,
@@ -102,7 +102,7 @@ export function useVirtualizedList({
         },
       });
     }
-    
+
     return items;
   }, [visibleRange, itemHeight]);
 
@@ -124,7 +124,7 @@ export function useVirtualizedList({
     const container = containerRef.current;
     if (!container || providedHeight) return;
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    const resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         setContainerHeight(entry.contentRect.height);
       }
@@ -143,7 +143,7 @@ export function useVirtualizedList({
       if (!container) return;
 
       let scrollPosition: number;
-      
+
       switch (align) {
         case 'center':
           scrollPosition = index * itemHeight - containerHeight / 2 + itemHeight / 2;
@@ -192,16 +192,18 @@ export function useVariableVirtualizedList(
   // Pre-compute item positions
   const itemPositions = useMemo(() => {
     let offset = 0;
-    return items.map((item) => {
+    return items.map(item => {
       const position = { start: offset, height: item.height };
       offset += item.height;
       return position;
     });
   }, [items]);
 
-  const totalHeight = itemPositions.length > 0
-    ? itemPositions[itemPositions.length - 1].start + itemPositions[itemPositions.length - 1].height
-    : 0;
+  const totalHeight =
+    itemPositions.length > 0
+      ? itemPositions[itemPositions.length - 1].start +
+        itemPositions[itemPositions.length - 1].height
+      : 0;
 
   // Binary search to find start index
   const findStartIndex = useCallback(
@@ -214,7 +216,10 @@ export function useVariableVirtualizedList(
         const pos = itemPositions[mid];
 
         if (pos.start + pos.height > scrollTop) {
-          if (mid === 0 || itemPositions[mid - 1].start + itemPositions[mid - 1].height <= scrollTop) {
+          if (
+            mid === 0 ||
+            itemPositions[mid - 1].start + itemPositions[mid - 1].height <= scrollTop
+          ) {
             return mid;
           }
           high = mid - 1;
@@ -231,22 +236,25 @@ export function useVariableVirtualizedList(
   // Calculate visible range
   const visibleRange = useMemo(() => {
     const start = Math.max(0, findStartIndex(scrollTop) - overscan);
-    
+
     let end = start;
     let accumulatedHeight = 0;
-    
-    while (end < items.length && accumulatedHeight < containerHeight + scrollTop - itemPositions[start].start) {
+
+    while (
+      end < items.length &&
+      accumulatedHeight < containerHeight + scrollTop - itemPositions[start].start
+    ) {
       accumulatedHeight += itemPositions[end].height;
       end++;
     }
-    
+
     return { start, end: Math.min(items.length - 1, end + overscan) };
   }, [scrollTop, containerHeight, items.length, itemPositions, overscan, findStartIndex]);
 
   // Generate virtual items
   const virtualItems = useMemo(() => {
     const result: VirtualItem[] = [];
-    
+
     for (let i = visibleRange.start; i <= visibleRange.end && i < items.length; i++) {
       const pos = itemPositions[i];
       result.push({
@@ -263,7 +271,7 @@ export function useVariableVirtualizedList(
         },
       });
     }
-    
+
     return result;
   }, [visibleRange, itemPositions, items.length]);
 

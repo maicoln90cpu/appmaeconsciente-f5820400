@@ -1,27 +1,24 @@
-import { Bell, BellOff, BellRing, Loader2 } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { toast } from "sonner";
+import { Bell, BellOff, BellRing, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+
 
 interface PushNotificationToggleProps {
   showDescription?: boolean;
   className?: string;
 }
 
-export const PushNotificationToggle = ({ 
+export const PushNotificationToggle = ({
   showDescription = true,
-  className = "" 
+  className = '',
 }: PushNotificationToggleProps) => {
-  const { 
-    isSupported, 
-    permission, 
-    isSubscribed, 
-    isLoading, 
-    subscribe, 
-    unsubscribe 
-  } = usePushNotifications();
+  const { isSupported, permission, isSubscribed, isLoading, subscribe, unsubscribe } =
+    usePushNotifications();
 
   if (!isSupported) {
     return (
@@ -45,16 +42,16 @@ export const PushNotificationToggle = ({
     if (enabled) {
       const success = await subscribe();
       if (success) {
-        toast.success("Notificações push ativadas!");
+        toast.success('Notificações push ativadas!');
       } else if (permission === 'denied') {
-        toast.error("Permissão negada. Ative nas configurações do navegador.");
+        toast.error('Permissão negada. Ative nas configurações do navegador.');
       } else {
-        toast.error("Erro ao ativar notificações push");
+        toast.error('Erro ao ativar notificações push');
       }
     } else {
       const success = await unsubscribe();
       if (success) {
-        toast.info("Notificações push desativadas");
+        toast.info('Notificações push desativadas');
       }
     }
   };
@@ -70,16 +67,14 @@ export const PushNotificationToggle = ({
           <div>
             <Label>Notificações bloqueadas</Label>
             {showDescription && (
-              <p className="text-sm text-muted-foreground">
-                Ative nas configurações do navegador
-              </p>
+              <p className="text-sm text-muted-foreground">Ative nas configurações do navegador</p>
             )}
           </div>
         </div>
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="sm"
-          onClick={() => toast.info("Acesse as configurações do seu navegador para desbloquear")}
+          onClick={() => toast.info('Acesse as configurações do seu navegador para desbloquear')}
         >
           Saiba mais
         </Button>
@@ -103,10 +98,9 @@ export const PushNotificationToggle = ({
           <Label>Notificações Push</Label>
           {showDescription && (
             <p className="text-sm text-muted-foreground">
-              {isSubscribed 
-                ? "Você receberá lembretes e alertas" 
-                : "Receba lembretes mesmo com o app fechado"
-              }
+              {isSubscribed
+                ? 'Você receberá lembretes e alertas'
+                : 'Receba lembretes mesmo com o app fechado'}
             </p>
           )}
         </div>

@@ -1,23 +1,35 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Plus, Timer, TrendingDown, AlertTriangle, Clock, Frown } from "lucide-react";
-import { useBabyColic, COLIC_TRIGGERS, RELIEF_METHODS } from "@/hooks/useBabyColic";
-import { format, formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState } from 'react';
+
+import { format, formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Timer, TrendingDown, AlertTriangle, Clock, Frown } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
+
+
+import { useBabyColic, COLIC_TRIGGERS, RELIEF_METHODS } from '@/hooks/useBabyColic';
+
 
 interface ColicTrackerProps {
   babyProfileId?: string;
 }
 
 export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
-  const { colicLogs, stats, isLoading, addColicLog, updateColicLog, isAdding } = useBabyColic(babyProfileId);
+  const { colicLogs, stats, isLoading, addColicLog, updateColicLog, isAdding } =
+    useBabyColic(babyProfileId);
   const [isOpen, setIsOpen] = useState(false);
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timerStart, setTimerStart] = useState<Date | null>(null);
@@ -25,7 +37,7 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
     intensity: 3,
     triggers: [] as string[],
     relief_methods: [] as string[],
-    notes: "",
+    notes: '',
   });
 
   const handleStartTimer = () => {
@@ -52,7 +64,7 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
 
     setIsTimerActive(false);
     setTimerStart(null);
-    setFormData({ intensity: 3, triggers: [], relief_methods: [], notes: "" });
+    setFormData({ intensity: 3, triggers: [], relief_methods: [], notes: '' });
     setIsOpen(false);
   };
 
@@ -66,7 +78,7 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
       notes: formData.notes || null,
     });
 
-    setFormData({ intensity: 3, triggers: [], relief_methods: [], notes: "" });
+    setFormData({ intensity: 3, triggers: [], relief_methods: [], notes: '' });
     setIsOpen(false);
   };
 
@@ -107,7 +119,9 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
         <Card className="bg-gradient-to-br from-amber-50 to-amber-100 border-amber-200">
           <CardContent className="p-4 text-center">
             <Clock className="h-6 w-6 mx-auto text-amber-600 mb-1" />
-            <p className="text-2xl font-bold text-amber-700">{Math.round(stats?.averageDuration || 0)}m</p>
+            <p className="text-2xl font-bold text-amber-700">
+              {Math.round(stats?.averageDuration || 0)}m
+            </p>
             <p className="text-xs text-amber-600">Duração média</p>
           </CardContent>
         </Card>
@@ -115,7 +129,9 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
         <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
           <CardContent className="p-4 text-center">
             <AlertTriangle className="h-6 w-6 mx-auto text-purple-600 mb-1" />
-            <p className="text-sm font-bold text-purple-700 truncate">{stats?.mostCommonTrigger || '-'}</p>
+            <p className="text-sm font-bold text-purple-700 truncate">
+              {stats?.mostCommonTrigger || '-'}
+            </p>
             <p className="text-xs text-purple-600">Gatilho comum</p>
           </CardContent>
         </Card>
@@ -123,7 +139,9 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
         <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
           <CardContent className="p-4 text-center">
             <TrendingDown className="h-6 w-6 mx-auto text-emerald-600 mb-1" />
-            <p className="text-sm font-bold text-emerald-700 truncate">{stats?.mostEffectiveRelief || '-'}</p>
+            <p className="text-sm font-bold text-emerald-700 truncate">
+              {stats?.mostEffectiveRelief || '-'}
+            </p>
             <p className="text-xs text-emerald-600">Alívio eficaz</p>
           </CardContent>
         </Card>
@@ -137,22 +155,24 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
               <Frown className="h-5 w-5 text-rose-500" />
               Rastreador de Cólicas
             </CardTitle>
-            <CardDescription>
-              Registre e analise os episódios de cólica
-            </CardDescription>
+            <CardDescription>Registre e analise os episódios de cólica</CardDescription>
           </div>
 
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
               <Button className="gap-2">
-                {isTimerActive ? <Timer className="h-4 w-4 animate-pulse" /> : <Plus className="h-4 w-4" />}
-                {isTimerActive ? "Em andamento" : "Registrar"}
+                {isTimerActive ? (
+                  <Timer className="h-4 w-4 animate-pulse" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
+                {isTimerActive ? 'Em andamento' : 'Registrar'}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
-                  {isTimerActive ? "Episódio em andamento" : "Registrar Cólica"}
+                  {isTimerActive ? 'Episódio em andamento' : 'Registrar Cólica'}
                 </DialogTitle>
               </DialogHeader>
 
@@ -199,7 +219,7 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
                     {COLIC_TRIGGERS.map(trigger => (
                       <Badge
                         key={trigger}
-                        variant={formData.triggers.includes(trigger) ? "default" : "outline"}
+                        variant={formData.triggers.includes(trigger) ? 'default' : 'outline'}
                         className="cursor-pointer"
                         onClick={() => toggleTrigger(trigger)}
                       >
@@ -215,7 +235,7 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
                     {RELIEF_METHODS.map(method => (
                       <Badge
                         key={method}
-                        variant={formData.relief_methods.includes(method) ? "default" : "outline"}
+                        variant={formData.relief_methods.includes(method) ? 'default' : 'outline'}
                         className="cursor-pointer"
                         onClick={() => toggleRelief(method)}
                       >
@@ -236,7 +256,10 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
                 </div>
 
                 {isTimerActive && (
-                  <Button onClick={handleStopTimer} className="w-full bg-rose-600 hover:bg-rose-700">
+                  <Button
+                    onClick={handleStopTimer}
+                    className="w-full bg-rose-600 hover:bg-rose-700"
+                  >
                     Parar e Salvar
                   </Button>
                 )}
@@ -256,13 +279,17 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
                   >
                     <div className="flex-shrink-0 w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center">
                       <span className="text-lg">
-                        {log.intensity && log.intensity >= 4 ? '😭' : log.intensity && log.intensity >= 2 ? '😢' : '😿'}
+                        {log.intensity && log.intensity >= 4
+                          ? '😭'
+                          : log.intensity && log.intensity >= 2
+                            ? '😢'
+                            : '😿'}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-medium">
-                          {format(new Date(log.start_time), "dd/MM HH:mm", { locale: ptBR })}
+                          {format(new Date(log.start_time), 'dd/MM HH:mm', { locale: ptBR })}
                         </span>
                         {log.duration_minutes && (
                           <Badge variant="secondary" className="text-xs">
@@ -273,10 +300,10 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
                           variant="outline"
                           className={
                             log.intensity && log.intensity >= 4
-                              ? "border-rose-500 text-rose-600"
+                              ? 'border-rose-500 text-rose-600'
                               : log.intensity && log.intensity >= 2
-                              ? "border-amber-500 text-amber-600"
-                              : "border-green-500 text-green-600"
+                                ? 'border-amber-500 text-amber-600'
+                                : 'border-green-500 text-green-600'
                           }
                         >
                           {log.intensity}/5
@@ -285,7 +312,10 @@ export const ColicTracker = ({ babyProfileId }: ColicTrackerProps) => {
                       {log.triggers && log.triggers.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
                           {log.triggers.map(t => (
-                            <span key={t} className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded">
+                            <span
+                              key={t}
+                              className="text-xs text-muted-foreground bg-background px-1.5 py-0.5 rounded"
+                            >
                               {t}
                             </span>
                           ))}

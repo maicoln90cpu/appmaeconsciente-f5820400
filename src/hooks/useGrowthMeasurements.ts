@@ -3,10 +3,13 @@
  * Migrado para usar createSupabaseCRUD com QueryKeys centralizados
  */
 
-import { useMemo } from "react";
-import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
-import type { Database } from "@/integrations/supabase/types";
+import { useMemo } from 'react';
+
+import { createSupabaseCRUD } from '@/hooks/factories/createSupabaseCRUD';
+
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import type { Database } from '@/integrations/supabase/types';
 
 type GrowthMeasurementRow = Database['public']['Tables']['growth_measurements']['Row'];
 type GrowthMeasurementInsert = Database['public']['Tables']['growth_measurements']['Insert'];
@@ -119,8 +122,8 @@ export const useGrowthMeasurements = (babyProfileId?: string) => {
   }, [base.data, babyProfileId]);
 
   // Get latest measurement
-  const latestMeasurement = useMemo(() => 
-    measurements[measurements.length - 1] || null,
+  const latestMeasurement = useMemo(
+    () => measurements[measurements.length - 1] || null,
     [measurements]
   );
 
@@ -128,29 +131,29 @@ export const useGrowthMeasurements = (babyProfileId?: string) => {
   const calculatePercentile = (
     value: number,
     ageMonths: number,
-    type: "weight" | "height",
-    gender: "male" | "female"
+    type: 'weight' | 'height',
+    gender: 'male' | 'female'
   ): string => {
     const data =
-      type === "weight"
-        ? gender === "male"
+      type === 'weight'
+        ? gender === 'male'
           ? WHO_WEIGHT_BOYS
           : WHO_WEIGHT_GIRLS
-        : gender === "male"
-        ? WHO_HEIGHT_BOYS
-        : WHO_HEIGHT_GIRLS;
+        : gender === 'male'
+          ? WHO_HEIGHT_BOYS
+          : WHO_HEIGHT_GIRLS;
 
     // Find closest age
     const closest = data.reduce((prev, curr) =>
       Math.abs(curr.month - ageMonths) < Math.abs(prev.month - ageMonths) ? curr : prev
     );
 
-    if (value <= closest.p3) return "<3";
-    if (value <= closest.p15) return "3-15";
-    if (value <= closest.p50) return "15-50";
-    if (value <= closest.p85) return "50-85";
-    if (value <= closest.p97) return "85-97";
-    return ">97";
+    if (value <= closest.p3) return '<3';
+    if (value <= closest.p15) return '3-15';
+    if (value <= closest.p50) return '15-50';
+    if (value <= closest.p85) return '50-85';
+    if (value <= closest.p97) return '85-97';
+    return '>97';
   };
 
   return {

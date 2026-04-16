@@ -1,20 +1,37 @@
-import { lazy } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LazyTabContent } from "@/components/ui/lazy-tab-content";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Baby, BarChart3, History, Droplets, Settings, Info, Loader2 } from "lucide-react";
-import { useBabyFeeding } from "@/hooks/useBabyFeeding";
-import { RegistroMamada } from "@/components/amamentacao/RegistroMamada";
-import { ExportAmamentacaoPDF } from "@/components/amamentacao/ExportAmamentacaoPDF";
+import { lazy } from 'react';
+
+import { Baby, BarChart3, History, Droplets, Settings, Info, Loader2 } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LazyTabContent } from '@/components/ui/lazy-tab-content';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+import { ConfiguracoesAmamentacao as ConfiguracoesAmamentacaoSetup } from '@/components/amamentacao/ConfiguracoesAmamentacao';
+import { ExportAmamentacaoPDF } from '@/components/amamentacao/ExportAmamentacaoPDF';
+import { RegistroMamada } from '@/components/amamentacao/RegistroMamada';
+
+import { useBabyFeeding } from '@/hooks/useBabyFeeding';
 
 // Lazy load tab components for better initial bundle size
-const DashboardAmamentacao = lazy(() => import("@/components/amamentacao/DashboardAmamentacao").then(m => ({ default: m.DashboardAmamentacao })));
-const HistoricoMamadas = lazy(() => import("@/components/amamentacao/HistoricoMamadas").then(m => ({ default: m.HistoricoMamadas })));
-const GestaoOrdenha = lazy(() => import("@/components/amamentacao/GestaoOrdenha").then(m => ({ default: m.GestaoOrdenha })));
-const ConfiguracoesAmamentacao = lazy(() => import("@/components/amamentacao/ConfiguracoesAmamentacao").then(m => ({ default: m.ConfiguracoesAmamentacao })));
+const DashboardAmamentacao = lazy(() =>
+  import('@/components/amamentacao/DashboardAmamentacao').then(m => ({
+    default: m.DashboardAmamentacao,
+  }))
+);
+const HistoricoMamadas = lazy(() =>
+  import('@/components/amamentacao/HistoricoMamadas').then(m => ({ default: m.HistoricoMamadas }))
+);
+const GestaoOrdenha = lazy(() =>
+  import('@/components/amamentacao/GestaoOrdenha').then(m => ({ default: m.GestaoOrdenha }))
+);
+const ConfiguracoesAmamentacao = lazy(() =>
+  import('@/components/amamentacao/ConfiguracoesAmamentacao').then(m => ({
+    default: m.ConfiguracoesAmamentacao,
+  }))
+);
 
 // Import ConfiguracoesAmamentacao directly for initial setup (when no settings exist)
-import { ConfiguracoesAmamentacao as ConfiguracoesAmamentacaoSetup } from "@/components/amamentacao/ConfiguracoesAmamentacao";
 
 const RastreadorAmamentacao = () => {
   const {
@@ -54,7 +71,8 @@ const RastreadorAmamentacao = () => {
           <Alert>
             <Info className="h-4 w-4" />
             <AlertDescription>
-              Primeiro, configure as informações básicas do seu bebê para começar a usar o rastreador.
+              Primeiro, configure as informações básicas do seu bebê para começar a usar o
+              rastreador.
             </AlertDescription>
           </Alert>
 
@@ -84,23 +102,38 @@ const RastreadorAmamentacao = () => {
         {/* Tabs */}
         <Tabs defaultValue="registro" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5 gap-1 h-auto p-1">
-            <TabsTrigger value="registro" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
+            <TabsTrigger
+              value="registro"
+              className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3"
+            >
               <Baby className="h-4 w-4" />
               <span className="text-[10px] sm:text-xs">Registro</span>
             </TabsTrigger>
-            <TabsTrigger value="dashboard" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
+            <TabsTrigger
+              value="dashboard"
+              className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3"
+            >
               <BarChart3 className="h-4 w-4" />
               <span className="text-[10px] sm:text-xs">Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="historico" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
+            <TabsTrigger
+              value="historico"
+              className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3"
+            >
               <History className="h-4 w-4" />
               <span className="text-[10px] sm:text-xs">Histórico</span>
             </TabsTrigger>
-            <TabsTrigger value="ordenha" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
+            <TabsTrigger
+              value="ordenha"
+              className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3"
+            >
               <Droplets className="h-4 w-4" />
               <span className="text-[10px] sm:text-xs">Ordenha</span>
             </TabsTrigger>
-            <TabsTrigger value="configuracoes" className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3">
+            <TabsTrigger
+              value="configuracoes"
+              className="flex flex-col sm:flex-row items-center gap-1 py-2 px-1 sm:px-3"
+            >
               <Settings className="h-4 w-4" />
               <span className="text-[10px] sm:text-xs">Config</span>
             </TabsTrigger>
@@ -124,8 +157,8 @@ const RastreadorAmamentacao = () => {
 
           <TabsContent value="ordenha">
             <LazyTabContent>
-              <GestaoOrdenha 
-                storage={storage} 
+              <GestaoOrdenha
+                storage={storage}
                 onAddStorage={addStorage}
                 onMarkAsUsed={markStorageAsUsed}
               />

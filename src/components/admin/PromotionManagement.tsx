@@ -1,15 +1,25 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Gift, Trash2, Zap } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Gift, Trash2, Zap } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface Promotion {
   id: string;
@@ -27,22 +37,22 @@ interface Promotion {
 export function PromotionManagement() {
   const queryClient = useQueryClient();
   const [newPromo, setNewPromo] = useState({
-    name: "",
-    description: "",
-    product_id: "",
+    name: '',
+    description: '',
+    product_id: '',
     duration_days: 5,
     is_active: true,
   });
 
   // Buscar produtos disponíveis
   const { data: products } = useQuery({
-    queryKey: ["products"],
+    queryKey: ['products'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("products")
-        .select("id, title")
-        .eq("is_active", true)
-        .order("title");
+        .from('products')
+        .select('id, title')
+        .eq('is_active', true)
+        .order('title');
       if (error) throw error;
       return data;
     },
@@ -50,17 +60,19 @@ export function PromotionManagement() {
 
   // Buscar promoções
   const { data: promotions, isLoading } = useQuery({
-    queryKey: ["promotions"],
+    queryKey: ['promotions'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("promotions")
-        .select(`
+        .from('promotions')
+        .select(
+          `
           *,
           products:product_id (
             title
           )
-        `)
-        .order("created_at", { ascending: false });
+        `
+        )
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data as Promotion[];
     },
@@ -69,11 +81,13 @@ export function PromotionManagement() {
   // Criar promoção
   const createMutation = useMutation({
     mutationFn: async (promo: typeof newPromo) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Usuário não autenticado");
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
 
       const { data, error } = await supabase
-        .from("promotions")
+        .from('promotions')
         .insert({
           ...promo,
           created_by: user.id,
@@ -85,47 +99,49 @@ export function PromotionManagement() {
       return data;
     },
     onSuccess: () => {
-      toast("Promoção criada com sucesso!");
+      toast('Promoção criada com sucesso!');
       setNewPromo({
-        name: "",
-        description: "",
-        product_id: "",
+        name: '',
+        description: '',
+        product_id: '',
         duration_days: 5,
         is_active: true,
       });
-      queryClient.invalidateQueries({ queryKey: ["promotions"] });
+      queryClient.invalidateQueries({ queryKey: ['promotions'] });
     },
     onError: (error: any) => {
-      toast.error("Erro ao criar promoção", { description: error.message });
+      toast.error('Erro ao criar promoção', { description: error.message });
     },
   });
 
   // Deletar promoção
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("promotions").delete().eq("id", id);
+      const { error } = await supabase.from('promotions').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      toast("Promoção deletada");
-      queryClient.invalidateQueries({ queryKey: ["promotions"] });
+      toast('Promoção deletada');
+      queryClient.invalidateQueries({ queryKey: ['promotions'] });
     },
   });
 
   // Aplicar promoção para todos os usuários
   const applyMutation = useMutation({
     mutationFn: async (promotionId: string) => {
-      const { data, error } = await supabase.functions.invoke("apply-promotion", {
+      const { data, error } = await supabase.functions.invoke('apply-promotion', {
         body: { promotion_id: promotionId },
       });
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
-      toast("Promoção aplicada!", { description: `${data.users_affected} usuários receberam acesso` });
+    onSuccess: data => {
+      toast('Promoção aplicada!', {
+        description: `${data.users_affected} usuários receberam acesso`,
+      });
     },
     onError: (error: any) => {
-      toast.error("Erro ao aplicar promoção", { description: error.message });
+      toast.error('Erro ao aplicar promoção', { description: error.message });
     },
   });
 
@@ -147,7 +163,7 @@ export function PromotionManagement() {
               <Label>Nome da Promoção</Label>
               <Input
                 value={newPromo.name}
-                onChange={(e) => setNewPromo({ ...newPromo, name: e.target.value })}
+                onChange={e => setNewPromo({ ...newPromo, name: e.target.value })}
                 placeholder="Ex: Natal 2024"
               />
             </div>
@@ -156,13 +172,13 @@ export function PromotionManagement() {
               <Label>Produto</Label>
               <Select
                 value={newPromo.product_id}
-                onValueChange={(value) => setNewPromo({ ...newPromo, product_id: value })}
+                onValueChange={value => setNewPromo({ ...newPromo, product_id: value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o produto" />
                 </SelectTrigger>
                 <SelectContent>
-                  {products?.map((product) => (
+                  {products?.map(product => (
                     <SelectItem key={product.id} value={product.id}>
                       {product.title}
                     </SelectItem>
@@ -176,7 +192,7 @@ export function PromotionManagement() {
             <Label>Descrição</Label>
             <Textarea
               value={newPromo.description}
-              onChange={(e) => setNewPromo({ ...newPromo, description: e.target.value })}
+              onChange={e => setNewPromo({ ...newPromo, description: e.target.value })}
               placeholder="Ex: Presente de Natal para todas as mães!"
               rows={3}
             />
@@ -188,14 +204,14 @@ export function PromotionManagement() {
               type="number"
               min="1"
               value={newPromo.duration_days}
-              onChange={(e) => setNewPromo({ ...newPromo, duration_days: Number(e.target.value) })}
+              onChange={e => setNewPromo({ ...newPromo, duration_days: Number(e.target.value) })}
             />
           </div>
 
           <div className="flex items-center gap-2">
             <Switch
               checked={newPromo.is_active}
-              onCheckedChange={(checked) => setNewPromo({ ...newPromo, is_active: checked })}
+              onCheckedChange={checked => setNewPromo({ ...newPromo, is_active: checked })}
             />
             <Label>Promoção Ativa</Label>
           </div>
@@ -222,7 +238,7 @@ export function PromotionManagement() {
             <p className="text-muted-foreground text-center py-8">Nenhuma promoção criada ainda</p>
           ) : (
             <div className="space-y-4">
-              {promotions?.map((promo) => (
+              {promotions?.map(promo => (
                 <Card key={promo.id} className="border-l-4 border-l-primary">
                   <CardContent className="pt-6">
                     <div className="flex items-start justify-between">
@@ -238,8 +254,10 @@ export function PromotionManagement() {
                           <span className="text-muted-foreground">
                             Duração: <strong>{promo.duration_days} dias</strong>
                           </span>
-                          <span className={promo.is_active ? "text-green-600" : "text-muted-foreground"}>
-                            Status: <strong>{promo.is_active ? "Ativa" : "Inativa"}</strong>
+                          <span
+                            className={promo.is_active ? 'text-green-600' : 'text-muted-foreground'}
+                          >
+                            Status: <strong>{promo.is_active ? 'Ativa' : 'Inativa'}</strong>
                           </span>
                         </div>
                       </div>

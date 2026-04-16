@@ -1,13 +1,17 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Slider } from "@/components/ui/slider";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import { usePostpartumSymptoms } from "@/hooks/postpartum";
-import { Loader2 } from "lucide-react";
+import { useState } from 'react';
+
+import { Loader2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
+
+import { usePostpartumSymptoms } from '@/hooks/postpartum';
+
 
 export const RastreadorSintomas = () => {
   const { addSymptom, isAdding } = usePostpartumSymptoms();
@@ -41,7 +45,8 @@ export const RastreadorSintomas = () => {
       <CardHeader>
         <CardTitle>Registrar Sintomas do Dia</CardTitle>
         <CardDescription>
-          Acompanhe sua recuperação física diariamente. Seja honesta — isso ajuda a identificar quando procurar ajuda.
+          Acompanhe sua recuperação física diariamente. Seja honesta — isso ajuda a identificar
+          quando procurar ajuda.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -66,7 +71,9 @@ export const RastreadorSintomas = () => {
             <Label>Intensidade do Sangramento</Label>
             <RadioGroup
               value={formData.bleeding_intensity}
-              onValueChange={(value: any) => setFormData(prev => ({ ...prev, bleeding_intensity: value }))}
+              onValueChange={(value: any) =>
+                setFormData(prev => ({ ...prev, bleeding_intensity: value }))
+              }
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="none" id="none" />
@@ -98,7 +105,9 @@ export const RastreadorSintomas = () => {
             <Label>Cicatrização (pontos ou cesárea)</Label>
             <RadioGroup
               value={formData.healing_status}
-              onValueChange={(value: any) => setFormData(prev => ({ ...prev, healing_status: value }))}
+              onValueChange={(value: any) =>
+                setFormData(prev => ({ ...prev, healing_status: value }))
+              }
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="normal" id="normal-heal" />
@@ -140,7 +149,9 @@ export const RastreadorSintomas = () => {
             <div className="flex items-center gap-4">
               <Slider
                 value={[formData.sleep_quality]}
-                onValueChange={([value]) => setFormData(prev => ({ ...prev, sleep_quality: value }))}
+                onValueChange={([value]) =>
+                  setFormData(prev => ({ ...prev, sleep_quality: value }))
+                }
                 max={10}
                 step={1}
                 className="flex-1"
@@ -180,7 +191,9 @@ export const RastreadorSintomas = () => {
             <Label>Evacuação</Label>
             <RadioGroup
               value={formData.bowel_movement}
-              onValueChange={(value: any) => setFormData(prev => ({ ...prev, bowel_movement: value }))}
+              onValueChange={(value: any) =>
+                setFormData(prev => ({ ...prev, bowel_movement: value }))
+              }
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="normal" id="bowel-normal" />
@@ -233,15 +246,21 @@ export const RastreadorSintomas = () => {
               <Checkbox
                 id="fever"
                 checked={formData.fever}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, fever: checked as boolean }))}
+                onCheckedChange={checked =>
+                  setFormData(prev => ({ ...prev, fever: checked as boolean }))
+                }
               />
-              <Label htmlFor="fever" className="text-destructive">Estou com febre ⚠️</Label>
+              <Label htmlFor="fever" className="text-destructive">
+                Estou com febre ⚠️
+              </Label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="breast_pain"
                 checked={formData.breast_pain}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, breast_pain: checked as boolean }))}
+                onCheckedChange={checked =>
+                  setFormData(prev => ({ ...prev, breast_pain: checked as boolean }))
+                }
               />
               <Label htmlFor="breast_pain">Dor nas mamas</Label>
             </div>
@@ -253,7 +272,7 @@ export const RastreadorSintomas = () => {
             <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               placeholder="Como você está se sentindo hoje? Alguma preocupação específica?"
               rows={3}
             />

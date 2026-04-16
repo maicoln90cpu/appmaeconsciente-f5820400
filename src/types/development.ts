@@ -1,4 +1,9 @@
-export type DevelopmentArea = 'motor_grosso' | 'motor_fino' | 'linguagem' | 'cognitivo' | 'social_emocional';
+export type DevelopmentArea =
+  | 'motor_grosso'
+  | 'motor_fino'
+  | 'linguagem'
+  | 'cognitivo'
+  | 'social_emocional';
 
 export type MilestoneStatus = 'pending' | 'achieved' | 'attention' | 'doubt';
 
@@ -78,7 +83,7 @@ export const AREA_LABELS: Record<DevelopmentArea, string> = {
   motor_fino: 'Motor Fino',
   linguagem: 'Linguagem',
   cognitivo: 'Cognitivo',
-  social_emocional: 'Social/Emocional'
+  social_emocional: 'Social/Emocional',
 };
 
 export const AREA_ICONS: Record<DevelopmentArea, string> = {
@@ -86,7 +91,7 @@ export const AREA_ICONS: Record<DevelopmentArea, string> = {
   motor_fino: '✋',
   linguagem: '🗣️',
   cognitivo: '🧠',
-  social_emocional: '💞'
+  social_emocional: '💞',
 };
 
 export const AREA_COLORS: Record<DevelopmentArea, string> = {
@@ -94,5 +99,5 @@ export const AREA_COLORS: Record<DevelopmentArea, string> = {
   motor_fino: 'hsl(var(--chart-2))',
   linguagem: 'hsl(var(--chart-3))',
   cognitivo: 'hsl(var(--chart-4))',
-  social_emocional: 'hsl(var(--chart-5))'
+  social_emocional: 'hsl(var(--chart-5))',
 };

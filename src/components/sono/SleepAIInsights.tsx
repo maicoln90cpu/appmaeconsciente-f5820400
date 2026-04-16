@@ -1,30 +1,44 @@
-import { useState, useMemo } from "react";
-import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { 
-  Brain, 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
-  Sparkles, 
-  Clock, 
-  Moon, 
-  Sun, 
+import { useState, useMemo } from 'react';
+
+import {
+  format,
+  subDays,
+  differenceInHours,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameDay,
+} from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  Brain,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  Sparkles,
+  Clock,
+  Moon,
+  Sun,
   Baby,
   Lightbulb,
   Target,
   RefreshCw,
   CheckCircle2,
-  XCircle
-} from "lucide-react";
-import { BabySleepLog, BabySleepMilestone } from "@/types/babySleep";
-import { format, subDays, differenceInHours, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
+  XCircle,
+} from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+import { BabySleepLog, BabySleepMilestone } from '@/types/babySleep';
+
+
+import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
 
 interface SleepAIInsightsProps {
   sleepLogs: BabySleepLog[];
@@ -50,16 +64,14 @@ interface SleepInsight {
   icon: typeof TrendingUp;
 }
 
-export const SleepAIInsights = ({ 
-  sleepLogs, 
-  milestones, 
-  babyName = "seu bebê",
-  babyAgeMonths 
+export const SleepAIInsights = ({
+  sleepLogs,
+  milestones,
+  babyName = 'seu bebê',
+  babyAgeMonths,
 }: SleepAIInsightsProps) => {
   const { aiInsightsEnabled } = useFeatureFlags();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  
 
   // Análise dos últimos 7 dias
   const last7DaysLogs = useMemo(() => {
@@ -85,19 +97,21 @@ export const SleepAIInsights = ({
     const dayLogs = last7DaysLogs.filter(log => log.sleep_type === 'diurno');
 
     // Média de duração
-    const validDurations = last7DaysLogs.filter(log => log.duration_minutes).map(log => log.duration_minutes!);
-    const averageDuration = validDurations.length > 0 
-      ? validDurations.reduce((a, b) => a + b, 0) / validDurations.length 
-      : 0;
+    const validDurations = last7DaysLogs
+      .filter(log => log.duration_minutes)
+      .map(log => log.duration_minutes!);
+    const averageDuration =
+      validDurations.length > 0
+        ? validDurations.reduce((a, b) => a + b, 0) / validDurations.length
+        : 0;
 
     // Horário médio de dormir (noturno)
     const bedtimes = nightLogs.map(log => {
       const date = new Date(log.sleep_start);
       return date.getHours() + date.getMinutes() / 60;
     });
-    const avgBedtimeHour = bedtimes.length > 0 
-      ? bedtimes.reduce((a, b) => a + b, 0) / bedtimes.length 
-      : 20;
+    const avgBedtimeHour =
+      bedtimes.length > 0 ? bedtimes.reduce((a, b) => a + b, 0) / bedtimes.length : 20;
     const avgBedtimeHours = Math.floor(avgBedtimeHour);
     const avgBedtimeMinutes = Math.round((avgBedtimeHour - avgBedtimeHours) * 60);
 
@@ -108,16 +122,19 @@ export const SleepAIInsights = ({
         const date = new Date(log.sleep_end!);
         return date.getHours() + date.getMinutes() / 60;
       });
-    const avgWakeHour = wakeTimes.length > 0 
-      ? wakeTimes.reduce((a, b) => a + b, 0) / wakeTimes.length 
-      : 7;
+    const avgWakeHour =
+      wakeTimes.length > 0 ? wakeTimes.reduce((a, b) => a + b, 0) / wakeTimes.length : 7;
     const avgWakeHours = Math.floor(avgWakeHour);
     const avgWakeMinutes = Math.round((avgWakeHour - avgWakeHours) * 60);
 
     // Consistência (baseado na variação do horário de dormir)
-    const bedtimeVariance = bedtimes.length > 1
-      ? Math.sqrt(bedtimes.map(b => Math.pow(b - avgBedtimeHour, 2)).reduce((a, b) => a + b, 0) / bedtimes.length)
-      : 0;
+    const bedtimeVariance =
+      bedtimes.length > 1
+        ? Math.sqrt(
+            bedtimes.map(b => Math.pow(b - avgBedtimeHour, 2)).reduce((a, b) => a + b, 0) /
+              bedtimes.length
+          )
+        : 0;
     const consistency = Math.max(0, 100 - bedtimeVariance * 20);
 
     // Total de horas diárias (média)
@@ -129,9 +146,8 @@ export const SleepAIInsights = ({
       }
     });
     const totalDays = Object.keys(dailyTotals).length;
-    const totalDailyHours = totalDays > 0
-      ? Object.values(dailyTotals).reduce((a, b) => a + b, 0) / totalDays
-      : 0;
+    const totalDailyHours =
+      totalDays > 0 ? Object.values(dailyTotals).reduce((a, b) => a + b, 0) / totalDays : 0;
 
     // Média de sonecas por dia
     const napsPerDay = totalDays > 0 ? dayLogs.length / 7 : 0;
@@ -150,8 +166,8 @@ export const SleepAIInsights = ({
   // Milestone atual baseado na idade
   const currentMilestone = useMemo(() => {
     if (!babyAgeMonths || !milestones.length) return null;
-    return milestones.find(m => 
-      babyAgeMonths >= m.age_range_start && babyAgeMonths <= m.age_range_end
+    return milestones.find(
+      m => babyAgeMonths >= m.age_range_start && babyAgeMonths <= m.age_range_end
     );
   }, [babyAgeMonths, milestones]);
 
@@ -160,17 +176,23 @@ export const SleepAIInsights = ({
     const result: SleepInsight[] = [];
 
     if (!sleepPatterns) {
-      return [{
-        type: 'suggestion',
-        title: 'Registre mais dados',
-        description: 'Precisamos de pelo menos 3 dias de registros para gerar insights personalizados.',
-        icon: Lightbulb,
-      }];
+      return [
+        {
+          type: 'suggestion',
+          title: 'Registre mais dados',
+          description:
+            'Precisamos de pelo menos 3 dias de registros para gerar insights personalizados.',
+          icon: Lightbulb,
+        },
+      ];
     }
 
     // Comparar com semana anterior
     if (previous7DaysLogs.length > 0) {
-      const prevAvg = previous7DaysLogs.filter(l => l.duration_minutes).reduce((a, b) => a + (b.duration_minutes || 0), 0) / previous7DaysLogs.length;
+      const prevAvg =
+        previous7DaysLogs
+          .filter(l => l.duration_minutes)
+          .reduce((a, b) => a + (b.duration_minutes || 0), 0) / previous7DaysLogs.length;
       const currAvg = sleepPatterns.averageDuration;
       const diff = ((currAvg - prevAvg) / prevAvg) * 100;
 
@@ -273,17 +295,22 @@ export const SleepAIInsights = ({
       result.push({
         type: 'warning',
         title: 'Cuide de você também',
-        description: 'Você está se sentindo exausta com frequência. Lembre-se de pedir ajuda quando precisar. 💙',
+        description:
+          'Você está se sentindo exausta com frequência. Lembre-se de pedir ajuda quando precisar. 💙',
         icon: AlertTriangle,
       });
     }
 
-    return result.length > 0 ? result : [{
-      type: 'positive',
-      title: 'Tudo em ordem',
-      description: 'Os padrões de sono estão dentro do esperado. Continue assim!',
-      icon: Sparkles,
-    }];
+    return result.length > 0
+      ? result
+      : [
+          {
+            type: 'positive',
+            title: 'Tudo em ordem',
+            description: 'Os padrões de sono estão dentro do esperado. Continue assim!',
+            icon: Sparkles,
+          },
+        ];
   }, [sleepPatterns, previous7DaysLogs, currentMilestone, last7DaysLogs, babyName]);
 
   // Sugestões personalizadas
@@ -295,38 +322,40 @@ export const SleepAIInsights = ({
     // Sugestões baseadas no horário de dormir
     const bedtimeHour = parseInt(sleepPatterns.averageBedtime.split(':')[0]);
     if (bedtimeHour >= 22) {
-      result.push("Tente antecipar o horário de dormir em 15-30 minutos gradualmente.");
+      result.push('Tente antecipar o horário de dormir em 15-30 minutos gradualmente.');
     }
     if (bedtimeHour <= 18 && babyAgeMonths && babyAgeMonths > 6) {
-      result.push("O bebê pode estar dormindo muito cedo. Observe se acorda de madrugada.");
+      result.push('O bebê pode estar dormindo muito cedo. Observe se acorda de madrugada.');
     }
 
     // Sugestões por idade
     if (babyAgeMonths) {
       if (babyAgeMonths <= 3) {
-        result.push("Nessa idade, o sono é fragmentado. Isso é normal!");
-        result.push("Deixe o ambiente escuro e silencioso para sonecas melhores.");
+        result.push('Nessa idade, o sono é fragmentado. Isso é normal!');
+        result.push('Deixe o ambiente escuro e silencioso para sonecas melhores.');
       } else if (babyAgeMonths <= 6) {
-        result.push("Comece a estabelecer uma rotina noturna consistente.");
-        result.push("Um banho morno antes de dormir pode ajudar a relaxar.");
+        result.push('Comece a estabelecer uma rotina noturna consistente.');
+        result.push('Um banho morno antes de dormir pode ajudar a relaxar.');
       } else if (babyAgeMonths <= 12) {
-        result.push("A transição de 3 para 2 sonecas pode acontecer nessa fase.");
-        result.push("Mantenha o quarto entre 20-22°C para conforto.");
+        result.push('A transição de 3 para 2 sonecas pode acontecer nessa fase.');
+        result.push('Mantenha o quarto entre 20-22°C para conforto.');
       } else {
-        result.push("Uma rotina previsível (banho, história, música) ajuda a sinalizar hora de dormir.");
-        result.push("Evite telas pelo menos 1 hora antes de dormir.");
+        result.push(
+          'Uma rotina previsível (banho, história, música) ajuda a sinalizar hora de dormir.'
+        );
+        result.push('Evite telas pelo menos 1 hora antes de dormir.');
       }
     }
 
     // Sugestões baseadas na consistência
     if (sleepPatterns.consistency < 60) {
-      result.push("Tente manter horários fixos de dormir e acordar, mesmo nos fins de semana.");
+      result.push('Tente manter horários fixos de dormir e acordar, mesmo nos fins de semana.');
     }
 
     // Baseado no humor ao acordar
     const agitatedCount = last7DaysLogs.filter(l => l.wakeup_mood === 'agitado').length;
     if (agitatedCount > 2) {
-      result.push("Se o bebê acorda agitado, verifique conforto: fralda, temperatura, fome.");
+      result.push('Se o bebê acorda agitado, verifique conforto: fralda, temperatura, fome.');
     }
 
     return result.slice(0, 4); // Máximo 4 sugestões
@@ -339,12 +368,10 @@ export const SleepAIInsights = ({
     const days = eachDayOfInterval({ start, end });
 
     return days.map(day => {
-      const dayLogs = last7DaysLogs.filter(log => 
-        isSameDay(new Date(log.sleep_start), day)
-      );
+      const dayLogs = last7DaysLogs.filter(log => isSameDay(new Date(log.sleep_start), day));
       const totalMinutes = dayLogs.reduce((sum, log) => sum + (log.duration_minutes || 0), 0);
       const hours = totalMinutes / 60;
-      
+
       return {
         day: format(day, 'EEE', { locale: ptBR }),
         fullDate: format(day, 'dd/MM'),
@@ -445,12 +472,13 @@ export const SleepAIInsights = ({
             {weeklyHeatmap.map((day, i) => (
               <div key={i} className="flex-1 text-center">
                 <div className="text-xs text-muted-foreground mb-1 capitalize">{day.day}</div>
-                <div 
+                <div
                   className="h-16 rounded-md flex items-center justify-center transition-colors"
-                  style={{ 
-                    backgroundColor: day.hours > 0 
-                      ? `hsl(var(--primary) / ${0.2 + (day.intensity / 100) * 0.8})` 
-                      : 'hsl(var(--muted))'
+                  style={{
+                    backgroundColor:
+                      day.hours > 0
+                        ? `hsl(var(--primary) / ${0.2 + (day.intensity / 100) * 0.8})`
+                        : 'hsl(var(--muted))',
                   }}
                 >
                   <span className="text-sm font-medium">
@@ -471,27 +499,31 @@ export const SleepAIInsights = ({
             <Brain className="h-5 w-5" />
             Insights Personalizados
           </CardTitle>
-          <CardDescription>
-            Análise baseada nos registros dos últimos 7 dias
-          </CardDescription>
+          <CardDescription>Análise baseada nos registros dos últimos 7 dias</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {insights.map((insight, i) => {
             const Icon = insight.icon;
             return (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`flex gap-4 p-4 rounded-lg ${
-                  insight.type === 'positive' ? 'bg-green-500/10 border border-green-500/20' :
-                  insight.type === 'warning' ? 'bg-amber-500/10 border border-amber-500/20' :
-                  'bg-blue-500/10 border border-blue-500/20'
+                  insight.type === 'positive'
+                    ? 'bg-green-500/10 border border-green-500/20'
+                    : insight.type === 'warning'
+                      ? 'bg-amber-500/10 border border-amber-500/20'
+                      : 'bg-blue-500/10 border border-blue-500/20'
                 }`}
               >
-                <Icon className={`h-5 w-5 mt-0.5 ${
-                  insight.type === 'positive' ? 'text-green-500' :
-                  insight.type === 'warning' ? 'text-amber-500' :
-                  'text-blue-500'
-                }`} />
+                <Icon
+                  className={`h-5 w-5 mt-0.5 ${
+                    insight.type === 'positive'
+                      ? 'text-green-500'
+                      : insight.type === 'warning'
+                        ? 'text-amber-500'
+                        : 'text-blue-500'
+                  }`}
+                />
                 <div>
                   <h4 className="font-medium">{insight.title}</h4>
                   <p className="text-sm text-muted-foreground">{insight.description}</p>
@@ -515,7 +547,8 @@ export const SleepAIInsights = ({
             <div className="grid gap-4 sm:grid-cols-3">
               <div className="text-center p-4 bg-muted rounded-lg">
                 <p className="text-3xl font-bold text-primary">
-                  {currentMilestone.recommended_total_hours_min}-{currentMilestone.recommended_total_hours_max}h
+                  {currentMilestone.recommended_total_hours_min}-
+                  {currentMilestone.recommended_total_hours_max}h
                 </p>
                 <p className="text-sm text-muted-foreground">Total diário</p>
               </div>

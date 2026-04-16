@@ -1,8 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import type { Database } from "@/integrations/supabase/types";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import type { Database } from '@/integrations/supabase/types';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 type BabyRoutineRow = Database['public']['Tables']['baby_routines']['Row'];
 type BabyRoutineInsert = Database['public']['Tables']['baby_routines']['Insert'];
@@ -20,7 +24,12 @@ export const ROUTINE_TYPES = [
   { value: 'walk', label: 'Passeio', icon: '🚶', color: 'bg-green-100 text-green-700' },
   { value: 'medication', label: 'Medicamento', icon: '💊', color: 'bg-red-100 text-red-700' },
   { value: 'massage', label: 'Massagem', icon: '👐', color: 'bg-purple-100 text-purple-700' },
-  { value: 'tummy_time', label: 'Tempo de Barriga', icon: '👶', color: 'bg-orange-100 text-orange-700' },
+  {
+    value: 'tummy_time',
+    label: 'Tempo de Barriga',
+    icon: '👶',
+    color: 'bg-orange-100 text-orange-700',
+  },
   { value: 'reading', label: 'Leitura', icon: '📚', color: 'bg-teal-100 text-teal-700' },
   { value: 'other', label: 'Outro', icon: '📋', color: 'bg-gray-100 text-gray-700' },
 ] as const;
@@ -45,7 +54,9 @@ export const useBabyRoutines = (babyProfileId?: string) => {
 
       let query = supabase
         .from('baby_routines')
-        .select('id, user_id, baby_profile_id, title, routine_type, scheduled_time, duration_minutes, days_of_week, notes, is_active, created_at, updated_at')
+        .select(
+          'id, user_id, baby_profile_id, title, routine_type, scheduled_time, duration_minutes, days_of_week, notes, is_active, created_at, updated_at'
+        )
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('scheduled_time', { ascending: true })
@@ -95,10 +106,10 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routines'] });
-      toast("Sucesso", { description: "Rotina criada" });
+      toast('Sucesso', { description: 'Rotina criada' });
     },
     onError: () => {
-      toast.error("Erro", { description: "Erro ao criar rotina" });
+      toast.error('Erro', { description: 'Erro ao criar rotina' });
     },
   });
 
@@ -116,7 +127,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routines'] });
-      toast("Sucesso", { description: "Rotina atualizada" });
+      toast('Sucesso', { description: 'Rotina atualizada' });
     },
   });
 
@@ -131,7 +142,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routines'] });
-      toast("Sucesso", { description: "Rotina removida" });
+      toast('Sucesso', { description: 'Rotina removida' });
     },
   });
 
@@ -150,7 +161,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routine-logs-today'] });
-      toast("Sucesso", { description: "Rotina concluída" });
+      toast('Sucesso', { description: 'Rotina concluída' });
     },
   });
 
@@ -160,9 +171,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
 
   // Get today's routines (filter by day of week)
   const todayDayOfWeek = new Date().getDay();
-  const todaysRoutines = routines?.filter(r => 
-    r.days_of_week?.includes(todayDayOfWeek)
-  ) || [];
+  const todaysRoutines = routines?.filter(r => r.days_of_week?.includes(todayDayOfWeek)) || [];
 
   const completedToday = todaysRoutines.filter(r => isRoutineCompletedToday(r.id)).length;
   const progress = todaysRoutines.length > 0 ? (completedToday / todaysRoutines.length) * 100 : 0;

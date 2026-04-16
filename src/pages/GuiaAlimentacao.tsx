@@ -1,32 +1,75 @@
-import { useState, lazy } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { LazyTabContent } from "@/components/ui/lazy-tab-content";
-import { DashboardSaude } from "@/components/alimentacao/DashboardSaude";
-import { GenerateMealPlanButton } from "@/components/alimentacao/GenerateMealPlanButton";
-import { GenerateRecipesButton } from "@/components/alimentacao/GenerateRecipesButton";
-import { GenerateExercisesButton } from "@/components/alimentacao/GenerateExercisesButton";
-import { ProfileRequiredDialog } from "@/components/alimentacao/ProfileRequiredDialog";
-import { Utensils, Pill, BookOpen, Scale, AlertTriangle, Bot, Droplets, Dumbbell, ShoppingCart, BarChart3 } from "lucide-react";
-import { useProfile } from "@/hooks/useProfile";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, lazy } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+import {
+  Utensils,
+  Pill,
+  BookOpen,
+  Scale,
+  AlertTriangle,
+  Bot,
+  Droplets,
+  Dumbbell,
+  ShoppingCart,
+  BarChart3,
+} from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LazyTabContent } from '@/components/ui/lazy-tab-content';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { DashboardSaude } from '@/components/alimentacao/DashboardSaude';
+import { GenerateExercisesButton } from '@/components/alimentacao/GenerateExercisesButton';
+import { GenerateMealPlanButton } from '@/components/alimentacao/GenerateMealPlanButton';
+import { GenerateRecipesButton } from '@/components/alimentacao/GenerateRecipesButton';
+import { ProfileRequiredDialog } from '@/components/alimentacao/ProfileRequiredDialog';
+
+
+import { useProfile } from '@/hooks/useProfile';
+
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 // Lazy load tab components for better initial bundle size
-const PlanoSemanal = lazy(() => import("@/components/alimentacao/PlanoSemanal").then(m => ({ default: m.PlanoSemanal })));
-const Receitas = lazy(() => import("@/components/alimentacao/Receitas").then(m => ({ default: m.Receitas })));
-const ControleSuplemento = lazy(() => import("@/components/alimentacao/ControleSuplemento").then(m => ({ default: m.ControleSuplemento })));
-const RastreadorHidratacao = lazy(() => import("@/components/alimentacao/RastreadorHidratacao").then(m => ({ default: m.RastreadorHidratacao })));
-const ExerciciosTrimestre = lazy(() => import("@/components/alimentacao/ExerciciosTrimestre").then(m => ({ default: m.ExerciciosTrimestre })));
-const MonitoramentoPeso = lazy(() => import("@/components/alimentacao/MonitoramentoPeso").then(m => ({ default: m.MonitoramentoPeso })));
-const ListaCompras = lazy(() => import("@/components/alimentacao/ListaCompras").then(m => ({ default: m.ListaCompras })));
-const AlertasAlimentos = lazy(() => import("@/components/alimentacao/AlertasAlimentos").then(m => ({ default: m.AlertasAlimentos })));
-const IANutricional = lazy(() => import("@/components/alimentacao/IANutricional").then(m => ({ default: m.IANutricional })));
+const PlanoSemanal = lazy(() =>
+  import('@/components/alimentacao/PlanoSemanal').then(m => ({ default: m.PlanoSemanal }))
+);
+const Receitas = lazy(() =>
+  import('@/components/alimentacao/Receitas').then(m => ({ default: m.Receitas }))
+);
+const ControleSuplemento = lazy(() =>
+  import('@/components/alimentacao/ControleSuplemento').then(m => ({
+    default: m.ControleSuplemento,
+  }))
+);
+const RastreadorHidratacao = lazy(() =>
+  import('@/components/alimentacao/RastreadorHidratacao').then(m => ({
+    default: m.RastreadorHidratacao,
+  }))
+);
+const ExerciciosTrimestre = lazy(() =>
+  import('@/components/alimentacao/ExerciciosTrimestre').then(m => ({
+    default: m.ExerciciosTrimestre,
+  }))
+);
+const MonitoramentoPeso = lazy(() =>
+  import('@/components/alimentacao/MonitoramentoPeso').then(m => ({ default: m.MonitoramentoPeso }))
+);
+const ListaCompras = lazy(() =>
+  import('@/components/alimentacao/ListaCompras').then(m => ({ default: m.ListaCompras }))
+);
+const AlertasAlimentos = lazy(() =>
+  import('@/components/alimentacao/AlertasAlimentos').then(m => ({ default: m.AlertasAlimentos }))
+);
+const IANutricional = lazy(() =>
+  import('@/components/alimentacao/IANutricional').then(m => ({ default: m.IANutricional }))
+);
 
 export default function GuiaAlimentacao() {
   const { profile, loading } = useProfile();
-  const [activeTab, setActiveTab] = useState("plano");
+  const [activeTab, setActiveTab] = useState('plano');
   const [showProfileDialog, setShowProfileDialog] = useState(false);
 
   const needsProfileData = !profile?.peso_atual || !profile?.altura_cm;
@@ -38,9 +81,18 @@ export default function GuiaAlimentacao() {
       if (!profile?.id) return false;
 
       const [mealPlans, recipes, exercises] = await Promise.all([
-        supabase.from('meal_plans').select('id', { count: 'exact', head: true }).eq('created_by', profile.id),
-        supabase.from('recipes').select('id', { count: 'exact', head: true }).eq('created_by', profile.id),
-        supabase.from('exercises').select('id', { count: 'exact', head: true }).eq('created_by', profile.id),
+        supabase
+          .from('meal_plans')
+          .select('id', { count: 'exact', head: true })
+          .eq('created_by', profile.id),
+        supabase
+          .from('recipes')
+          .select('id', { count: 'exact', head: true })
+          .eq('created_by', profile.id),
+        supabase
+          .from('exercises')
+          .select('id', { count: 'exact', head: true })
+          .eq('created_by', profile.id),
       ]);
 
       return (mealPlans.count || 0) > 0 || (recipes.count || 0) > 0 || (exercises.count || 0) > 0;
@@ -70,16 +122,17 @@ export default function GuiaAlimentacao() {
 
   return (
     <>
-      <ProfileRequiredDialog 
-        open={showProfileDialog} 
-        onComplete={() => setShowProfileDialog(false)} 
+      <ProfileRequiredDialog
+        open={showProfileDialog}
+        onComplete={() => setShowProfileDialog(false)}
       />
       <div className="container max-w-6xl py-8">
         <div className="mb-8">
           <div>
             <h1 className="text-3xl font-bold mb-2">🌱 Guia de Alimentação e Bem-Estar</h1>
             <p className="text-muted-foreground">
-              Sua nutrição e saúde durante a gestação, com planos personalizados e acompanhamento completo
+              Sua nutrição e saúde durante a gestação, com planos personalizados e acompanhamento
+              completo
             </p>
           </div>
         </div>
@@ -88,71 +141,71 @@ export default function GuiaAlimentacao() {
           {/* ScrollArea horizontal para tabs em mobile */}
           <ScrollArea className="w-full whitespace-nowrap">
             <TabsList className="inline-flex w-max gap-1 h-auto p-1.5 md:grid md:w-full md:grid-cols-5 lg:grid-cols-10">
-              <TabsTrigger 
-                value="dashboard" 
+              <TabsTrigger
+                value="dashboard"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <BarChart3 className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Dash</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="ia" 
+              <TabsTrigger
+                value="ia"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <Bot className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">IA</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="plano" 
+              <TabsTrigger
+                value="plano"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <Utensils className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Plano</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="receitas" 
+              <TabsTrigger
+                value="receitas"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <BookOpen className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Receitas</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="suplementos" 
+              <TabsTrigger
+                value="suplementos"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <Pill className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Suplem.</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="hidratacao" 
+              <TabsTrigger
+                value="hidratacao"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <Droplets className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Água</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="exercicios" 
+              <TabsTrigger
+                value="exercicios"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <Dumbbell className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Exerc.</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="peso" 
+              <TabsTrigger
+                value="peso"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <Scale className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Peso</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="compras" 
+              <TabsTrigger
+                value="compras"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <ShoppingCart className="h-4 w-4" />
                 <span className="text-[10px] sm:text-xs">Compras</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="alertas" 
+              <TabsTrigger
+                value="alertas"
                 className="flex flex-col items-center gap-1 min-w-[60px] min-h-[44px] py-2 px-2 touch-manipulation"
               >
                 <AlertTriangle className="h-4 w-4" />
@@ -174,8 +227,8 @@ export default function GuiaAlimentacao() {
 
           <TabsContent value="plano">
             <div className="space-y-4">
-              <GenerateMealPlanButton 
-                onSuccess={() => refetchContent()} 
+              <GenerateMealPlanButton
+                onSuccess={() => refetchContent()}
                 onNeedsProfile={() => setShowProfileDialog(true)}
                 needsProfile={needsProfileData}
               />
@@ -187,7 +240,7 @@ export default function GuiaAlimentacao() {
 
           <TabsContent value="receitas">
             <div className="space-y-4">
-              <GenerateRecipesButton 
+              <GenerateRecipesButton
                 onSuccess={() => refetchContent()}
                 onNeedsProfile={() => setShowProfileDialog(true)}
                 needsProfile={needsProfileData}
@@ -212,7 +265,7 @@ export default function GuiaAlimentacao() {
 
           <TabsContent value="exercicios">
             <div className="space-y-4">
-              <GenerateExercisesButton 
+              <GenerateExercisesButton
                 onSuccess={() => refetchContent()}
                 onNeedsProfile={() => setShowProfileDialog(true)}
                 needsProfile={needsProfileData}

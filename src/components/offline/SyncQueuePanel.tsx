@@ -3,9 +3,10 @@
  * Allows users to manage pending and failed sync operations
  */
 
-import { memo } from "react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { memo } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Cloud,
   CloudOff,
@@ -16,40 +17,40 @@ import {
   Loader2,
   Clock,
   Database,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useOfflineSync } from "@/hooks/useOfflineSync";
-import { cn } from "@/lib/utils";
-import { SyncTask } from "@/lib/offline-sync";
+} from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { useOfflineSync } from '@/hooks/useOfflineSync';
+
+import { SyncTask } from '@/lib/offline-sync';
+import { cn } from '@/lib/utils';
 
 const operationLabels: Record<string, string> = {
-  insert: "Adicionar",
-  update: "Atualizar",
-  delete: "Excluir",
+  insert: 'Adicionar',
+  update: 'Atualizar',
+  delete: 'Excluir',
 };
 
 const typeLabels: Record<string, string> = {
-  baby_feeding: "Amamentação",
-  baby_sleep: "Sono do Bebê",
-  enxoval: "Enxoval",
-  posts: "Posts",
-  vaccinations: "Vacinação",
-  postpartum_symptoms: "Sintomas Pós-Parto",
-  milestones: "Marcos",
+  baby_feeding: 'Amamentação',
+  baby_sleep: 'Sono do Bebê',
+  enxoval: 'Enxoval',
+  posts: 'Posts',
+  vaccinations: 'Vacinação',
+  postpartum_symptoms: 'Sintomas Pós-Parto',
+  milestones: 'Marcos',
 };
 
-const statusConfig: Record<
-  string,
-  { icon: typeof Cloud; label: string; color: string }
-> = {
-  pending: { icon: Clock, label: "Pendente", color: "text-muted-foreground" },
-  syncing: { icon: Loader2, label: "Sincronizando", color: "text-primary" },
-  synced: { icon: Check, label: "Sincronizado", color: "text-green-600" },
-  failed: { icon: AlertTriangle, label: "Falhou", color: "text-destructive" },
-  conflict: { icon: CloudOff, label: "Conflito", color: "text-orange-600" },
+const statusConfig: Record<string, { icon: typeof Cloud; label: string; color: string }> = {
+  pending: { icon: Clock, label: 'Pendente', color: 'text-muted-foreground' },
+  syncing: { icon: Loader2, label: 'Sincronizando', color: 'text-primary' },
+  synced: { icon: Check, label: 'Sincronizado', color: 'text-green-600' },
+  failed: { icon: AlertTriangle, label: 'Falhou', color: 'text-destructive' },
+  conflict: { icon: CloudOff, label: 'Conflito', color: 'text-orange-600' },
 };
 
 const TaskItem = memo(
@@ -67,35 +68,29 @@ const TaskItem = memo(
 
     return (
       <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-        <div className={cn("p-2 rounded-full bg-background", config.color)}>
-          <StatusIcon
-            className={cn("h-4 w-4", task.status === "syncing" && "animate-spin")}
-          />
+        <div className={cn('p-2 rounded-full bg-background', config.color)}>
+          <StatusIcon className={cn('h-4 w-4', task.status === 'syncing' && 'animate-spin')} />
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-medium text-sm">
-              {typeLabels[task.type] || task.type}
-            </span>
+            <span className="font-medium text-sm">{typeLabels[task.type] || task.type}</span>
             <Badge variant="outline" className="text-xs">
               {operationLabels[task.operation] || task.operation}
             </Badge>
           </div>
 
           <p className="text-xs text-muted-foreground">
-            {format(new Date(task.timestamp), "dd/MM HH:mm", { locale: ptBR })}
+            {format(new Date(task.timestamp), 'dd/MM HH:mm', { locale: ptBR })}
             {task.retries > 0 && ` • ${task.retries} tentativa(s)`}
           </p>
 
           {task.errorMessage && (
-            <p className="text-xs text-destructive mt-1 line-clamp-2">
-              {task.errorMessage}
-            </p>
+            <p className="text-xs text-destructive mt-1 line-clamp-2">{task.errorMessage}</p>
           )}
         </div>
 
-        {task.status === "failed" && (
+        {task.status === 'failed' && (
           <div className="flex gap-1 shrink-0">
             <Button
               size="icon"
@@ -120,7 +115,7 @@ const TaskItem = memo(
   }
 );
 
-TaskItem.displayName = "TaskItem";
+TaskItem.displayName = 'TaskItem';
 
 export const SyncQueuePanel = memo(() => {
   const {
@@ -137,10 +132,8 @@ export const SyncQueuePanel = memo(() => {
   } = useOfflineSync();
 
   const hasTasks = tasks.length > 0;
-  const pendingTasks = tasks.filter(
-    (t) => t.status === "pending" || t.status === "syncing"
-  );
-  const failedTasks = tasks.filter((t) => t.status === "failed");
+  const pendingTasks = tasks.filter(t => t.status === 'pending' || t.status === 'syncing');
+  const failedTasks = tasks.filter(t => t.status === 'failed');
 
   return (
     <Card>
@@ -150,8 +143,8 @@ export const SyncQueuePanel = memo(() => {
             <Database className="h-5 w-5" />
             Sincronização Offline
           </CardTitle>
-          <Badge variant={isOnline ? "default" : "destructive"}>
-            {isOnline ? "Online" : "Offline"}
+          <Badge variant={isOnline ? 'default' : 'destructive'}>
+            {isOnline ? 'Online' : 'Offline'}
           </Badge>
         </div>
       </CardHeader>
@@ -182,9 +175,7 @@ export const SyncQueuePanel = memo(() => {
             onClick={forceSync}
             disabled={!isOnline || isSyncing || pendingCount === 0}
           >
-            <RefreshCw
-              className={cn("h-4 w-4 mr-2", isSyncing && "animate-spin")}
-            />
+            <RefreshCw className={cn('h-4 w-4 mr-2', isSyncing && 'animate-spin')} />
             Sincronizar
           </Button>
           {failedCount > 0 && (
@@ -221,7 +212,7 @@ export const SyncQueuePanel = memo(() => {
                     <AlertTriangle className="h-4 w-4" />
                     Falhas ({failedTasks.length})
                   </h4>
-                  {failedTasks.map((task) => (
+                  {failedTasks.map(task => (
                     <TaskItem
                       key={task.id}
                       task={task}
@@ -238,7 +229,7 @@ export const SyncQueuePanel = memo(() => {
                     <Clock className="h-4 w-4" />
                     Pendentes ({pendingTasks.length})
                   </h4>
-                  {pendingTasks.map((task) => (
+                  {pendingTasks.map(task => (
                     <TaskItem
                       key={task.id}
                       task={task}
@@ -262,4 +253,4 @@ export const SyncQueuePanel = memo(() => {
   );
 });
 
-SyncQueuePanel.displayName = "SyncQueuePanel";
+SyncQueuePanel.displayName = 'SyncQueuePanel';

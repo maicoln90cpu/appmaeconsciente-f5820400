@@ -1,60 +1,77 @@
-import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
-import { SortableTableHead } from "@/components/ui/sortable-table-head";
-import { useSortableTable } from "@/hooks/useSortableTable";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { useState } from "react";
-import { MessageSquare, ChevronDown, ChevronUp } from "lucide-react";
-import { getTicketStatusBadgeVariant, getTicketStatusLabel, getTicketPriorityBadgeVariant } from "@/lib/ticket-utils";
+import React from 'react';
+import { useState } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useSortableTable } from '@/hooks/useSortableTable';
+
+
+
+
+import {
+  getTicketStatusBadgeVariant,
+  getTicketStatusLabel,
+  getTicketPriorityBadgeVariant,
+} from '@/lib/ticket-utils';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export const TicketManagement = () => {
   const queryClient = useQueryClient();
   const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
-  const [replyMessage, setReplyMessage] = useState("");
+  const [replyMessage, setReplyMessage] = useState('');
 
   const { data: tickets, isLoading } = useQuery({
-    queryKey: ["admin-tickets"],
+    queryKey: ['admin-tickets'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("support_tickets")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .from('support_tickets')
+        .select('*')
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
   const { sortedData, sortKey, sortDirection, handleSort } = useSortableTable(tickets, {
-    key: "created_at" as any,
-    direction: "desc",
+    key: 'created_at' as any,
+    direction: 'desc',
   });
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("support_tickets")
-        .update({ status })
-        .eq("id", id);
+      const { error } = await supabase.from('support_tickets').update({ status }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-tickets"] });
-      toast.success("Status atualizado");
+      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] });
+      toast.success('Status atualizado');
     },
   });
 
   const replyMutation = useMutation({
     mutationFn: async ({ ticketId, message }: { ticketId: string; message: string }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase.from("ticket_messages").insert({
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+      const { error } = await supabase.from('ticket_messages').insert({
         ticket_id: ticketId,
         user_id: user.id,
         message,
@@ -63,10 +80,10 @@ export const TicketManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-tickets"] });
-      setReplyMessage("");
+      queryClient.invalidateQueries({ queryKey: ['admin-tickets'] });
+      setReplyMessage('');
       setSelectedTicket(null);
-      toast.success("Resposta enviada");
+      toast.success('Resposta enviada');
     },
   });
 
@@ -74,7 +91,6 @@ export const TicketManagement = () => {
     if (!replyMessage.trim()) return;
     replyMutation.mutate({ ticketId, message: replyMessage });
   };
-
 
   if (isLoading) {
     return <div>Carregando tickets...</div>;
@@ -88,42 +104,80 @@ export const TicketManagement = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <SortableTableHead sortKey="subject" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={sortHandler}>
+            <SortableTableHead
+              sortKey="subject"
+              currentSortKey={sortKey as string}
+              sortDirection={sortDirection}
+              onSort={sortHandler}
+            >
               Assunto
             </SortableTableHead>
-            <SortableTableHead sortKey="name" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={sortHandler}>
+            <SortableTableHead
+              sortKey="name"
+              currentSortKey={sortKey as string}
+              sortDirection={sortDirection}
+              onSort={sortHandler}
+            >
               Nome
             </SortableTableHead>
-            <SortableTableHead sortKey="email" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={sortHandler}>
+            <SortableTableHead
+              sortKey="email"
+              currentSortKey={sortKey as string}
+              sortDirection={sortDirection}
+              onSort={sortHandler}
+            >
               Email
             </SortableTableHead>
-            <SortableTableHead sortKey="created_at" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={sortHandler}>
+            <SortableTableHead
+              sortKey="created_at"
+              currentSortKey={sortKey as string}
+              sortDirection={sortDirection}
+              onSort={sortHandler}
+            >
               Data
             </SortableTableHead>
-            <SortableTableHead sortKey="priority" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={sortHandler}>
+            <SortableTableHead
+              sortKey="priority"
+              currentSortKey={sortKey as string}
+              sortDirection={sortDirection}
+              onSort={sortHandler}
+            >
               Prioridade
             </SortableTableHead>
-            <SortableTableHead sortKey="status" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={sortHandler}>
+            <SortableTableHead
+              sortKey="status"
+              currentSortKey={sortKey as string}
+              sortDirection={sortDirection}
+              onSort={sortHandler}
+            >
               Status
             </SortableTableHead>
             <SortableTableHead>Ações</SortableTableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedData?.map((ticket) => (
+          {sortedData?.map(ticket => (
             <React.Fragment key={ticket.id}>
               <TableRow>
-                <TableCell className="font-medium max-w-[200px] truncate">{ticket.subject}</TableCell>
+                <TableCell className="font-medium max-w-[200px] truncate">
+                  {ticket.subject}
+                </TableCell>
                 <TableCell>{ticket.name}</TableCell>
                 <TableCell className="max-w-[180px] truncate">{ticket.email}</TableCell>
-                <TableCell className="whitespace-nowrap">{format(new Date(ticket.created_at), "dd/MM/yyyy HH:mm")}</TableCell>
+                <TableCell className="whitespace-nowrap">
+                  {format(new Date(ticket.created_at), 'dd/MM/yyyy HH:mm')}
+                </TableCell>
                 <TableCell>
-                  <Badge variant={getTicketPriorityBadgeVariant(ticket.priority)}>{ticket.priority}</Badge>
+                  <Badge variant={getTicketPriorityBadgeVariant(ticket.priority)}>
+                    {ticket.priority}
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <Select
                     value={ticket.status}
-                    onValueChange={(value) => updateStatusMutation.mutate({ id: ticket.id, status: value })}
+                    onValueChange={value =>
+                      updateStatusMutation.mutate({ id: ticket.id, status: value })
+                    }
                   >
                     <SelectTrigger className="w-32 h-8">
                       <SelectValue />
@@ -139,10 +193,16 @@ export const TicketManagement = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSelectedTicket(selectedTicket === ticket.id ? null : ticket.id)}
+                    onClick={() =>
+                      setSelectedTicket(selectedTicket === ticket.id ? null : ticket.id)
+                    }
                   >
                     <MessageSquare className="h-4 w-4 mr-1" />
-                    {selectedTicket === ticket.id ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                    {selectedTicket === ticket.id ? (
+                      <ChevronUp className="h-3 w-3" />
+                    ) : (
+                      <ChevronDown className="h-3 w-3" />
+                    )}
                   </Button>
                 </TableCell>
               </TableRow>
@@ -154,14 +214,25 @@ export const TicketManagement = () => {
                       <Textarea
                         placeholder="Digite sua resposta..."
                         value={replyMessage}
-                        onChange={(e) => setReplyMessage(e.target.value)}
+                        onChange={e => setReplyMessage(e.target.value)}
                         rows={3}
                       />
                       <div className="flex gap-2 justify-end">
-                        <Button variant="outline" size="sm" onClick={() => { setSelectedTicket(null); setReplyMessage(""); }}>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedTicket(null);
+                            setReplyMessage('');
+                          }}
+                        >
                           Cancelar
                         </Button>
-                        <Button size="sm" onClick={() => handleReply(ticket.id)} disabled={!replyMessage.trim() || replyMutation.isPending}>
+                        <Button
+                          size="sm"
+                          onClick={() => handleReply(ticket.id)}
+                          disabled={!replyMessage.trim() || replyMutation.isPending}
+                        >
                           Enviar Resposta
                         </Button>
                       </div>

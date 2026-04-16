@@ -1,7 +1,13 @@
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface HospitalSettingsProps {
   selectedHospital: string;
@@ -13,16 +19,16 @@ interface HospitalSettingsProps {
 }
 
 const hospitals = [
-  { id: "none", name: "Selecione seu hospital", info: "" },
-  { id: "einstein", name: "Hospital Albert Einstein", info: "Fornece: fraldas, lenços, pomada" },
-  { id: "sirio", name: "Hospital Sírio-Libanês", info: "Fornece: fraldas, roupas básicas" },
-  { id: "samaritano", name: "Hospital Samaritano", info: "Fornece: fraldas, toalhas" },
-  { id: "santa-catarina", name: "Santa Catarina", info: "Fornece: fraldas" },
-  { id: "beneficencia", name: "Beneficência Portuguesa", info: "Fornece: fraldas, lenços" },
-  { id: "oswaldo-cruz", name: "Hospital Oswaldo Cruz", info: "Fornece: fraldas" },
-  { id: "pro-matre", name: "Pro Matre Paulista", info: "Fornece: fraldas, roupas" },
-  { id: "santa-joana", name: "Santa Joana", info: "Fornece: fraldas, lenços, roupas" },
-  { id: "other", name: "Outro hospital", info: "Confirme com o hospital o que é fornecido" },
+  { id: 'none', name: 'Selecione seu hospital', info: '' },
+  { id: 'einstein', name: 'Hospital Albert Einstein', info: 'Fornece: fraldas, lenços, pomada' },
+  { id: 'sirio', name: 'Hospital Sírio-Libanês', info: 'Fornece: fraldas, roupas básicas' },
+  { id: 'samaritano', name: 'Hospital Samaritano', info: 'Fornece: fraldas, toalhas' },
+  { id: 'santa-catarina', name: 'Santa Catarina', info: 'Fornece: fraldas' },
+  { id: 'beneficencia', name: 'Beneficência Portuguesa', info: 'Fornece: fraldas, lenços' },
+  { id: 'oswaldo-cruz', name: 'Hospital Oswaldo Cruz', info: 'Fornece: fraldas' },
+  { id: 'pro-matre', name: 'Pro Matre Paulista', info: 'Fornece: fraldas, roupas' },
+  { id: 'santa-joana', name: 'Santa Joana', info: 'Fornece: fraldas, lenços, roupas' },
+  { id: 'other', name: 'Outro hospital', info: 'Confirme com o hospital o que é fornecido' },
 ];
 
 export const HospitalSettings = ({
@@ -88,12 +94,15 @@ export const HospitalSettings = ({
           min="1"
           max="42"
           value={weeksPregnant}
-          onChange={(e) => onWeeksChange(parseInt(e.target.value) || 0)}
+          onChange={e => onWeeksChange(parseInt(e.target.value) || 0)}
         />
         <p className="text-xs text-muted-foreground">
-          {weeksPregnant < 32 && "Ainda há tempo para organizar tudo com calma"}
-          {weeksPregnant >= 32 && weeksPregnant < 37 && "Bom momento para começar a preparar as malas"}
-          {weeksPregnant >= 37 && "Sua mala deve estar pronta! O bebê pode chegar a qualquer momento"}
+          {weeksPregnant < 32 && 'Ainda há tempo para organizar tudo com calma'}
+          {weeksPregnant >= 32 &&
+            weeksPregnant < 37 &&
+            'Bom momento para começar a preparar as malas'}
+          {weeksPregnant >= 37 &&
+            'Sua mala deve estar pronta! O bebê pode chegar a qualquer momento'}
         </p>
       </div>
     </div>

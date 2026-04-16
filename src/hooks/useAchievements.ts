@@ -1,6 +1,8 @@
-import { useCallback, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useCallback, useRef } from 'react';
+
+import { toast } from 'sonner';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export const useAchievements = () => {
   const isCheckingRef = useRef(false);
@@ -8,26 +10,30 @@ export const useAchievements = () => {
   const checkAndUnlockAchievements = useCallback(async () => {
     // Prevent concurrent checks
     if (isCheckingRef.current) return;
-    
+
     try {
       isCheckingRef.current = true;
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Buscar progresso
       const { data: progress } = await supabase
-        .from("user_achievement_progress")
-        .select("user_id, has_sleep_master, has_feeding_queen, has_savings_master, has_organizer_expert, has_peaceful_nights, has_first_week, has_complete_bag, feeding_logs_count, sleep_logs_count, long_sleep_count, enxoval_items_count, total_savings, mala_categories, days_using_app")
-        .eq("user_id", user.id)
+        .from('user_achievement_progress')
+        .select(
+          'user_id, has_sleep_master, has_feeding_queen, has_savings_master, has_organizer_expert, has_peaceful_nights, has_first_week, has_complete_bag, feeding_logs_count, sleep_logs_count, long_sleep_count, enxoval_items_count, total_savings, mala_categories, days_using_app'
+        )
+        .eq('user_id', user.id)
         .maybeSingle();
 
       if (!progress) return;
 
       // Buscar conquistas já desbloqueadas
       const { data: unlocked } = await supabase
-        .from("user_achievements")
-        .select("achievement_code")
-        .eq("user_id", user.id);
+        .from('user_achievements')
+        .select('achievement_code')
+        .eq('user_id', user.id);
 
       const unlockedCodes = unlocked?.map(a => a.achievement_code) || [];
 
@@ -64,16 +70,16 @@ export const useAchievements = () => {
 
       // Inserir novas conquistas
       for (const achievement of achievementsToUnlock) {
-        await supabase.from("user_achievements").insert({
+        await supabase.from('user_achievements').insert({
           user_id: user.id,
           achievement_code: achievement.code,
         });
 
         // Mostrar toast de conquista desbloqueada
-        toast("🏆 Nova Conquista Desbloqueada!", { description: achievement.name, duration: 5000 });
+        toast('🏆 Nova Conquista Desbloqueada!', { description: achievement.name, duration: 5000 });
       }
     } catch (error) {
-      console.error("Error checking achievements:", error);
+      console.error('Error checking achievements:', error);
     } finally {
       isCheckingRef.current = false;
     }

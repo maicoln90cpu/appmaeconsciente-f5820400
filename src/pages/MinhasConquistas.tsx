@@ -1,11 +1,17 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Trophy, Loader2 } from "lucide-react";
-import { AchievementBadge, Achievement } from "@/components/AchievementBadge";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+
+import { Trophy, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+
+import { AchievementBadge, Achievement } from '@/components/AchievementBadge';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface AchievementProgress {
   user_id: string;
@@ -36,28 +42,30 @@ const MinhasConquistas = () => {
 
   const loadAchievements = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       // Buscar progresso
       const { data: progressData } = await supabase
-        .from("user_achievement_progress")
-        .select("*")
-        .eq("user_id", user.id)
+        .from('user_achievement_progress')
+        .select('*')
+        .eq('user_id', user.id)
         .maybeSingle();
 
       setProgress(progressData);
 
       // Buscar conquistas desbloqueadas
       const { data: achievements } = await supabase
-        .from("user_achievements")
-        .select("achievement_code")
-        .eq("user_id", user.id);
+        .from('user_achievements')
+        .select('achievement_code')
+        .eq('user_id', user.id);
 
       setUnlockedAchievements(achievements?.map(a => a.achievement_code) || []);
     } catch (error) {
-      console.error("Error loading achievements:", error);
-      toast.error("Erro ao carregar conquistas", { description: "Tente novamente mais tarde." });
+      console.error('Error loading achievements:', error);
+      toast.error('Erro ao carregar conquistas', { description: 'Tente novamente mais tarde.' });
     } finally {
       setLoading(false);
     }
@@ -134,14 +142,15 @@ const MinhasConquistas = () => {
   const progressPercentage = (unlockedCount / totalAchievements) * 100;
 
   const shareAllAchievements = () => {
-    const message = `🏆 Minhas Conquistas no Mãe Consciente!\n\n` +
+    const message =
+      `🏆 Minhas Conquistas no Mãe Consciente!\n\n` +
       `${unlockedCount} de ${totalAchievements} conquistas desbloqueadas!\n\n` +
       achievements
         .filter(a => a.unlocked)
         .map(a => `✅ ${a.name}`)
         .join('\n') +
       `\n\nEstou organizando minha maternidade com o app Mãe Consciente! 💜`;
-    
+
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -178,9 +187,7 @@ const MinhasConquistas = () => {
         <CardContent>
           <Progress value={progressPercentage} className="h-4 mb-4" />
           <div className="flex justify-between items-center">
-            <p className="text-2xl font-bold text-primary">
-              {Math.round(progressPercentage)}%
-            </p>
+            <p className="text-2xl font-bold text-primary">{Math.round(progressPercentage)}%</p>
             {unlockedCount > 0 && (
               <Button onClick={shareAllAchievements} variant="outline">
                 Compartilhar Conquistas
@@ -192,7 +199,7 @@ const MinhasConquistas = () => {
 
       {/* Grid de Conquistas */}
       <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {achievements.map((achievement) => (
+        {achievements.map(achievement => (
           <AchievementBadge key={achievement.code} achievement={achievement} />
         ))}
       </div>
@@ -203,7 +210,8 @@ const MinhasConquistas = () => {
           <CardContent className="p-6 text-center">
             <Trophy className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
             <p className="text-sm text-muted-foreground">
-              💡 Dica: Continue registrando eventos e organizando seu enxoval para desbloquear mais conquistas!
+              💡 Dica: Continue registrando eventos e organizando seu enxoval para desbloquear mais
+              conquistas!
             </p>
           </CardContent>
         </Card>

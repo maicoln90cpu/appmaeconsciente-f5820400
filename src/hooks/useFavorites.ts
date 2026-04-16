@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+
 import { toast } from 'sonner';
+
 import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
 
 type FavoriteType = 'recipe' | 'exercise';
 
@@ -31,7 +34,9 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
 
   const loadFavorites = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         setLoading(false);
         return;
@@ -49,7 +54,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
       setFavorites(new Set(items.map(f => f.item_id)));
       setFavoriteNotes(new Map(items.map(f => [f.item_id, f.notes])));
     } catch (error) {
-      logger.error("Erro ao carregar favoritos", error, { context: "useFavorites" });
+      logger.error('Erro ao carregar favoritos', error, { context: 'useFavorites' });
     } finally {
       setLoading(false);
     }
@@ -57,7 +62,9 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
 
   const toggleFavorite = async (itemId: string, type: FavoriteType) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         toast.error('Você precisa estar logado para favoritar');
         return;
@@ -84,13 +91,11 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
         toast.success('Removido dos favoritos');
       } else {
         // Add favorite
-        const { error } = await supabase
-          .from('user_favorites')
-          .insert({
-            user_id: user.id,
-            item_type: type,
-            item_id: itemId
-          });
+        const { error } = await supabase.from('user_favorites').insert({
+          user_id: user.id,
+          item_type: type,
+          item_id: itemId,
+        });
 
         if (error) throw error;
 
@@ -98,7 +103,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
         toast.success('Adicionado aos favoritos');
       }
     } catch (error) {
-      logger.error("Erro ao favoritar", error, { context: "useFavorites" });
+      logger.error('Erro ao favoritar', error, { context: 'useFavorites' });
       toast.error('Erro ao atualizar favoritos');
     }
   };
@@ -107,7 +112,9 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
 
   const updateNotes = async (itemId: string, notes: string) => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
         toast.error('Você precisa estar logado');
         return;
@@ -125,7 +132,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
       setFavoriteNotes(prev => new Map(prev).set(itemId, notes));
       toast.success('Nota atualizada com sucesso');
     } catch (error) {
-      logger.error("Erro ao atualizar nota", error, { context: "useFavorites" });
+      logger.error('Erro ao atualizar nota', error, { context: 'useFavorites' });
       toast.error('Erro ao atualizar nota');
     }
   };

@@ -1,18 +1,18 @@
 /**
  * Sentry integration for error tracking
- * 
+ *
  * NOTE: This file must NOT import from logger.ts to avoid circular dependencies
  * Use console.log/warn/error directly for debugging within this file
  */
 
-import * as Sentry from "@sentry/react";
+import * as Sentry from '@sentry/react';
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN;
 
 export const initSentry = () => {
   if (!SENTRY_DSN) {
     if (import.meta.env.DEV) {
-      console.warn("[Sentry] DSN not configured. Error tracking disabled.");
+      console.warn('[Sentry] DSN not configured. Error tracking disabled.');
     }
     return;
   }
@@ -21,15 +21,15 @@ export const initSentry = () => {
     dsn: SENTRY_DSN,
     environment: import.meta.env.MODE,
     enabled: import.meta.env.PROD,
-    
+
     // Performance monitoring - increased for better visibility
     tracesSampleRate: 0.2, // 20% of transactions
     profilesSampleRate: 0.1, // 10% of transactions for profiling
-    
+
     // Session replay for debugging
     replaysSessionSampleRate: 0.02, // 2% of sessions
     replaysOnErrorSampleRate: 0.2, // 20% of error sessions
-    
+
     // Enable integrations
     integrations: [
       Sentry.browserTracingIntegration({
@@ -42,30 +42,30 @@ export const initSentry = () => {
         blockAllMedia: false,
       }),
     ],
-    
+
     // Filter out known non-critical errors
     ignoreErrors: [
       // Network errors that are expected
-      "Failed to fetch",
-      "NetworkError",
-      "Load failed",
-      "net::ERR_",
-      "TypeError: Failed to fetch",
+      'Failed to fetch',
+      'NetworkError',
+      'Load failed',
+      'net::ERR_',
+      'TypeError: Failed to fetch',
       // User-cancelled actions
-      "AbortError",
-      "The operation was aborted",
+      'AbortError',
+      'The operation was aborted',
       // Browser extensions
       /^chrome-extension:\/\//,
       /^moz-extension:\/\//,
       // React hydration
-      "Minified React error",
-      "Hydration failed",
+      'Minified React error',
+      'Hydration failed',
       // Service worker
-      "ServiceWorker",
+      'ServiceWorker',
       // ResizeObserver
-      "ResizeObserver loop",
+      'ResizeObserver loop',
     ],
-    
+
     // Deny URLs from noisy sources
     denyUrls: [
       /extensions\//i,
@@ -74,37 +74,37 @@ export const initSentry = () => {
       /googletagmanager\.com/i,
       /google-analytics\.com/i,
     ],
-    
+
     // Add extra context
     beforeSend(event, hint) {
       // Don't send events in development
       if (import.meta.env.DEV) {
-        console.info("[Sentry] Event captured (dev mode, not sent):", event);
+        console.info('[Sentry] Event captured (dev mode, not sent):', event);
         return null;
       }
-      
+
       // Add user context if available
-      const userId = localStorage.getItem("sb-user-id");
+      const userId = localStorage.getItem('sb-user-id');
       if (userId) {
         event.user = { ...event.user, id: userId };
       }
-      
+
       // Add app version
       event.tags = {
         ...event.tags,
         app_version: import.meta.env.VITE_APP_VERSION || 'unknown',
       };
-      
+
       return event;
     },
-    
+
     // Breadcrumb filtering
     beforeBreadcrumb(breadcrumb) {
       // Filter out noisy console logs
-      if (breadcrumb.category === "console" && breadcrumb.level === "log") {
+      if (breadcrumb.category === 'console' && breadcrumb.level === 'log') {
         return null;
       }
-      
+
       // Limit breadcrumb data size
       if (breadcrumb.data && typeof breadcrumb.data === 'object') {
         const data = breadcrumb.data as Record<string, unknown>;
@@ -114,11 +114,11 @@ export const initSentry = () => {
           }
         });
       }
-      
+
       return breadcrumb;
     },
   });
-  
+
   // Set initial tags
   Sentry.setTag('platform', 'web');
   Sentry.setTag('pwa', 'serviceWorker' in navigator ? 'true' : 'false');
@@ -134,25 +134,25 @@ export const captureError = (
   }
 ) => {
   if (!SENTRY_DSN || import.meta.env.DEV) {
-    console.error("[Sentry] Would capture:", error, context);
+    console.error('[Sentry] Would capture:', error, context);
     return;
   }
 
-  Sentry.withScope((scope) => {
+  Sentry.withScope(scope => {
     if (context?.component) {
-      scope.setTag("component", context.component);
+      scope.setTag('component', context.component);
     }
     if (context?.action) {
-      scope.setTag("action", context.action);
+      scope.setTag('action', context.action);
     }
     if (context?.extra) {
       scope.setExtras(context.extra);
     }
-    
+
     if (error instanceof Error) {
       Sentry.captureException(error);
     } else {
-      Sentry.captureMessage(String(error), "error");
+      Sentry.captureMessage(String(error), 'error');
     }
   });
 };
@@ -166,7 +166,7 @@ export const addBreadcrumb = (
   Sentry.addBreadcrumb({
     message,
     category,
-    level: "info",
+    level: 'info',
     data,
   });
 };
@@ -174,13 +174,13 @@ export const addBreadcrumb = (
 // Set user context (call after login)
 export const setUserContext = (userId: string, email?: string) => {
   Sentry.setUser({ id: userId, email });
-  localStorage.setItem("sb-user-id", userId);
+  localStorage.setItem('sb-user-id', userId);
 };
 
 // Clear user context (call after logout)
 export const clearUserContext = () => {
   Sentry.setUser(null);
-  localStorage.removeItem("sb-user-id");
+  localStorage.removeItem('sb-user-id');
 };
 
 export { Sentry };

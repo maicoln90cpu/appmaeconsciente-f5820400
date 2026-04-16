@@ -1,18 +1,37 @@
-import { useState, useCallback } from "react";
-import { useSubmitGuard } from "@/hooks/useSubmitGuard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTeethTracker, BABY_TEETH, TOOTH_SYMPTOMS, RELIEF_METHODS } from "@/hooks/useTeethTracker";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Plus, Trash2, SmilePlus } from "lucide-react";
+import { useState, useCallback } from 'react';
+
+import {
+  useTeethTracker,
+  BABY_TEETH,
+  TOOTH_SYMPTOMS,
+  RELIEF_METHODS,
+} from '@/hooks/useTeethTracker';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Trash2, SmilePlus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useSubmitGuard } from '@/hooks/useSubmitGuard';
 
 interface Props {
   babyProfileId?: string;
@@ -22,11 +41,11 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
   const { logs, loading, addTooth, removeTooth } = useTeethTracker(babyProfileId);
   const [open, setOpen] = useState(false);
   const [selectedTooth, setSelectedTooth] = useState<number | null>(null);
-  const [noticedDate, setNoticedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [noticedDate, setNoticedDate] = useState(format(new Date(), 'yyyy-MM-dd'));
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [painLevel, setPainLevel] = useState(0);
   const [reliefMethods, setReliefMethods] = useState<string[]>([]);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState('');
 
   const registeredNumbers = new Set(logs.map(l => l.tooth_number));
   const availableTeeth = BABY_TEETH.filter(t => !registeredNumbers.has(t.number));
@@ -48,17 +67,26 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
     });
     setOpen(false);
     resetForm();
-  }, [selectedTooth, babyProfileId, noticedDate, symptoms, painLevel, reliefMethods, notes, addTooth]);
+  }, [
+    selectedTooth,
+    babyProfileId,
+    noticedDate,
+    symptoms,
+    painLevel,
+    reliefMethods,
+    notes,
+    addTooth,
+  ]);
 
   const [isSaving, handleSave] = useSubmitGuard(handleSaveRaw);
 
   const resetForm = () => {
     setSelectedTooth(null);
-    setNoticedDate(format(new Date(), "yyyy-MM-dd"));
+    setNoticedDate(format(new Date(), 'yyyy-MM-dd'));
     setSymptoms([]);
     setPainLevel(0);
     setReliefMethods([]);
-    setNotes("");
+    setNotes('');
   };
 
   const toggleArrayItem = (arr: string[], item: string, setter: (v: string[]) => void) => {
@@ -67,19 +95,15 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
 
   if (loading) return <Skeleton className="h-64 w-full" />;
 
-  const upperTeeth = BABY_TEETH.filter(t => t.position === "upper");
-  const lowerTeeth = BABY_TEETH.filter(t => t.position === "lower");
+  const upperTeeth = BABY_TEETH.filter(t => t.position === 'upper');
+  const lowerTeeth = BABY_TEETH.filter(t => t.position === 'lower');
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold flex items-center gap-2">
-            🦷 Rastreador de Dentes
-          </h3>
-          <p className="text-sm text-muted-foreground">
-            {logs.length} de 20 dentes registrados
-          </p>
+          <h3 className="text-lg font-semibold flex items-center gap-2">🦷 Rastreador de Dentes</h3>
+          <p className="text-sm text-muted-foreground">{logs.length} de 20 dentes registrados</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -94,8 +118,13 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
             <div className="space-y-4">
               <div>
                 <Label>Qual dente nasceu?</Label>
-                <Select value={selectedTooth?.toString() || ""} onValueChange={v => setSelectedTooth(Number(v))}>
-                  <SelectTrigger><SelectValue placeholder="Selecione o dente" /></SelectTrigger>
+                <Select
+                  value={selectedTooth?.toString() || ''}
+                  onValueChange={v => setSelectedTooth(Number(v))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione o dente" />
+                  </SelectTrigger>
                   <SelectContent>
                     {availableTeeth.map(t => (
                       <SelectItem key={t.number} value={t.number.toString()}>
@@ -108,7 +137,11 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
 
               <div>
                 <Label>Data que notou</Label>
-                <Input type="date" value={noticedDate} onChange={e => setNoticedDate(e.target.value)} />
+                <Input
+                  type="date"
+                  value={noticedDate}
+                  onChange={e => setNoticedDate(e.target.value)}
+                />
               </div>
 
               <div>
@@ -117,7 +150,7 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
                   {TOOTH_SYMPTOMS.map(s => (
                     <Badge
                       key={s}
-                      variant={symptoms.includes(s) ? "default" : "outline"}
+                      variant={symptoms.includes(s) ? 'default' : 'outline'}
                       className="cursor-pointer text-xs"
                       onClick={() => toggleArrayItem(symptoms, s, setSymptoms)}
                     >
@@ -134,7 +167,7 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
                     <Button
                       key={n}
                       size="sm"
-                      variant={painLevel === n ? "default" : "outline"}
+                      variant={painLevel === n ? 'default' : 'outline'}
                       onClick={() => setPainLevel(n)}
                       className="w-9 h-9 p-0"
                     >
@@ -150,7 +183,7 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
                   {RELIEF_METHODS.map(m => (
                     <Badge
                       key={m}
-                      variant={reliefMethods.includes(m) ? "default" : "outline"}
+                      variant={reliefMethods.includes(m) ? 'default' : 'outline'}
                       className="cursor-pointer text-xs"
                       onClick={() => toggleArrayItem(reliefMethods, m, setReliefMethods)}
                     >
@@ -162,11 +195,15 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
 
               <div>
                 <Label>Observações</Label>
-                <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notas adicionais..." />
+                <Textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder="Notas adicionais..."
+                />
               </div>
 
               <Button onClick={handleSave} disabled={!selectedTooth || isSaving} className="w-full">
-                {isSaving ? "Salvando..." : "Registrar dente"}
+                {isSaving ? 'Salvando...' : 'Registrar dente'}
               </Button>
             </div>
           </DialogContent>
@@ -187,12 +224,12 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
                   key={t.number}
                   className={`w-8 h-8 rounded-md flex items-center justify-center text-xs font-bold border-2 transition-colors ${
                     registeredNumbers.has(t.number)
-                      ? "bg-primary/20 border-primary text-primary"
-                      : "bg-muted/30 border-muted-foreground/20 text-muted-foreground/40"
+                      ? 'bg-primary/20 border-primary text-primary'
+                      : 'bg-muted/30 border-muted-foreground/20 text-muted-foreground/40'
                   }`}
                   title={t.name}
                 >
-                  {registeredNumbers.has(t.number) ? "🦷" : t.number}
+                  {registeredNumbers.has(t.number) ? '🦷' : t.number}
                 </div>
               ))}
             </div>
@@ -204,12 +241,12 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
                   key={t.number}
                   className={`w-8 h-8 rounded-md flex items-center justify-center text-xs font-bold border-2 transition-colors ${
                     registeredNumbers.has(t.number)
-                      ? "bg-primary/20 border-primary text-primary"
-                      : "bg-muted/30 border-muted-foreground/20 text-muted-foreground/40"
+                      ? 'bg-primary/20 border-primary text-primary'
+                      : 'bg-muted/30 border-muted-foreground/20 text-muted-foreground/40'
                   }`}
                   title={t.name}
                 >
-                  {registeredNumbers.has(t.number) ? "🦷" : t.number}
+                  {registeredNumbers.has(t.number) ? '🦷' : t.number}
                 </div>
               ))}
             </div>
@@ -225,17 +262,22 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
           </CardHeader>
           <CardContent className="space-y-2">
             {logs.map(log => (
-              <div key={log.id} className="flex items-start justify-between p-3 rounded-lg bg-muted/30 border">
+              <div
+                key={log.id}
+                className="flex items-start justify-between p-3 rounded-lg bg-muted/30 border"
+              >
                 <div className="space-y-1">
                   <p className="font-medium text-sm">🦷 {log.tooth_name}</p>
                   <p className="text-xs text-muted-foreground">
-                    {format(new Date(log.noticed_date), "dd/MM/yyyy", { locale: ptBR })}
+                    {format(new Date(log.noticed_date), 'dd/MM/yyyy', { locale: ptBR })}
                     {log.pain_level > 0 && ` • Desconforto: ${log.pain_level}/5`}
                   </p>
                   {log.symptoms.length > 0 && (
                     <div className="flex flex-wrap gap-1">
                       {log.symptoms.map(s => (
-                        <Badge key={s} variant="secondary" className="text-[10px]">{s}</Badge>
+                        <Badge key={s} variant="secondary" className="text-[10px]">
+                          {s}
+                        </Badge>
                       ))}
                     </div>
                   )}
@@ -252,7 +294,9 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
           <CardContent className="flex flex-col items-center py-8 text-center">
             <SmilePlus className="h-10 w-10 text-muted-foreground/40 mb-2" />
             <p className="text-sm text-muted-foreground">Nenhum dente registrado ainda</p>
-            <p className="text-xs text-muted-foreground">O primeiro dente costuma aparecer por volta dos 6 meses</p>
+            <p className="text-xs text-muted-foreground">
+              O primeiro dente costuma aparecer por volta dos 6 meses
+            </p>
           </CardContent>
         </Card>
       )}

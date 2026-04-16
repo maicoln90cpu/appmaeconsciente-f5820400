@@ -1,27 +1,24 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { RegistroSono } from "@/components/sono/RegistroSono";
-import { DashboardSono } from "@/components/sono/DashboardSono";
-import { HistoricoSono } from "@/components/sono/HistoricoSono";
-import { ConfiguracoesSono } from "@/components/sono/ConfiguracoesSono";
-import { SleepAIInsights } from "@/components/sono/SleepAIInsights";
-import { SleepPatternChart } from "@/components/sono/SleepPatternChart";
-import { useBabySleep } from "@/hooks/useBabySleep";
-import { Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { differenceInMonths } from "date-fns";
+import { differenceInMonths } from 'date-fns';
+import { Loader2 } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { ConfiguracoesSono } from '@/components/sono/ConfiguracoesSono';
+import { DashboardSono } from '@/components/sono/DashboardSono';
+import { HistoricoSono } from '@/components/sono/HistoricoSono';
+import { RegistroSono } from '@/components/sono/RegistroSono';
+import { SleepAIInsights } from '@/components/sono/SleepAIInsights';
+import { SleepPatternChart } from '@/components/sono/SleepPatternChart';
+
+import { useBabySleep } from '@/hooks/useBabySleep';
+
 
 export default function DiarioSono() {
-  const {
-    sleepLogs,
-    settings,
-    milestones,
-    loading,
-    saveSettings,
-    addSleepLog,
-    deleteSleepLog,
-  } = useBabySleep();
+  const { sleepLogs, settings, milestones, loading, saveSettings, addSleepLog, deleteSleepLog } =
+    useBabySleep();
 
-  const babyAgeMonths = settings?.baby_birthdate 
+  const babyAgeMonths = settings?.baby_birthdate
     ? differenceInMonths(new Date(), new Date(settings.baby_birthdate))
     : undefined;
 
@@ -38,9 +35,7 @@ export default function DiarioSono() {
       <div className="container max-w-4xl py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">💤 Diário de Sono do Bebê</h1>
-          <p className="text-muted-foreground">
-            Configure os dados do seu bebê para começar
-          </p>
+          <p className="text-muted-foreground">Configure os dados do seu bebê para começar</p>
         </div>
         <Alert>
           <AlertDescription>
@@ -58,9 +53,7 @@ export default function DiarioSono() {
     <div className="container max-w-7xl py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">💤 Diário de Sono do Bebê</h1>
-        <p className="text-muted-foreground">
-          Acompanhe e melhore o sono de {settings.baby_name}
-        </p>
+        <p className="text-muted-foreground">Acompanhe e melhore o sono de {settings.baby_name}</p>
       </div>
 
       <Tabs defaultValue="insights" className="space-y-6">

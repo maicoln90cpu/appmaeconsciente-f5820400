@@ -6,17 +6,17 @@
  * - Conflict resolution strategies
  * - Real-time sync status updates
  */
-import { analytics } from "./analytics";
-import { logger } from "./logger";
+import { analytics } from './analytics';
+import { logger } from './logger';
 
-export type SyncStatus = "pending" | "syncing" | "synced" | "failed" | "conflict";
-export type ConflictStrategy = "client-wins" | "server-wins" | "merge" | "manual";
+export type SyncStatus = 'pending' | 'syncing' | 'synced' | 'failed' | 'conflict';
+export type ConflictStrategy = 'client-wins' | 'server-wins' | 'merge' | 'manual';
 
 export interface SyncTask {
   id: string;
   type: string;
   table: string;
-  operation: "insert" | "update" | "delete";
+  operation: 'insert' | 'update' | 'delete';
   data: Record<string, any>;
   timestamp: number;
   retries: number;
@@ -36,12 +36,12 @@ const DEFAULT_CONFIG: SyncConfig = {
   maxRetries: 5,
   baseDelayMs: 1000,
   maxDelayMs: 30000,
-  conflictStrategy: "client-wins",
+  conflictStrategy: 'client-wins',
 };
 
-const DB_NAME = "maternidade_offline_db";
+const DB_NAME = 'maternidade_offline_db';
 const DB_VERSION = 1;
-const STORE_NAME = "sync_queue";
+const STORE_NAME = 'sync_queue';
 
 type SyncHandler = (task: SyncTask) => Promise<void>;
 type StatusListener = (tasks: SyncTask[]) => void;
@@ -67,7 +67,7 @@ class OfflineSyncManager {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = () => {
-        console.error("Failed to open IndexedDB:", request.error);
+        console.error('Failed to open IndexedDB:', request.error);
         reject(request.error);
       };
 
@@ -77,14 +77,14 @@ class OfflineSyncManager {
         this.processQueue();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         if (!db.objectStoreNames.contains(STORE_NAME)) {
-          const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
-          store.createIndex("status", "status", { unique: false });
-          store.createIndex("timestamp", "timestamp", { unique: false });
-          store.createIndex("type", "type", { unique: false });
+          const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          store.createIndex('status', 'status', { unique: false });
+          store.createIndex('timestamp', 'timestamp', { unique: false });
+          store.createIndex('type', 'type', { unique: false });
         }
       };
     });
@@ -92,16 +92,16 @@ class OfflineSyncManager {
 
   private setupListeners(): void {
     this.onlineHandler = () => {
-      logger.info("🔄 Connection restored, syncing...");
+      logger.info('🔄 Connection restored, syncing...');
       this.processQueue();
     };
 
     this.offlineHandler = () => {
-      logger.info("📴 Offline mode activated");
+      logger.info('📴 Offline mode activated');
     };
 
-    window.addEventListener("online", this.onlineHandler);
-    window.addEventListener("offline", this.offlineHandler);
+    window.addEventListener('online', this.onlineHandler);
+    window.addEventListener('offline', this.offlineHandler);
 
     // Periodic sync check (every 30 seconds when online)
     this.intervalId = setInterval(() => {
@@ -116,11 +116,11 @@ class OfflineSyncManager {
    */
   destroy(): void {
     if (this.onlineHandler) {
-      window.removeEventListener("online", this.onlineHandler);
+      window.removeEventListener('online', this.onlineHandler);
       this.onlineHandler = null;
     }
     if (this.offlineHandler) {
-      window.removeEventListener("offline", this.offlineHandler);
+      window.removeEventListener('offline', this.offlineHandler);
       this.offlineHandler = null;
     }
     if (this.intervalId !== null) {
@@ -146,8 +146,8 @@ class OfflineSyncManager {
   }
 
   private notifyStatusChange(): void {
-    this.getAllTasks().then((tasks) => {
-      this.statusListeners.forEach((listener) => listener(tasks));
+    this.getAllTasks().then(tasks => {
+      this.statusListeners.forEach(listener => listener(tasks));
     });
   }
 
@@ -157,7 +157,7 @@ class OfflineSyncManager {
   async queueTask(
     type: string,
     table: string,
-    operation: "insert" | "update" | "delete",
+    operation: 'insert' | 'update' | 'delete',
     data: Record<string, any>
   ): Promise<string> {
     const task: SyncTask = {
@@ -168,13 +168,13 @@ class OfflineSyncManager {
       data,
       timestamp: Date.now(),
       retries: 0,
-      status: "pending",
+      status: 'pending',
     };
 
     await this.saveTask(task);
-    
+
     analytics.track({
-      name: "offline_sync_queued",
+      name: 'offline_sync_queued',
       properties: { type, table, operation, taskId: task.id },
     });
 
@@ -194,21 +194,21 @@ class OfflineSyncManager {
     tasks: Array<{
       type: string;
       table: string;
-      operation: "insert" | "update" | "delete";
+      operation: 'insert' | 'update' | 'delete';
       data: Record<string, any>;
     }>
   ): Promise<string[]> {
     const ids = await Promise.all(
-      tasks.map((t) => this.queueTask(t.type, t.table, t.operation, t.data))
+      tasks.map(t => this.queueTask(t.type, t.table, t.operation, t.data))
     );
     return ids;
   }
 
   private async saveTask(task: SyncTask): Promise<void> {
     if (!this.db) await this.initDB();
-    
+
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([STORE_NAME], "readwrite");
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.put(task);
 
@@ -221,7 +221,7 @@ class OfflineSyncManager {
     if (!this.db) await this.initDB();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([STORE_NAME], "readonly");
+      const transaction = this.db!.transaction([STORE_NAME], 'readonly');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.get(id);
 
@@ -234,7 +234,7 @@ class OfflineSyncManager {
     if (!this.db) await this.initDB();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([STORE_NAME], "readwrite");
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.delete(id);
 
@@ -247,7 +247,7 @@ class OfflineSyncManager {
     if (!this.db) await this.initDB();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([STORE_NAME], "readonly");
+      const transaction = this.db!.transaction([STORE_NAME], 'readonly');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.getAll();
 
@@ -261,7 +261,7 @@ class OfflineSyncManager {
 
   async getPendingTasks(): Promise<SyncTask[]> {
     const tasks = await this.getAllTasks();
-    return tasks.filter((t) => t.status === "pending" || t.status === "failed");
+    return tasks.filter(t => t.status === 'pending' || t.status === 'failed');
   }
 
   /**
@@ -275,14 +275,14 @@ class OfflineSyncManager {
 
     for (const task of pendingTasks) {
       try {
-        task.status = "syncing";
+        task.status = 'syncing';
         await this.saveTask(task);
         this.notifyStatusChange();
 
         const handler = this.handlers.get(task.type);
         if (!handler) {
           console.warn(`No handler registered for task type: ${task.type}`);
-          task.status = "failed";
+          task.status = 'failed';
           task.errorMessage = `No handler for type: ${task.type}`;
           await this.saveTask(task);
           continue;
@@ -290,37 +290,37 @@ class OfflineSyncManager {
 
         await handler(task);
         await this.deleteTask(task.id);
-        
+
         analytics.track({
-          name: "offline_sync_success",
+          name: 'offline_sync_success',
           properties: { type: task.type, taskId: task.id },
         });
 
         this.notifyStatusChange();
       } catch (error: any) {
         console.error(`Sync failed for task ${task.id}:`, error);
-        
+
         task.retries++;
-        task.errorMessage = error.message || "Unknown error";
+        task.errorMessage = error.message || 'Unknown error';
 
         if (task.retries >= this.config.maxRetries) {
-          task.status = "failed";
+          task.status = 'failed';
           analytics.track({
-            name: "offline_sync_failed",
-            properties: { 
-              type: task.type, 
-              taskId: task.id, 
+            name: 'offline_sync_failed',
+            properties: {
+              type: task.type,
+              taskId: task.id,
               error: task.errorMessage,
-              retries: task.retries 
+              retries: task.retries,
             },
           });
         } else {
-          task.status = "pending";
+          task.status = 'pending';
           const delay = Math.min(
             this.config.baseDelayMs * Math.pow(2, task.retries),
             this.config.maxDelayMs
           );
-          await new Promise((resolve) => setTimeout(resolve, delay));
+          await new Promise(resolve => setTimeout(resolve, delay));
         }
 
         await this.saveTask(task);
@@ -336,8 +336,8 @@ class OfflineSyncManager {
    */
   async retryTask(taskId: string): Promise<void> {
     const task = await this.getTask(taskId);
-    if (task && task.status === "failed") {
-      task.status = "pending";
+    if (task && task.status === 'failed') {
+      task.status = 'pending';
       task.retries = 0;
       task.errorMessage = undefined;
       await this.saveTask(task);
@@ -351,10 +351,10 @@ class OfflineSyncManager {
    */
   async retryAllFailed(): Promise<void> {
     const tasks = await this.getAllTasks();
-    const failedTasks = tasks.filter((t) => t.status === "failed");
+    const failedTasks = tasks.filter(t => t.status === 'failed');
 
     for (const task of failedTasks) {
-      task.status = "pending";
+      task.status = 'pending';
       task.retries = 0;
       task.errorMessage = undefined;
       await this.saveTask(task);
@@ -379,7 +379,7 @@ class OfflineSyncManager {
     if (!this.db) await this.initDB();
 
     return new Promise((resolve, reject) => {
-      const transaction = this.db!.transaction([STORE_NAME], "readwrite");
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const request = store.clear();
 
@@ -402,9 +402,9 @@ class OfflineSyncManager {
   }> {
     const tasks = await this.getAllTasks();
     return {
-      pending: tasks.filter((t) => t.status === "pending").length,
-      syncing: tasks.filter((t) => t.status === "syncing").length,
-      failed: tasks.filter((t) => t.status === "failed").length,
+      pending: tasks.filter(t => t.status === 'pending').length,
+      syncing: tasks.filter(t => t.status === 'syncing').length,
+      failed: tasks.filter(t => t.status === 'failed').length,
       total: tasks.length,
     };
   }
@@ -419,7 +419,7 @@ class OfflineSyncManager {
 
 // Singleton com proteção contra duplicação em HMR
 function createOfflineSync(): OfflineSyncManager {
-  const key = "__offlineSyncManager";
+  const key = '__offlineSyncManager';
   const existing = (globalThis as any)[key] as OfflineSyncManager | undefined;
   if (existing) {
     existing.destroy();

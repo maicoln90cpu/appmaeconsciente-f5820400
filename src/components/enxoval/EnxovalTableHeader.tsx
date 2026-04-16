@@ -1,5 +1,6 @@
-import { memo } from "react";
-import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { memo } from 'react';
+
+import { TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export const EnxovalTableHeader = memo(() => (
   <TableHeader>
@@ -24,4 +25,4 @@ export const EnxovalTableHeader = memo(() => (
   </TableHeader>
 ));
 
-EnxovalTableHeader.displayName = "EnxovalTableHeader";
+EnxovalTableHeader.displayName = 'EnxovalTableHeader';

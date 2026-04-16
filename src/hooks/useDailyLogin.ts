@@ -3,12 +3,16 @@
  * @module hooks/useDailyLogin
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { useGamification, XP_REWARDS } from "@/hooks/useGamification";
-import { format, differenceInDays, parseISO } from "date-fns";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format, differenceInDays, parseISO } from 'date-fns';
+
+import { useGamification, XP_REWARDS } from '@/hooks/useGamification';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+
 
 export interface DailyLoginData {
   id: string;
@@ -34,22 +38,22 @@ export const useDailyLogin = () => {
 
   // Fetch daily login data
   const { data: loginData, isLoading } = useQuery({
-    queryKey: ["daily-login", user?.id],
+    queryKey: ['daily-login', user?.id],
     queryFn: async (): Promise<DailyLoginData | null> => {
       if (!user) return null;
 
       const { data, error } = await supabase
-        .from("user_streaks")
-        .select("id, user_id, streak_type, current_streak, longest_streak, last_activity_date")
-        .eq("user_id", user.id)
-        .eq("streak_type", "daily_login")
+        .from('user_streaks')
+        .select('id, user_id, streak_type, current_streak, longest_streak, last_activity_date')
+        .eq('user_id', user.id)
+        .eq('streak_type', 'daily_login')
         .maybeSingle();
 
       if (error) throw error;
 
       if (!data) {
         return {
-          id: "",
+          id: '',
           user_id: user.id,
           current_streak: 0,
           longest_streak: 0,
@@ -74,16 +78,16 @@ export const useDailyLogin = () => {
   // Record daily login
   const recordLogin = useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
-      const today = format(new Date(), "yyyy-MM-dd");
+      const today = format(new Date(), 'yyyy-MM-dd');
 
       // Get current streak data
       const { data: existing } = await supabase
-        .from("user_streaks")
-        .select("id, current_streak, longest_streak, last_activity_date")
-        .eq("user_id", user.id)
-        .eq("streak_type", "daily_login")
+        .from('user_streaks')
+        .select('id, current_streak, longest_streak, last_activity_date')
+        .eq('user_id', user.id)
+        .eq('streak_type', 'daily_login')
         .maybeSingle();
 
       if (existing?.last_activity_date === today) {
@@ -95,10 +99,7 @@ export const useDailyLogin = () => {
       let longestStreak = 1;
 
       if (existing?.last_activity_date) {
-        const daysDiff = differenceInDays(
-          new Date(today),
-          parseISO(existing.last_activity_date)
-        );
+        const daysDiff = differenceInDays(new Date(today), parseISO(existing.last_activity_date));
 
         if (daysDiff === 1) {
           // Consecutive day
@@ -107,28 +108,32 @@ export const useDailyLogin = () => {
         longestStreak = Math.max(newStreak, existing.longest_streak);
       }
 
-      const { error } = await supabase.from("user_streaks").upsert(
+      const { error } = await supabase.from('user_streaks').upsert(
         {
           user_id: user.id,
-          streak_type: "daily_login",
+          streak_type: 'daily_login',
           current_streak: newStreak,
           longest_streak: longestStreak,
           last_activity_date: today,
         },
-        { onConflict: "user_id,streak_type" }
+        { onConflict: 'user_id,streak_type' }
       );
 
       if (error) throw error;
 
-      return { alreadyLogged: false, streak: newStreak, isNewRecord: newStreak > (existing?.longest_streak || 0) };
+      return {
+        alreadyLogged: false,
+        streak: newStreak,
+        isNewRecord: newStreak > (existing?.longest_streak || 0),
+      };
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["daily-login"] });
-      queryClient.invalidateQueries({ queryKey: ["user-streaks"] });
+    onSuccess: data => {
+      queryClient.invalidateQueries({ queryKey: ['daily-login'] });
+      queryClient.invalidateQueries({ queryKey: ['user-streaks'] });
 
       if (!data.alreadyLogged) {
         // Give XP for daily login
-        addXP({ amount: 5, actionType: "daily_login" });
+        addXP({ amount: 5, actionType: 'daily_login' });
 
         // Check for streak bonuses
         const bonusXP = STREAK_XP_BONUSES[data.streak];
@@ -143,7 +148,7 @@ export const useDailyLogin = () => {
   const hasRecordedRef = useRef(false);
   useEffect(() => {
     if (user && !isLoading) {
-      const today = format(new Date(), "yyyy-MM-dd");
+      const today = format(new Date(), 'yyyy-MM-dd');
       if (loginData?.last_login_date !== today && !hasRecordedRef.current) {
         hasRecordedRef.current = true;
         recordLogin.mutate();

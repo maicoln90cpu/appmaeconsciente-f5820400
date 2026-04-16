@@ -1,10 +1,18 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { BabyVaccinationProfile } from "@/types/vaccination";
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import type { BabyVaccinationProfile } from '@/types/vaccination';
 
 interface CadastroBebeProps {
   profile?: BabyVaccinationProfile | null;
@@ -42,7 +50,7 @@ export const CadastroBebe = ({ profile, onSave }: CadastroBebeProps) => {
               <Input
                 id="baby_name"
                 value={formData.baby_name}
-                onChange={(e) => setFormData({ ...formData, baby_name: e.target.value })}
+                onChange={e => setFormData({ ...formData, baby_name: e.target.value })}
                 placeholder="Ex: Maria Silva Santos"
                 required
               />
@@ -53,7 +61,7 @@ export const CadastroBebe = ({ profile, onSave }: CadastroBebeProps) => {
               <Input
                 id="nickname"
                 value={formData.nickname}
-                onChange={(e) => setFormData({ ...formData, nickname: e.target.value })}
+                onChange={e => setFormData({ ...formData, nickname: e.target.value })}
                 placeholder="Ex: Mari"
               />
             </div>
@@ -64,7 +72,7 @@ export const CadastroBebe = ({ profile, onSave }: CadastroBebeProps) => {
                 id="birth_date"
                 type="date"
                 value={formData.birth_date}
-                onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
+                onChange={e => setFormData({ ...formData, birth_date: e.target.value })}
                 required
               />
             </div>
@@ -73,7 +81,7 @@ export const CadastroBebe = ({ profile, onSave }: CadastroBebeProps) => {
               <Label htmlFor="birth_type">Tipo de parto</Label>
               <Select
                 value={formData.birth_type}
-                onValueChange={(value) => setFormData({ ...formData, birth_type: value })}
+                onValueChange={value => setFormData({ ...formData, birth_type: value })}
               >
                 <SelectTrigger id="birth_type">
                   <SelectValue placeholder="Selecione" />
@@ -90,7 +98,7 @@ export const CadastroBebe = ({ profile, onSave }: CadastroBebeProps) => {
               <Input
                 id="birth_city"
                 value={formData.birth_city}
-                onChange={(e) => setFormData({ ...formData, birth_city: e.target.value })}
+                onChange={e => setFormData({ ...formData, birth_city: e.target.value })}
                 placeholder="Ex: São Paulo - SP"
               />
             </div>
@@ -99,14 +107,18 @@ export const CadastroBebe = ({ profile, onSave }: CadastroBebeProps) => {
               <Label htmlFor="calendar_type">Calendário de vacinação *</Label>
               <Select
                 value={formData.calendar_type}
-                onValueChange={(value: 'brasil' | 'particular') => setFormData({ ...formData, calendar_type: value })}
+                onValueChange={(value: 'brasil' | 'particular') =>
+                  setFormData({ ...formData, calendar_type: value })
+                }
               >
                 <SelectTrigger id="calendar_type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="brasil">Padrão Brasil (Ministério da Saúde)</SelectItem>
-                  <SelectItem value="particular">Calendário Particular (Clínicas Privadas)</SelectItem>
+                  <SelectItem value="particular">
+                    Calendário Particular (Clínicas Privadas)
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

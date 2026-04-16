@@ -1,5 +1,6 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface SubTab {
   value: string;
@@ -16,13 +17,13 @@ export const AdminSubTabs = ({ tabs, defaultValue }: AdminSubTabsProps) => {
   return (
     <Tabs defaultValue={defaultValue || tabs[0]?.value} className="space-y-4">
       <TabsList className="bg-muted/50">
-        {tabs.map((tab) => (
+        {tabs.map(tab => (
           <TabsTrigger key={tab.value} value={tab.value} className="text-sm">
             {tab.label}
           </TabsTrigger>
         ))}
       </TabsList>
-      {tabs.map((tab) => (
+      {tabs.map(tab => (
         <TabsContent key={tab.value} value={tab.value}>
           {tab.content}
         </TabsContent>

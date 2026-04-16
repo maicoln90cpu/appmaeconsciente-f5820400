@@ -1,15 +1,24 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, ArrowUpDown, RefreshCw } from "lucide-react";
-import { UserFiltersState } from "./types";
+import { Search, ArrowUpDown, RefreshCw } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+
+import { UserFiltersState } from './types';
 
 interface UserFiltersProps {
   filters: UserFiltersState;
   onSearchChange: (value: string) => void;
-  onRoleFilterChange: (value: "all" | "admin" | "user") => void;
-  onSortByChange: (value: "date" | "email") => void;
+  onRoleFilterChange: (value: 'all' | 'admin' | 'user') => void;
+  onSortByChange: (value: 'date' | 'email') => void;
   onSortOrderToggle: () => void;
   onRefresh: () => void;
   totalFiltered: number;
@@ -47,7 +56,7 @@ export const UserFilters = ({
                 <Input
                   placeholder="Buscar por email..."
                   value={filters.searchTerm}
-                  onChange={(e) => onSearchChange(e.target.value)}
+                  onChange={e => onSearchChange(e.target.value)}
                   className="pl-9"
                 />
               </div>
@@ -66,16 +75,16 @@ export const UserFilters = ({
 
             <div className="flex gap-2">
               <Button
-                variant={filters.sortBy === "date" ? "default" : "outline"}
+                variant={filters.sortBy === 'date' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => onSortByChange("date")}
+                onClick={() => onSortByChange('date')}
               >
                 📅 Data
               </Button>
               <Button
-                variant={filters.sortBy === "email" ? "default" : "outline"}
+                variant={filters.sortBy === 'email' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => onSortByChange("email")}
+                onClick={() => onSortByChange('email')}
               >
                 📧 Email
               </Button>

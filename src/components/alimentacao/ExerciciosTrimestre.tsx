@@ -1,19 +1,23 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/integrations/supabase/client";
-import { Dumbbell, Play, Clock, AlertCircle, CheckCircle2, Calendar, Heart } from "lucide-react";
-import { toast } from "sonner";
-import { useProfile } from "@/hooks/useProfile";
-import { useFavorites } from "@/hooks/useFavorites";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState, useEffect } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Dumbbell, Play, Clock, AlertCircle, CheckCircle2, Calendar, Heart } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useFavorites } from '@/hooks/useFavorites';
+import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface Exercise {
   id: string;
@@ -39,26 +43,26 @@ interface ExerciseLog {
 }
 
 const CATEGORIES = {
-  cardio: { label: "Cardio", color: "bg-red-500" },
-  forca: { label: "Força", color: "bg-blue-500" },
-  flexibilidade: { label: "Flexibilidade", color: "bg-green-500" },
-  respiracao: { label: "Respiração", color: "bg-purple-500" },
-  relaxamento: { label: "Relaxamento", color: "bg-pink-500" }
+  cardio: { label: 'Cardio', color: 'bg-red-500' },
+  forca: { label: 'Força', color: 'bg-blue-500' },
+  flexibilidade: { label: 'Flexibilidade', color: 'bg-green-500' },
+  respiracao: { label: 'Respiração', color: 'bg-purple-500' },
+  relaxamento: { label: 'Relaxamento', color: 'bg-pink-500' },
 };
 
 const INTENSITY = {
-  leve: "Leve",
-  moderado: "Moderado",
-  intenso: "Intenso"
+  leve: 'Leve',
+  moderado: 'Moderado',
+  intenso: 'Intenso',
 };
 
 const EXERCISE_TYPES = {
-  em_casa: "Em Casa",
-  aerobio: "Aeróbio",
-  academia: "Academia",
-  yoga: "Yoga",
-  alongamento: "Alongamento",
-  outros: "Outros"
+  em_casa: 'Em Casa',
+  aerobio: 'Aeróbio',
+  academia: 'Academia',
+  yoga: 'Yoga',
+  alongamento: 'Alongamento',
+  outros: 'Outros',
 };
 
 export function ExerciciosTrimestre() {
@@ -70,13 +74,11 @@ export function ExerciciosTrimestre() {
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [logDialogOpen, setLogDialogOpen] = useState(false);
-  const [logDuration, setLogDuration] = useState("");
-  const [logNotes, setLogNotes] = useState("");
+  const [logDuration, setLogDuration] = useState('');
+  const [logNotes, setLogNotes] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const trimester = profile?.meses_gestacao 
-    ? Math.ceil(profile.meses_gestacao / 3) 
-    : 1;
+  const trimester = profile?.meses_gestacao ? Math.ceil(profile.meses_gestacao / 3) : 1;
 
   useEffect(() => {
     loadExercises();
@@ -85,9 +87,13 @@ export function ExerciciosTrimestre() {
 
   useEffect(() => {
     if (selectedType) {
-      setFilteredExercises(exercises.filter(ex => 
-        ex.exercise_type === selectedType || (ex.exercise_type === null && selectedType === 'outros')
-      ));
+      setFilteredExercises(
+        exercises.filter(
+          ex =>
+            ex.exercise_type === selectedType ||
+            (ex.exercise_type === null && selectedType === 'outros')
+        )
+      );
     } else {
       setFilteredExercises(exercises);
     }
@@ -97,7 +103,9 @@ export function ExerciciosTrimestre() {
     try {
       const { data, error } = await supabase
         .from('exercises')
-        .select('id, title, description, category, exercise_type, trimester, duration_minutes, intensity, instructions, precautions, benefits, image_url, video_url, is_active, created_at')
+        .select(
+          'id, title, description, category, exercise_type, trimester, duration_minutes, intensity, instructions, precautions, benefits, image_url, video_url, is_active, created_at'
+        )
         .eq('is_active', true)
         .contains('trimester', [trimester])
         .order('category');
@@ -113,10 +121,12 @@ export function ExerciciosTrimestre() {
 
   const loadTodayLogs = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const today = format(new Date(), "yyyy-MM-dd");
+      const today = format(new Date(), 'yyyy-MM-dd');
       const { data, error } = await supabase
         .from('user_exercise_logs')
         .select('id, user_id, exercise_id, date, duration_minutes, notes, created_at')
@@ -140,7 +150,7 @@ export function ExerciciosTrimestre() {
 
   const openLogDialog = (exercise: Exercise) => {
     setSelectedExercise(exercise);
-    setLogDuration(exercise.duration_minutes?.toString() || "");
+    setLogDuration(exercise.duration_minutes?.toString() || '');
     setLogDialogOpen(true);
   };
 
@@ -148,24 +158,24 @@ export function ExerciciosTrimestre() {
     if (!selectedExercise || !logDuration) return;
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { error } = await supabase
-        .from('user_exercise_logs')
-        .insert({
-          user_id: user.id,
-          exercise_id: selectedExercise.id,
-          duration_minutes: parseInt(logDuration),
-          notes: logNotes || null
-        });
+      const { error } = await supabase.from('user_exercise_logs').insert({
+        user_id: user.id,
+        exercise_id: selectedExercise.id,
+        duration_minutes: parseInt(logDuration),
+        notes: logNotes || null,
+      });
 
       if (error) throw error;
 
       toast.success('Exercício registrado!');
       setLogDialogOpen(false);
-      setLogDuration("");
-      setLogNotes("");
+      setLogDuration('');
+      setLogNotes('');
       setSelectedExercise(null);
       loadTodayLogs();
     } catch (error) {
@@ -251,16 +261,14 @@ export function ExerciciosTrimestre() {
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">
-                {format(new Date(), "d 'de' MMMM", { locale: ptBR })}
-              </span>
+              <span className="text-sm">{format(new Date(), "d 'de' MMMM", { locale: ptBR })}</span>
             </div>
           </div>
 
           {/* Filtros por Tipo */}
           <div className="flex gap-2 overflow-x-auto pb-2">
             <Button
-              variant={selectedType === null ? "default" : "outline"}
+              variant={selectedType === null ? 'default' : 'outline'}
               onClick={() => setSelectedType(null)}
               size="sm"
             >
@@ -269,7 +277,7 @@ export function ExerciciosTrimestre() {
             {Object.entries(EXERCISE_TYPES).map(([key, label]) => (
               <Button
                 key={key}
-                variant={selectedType === key ? "default" : "outline"}
+                variant={selectedType === key ? 'default' : 'outline'}
                 onClick={() => setSelectedType(key)}
                 size="sm"
                 className="whitespace-nowrap"
@@ -286,15 +294,15 @@ export function ExerciciosTrimestre() {
           <CardContent className="py-8 text-center text-muted-foreground">
             <Dumbbell className="mx-auto h-12 w-12 mb-4 opacity-50" />
             <p>
-              {exercises.length === 0 
+              {exercises.length === 0
                 ? `Em breve teremos exercícios para o ${trimester}º trimestre!`
-                : "Nenhum exercício encontrado com o filtro selecionado."}
+                : 'Nenhum exercício encontrado com o filtro selecionado.'}
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
-          {filteredExercises.map((exercise) => {
+          {filteredExercises.map(exercise => {
             const completed = hasCompletedToday(exercise.id);
             const isFav = isFavorite(exercise.id);
             const categoryConfig = CATEGORIES[exercise.category as keyof typeof CATEGORIES];
@@ -327,7 +335,9 @@ export function ExerciciosTrimestre() {
                           className="shrink-0"
                           aria-label={isFav ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}
                         >
-                          <Heart className={`h-5 w-5 ${isFav ? 'fill-red-500 text-red-500' : ''}`} />
+                          <Heart
+                            className={`h-5 w-5 ${isFav ? 'fill-red-500 text-red-500' : ''}`}
+                          />
                         </Button>
                       </div>
                     </div>
@@ -363,7 +373,7 @@ export function ExerciciosTrimestre() {
                       disabled={completed}
                     >
                       <Play className="h-4 w-4 mr-2" />
-                      {completed ? "Concluído" : "Começar"}
+                      {completed ? 'Concluído' : 'Começar'}
                     </Button>
                   </div>
                 </CardContent>
@@ -391,7 +401,9 @@ export function ExerciciosTrimestre() {
                   </h3>
                   <ol className="list-decimal list-inside space-y-2">
                     {selectedExercise.instructions.map((instruction, index) => (
-                      <li key={index} className="text-sm">{instruction}</li>
+                      <li key={index} className="text-sm">
+                        {instruction}
+                      </li>
                     ))}
                   </ol>
                 </div>
@@ -405,7 +417,9 @@ export function ExerciciosTrimestre() {
                   </h3>
                   <ul className="list-disc list-inside space-y-1">
                     {selectedExercise.benefits.map((benefit, index) => (
-                      <li key={index} className="text-sm">{benefit}</li>
+                      <li key={index} className="text-sm">
+                        {benefit}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -427,10 +441,13 @@ export function ExerciciosTrimestre() {
                 </div>
               )}
 
-              <Button className="w-full" onClick={() => {
-                closeExercise();
-                openLogDialog(selectedExercise);
-              }}>
+              <Button
+                className="w-full"
+                onClick={() => {
+                  closeExercise();
+                  openLogDialog(selectedExercise);
+                }}
+              >
                 <Play className="h-4 w-4 mr-2" />
                 Começar Exercício
               </Button>
@@ -452,7 +469,7 @@ export function ExerciciosTrimestre() {
                 id="duration"
                 type="number"
                 value={logDuration}
-                onChange={(e) => setLogDuration(e.target.value)}
+                onChange={e => setLogDuration(e.target.value)}
                 placeholder="Ex: 30"
                 min="1"
               />
@@ -463,7 +480,7 @@ export function ExerciciosTrimestre() {
               <Textarea
                 id="notes"
                 value={logNotes}
-                onChange={(e) => setLogNotes(e.target.value)}
+                onChange={e => setLogNotes(e.target.value)}
                 placeholder="Como você se sentiu?"
               />
             </div>

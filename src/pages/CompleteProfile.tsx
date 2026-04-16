@@ -1,21 +1,58 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Baby, Upload, Info } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
+import { useState } from 'react';
+
+import { Baby, Upload, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
+
+import { Progress } from '@/components/ui/progress';
+
 
 const ESTADOS = [
-  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
-  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
 ];
 
 export default function CompleteProfile() {
@@ -25,16 +62,16 @@ export default function CompleteProfile() {
   const [uploading, setUploading] = useState(false);
 
   const [formData, setFormData] = useState({
-    idade: profile?.idade || "",
-    sexo: profile?.sexo || "",
-    cidade: profile?.cidade || "",
-    estado: profile?.estado || "",
-    meses_gestacao: profile?.meses_gestacao || "",
-    data_prevista_parto: profile?.data_prevista_parto || "",
-    data_inicio_planejamento: profile?.data_inicio_planejamento || "",
+    idade: profile?.idade || '',
+    sexo: profile?.sexo || '',
+    cidade: profile?.cidade || '',
+    estado: profile?.estado || '',
+    meses_gestacao: profile?.meses_gestacao || '',
+    data_prevista_parto: profile?.data_prevista_parto || '',
+    data_inicio_planejamento: profile?.data_inicio_planejamento || '',
     possui_filhos: profile?.possui_filhos || false,
-    idades_filhos: profile?.idades_filhos?.join(", ") || "",
-    foto_perfil_url: profile?.foto_perfil_url || "",
+    idades_filhos: profile?.idades_filhos?.join(', ') || '',
+    foto_perfil_url: profile?.foto_perfil_url || '',
   });
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -44,14 +81,16 @@ export default function CompleteProfile() {
     // Validação de tamanho (5MB)
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      toast.error("Arquivo muito grande", { description: "O tamanho máximo permitido é 5MB." });
+      toast.error('Arquivo muito grande', { description: 'O tamanho máximo permitido é 5MB.' });
       return;
     }
 
     // Validação de tipo MIME
     const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error("Formato inválido", { description: "Use apenas imagens JPEG, PNG, WebP ou GIF." });
+      toast.error('Formato inválido', {
+        description: 'Use apenas imagens JPEG, PNG, WebP ou GIF.',
+      });
       return;
     }
 
@@ -66,16 +105,14 @@ export default function CompleteProfile() {
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage
-        .from('profile-photos')
-        .getPublicUrl(fileName);
+      const { data } = supabase.storage.from('profile-photos').getPublicUrl(fileName);
 
       setFormData({ ...formData, foto_perfil_url: data.publicUrl });
-      
-      toast("Foto carregada!", { description: "Sua foto de perfil foi enviada com sucesso." });
+
+      toast('Foto carregada!', { description: 'Sua foto de perfil foi enviada com sucesso.' });
     } catch (error) {
       console.error('Error uploading file:', error);
-      toast.error("Erro ao enviar foto", { description: "Tente novamente mais tarde." });
+      toast.error('Erro ao enviar foto', { description: 'Tente novamente mais tarde.' });
     } finally {
       setUploading(false);
     }
@@ -85,9 +122,9 @@ export default function CompleteProfile() {
     const { error } = await updateProfile({ perfil_completo: true });
 
     if (error) {
-      toast.error("Erro", { description: error });
+      toast.error('Erro', { description: error });
     } else {
-      navigate("/");
+      navigate('/');
     }
   };
 
@@ -101,14 +138,19 @@ export default function CompleteProfile() {
     if (formData.sexo) updates.sexo = formData.sexo;
     if (formData.cidade) updates.cidade = formData.cidade;
     if (formData.estado) updates.estado = formData.estado;
-    if (formData.meses_gestacao) updates.meses_gestacao = parseInt(formData.meses_gestacao as string);
+    if (formData.meses_gestacao)
+      updates.meses_gestacao = parseInt(formData.meses_gestacao as string);
     if (formData.data_prevista_parto) updates.data_prevista_parto = formData.data_prevista_parto;
-    if (formData.data_inicio_planejamento) updates.data_inicio_planejamento = formData.data_inicio_planejamento;
+    if (formData.data_inicio_planejamento)
+      updates.data_inicio_planejamento = formData.data_inicio_planejamento;
     if (formData.foto_perfil_url) updates.foto_perfil_url = formData.foto_perfil_url;
-    
+
     updates.possui_filhos = formData.possui_filhos;
     if (formData.possui_filhos && formData.idades_filhos) {
-      updates.idades_filhos = formData.idades_filhos.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+      updates.idades_filhos = formData.idades_filhos
+        .split(',')
+        .map(n => parseInt(n.trim()))
+        .filter(n => !isNaN(n));
     } else {
       updates.idades_filhos = [];
     }
@@ -116,10 +158,10 @@ export default function CompleteProfile() {
     const { error } = await updateProfile(updates);
 
     if (error) {
-      toast.error("Erro ao salvar perfil", { description: error });
+      toast.error('Erro ao salvar perfil', { description: error });
     } else {
-      toast("Perfil completo!", { description: "Bem-vindo ao sistema." });
-      navigate("/");
+      toast('Perfil completo!', { description: 'Bem-vindo ao sistema.' });
+      navigate('/');
     }
   };
 
@@ -135,18 +177,17 @@ export default function CompleteProfile() {
             </div>
             <div className="text-center">
               <CardTitle className="text-2xl">Complete seu Perfil</CardTitle>
-              <CardDescription className="mt-1">
-                Etapa {step} de 4
-              </CardDescription>
+              <CardDescription className="mt-1">Etapa {step} de 4</CardDescription>
             </div>
           </div>
           <Progress value={progress} className="w-full" />
-          
+
           <Alert className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
             <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <AlertDescription className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>Dica:</strong> Completar seu perfil nos ajuda a oferecer recomendações personalizadas de produtos e serviços, 
-              além de melhorar sua experiência com a integração da nossa plataforma. Todos os campos são opcionais!
+              <strong>Dica:</strong> Completar seu perfil nos ajuda a oferecer recomendações
+              personalizadas de produtos e serviços, além de melhorar sua experiência com a
+              integração da nossa plataforma. Todos os campos são opcionais!
             </AlertDescription>
           </Alert>
         </CardHeader>
@@ -161,13 +202,16 @@ export default function CompleteProfile() {
                     id="idade"
                     type="number"
                     value={formData.idade}
-                    onChange={(e) => setFormData({ ...formData, idade: e.target.value })}
+                    onChange={e => setFormData({ ...formData, idade: e.target.value })}
                     placeholder="Ex: 28"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="sexo">Sexo (sugerido)</Label>
-                  <Select value={formData.sexo} onValueChange={(value) => setFormData({ ...formData, sexo: value })}>
+                  <Select
+                    value={formData.sexo}
+                    onValueChange={value => setFormData({ ...formData, sexo: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione..." />
                     </SelectTrigger>
@@ -183,19 +227,24 @@ export default function CompleteProfile() {
                   <Input
                     id="cidade"
                     value={formData.cidade}
-                    onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
+                    onChange={e => setFormData({ ...formData, cidade: e.target.value })}
                     placeholder="Ex: São Paulo"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="estado">Estado (sugerido)</Label>
-                  <Select value={formData.estado} onValueChange={(value) => setFormData({ ...formData, estado: value })}>
+                  <Select
+                    value={formData.estado}
+                    onValueChange={value => setFormData({ ...formData, estado: value })}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione..." />
                     </SelectTrigger>
                     <SelectContent>
-                      {ESTADOS.map((uf) => (
-                        <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                      {ESTADOS.map(uf => (
+                        <SelectItem key={uf} value={uf}>
+                          {uf}
+                        </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -224,7 +273,7 @@ export default function CompleteProfile() {
                     min="0"
                     max="40"
                     value={formData.meses_gestacao}
-                    onChange={(e) => setFormData({ ...formData, meses_gestacao: e.target.value })}
+                    onChange={e => setFormData({ ...formData, meses_gestacao: e.target.value })}
                     placeholder="Ex: 6"
                   />
                 </div>
@@ -234,16 +283,22 @@ export default function CompleteProfile() {
                     id="data_prevista_parto"
                     type="date"
                     value={formData.data_prevista_parto}
-                    onChange={(e) => setFormData({ ...formData, data_prevista_parto: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, data_prevista_parto: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="data_inicio_planejamento">Data de Início do Planejamento (sugerido)</Label>
+                  <Label htmlFor="data_inicio_planejamento">
+                    Data de Início do Planejamento (sugerido)
+                  </Label>
                   <Input
                     id="data_inicio_planejamento"
                     type="date"
                     value={formData.data_inicio_planejamento}
-                    onChange={(e) => setFormData({ ...formData, data_inicio_planejamento: e.target.value })}
+                    onChange={e =>
+                      setFormData({ ...formData, data_inicio_planejamento: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -269,7 +324,9 @@ export default function CompleteProfile() {
                   <Checkbox
                     id="possui_filhos"
                     checked={formData.possui_filhos}
-                    onCheckedChange={(checked) => setFormData({ ...formData, possui_filhos: checked as boolean })}
+                    onCheckedChange={checked =>
+                      setFormData({ ...formData, possui_filhos: checked as boolean })
+                    }
                   />
                   <Label htmlFor="possui_filhos">Já possui filhos?</Label>
                 </div>
@@ -280,7 +337,7 @@ export default function CompleteProfile() {
                       id="idades_filhos"
                       placeholder="Ex: 3, 5, 8"
                       value={formData.idades_filhos}
-                      onChange={(e) => setFormData({ ...formData, idades_filhos: e.target.value })}
+                      onChange={e => setFormData({ ...formData, idades_filhos: e.target.value })}
                     />
                   </div>
                 )}
@@ -305,9 +362,9 @@ export default function CompleteProfile() {
               <div className="space-y-4">
                 {formData.foto_perfil_url && (
                   <div className="flex justify-center">
-                    <img 
-                      src={formData.foto_perfil_url} 
-                      alt="Foto de perfil" 
+                    <img
+                      src={formData.foto_perfil_url}
+                      alt="Foto de perfil"
                       className="w-32 h-32 rounded-full object-cover"
                     />
                   </div>
@@ -316,7 +373,7 @@ export default function CompleteProfile() {
                   <Label htmlFor="foto" className="cursor-pointer">
                     <div className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
                       <Upload className="w-4 h-4" />
-                      {uploading ? "Enviando..." : "Escolher Foto"}
+                      {uploading ? 'Enviando...' : 'Escolher Foto'}
                     </div>
                   </Label>
                   <Input

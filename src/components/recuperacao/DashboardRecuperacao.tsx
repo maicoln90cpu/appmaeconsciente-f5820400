@@ -1,10 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { useProfile } from "@/hooks/useProfile";
-import { usePostpartumSymptoms, usePostpartumMedications, usePostpartumAppointments, useEmotionalLogs } from "@/hooks/postpartum";
-import { Activity, Heart, Pill, Calendar, Droplet, AlertTriangle } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo } from 'react';
+
+import { Activity, Heart, Pill, Calendar, Droplet, AlertTriangle } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import {
+  usePostpartumSymptoms,
+  usePostpartumMedications,
+  usePostpartumAppointments,
+  useEmotionalLogs,
+} from '@/hooks/postpartum';
+import { useProfile } from '@/hooks/useProfile';
+
+
 
 export const DashboardRecuperacao = () => {
   const { profile } = useProfile();
@@ -17,12 +27,12 @@ export const DashboardRecuperacao = () => {
     const today = new Date().toISOString().split('T')[0];
     const lastSymptom = symptoms?.[0];
     const todayMoodLog = emotionalLogs?.find(log => log.date === today);
-    const upcomingAppointments = appointments?.filter(apt => 
-      apt.scheduled_date >= today && !apt.completed
-    ).length || 0;
+    const upcomingAppointments =
+      appointments?.filter(apt => apt.scheduled_date >= today && !apt.completed).length || 0;
     const activeMedications = medications?.length || 0;
     const todayMedicationsTaken = logs?.length || 0;
-    const totalMedicationsToday = medications?.reduce((sum, med) => sum + med.times_per_day, 0) || 0;
+    const totalMedicationsToday =
+      medications?.reduce((sum, med) => sum + med.times_per_day, 0) || 0;
 
     return {
       postpartumWeek: profile?.postpartum_week || 0,
@@ -30,9 +40,10 @@ export const DashboardRecuperacao = () => {
       todayMood: todayMoodLog?.mood,
       upcomingAppointments,
       activeMedications,
-      medicationAdherence: totalMedicationsToday > 0 
-        ? Math.round((todayMedicationsTaken / totalMedicationsToday) * 100)
-        : 0,
+      medicationAdherence:
+        totalMedicationsToday > 0
+          ? Math.round((todayMedicationsTaken / totalMedicationsToday) * 100)
+          : 0,
     };
   }, [profile, symptoms, emotionalLogs, appointments, medications, logs]);
 
@@ -40,10 +51,21 @@ export const DashboardRecuperacao = () => {
     const { lastSymptom } = stats;
     if (!lastSymptom) return null;
 
-    if (lastSymptom.bleeding_intensity === 'very_heavy' || lastSymptom.fever || lastSymptom.healing_status === 'infected') {
-      return { level: 'critical', message: 'Sintomas críticos detectados. Procure atendimento médico!' };
+    if (
+      lastSymptom.bleeding_intensity === 'very_heavy' ||
+      lastSymptom.fever ||
+      lastSymptom.healing_status === 'infected'
+    ) {
+      return {
+        level: 'critical',
+        message: 'Sintomas críticos detectados. Procure atendimento médico!',
+      };
     }
-    if (lastSymptom.bleeding_intensity === 'heavy' || lastSymptom.healing_status === 'concerning' || (lastSymptom.pain_level && lastSymptom.pain_level >= 4)) {
+    if (
+      lastSymptom.bleeding_intensity === 'heavy' ||
+      lastSymptom.healing_status === 'concerning' ||
+      (lastSymptom.pain_level && lastSymptom.pain_level >= 4)
+    ) {
       return { level: 'warning', message: 'Sintomas que precisam de atenção. Contate seu médico.' };
     }
     return { level: 'good', message: 'Recuperação dentro do esperado 💕' };
@@ -66,8 +88,12 @@ export const DashboardRecuperacao = () => {
       {/* Mensagem de acolhimento */}
       <Card className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-950/20 dark:to-purple-950/20 border-none">
         <CardContent className="pt-6">
-          <h2 className="text-2xl font-semibold mb-2">Olá, você está na semana {stats.postpartumWeek} pós-parto 💕</h2>
-          <p className="text-muted-foreground">Seu corpo está se curando — cada dia é um passo de amor próprio.</p>
+          <h2 className="text-2xl font-semibold mb-2">
+            Olá, você está na semana {stats.postpartumWeek} pós-parto 💕
+          </h2>
+          <p className="text-muted-foreground">
+            Seu corpo está se curando — cada dia é um passo de amor próprio.
+          </p>
         </CardContent>
       </Card>
 

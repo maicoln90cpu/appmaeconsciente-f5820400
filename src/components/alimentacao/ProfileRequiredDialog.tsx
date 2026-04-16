@@ -1,10 +1,20 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useProfile } from "@/hooks/useProfile";
-import { toast } from "sonner";
+import { useState } from 'react';
+
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+import { useProfile } from '@/hooks/useProfile';
+
 
 interface ProfileRequiredDialogProps {
   open: boolean;
@@ -14,17 +24,17 @@ interface ProfileRequiredDialogProps {
 export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialogProps) {
   const { updateProfile } = useProfile();
   const [formData, setFormData] = useState({
-    peso_atual: "",
-    altura_cm: "",
-    sexo: "",
+    peso_atual: '',
+    altura_cm: '',
+    sexo: '',
   });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.peso_atual || !formData.altura_cm || !formData.sexo) {
-      toast.error("Preencha todos os campos obrigatórios");
+      toast.error('Preencha todos os campos obrigatórios');
       return;
     }
 
@@ -36,9 +46,9 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
     });
 
     if (error) {
-      toast.error("Erro ao atualizar perfil");
+      toast.error('Erro ao atualizar perfil');
     } else {
-      toast.success("Perfil atualizado!");
+      toast.success('Perfil atualizado!');
       onComplete();
     }
     setLoading(false);
@@ -46,7 +56,7 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={e => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Complete seu Perfil</DialogTitle>
           <DialogDescription>
@@ -59,7 +69,7 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
             <select
               id="sexo"
               value={formData.sexo}
-              onChange={(e) => setFormData({ ...formData, sexo: e.target.value })}
+              onChange={e => setFormData({ ...formData, sexo: e.target.value })}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               required
             >
@@ -76,7 +86,7 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
               type="number"
               step="0.1"
               value={formData.peso_atual}
-              onChange={(e) => setFormData({ ...formData, peso_atual: e.target.value })}
+              onChange={e => setFormData({ ...formData, peso_atual: e.target.value })}
               placeholder="Ex: 65.5"
               required
             />
@@ -87,13 +97,13 @@ export function ProfileRequiredDialog({ open, onComplete }: ProfileRequiredDialo
               id="altura"
               type="number"
               value={formData.altura_cm}
-              onChange={(e) => setFormData({ ...formData, altura_cm: e.target.value })}
+              onChange={e => setFormData({ ...formData, altura_cm: e.target.value })}
               placeholder="Ex: 165"
               required
             />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Salvando..." : "Salvar e Continuar"}
+            {loading ? 'Salvando...' : 'Salvar e Continuar'}
           </Button>
         </form>
       </DialogContent>

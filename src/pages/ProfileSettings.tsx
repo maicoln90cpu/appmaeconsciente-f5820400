@@ -1,18 +1,9 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { SyncQueuePanel } from "@/components/offline";
-import { ProfileAchievements } from "@/components/profile/ProfileAchievements";
-import { SimpleModeToggle } from "@/components/profile/SimpleModeToggle";
+import { useState } from 'react';
+
+import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +14,59 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+
+import { SyncQueuePanel } from '@/components/offline';
+import { ProfileAchievements } from '@/components/profile/ProfileAchievements';
+import { SimpleModeToggle } from '@/components/profile/SimpleModeToggle';
+
+import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
 
 const ESTADOS = [
-  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
-  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
+  'AC',
+  'AL',
+  'AP',
+  'AM',
+  'BA',
+  'CE',
+  'DF',
+  'ES',
+  'GO',
+  'MA',
+  'MT',
+  'MS',
+  'MG',
+  'PA',
+  'PB',
+  'PR',
+  'PE',
+  'PI',
+  'RJ',
+  'RN',
+  'RS',
+  'RO',
+  'RR',
+  'SC',
+  'SP',
+  'SE',
+  'TO',
 ];
 
 export default function ProfileSettings() {
@@ -37,33 +75,35 @@ export default function ProfileSettings() {
   const [uploading, setUploading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState('');
 
   const [formData, setFormData] = useState({
-    idade: profile?.idade?.toString() || "",
-    sexo: profile?.sexo || "",
-    cidade: profile?.cidade || "",
-    estado: profile?.estado || "",
-    meses_gestacao: profile?.meses_gestacao?.toString() || "",
-    data_prevista_parto: profile?.data_prevista_parto || "",
-    data_inicio_planejamento: profile?.data_inicio_planejamento || "",
+    idade: profile?.idade?.toString() || '',
+    sexo: profile?.sexo || '',
+    cidade: profile?.cidade || '',
+    estado: profile?.estado || '',
+    meses_gestacao: profile?.meses_gestacao?.toString() || '',
+    data_prevista_parto: profile?.data_prevista_parto || '',
+    data_inicio_planejamento: profile?.data_inicio_planejamento || '',
     possui_filhos: profile?.possui_filhos || false,
-    idades_filhos: profile?.idades_filhos?.join(", ") || "",
-    foto_perfil_url: profile?.foto_perfil_url || "",
+    idades_filhos: profile?.idades_filhos?.join(', ') || '',
+    foto_perfil_url: profile?.foto_perfil_url || '',
   });
 
   // Exportar dados pessoais (LGPD)
   const handleExportData = async () => {
     setExporting(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
-        toast.error("Erro", { description: "Sessão expirada. Faça login novamente." });
+        toast.error('Erro', { description: 'Sessão expirada. Faça login novamente.' });
         return;
       }
 
       const response = await supabase.functions.invoke('export-user-data', {
-        headers: { Authorization: `Bearer ${session.access_token}` }
+        headers: { Authorization: `Bearer ${session.access_token}` },
       });
 
       if (response.error) throw response.error;
@@ -79,10 +119,10 @@ export default function ProfileSettings() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast("Dados exportados!", { description: "Seu arquivo de dados pessoais foi baixado." });
+      toast('Dados exportados!', { description: 'Seu arquivo de dados pessoais foi baixado.' });
     } catch (error) {
       console.error('Erro ao exportar dados:', error);
-      toast.error("Erro ao exportar", { description: "Tente novamente mais tarde." });
+      toast.error('Erro ao exportar', { description: 'Tente novamente mais tarde.' });
     } finally {
       setExporting(false);
     }
@@ -91,33 +131,41 @@ export default function ProfileSettings() {
   // Excluir conta (LGPD)
   const handleDeleteAccount = async () => {
     if (deleteConfirmEmail !== profile?.email) {
-      toast.error("Email incorreto", { description: "Digite seu email corretamente para confirmar a exclusão." });
+      toast.error('Email incorreto', {
+        description: 'Digite seu email corretamente para confirmar a exclusão.',
+      });
       return;
     }
 
     setDeleting(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
-        toast.error("Erro", { description: "Sessão expirada. Faça login novamente." });
+        toast.error('Erro', { description: 'Sessão expirada. Faça login novamente.' });
         return;
       }
 
       const response = await supabase.functions.invoke('delete-user-data', {
         body: { confirmEmail: deleteConfirmEmail },
-        headers: { Authorization: `Bearer ${session.access_token}` }
+        headers: { Authorization: `Bearer ${session.access_token}` },
       });
 
       if (response.error) throw response.error;
 
-      toast("Conta excluída", { description: "Sua conta e todos os dados foram excluídos permanentemente." });
+      toast('Conta excluída', {
+        description: 'Sua conta e todos os dados foram excluídos permanentemente.',
+      });
 
       // Fazer logout e redirecionar
       await supabase.auth.signOut();
-      navigate("/", { replace: true });
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Erro ao excluir conta:', error);
-      toast.error("Erro ao excluir conta", { description: "Contate o suporte se o problema persistir." });
+      toast.error('Erro ao excluir conta', {
+        description: 'Contate o suporte se o problema persistir.',
+      });
     } finally {
       setDeleting(false);
     }
@@ -130,14 +178,16 @@ export default function ProfileSettings() {
     // Validação de tamanho (5MB)
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      toast.error("Arquivo muito grande", { description: "O tamanho máximo permitido é 5MB." });
+      toast.error('Arquivo muito grande', { description: 'O tamanho máximo permitido é 5MB.' });
       return;
     }
 
     // Validação de tipo MIME
     const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!ALLOWED_TYPES.includes(file.type)) {
-      toast.error("Formato inválido", { description: "Use apenas imagens JPEG, PNG, WebP ou GIF." });
+      toast.error('Formato inválido', {
+        description: 'Use apenas imagens JPEG, PNG, WebP ou GIF.',
+      });
       return;
     }
 
@@ -152,16 +202,14 @@ export default function ProfileSettings() {
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage
-        .from('profile-photos')
-        .getPublicUrl(fileName);
+      const { data } = supabase.storage.from('profile-photos').getPublicUrl(fileName);
 
       setFormData({ ...formData, foto_perfil_url: data.publicUrl });
-      
-      toast("Foto carregada!", { description: "Sua foto de perfil foi enviada com sucesso." });
+
+      toast('Foto carregada!', { description: 'Sua foto de perfil foi enviada com sucesso.' });
     } catch (error) {
       console.error('Error uploading file:', error);
-      toast.error("Erro ao enviar foto", { description: "Tente novamente mais tarde." });
+      toast.error('Erro ao enviar foto', { description: 'Tente novamente mais tarde.' });
     } finally {
       setUploading(false);
     }
@@ -169,7 +217,7 @@ export default function ProfileSettings() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const updates: any = {};
 
     if (formData.idade) updates.idade = parseInt(formData.idade);
@@ -178,12 +226,16 @@ export default function ProfileSettings() {
     if (formData.estado) updates.estado = formData.estado;
     if (formData.meses_gestacao) updates.meses_gestacao = parseInt(formData.meses_gestacao);
     if (formData.data_prevista_parto) updates.data_prevista_parto = formData.data_prevista_parto;
-    if (formData.data_inicio_planejamento) updates.data_inicio_planejamento = formData.data_inicio_planejamento;
+    if (formData.data_inicio_planejamento)
+      updates.data_inicio_planejamento = formData.data_inicio_planejamento;
     if (formData.foto_perfil_url) updates.foto_perfil_url = formData.foto_perfil_url;
-    
+
     updates.possui_filhos = formData.possui_filhos;
     if (formData.possui_filhos && formData.idades_filhos) {
-      updates.idades_filhos = formData.idades_filhos.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+      updates.idades_filhos = formData.idades_filhos
+        .split(',')
+        .map(n => parseInt(n.trim()))
+        .filter(n => !isNaN(n));
     } else {
       updates.idades_filhos = [];
     }
@@ -191,10 +243,10 @@ export default function ProfileSettings() {
     const { error } = await updateProfile(updates);
 
     if (error) {
-      toast.error("Erro ao salvar", { description: error });
+      toast.error('Erro ao salvar', { description: error });
     } else {
-      toast("Perfil atualizado!", { description: "Suas informações foram salvas com sucesso." });
-      navigate("/");
+      toast('Perfil atualizado!', { description: 'Suas informações foram salvas com sucesso.' });
+      navigate('/');
     }
   };
 
@@ -203,7 +255,7 @@ export default function ProfileSettings() {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/")} className="gap-2">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/')} className="gap-2">
               <ArrowLeft className="h-4 w-4" />
               Voltar
             </Button>
@@ -236,9 +288,9 @@ export default function ProfileSettings() {
               <CardContent className="space-y-4">
                 {formData.foto_perfil_url && (
                   <div className="flex justify-center">
-                    <img 
-                      src={formData.foto_perfil_url} 
-                      alt="Foto de perfil" 
+                    <img
+                      src={formData.foto_perfil_url}
+                      alt="Foto de perfil"
                       className="w-32 h-32 rounded-full object-cover border-4 border-primary/10"
                     />
                   </div>
@@ -247,7 +299,7 @@ export default function ProfileSettings() {
                   <Label htmlFor="foto" className="cursor-pointer">
                     <div className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90">
                       <Upload className="w-4 h-4" />
-                      {uploading ? "Enviando..." : "Alterar Foto"}
+                      {uploading ? 'Enviando...' : 'Alterar Foto'}
                     </div>
                   </Label>
                   <Input
@@ -276,13 +328,16 @@ export default function ProfileSettings() {
                       id="idade"
                       type="number"
                       value={formData.idade}
-                      onChange={(e) => setFormData({ ...formData, idade: e.target.value })}
+                      onChange={e => setFormData({ ...formData, idade: e.target.value })}
                       placeholder="Ex: 28"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="sexo">Sexo</Label>
-                    <Select value={formData.sexo} onValueChange={(value) => setFormData({ ...formData, sexo: value })}>
+                    <Select
+                      value={formData.sexo}
+                      onValueChange={value => setFormData({ ...formData, sexo: value })}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
@@ -298,19 +353,24 @@ export default function ProfileSettings() {
                     <Input
                       id="cidade"
                       value={formData.cidade}
-                      onChange={(e) => setFormData({ ...formData, cidade: e.target.value })}
+                      onChange={e => setFormData({ ...formData, cidade: e.target.value })}
                       placeholder="Ex: São Paulo"
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="estado">Estado</Label>
-                    <Select value={formData.estado} onValueChange={(value) => setFormData({ ...formData, estado: value })}>
+                    <Select
+                      value={formData.estado}
+                      onValueChange={value => setFormData({ ...formData, estado: value })}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione..." />
                       </SelectTrigger>
                       <SelectContent>
-                        {ESTADOS.map((uf) => (
-                          <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                        {ESTADOS.map(uf => (
+                          <SelectItem key={uf} value={uf}>
+                            {uf}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -335,7 +395,7 @@ export default function ProfileSettings() {
                       min="0"
                       max="40"
                       value={formData.meses_gestacao}
-                      onChange={(e) => setFormData({ ...formData, meses_gestacao: e.target.value })}
+                      onChange={e => setFormData({ ...formData, meses_gestacao: e.target.value })}
                       placeholder="Ex: 6"
                     />
                   </div>
@@ -345,7 +405,9 @@ export default function ProfileSettings() {
                       id="data_prevista_parto"
                       type="date"
                       value={formData.data_prevista_parto}
-                      onChange={(e) => setFormData({ ...formData, data_prevista_parto: e.target.value })}
+                      onChange={e =>
+                        setFormData({ ...formData, data_prevista_parto: e.target.value })
+                      }
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
@@ -354,7 +416,9 @@ export default function ProfileSettings() {
                       id="data_inicio_planejamento"
                       type="date"
                       value={formData.data_inicio_planejamento}
-                      onChange={(e) => setFormData({ ...formData, data_inicio_planejamento: e.target.value })}
+                      onChange={e =>
+                        setFormData({ ...formData, data_inicio_planejamento: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -372,7 +436,9 @@ export default function ProfileSettings() {
                   <Checkbox
                     id="possui_filhos"
                     checked={formData.possui_filhos}
-                    onCheckedChange={(checked) => setFormData({ ...formData, possui_filhos: checked as boolean })}
+                    onCheckedChange={checked =>
+                      setFormData({ ...formData, possui_filhos: checked as boolean })
+                    }
                   />
                   <Label htmlFor="possui_filhos">Já possui filhos?</Label>
                 </div>
@@ -383,7 +449,7 @@ export default function ProfileSettings() {
                       id="idades_filhos"
                       placeholder="Ex: 3, 5, 8"
                       value={formData.idades_filhos}
-                      onChange={(e) => setFormData({ ...formData, idades_filhos: e.target.value })}
+                      onChange={e => setFormData({ ...formData, idades_filhos: e.target.value })}
                     />
                   </div>
                 )}
@@ -397,9 +463,7 @@ export default function ProfileSettings() {
                   <AlertTriangle className="h-5 w-5 text-destructive" />
                   Privacidade e Dados
                 </CardTitle>
-                <CardDescription>
-                  Gerencie seus dados pessoais conforme a LGPD
-                </CardDescription>
+                <CardDescription>Gerencie seus dados pessoais conforme a LGPD</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Exportar Dados */}
@@ -410,15 +474,15 @@ export default function ProfileSettings() {
                       Exporte todos os seus dados pessoais em formato JSON
                     </p>
                   </div>
-                  <Button 
-                    type="button" 
-                    variant="outline" 
+                  <Button
+                    type="button"
+                    variant="outline"
                     onClick={handleExportData}
                     disabled={exporting}
                     className="gap-2"
                   >
                     <Download className="h-4 w-4" />
-                    {exporting ? "Exportando..." : "Exportar"}
+                    {exporting ? 'Exportando...' : 'Exportar'}
                   </Button>
                 </div>
 
@@ -447,7 +511,7 @@ export default function ProfileSettings() {
                         </AlertDialogTitle>
                         <AlertDialogDescription className="space-y-4">
                           <p>
-                            Esta ação é <strong>irreversível</strong>. Todos os seus dados serão 
+                            Esta ação é <strong>irreversível</strong>. Todos os seus dados serão
                             permanentemente excluídos, incluindo:
                           </p>
                           <ul className="list-disc list-inside text-sm space-y-1">
@@ -467,14 +531,14 @@ export default function ProfileSettings() {
                               type="email"
                               placeholder="Digite seu email"
                               value={deleteConfirmEmail}
-                              onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                              onChange={e => setDeleteConfirmEmail(e.target.value)}
                               className="mt-2"
                             />
                           </div>
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setDeleteConfirmEmail("")}>
+                        <AlertDialogCancel onClick={() => setDeleteConfirmEmail('')}>
                           Cancelar
                         </AlertDialogCancel>
                         <AlertDialogAction
@@ -482,7 +546,7 @@ export default function ProfileSettings() {
                           disabled={deleting || deleteConfirmEmail !== profile?.email}
                           className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
-                          {deleting ? "Excluindo..." : "Sim, excluir minha conta"}
+                          {deleting ? 'Excluindo...' : 'Sim, excluir minha conta'}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -496,7 +560,7 @@ export default function ProfileSettings() {
 
             {/* Botão Salvar */}
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => navigate("/")}>
+              <Button type="button" variant="outline" onClick={() => navigate('/')}>
                 Cancelar
               </Button>
               <Button type="submit" className="gap-2">

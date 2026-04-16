@@ -1,9 +1,11 @@
-import { Trophy, Star, TrendingUp, Heart, Award, Sparkles, Moon } from "lucide-react";
-import { Card, CardContent } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { useState } from "react";
+import { useState } from 'react';
+
+import { Trophy, Star, TrendingUp, Heart, Award, Sparkles, Moon } from 'lucide-react';
+
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 
 export interface Achievement {
   code: string;
@@ -41,20 +43,20 @@ export const AchievementBadge = ({ achievement }: AchievementBadgeProps) => {
 
   return (
     <>
-      <Card 
+      <Card
         className={`cursor-pointer transition-all hover:scale-105 ${
-          achievement.unlocked 
-            ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 border-yellow-300' 
+          achievement.unlocked
+            ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-950 dark:to-yellow-900 border-yellow-300'
             : 'opacity-50 grayscale'
         }`}
         onClick={() => achievement.unlocked && setOpen(true)}
       >
         <CardContent className="p-6 text-center">
-          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-3 ${
-            achievement.unlocked 
-              ? 'bg-yellow-500 text-white' 
-              : 'bg-muted text-muted-foreground'
-          }`}>
+          <div
+            className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-3 ${
+              achievement.unlocked ? 'bg-yellow-500 text-white' : 'bg-muted text-muted-foreground'
+            }`}
+          >
             <Icon className="h-8 w-8" />
           </div>
           <h3 className="font-semibold text-sm mb-1">{achievement.name}</h3>
@@ -63,7 +65,7 @@ export const AchievementBadge = ({ achievement }: AchievementBadgeProps) => {
           ) : achievement.progress !== undefined && achievement.total !== undefined ? (
             <div className="mt-2">
               <div className="w-full bg-muted rounded-full h-2 mb-1">
-                <div 
+                <div
                   className="bg-primary h-2 rounded-full transition-all"
                   style={{ width: `${(achievement.progress / achievement.total) * 100}%` }}
                 />
@@ -73,7 +75,9 @@ export const AchievementBadge = ({ achievement }: AchievementBadgeProps) => {
               </p>
             </div>
           ) : (
-            <Badge variant="outline" className="text-xs mt-1">Bloqueada</Badge>
+            <Badge variant="outline" className="text-xs mt-1">
+              Bloqueada
+            </Badge>
           )}
         </CardContent>
       </Card>
@@ -84,12 +88,8 @@ export const AchievementBadge = ({ achievement }: AchievementBadgeProps) => {
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-white">
               <Icon className="h-10 w-10" />
             </div>
-            <DialogTitle className="text-center text-2xl">
-              {achievement.name}
-            </DialogTitle>
-            <DialogDescription className="text-center">
-              {achievement.description}
-            </DialogDescription>
+            <DialogTitle className="text-center text-2xl">{achievement.name}</DialogTitle>
+            <DialogDescription className="text-center">{achievement.description}</DialogDescription>
           </DialogHeader>
           <div className="flex gap-2">
             <Button onClick={shareAchievement} className="flex-1">

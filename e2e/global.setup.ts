@@ -1,6 +1,7 @@
-import { chromium, FullConfig } from '@playwright/test';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+
+import { chromium, FullConfig } from '@playwright/test';
 
 const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'test@example.com';
 const TEST_USER_PASSWORD = process.env.TEST_USER_PASSWORD || 'TestPassword123!';

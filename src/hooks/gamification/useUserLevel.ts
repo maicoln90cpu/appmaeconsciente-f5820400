@@ -3,11 +3,13 @@
  * @module hooks/gamification/useUserLevel
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 // XP rewards por ação
 export const XP_REWARDS = {
@@ -44,7 +46,7 @@ export const useUserLevel = () => {
     queryKey,
     queryFn: async (): Promise<UserLevel | null> => {
       if (!user) return null;
-      
+
       const { data, error } = await supabase
         .from('profiles')
         .select('xp_total, level')
@@ -55,7 +57,7 @@ export const useUserLevel = () => {
 
       const xpTotal = data.xp_total || 0;
       const level = data.level || 1;
-      
+
       // Calcular XP para níveis
       const xpForCurrentLevel = Math.pow(level - 1, 2) * 50;
       const xpForNextLevel = Math.pow(level, 2) * 50;
@@ -78,11 +80,11 @@ export const useUserLevel = () => {
 
   // Mutation para adicionar XP
   const addXPMutation = useMutation({
-    mutationFn: async ({ 
-      amount, 
-      actionType 
-    }: { 
-      amount: number; 
+    mutationFn: async ({
+      amount,
+      actionType,
+    }: {
+      amount: number;
       actionType: keyof typeof XP_REWARDS | string;
     }) => {
       if (!user) throw new Error('Not authenticated');
@@ -96,10 +98,10 @@ export const useUserLevel = () => {
       if (error) throw error;
       return data?.[0];
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey });
       queryClient.invalidateQueries({ queryKey: QueryKeys.dailyActivity(user?.id ?? '') });
-      
+
       if (data?.leveled_up) {
         toast.success(`🎉 Parabéns! Você subiu para o nível ${data.new_level}!`, {
           duration: 5000,

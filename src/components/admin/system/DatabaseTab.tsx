@@ -1,25 +1,46 @@
-import { useState, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { SortableTableHeader } from "./SortableTableHeader";
-import { useTableSort } from "@/hooks/useTableSort";
-import { usePagination } from "@/hooks/usePagination";
+import { useState, useMemo } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+import {
+  Database,
+  TableProperties,
+  Workflow,
+  Clock,
+  Cloud,
+  Search,
+  Layers,
+  Hash,
+  HardDrive,
+} from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { usePagination } from '@/hooks/usePagination';
+import { useTableSort } from '@/hooks/useTableSort';
+
+import { SortableTableHeader } from './SortableTableHeader';
+
+
 import {
   fetchDatabaseStats,
   TABLE_DESCRIPTIONS,
   TRIGGERS_CATALOG,
   CRON_JOBS_CATALOG,
   EDGE_FUNCTIONS_CATALOG,
-} from "@/services/databaseMonitorService";
-import {
-  Database, TableProperties, Workflow, Clock, Cloud,
-  Search, Layers, Hash, HardDrive,
-} from "lucide-react";
+} from '@/services/databaseMonitorService';
+
 
 function EmptyState({ message }: { message: string }) {
   return <p className="text-center text-sm text-muted-foreground py-6">{message}</p>;
@@ -30,14 +51,23 @@ function EmptyState({ message }: { message: string }) {
 // ═══════════════════════════════════════════════
 function OverviewSubTab() {
   const { data, isLoading } = useQuery({
-    queryKey: ["database-stats"],
+    queryKey: ['database-stats'],
     queryFn: fetchDatabaseStats,
     staleTime: 120000,
   });
 
-  if (isLoading) return <div className="space-y-3"><Skeleton className="h-20 w-full" /><Skeleton className="h-40 w-full" /></div>;
+  if (isLoading)
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-20 w-full" />
+        <Skeleton className="h-40 w-full" />
+      </div>
+    );
 
-  if (!data) return <EmptyState message="Não foi possível carregar as estatísticas. Verifique se a função de monitoramento está ativa." />;
+  if (!data)
+    return (
+      <EmptyState message="Não foi possível carregar as estatísticas. Verifique se a função de monitoramento está ativa." />
+    );
 
   const tables = (data.tables as Array<{ table_name: string; row_count: number }>) ?? [];
 
@@ -52,7 +82,7 @@ function OverviewSubTab() {
         </Card>
         <Card className="p-4 text-center">
           <Hash className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-          <p className="text-2xl font-bold">{(data.total_rows ?? 0).toLocaleString("pt-BR")}</p>
+          <p className="text-2xl font-bold">{(data.total_rows ?? 0).toLocaleString('pt-BR')}</p>
           <p className="text-xs text-muted-foreground">Total de Registros</p>
         </Card>
         <Card className="p-4 text-center">
@@ -88,8 +118,12 @@ function OverviewSubTab() {
                   <TableRow key={t.table_name}>
                     <TableCell className="text-xs">{i + 1}</TableCell>
                     <TableCell className="text-xs font-mono">{t.table_name}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{TABLE_DESCRIPTIONS[t.table_name] ?? "—"}</TableCell>
-                    <TableCell className="text-xs text-right font-bold">{t.row_count.toLocaleString("pt-BR")}</TableCell>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {TABLE_DESCRIPTIONS[t.table_name] ?? '—'}
+                    </TableCell>
+                    <TableCell className="text-xs text-right font-bold">
+                      {t.row_count.toLocaleString('pt-BR')}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -103,8 +137,14 @@ function OverviewSubTab() {
           <p className="text-sm font-medium">Cache Hit Ratio</p>
           <p className="text-2xl font-bold">{data.cache_hit_ratio}%</p>
           <p className="text-xs text-muted-foreground">
-            {data.cache_hit_ratio >= 99 ? "Excelente" : data.cache_hit_ratio >= 95 ? "Bom" : data.cache_hit_ratio >= 90 ? "Atenção" : "Crítico"}
-            {" — "}percentual de consultas atendidas pelo cache do banco
+            {data.cache_hit_ratio >= 99
+              ? 'Excelente'
+              : data.cache_hit_ratio >= 95
+                ? 'Bom'
+                : data.cache_hit_ratio >= 90
+                  ? 'Atenção'
+                  : 'Crítico'}
+            {' — '}percentual de consultas atendidas pelo cache do banco
           </p>
         </Card>
       )}
@@ -116,37 +156,44 @@ function OverviewSubTab() {
 // 2 — Tables & Shortcuts
 // ═══════════════════════════════════════════════
 function TablesSubTab() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const { data, isLoading } = useQuery({
-    queryKey: ["database-stats"],
+    queryKey: ['database-stats'],
     queryFn: fetchDatabaseStats,
     staleTime: 120000,
   });
 
   const tables = useMemo(() => {
     const raw = (data?.tables as Array<{ table_name: string; row_count: number }>) ?? [];
-    const withDesc = raw.map((t) => ({
+    const withDesc = raw.map(t => ({
       ...t,
-      description: TABLE_DESCRIPTIONS[t.table_name] ?? "—",
+      description: TABLE_DESCRIPTIONS[t.table_name] ?? '—',
     }));
     if (!search) return withDesc;
     const s = search.toLowerCase();
-    return withDesc.filter((t) =>
-      t.table_name.toLowerCase().includes(s) || t.description.toLowerCase().includes(s)
+    return withDesc.filter(
+      t => t.table_name.toLowerCase().includes(s) || t.description.toLowerCase().includes(s)
     );
   }, [data, search]);
 
-  const { sortConfig, handleSort, sortedData } = useTableSort(tables, "row_count");
+  const { sortConfig, handleSort, sortedData } = useTableSort(tables, 'row_count');
   const { paginatedData, currentPage, totalPages, setCurrentPage } = usePagination(sortedData, 15);
 
   return (
     <div className="space-y-3">
       <div className="relative">
         <Search className="absolute left-2 top-2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Buscar tabela..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
+        <Input
+          placeholder="Buscar tabela..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="pl-8 h-8 text-sm"
+        />
       </div>
 
-      {isLoading ? <Skeleton className="h-48 w-full" /> : tables.length === 0 ? (
+      {isLoading ? (
+        <Skeleton className="h-48 w-full" />
+      ) : tables.length === 0 ? (
         <EmptyState message="Nenhuma tabela encontrada." />
       ) : (
         <>
@@ -154,9 +201,20 @@ function TablesSubTab() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10">#</TableHead>
-                <SortableTableHeader label="Tabela" sortKey="table_name" currentSort={sortConfig} onSort={handleSort} />
+                <SortableTableHeader
+                  label="Tabela"
+                  sortKey="table_name"
+                  currentSort={sortConfig}
+                  onSort={handleSort}
+                />
                 <TableHead>Descrição</TableHead>
-                <SortableTableHeader label="Registros" sortKey="row_count" currentSort={sortConfig} onSort={handleSort} className="text-right" />
+                <SortableTableHeader
+                  label="Registros"
+                  sortKey="row_count"
+                  currentSort={sortConfig}
+                  onSort={handleSort}
+                  className="text-right"
+                />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -165,17 +223,33 @@ function TablesSubTab() {
                   <TableCell className="text-xs">{(currentPage - 1) * 15 + i + 1}</TableCell>
                   <TableCell className="text-xs font-mono">{t.table_name}</TableCell>
                   <TableCell className="text-xs text-muted-foreground">{t.description}</TableCell>
-                  <TableCell className="text-xs text-right font-bold">{t.row_count.toLocaleString("pt-BR")}</TableCell>
+                  <TableCell className="text-xs text-right font-bold">
+                    {t.row_count.toLocaleString('pt-BR')}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
           {totalPages > 1 && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Pág. {currentPage}/{totalPages} ({tables.length} tabelas)</span>
+              <span className="text-muted-foreground">
+                Pág. {currentPage}/{totalPages} ({tables.length} tabelas)
+              </span>
               <div className="flex gap-1">
-                <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage <= 1} className="px-2 py-1 border rounded disabled:opacity-50">Anterior</button>
-                <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage >= totalPages} className="px-2 py-1 border rounded disabled:opacity-50">Próxima</button>
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage <= 1}
+                  className="px-2 py-1 border rounded disabled:opacity-50"
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage >= totalPages}
+                  className="px-2 py-1 border rounded disabled:opacity-50"
+                >
+                  Próxima
+                </button>
               </div>
             </div>
           )}
@@ -191,7 +265,9 @@ function TablesSubTab() {
 function TriggersSubTab() {
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">{TRIGGERS_CATALOG.length} triggers ativos no sistema</p>
+      <p className="text-sm text-muted-foreground">
+        {TRIGGERS_CATALOG.length} triggers ativos no sistema
+      </p>
       <Table>
         <TableHeader>
           <TableRow>
@@ -207,7 +283,11 @@ function TriggersSubTab() {
             <TableRow key={t.name}>
               <TableCell className="text-xs">{i + 1}</TableCell>
               <TableCell className="text-xs font-mono">{t.table}</TableCell>
-              <TableCell><Badge variant="outline" className="text-xs">{t.event}</Badge></TableCell>
+              <TableCell>
+                <Badge variant="outline" className="text-xs">
+                  {t.event}
+                </Badge>
+              </TableCell>
               <TableCell className="text-xs font-mono">{t.fn}</TableCell>
               <TableCell className="text-xs text-muted-foreground">{t.description}</TableCell>
             </TableRow>
@@ -243,7 +323,9 @@ function CronJobsSubTab() {
               <TableCell className="text-xs">{j.frequency}</TableCell>
               <TableCell className="text-xs text-muted-foreground">{j.description}</TableCell>
               <TableCell>
-                <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">{j.status}</Badge>
+                <Badge variant="outline" className="text-emerald-400 border-emerald-500/30">
+                  {j.status}
+                </Badge>
               </TableCell>
             </TableRow>
           ))}
@@ -257,14 +339,17 @@ function CronJobsSubTab() {
 // 5 — Edge Functions
 // ═══════════════════════════════════════════════
 function EdgeFunctionsSubTab() {
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [search, setSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
-  const categories = useMemo(() => [...new Set(EDGE_FUNCTIONS_CATALOG.map((f) => f.category))].sort(), []);
+  const categories = useMemo(
+    () => [...new Set(EDGE_FUNCTIONS_CATALOG.map(f => f.category))].sort(),
+    []
+  );
 
   const filtered = useMemo(() => {
-    return EDGE_FUNCTIONS_CATALOG.filter((f) => {
-      if (categoryFilter !== "all" && f.category !== categoryFilter) return false;
+    return EDGE_FUNCTIONS_CATALOG.filter(f => {
+      if (categoryFilter !== 'all' && f.category !== categoryFilter) return false;
       if (search) {
         const s = search.toLowerCase();
         return f.name.toLowerCase().includes(s) || f.description.toLowerCase().includes(s);
@@ -278,16 +363,23 @@ function EdgeFunctionsSubTab() {
       <div className="flex flex-wrap gap-2">
         <div className="relative flex-1 min-w-[150px]">
           <Search className="absolute left-2 top-2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Buscar função..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-8 h-8 text-sm" />
+          <Input
+            placeholder="Buscar função..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-8 h-8 text-sm"
+          />
         </div>
         <select
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={e => setCategoryFilter(e.target.value)}
           className="h-8 px-2 text-xs border rounded-md bg-background"
         >
           <option value="all">Todas ({EDGE_FUNCTIONS_CATALOG.length})</option>
-          {categories.map((c) => (
-            <option key={c} value={c}>{c}</option>
+          {categories.map(c => (
+            <option key={c} value={c}>
+              {c}
+            </option>
           ))}
         </select>
       </div>
@@ -309,7 +401,11 @@ function EdgeFunctionsSubTab() {
             <TableRow key={f.name}>
               <TableCell className="text-xs">{i + 1}</TableCell>
               <TableCell className="text-xs font-mono">{f.name}</TableCell>
-              <TableCell><Badge variant="outline" className="text-xs">{f.category}</Badge></TableCell>
+              <TableCell>
+                <Badge variant="outline" className="text-xs">
+                  {f.category}
+                </Badge>
+              </TableCell>
               <TableCell className="text-xs">{f.trigger}</TableCell>
               <TableCell className="text-xs text-muted-foreground">{f.description}</TableCell>
             </TableRow>
@@ -344,11 +440,21 @@ export const DatabaseTab = () => {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="overview"><OverviewSubTab /></TabsContent>
-      <TabsContent value="tables"><TablesSubTab /></TabsContent>
-      <TabsContent value="triggers"><TriggersSubTab /></TabsContent>
-      <TabsContent value="cron"><CronJobsSubTab /></TabsContent>
-      <TabsContent value="functions"><EdgeFunctionsSubTab /></TabsContent>
+      <TabsContent value="overview">
+        <OverviewSubTab />
+      </TabsContent>
+      <TabsContent value="tables">
+        <TablesSubTab />
+      </TabsContent>
+      <TabsContent value="triggers">
+        <TriggersSubTab />
+      </TabsContent>
+      <TabsContent value="cron">
+        <CronJobsSubTab />
+      </TabsContent>
+      <TabsContent value="functions">
+        <EdgeFunctionsSubTab />
+      </TabsContent>
     </Tabs>
   );
 };

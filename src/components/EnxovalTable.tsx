@@ -1,15 +1,21 @@
-import { memo, useState, useCallback } from "react";
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
-import { EnxovalItem, Config } from "@/types/enxoval";
-import { useIsMobile } from "@/hooks/useMobile";
+import { memo, useState, useCallback } from 'react';
+
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+
 import {
   EnxovalTableRow,
   EnxovalMobileCard,
   EnxovalDeleteDialog,
   EnxovalTableHeader,
   useEnxovalTableStyles,
-} from "@/components/enxoval";
+} from '@/components/enxoval';
+
+import { useIsMobile } from '@/hooks/useMobile';
+
+import { EnxovalItem, Config } from '@/types/enxoval';
+
+
 
 interface EnxovalTableProps {
   items: EnxovalItem[];
@@ -48,7 +54,7 @@ const EnxovalTableComponent = ({ items, onEdit, onDelete }: EnxovalTableProps) =
               </CardContent>
             </Card>
           ) : (
-            items.map((item) => (
+            items.map(item => (
               <EnxovalMobileCard
                 key={item.id}
                 item={item}
@@ -85,7 +91,7 @@ const EnxovalTableComponent = ({ items, onEdit, onDelete }: EnxovalTableProps) =
                   </TableCell>
                 </TableRow>
               ) : (
-                items.map((item) => (
+                items.map(item => (
                   <EnxovalTableRow
                     key={item.id}
                     item={item}

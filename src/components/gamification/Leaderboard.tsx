@@ -1,22 +1,18 @@
-import { memo } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { useGamification } from "@/hooks/useGamification";
-import { useAuth } from "@/contexts/AuthContext";
-import { 
-  Trophy, 
-  Medal, 
-  Crown, 
-  Flame, 
-  Star,
-  TrendingUp,
-  Shield,
-  Eye,
-  EyeOff
-} from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { memo } from 'react';
+
+import { Trophy, Medal, Crown, Flame, Star, TrendingUp, Shield, Eye, EyeOff } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Switch } from '@/components/ui/switch';
+
+import { useGamification } from '@/hooks/useGamification';
+
+import { useAuth } from '@/contexts/AuthContext';
+
+
 
 const getRankIcon = (position: number) => {
   switch (position) {
@@ -27,7 +23,11 @@ const getRankIcon = (position: number) => {
     case 3:
       return <Medal className="h-5 w-5 text-amber-600" />;
     default:
-      return <span className="w-5 h-5 flex items-center justify-center text-sm font-medium text-muted-foreground">{position}</span>;
+      return (
+        <span className="w-5 h-5 flex items-center justify-center text-sm font-medium text-muted-foreground">
+          {position}
+        </span>
+      );
   }
 };
 
@@ -51,13 +51,8 @@ interface LeaderboardProps {
 
 export const Leaderboard = memo(({ limit = 10, showPrivacyToggle = true }: LeaderboardProps) => {
   const { user } = useAuth();
-  const { 
-    leaderboard, 
-    leaderboardOptIn, 
-    toggleLeaderboardOptIn, 
-    userRank,
-    isLoading 
-  } = useGamification();
+  const { leaderboard, leaderboardOptIn, toggleLeaderboardOptIn, userRank, isLoading } =
+    useGamification();
 
   const displayedEntries = leaderboard.slice(0, limit);
 
@@ -82,9 +77,7 @@ export const Leaderboard = memo(({ limit = 10, showPrivacyToggle = true }: Leade
               <Trophy className="h-5 w-5 text-yellow-500" />
               Ranking Semanal
             </CardTitle>
-            <CardDescription>
-              Top {limit} mamães mais ativas
-            </CardDescription>
+            <CardDescription>Top {limit} mamães mais ativas</CardDescription>
           </div>
           {userRank && (
             <Badge variant="secondary" className="text-sm">
@@ -93,7 +86,7 @@ export const Leaderboard = memo(({ limit = 10, showPrivacyToggle = true }: Leade
           )}
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* Privacy Toggle */}
         {showPrivacyToggle && (
@@ -126,16 +119,14 @@ export const Leaderboard = memo(({ limit = 10, showPrivacyToggle = true }: Leade
           <div className="text-center py-8 text-muted-foreground">
             <Shield className="h-12 w-12 mx-auto mb-3 opacity-50" />
             <p>Nenhum participante ainda</p>
-            <p className="text-sm">
-              Ative sua participação para aparecer no ranking!
-            </p>
+            <p className="text-sm">Ative sua participação para aparecer no ranking!</p>
           </div>
         ) : (
           <ScrollArea className="h-[400px] pr-4">
             <div className="space-y-2">
               {displayedEntries.map((entry, idx) => {
                 const isCurrentUser = entry.user_id === user?.id;
-                
+
                 return (
                   <div
                     key={entry.user_id}
@@ -149,7 +140,7 @@ export const Leaderboard = memo(({ limit = 10, showPrivacyToggle = true }: Leade
                     <div className="w-8 flex justify-center">
                       {getRankIcon(entry.rank_position)}
                     </div>
-                    
+
                     {/* User info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -163,7 +154,7 @@ export const Leaderboard = memo(({ limit = 10, showPrivacyToggle = true }: Leade
                           Nível {entry.level}
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
                         <span className="flex items-center gap-1">
                           <Star className="h-3 w-3" />
@@ -181,12 +172,11 @@ export const Leaderboard = memo(({ limit = 10, showPrivacyToggle = true }: Leade
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Weekly XP */}
                     <div className="text-right shrink-0">
                       <p className="text-sm font-semibold text-primary flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" />
-                        +{entry.weekly_xp}
+                        <TrendingUp className="h-3 w-3" />+{entry.weekly_xp}
                       </p>
                       <p className="text-xs text-muted-foreground">esta semana</p>
                     </div>

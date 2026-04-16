@@ -1,25 +1,30 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { 
-  Heart, 
-  AlertTriangle, 
-  Clock, 
+import { useState, useEffect } from 'react';
+
+import { differenceInWeeks, differenceInDays } from 'date-fns';
+import {
+  Heart,
+  AlertTriangle,
+  Clock,
   Activity,
   Flower2,
   ShieldCheck,
   Droplets,
   ChevronDown,
-  ChevronUp
-} from "lucide-react";
-import { differenceInWeeks, differenceInDays } from "date-fns";
-import { useProfile } from "@/hooks/useProfile";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Button } from "@/components/ui/button";
+  ChevronUp,
+} from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+
+
+import { useProfile } from '@/hooks/useProfile';
+
 
 interface ChecklistItem {
   id: string;
@@ -32,50 +37,69 @@ interface ChecklistItem {
 
 const NORMAL_CHECKLIST: ChecklistItem[] = [
   // Semana 1
-  { id: "rest-recover", label: "Descansar sempre que possível", week: 1 },
-  { id: "perineum-care", label: "Cuidados com o períneo (banho de assento)", week: 1, critical: true },
-  { id: "kegel-gentle", label: "Exercícios de Kegel gentis (se confortável)", week: 1 },
-  { id: "lochia-monitor", label: "Monitorar sangramento (lóquios)", week: 1, critical: true },
-  { id: "hydrate", label: "Manter boa hidratação", week: 1 },
-  
+  { id: 'rest-recover', label: 'Descansar sempre que possível', week: 1 },
+  {
+    id: 'perineum-care',
+    label: 'Cuidados com o períneo (banho de assento)',
+    week: 1,
+    critical: true,
+  },
+  { id: 'kegel-gentle', label: 'Exercícios de Kegel gentis (se confortável)', week: 1 },
+  { id: 'lochia-monitor', label: 'Monitorar sangramento (lóquios)', week: 1, critical: true },
+  { id: 'hydrate', label: 'Manter boa hidratação', week: 1 },
+
   // Semana 1-2 (Episiotomia)
-  { id: "episio-clean", label: "Limpar região da episiotomia após urinar", week: 1, episiotomy: true },
-  { id: "episio-dry", label: "Secar bem a região dos pontos", week: 1, episiotomy: true },
-  { id: "episio-sitz", label: "Banho de assento 2-3x ao dia", week: 1, episiotomy: true, critical: true },
-  
+  {
+    id: 'episio-clean',
+    label: 'Limpar região da episiotomia após urinar',
+    week: 1,
+    episiotomy: true,
+  },
+  { id: 'episio-dry', label: 'Secar bem a região dos pontos', week: 1, episiotomy: true },
+  {
+    id: 'episio-sitz',
+    label: 'Banho de assento 2-3x ao dia',
+    week: 1,
+    episiotomy: true,
+    critical: true,
+  },
+
   // Semana 2
-  { id: "walks-short", label: "Caminhadas curtas diárias", week: 2 },
-  { id: "pelvic-awareness", label: "Perceber músculos do assoalho pélvico", week: 2 },
-  { id: "bleeding-decrease", label: "Sangramento diminuindo gradualmente", week: 2 },
-  
+  { id: 'walks-short', label: 'Caminhadas curtas diárias', week: 2 },
+  { id: 'pelvic-awareness', label: 'Perceber músculos do assoalho pélvico', week: 2 },
+  { id: 'bleeding-decrease', label: 'Sangramento diminuindo gradualmente', week: 2 },
+
   // Semana 3-4
-  { id: "light-activity", label: "Retomar atividades leves em casa", week: 3 },
-  { id: "postpartum-visit", label: "Consulta pós-parto com obstetra", week: 4, critical: true },
-  { id: "kegel-regular", label: "Exercícios de Kegel regulares", week: 4 },
-  
+  { id: 'light-activity', label: 'Retomar atividades leves em casa', week: 3 },
+  { id: 'postpartum-visit', label: 'Consulta pós-parto com obstetra', week: 4, critical: true },
+  { id: 'kegel-regular', label: 'Exercícios de Kegel regulares', week: 4 },
+
   // Semana 6+
-  { id: "exercise-start", label: "Exercícios leves (com liberação médica)", week: 6 },
-  { id: "intimacy-ready", label: "Relações íntimas quando se sentir pronta", week: 6 },
-  { id: "pelvic-physio", label: "Avaliar fisioterapia pélvica se necessário", week: 6 },
-  { id: "full-activity", label: "Retorno gradual a atividades normais", week: 8 },
+  { id: 'exercise-start', label: 'Exercícios leves (com liberação médica)', week: 6 },
+  { id: 'intimacy-ready', label: 'Relações íntimas quando se sentir pronta', week: 6 },
+  { id: 'pelvic-physio', label: 'Avaliar fisioterapia pélvica se necessário', week: 6 },
+  { id: 'full-activity', label: 'Retorno gradual a atividades normais', week: 8 },
 ];
 
 const WARNING_SIGNS = [
-  "Febre acima de 38°C",
-  "Sangramento intenso (encharca absorvente em 1h)",
-  "Coágulos grandes (maiores que uma laranja)",
-  "Dor intensa no períneo que piora",
-  "Secreção com mau cheiro",
-  "Dificuldade para urinar ou evacuar",
-  "Incontinência urinária persistente",
+  'Febre acima de 38°C',
+  'Sangramento intenso (encharca absorvente em 1h)',
+  'Coágulos grandes (maiores que uma laranja)',
+  'Dor intensa no períneo que piora',
+  'Secreção com mau cheiro',
+  'Dificuldade para urinar ou evacuar',
+  'Incontinência urinária persistente',
 ];
 
 const KEGEL_EXERCISES = [
-  { step: 1, instruction: "Identifique os músculos do assoalho pélvico (como se fosse segurar o xixi)" },
-  { step: 2, instruction: "Contraia por 3-5 segundos" },
-  { step: 3, instruction: "Relaxe por 3-5 segundos" },
-  { step: 4, instruction: "Repita 10-15 vezes" },
-  { step: 5, instruction: "Faça 3 séries por dia" },
+  {
+    step: 1,
+    instruction: 'Identifique os músculos do assoalho pélvico (como se fosse segurar o xixi)',
+  },
+  { step: 2, instruction: 'Contraia por 3-5 segundos' },
+  { step: 3, instruction: 'Relaxe por 3-5 segundos' },
+  { step: 4, instruction: 'Repita 10-15 vezes' },
+  { step: 5, instruction: 'Faça 3 séries por dia' },
 ];
 
 export const NormalRecoveryChecklist = () => {
@@ -93,13 +117,13 @@ export const NormalRecoveryChecklist = () => {
   };
 
   const postpartumWeek = getPostpartumWeek();
-  const postpartumDays = profile?.delivery_date 
+  const postpartumDays = profile?.delivery_date
     ? differenceInDays(new Date(), new Date(profile.delivery_date))
     : 0;
 
   useEffect(() => {
-    const saved = localStorage.getItem("normal-checklist");
-    const savedEpisio = localStorage.getItem("has-episiotomy");
+    const saved = localStorage.getItem('normal-checklist');
+    const savedEpisio = localStorage.getItem('has-episiotomy');
     if (saved) {
       setCheckedItems(new Set(JSON.parse(saved)));
     }
@@ -109,46 +133,52 @@ export const NormalRecoveryChecklist = () => {
   }, []);
 
   const toggleItem = (id: string) => {
-    setCheckedItems((prev) => {
+    setCheckedItems(prev => {
       const newSet = new Set(prev);
       if (newSet.has(id)) {
         newSet.delete(id);
       } else {
         newSet.add(id);
       }
-      localStorage.setItem("normal-checklist", JSON.stringify([...newSet]));
+      localStorage.setItem('normal-checklist', JSON.stringify([...newSet]));
       return newSet;
     });
   };
 
   const toggleEpisiotomy = () => {
     setHasEpisiotomy(!hasEpisiotomy);
-    localStorage.setItem("has-episiotomy", JSON.stringify(!hasEpisiotomy));
+    localStorage.setItem('has-episiotomy', JSON.stringify(!hasEpisiotomy));
   };
 
   // Filtrar itens relevantes
-  const relevantItems = NORMAL_CHECKLIST.filter((item) => {
+  const relevantItems = NORMAL_CHECKLIST.filter(item => {
     const weekMatch = showAllItems || item.week <= postpartumWeek + 1;
     const episioMatch = !item.episiotomy || hasEpisiotomy;
     return weekMatch && episioMatch;
   });
 
-  const completedCount = relevantItems.filter((item) => checkedItems.has(item.id)).length;
-  const progress = relevantItems.length > 0 
-    ? Math.round((completedCount / relevantItems.length) * 100) 
-    : 0;
+  const completedCount = relevantItems.filter(item => checkedItems.has(item.id)).length;
+  const progress =
+    relevantItems.length > 0 ? Math.round((completedCount / relevantItems.length) * 100) : 0;
 
   // Agrupar por semana
-  const groupedItems = relevantItems.reduce((acc, item) => {
-    const weekLabel = item.week <= 1 ? "Semana 1" 
-      : item.week <= 2 ? "Semana 2"
-      : item.week <= 4 ? "Semanas 3-4"
-      : "Semanas 6+";
-    
-    if (!acc[weekLabel]) acc[weekLabel] = [];
-    acc[weekLabel].push(item);
-    return acc;
-  }, {} as Record<string, ChecklistItem[]>);
+  const groupedItems = relevantItems.reduce(
+    (acc, item) => {
+      const weekLabel =
+        item.week <= 1
+          ? 'Semana 1'
+          : item.week <= 2
+            ? 'Semana 2'
+            : item.week <= 4
+              ? 'Semanas 3-4'
+              : 'Semanas 6+';
+
+      if (!acc[weekLabel]) acc[weekLabel] = [];
+      acc[weekLabel].push(item);
+      return acc;
+    },
+    {} as Record<string, ChecklistItem[]>
+  );
 
   return (
     <div className="space-y-4">
@@ -165,15 +195,17 @@ export const NormalRecoveryChecklist = () => {
             </Badge>
           </div>
           <CardDescription className="text-green-600/80 dark:text-green-400/80">
-            {postpartumDays > 0 
-              ? `${postpartumDays} dias desde o parto` 
-              : "Configure a data do parto para acompanhar"}
+            {postpartumDays > 0
+              ? `${postpartumDays} dias desde o parto`
+              : 'Configure a data do parto para acompanhar'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>{completedCount} de {relevantItems.length} itens</span>
+              <span>
+                {completedCount} de {relevantItems.length} itens
+              </span>
               <span className="font-medium">{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -200,7 +232,11 @@ export const NormalRecoveryChecklist = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle className="flex items-center justify-between">
               Sinais de Alerta - Procure Ajuda
-              {warningsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              {warningsOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
             </AlertTitle>
           </Alert>
         </CollapsibleTrigger>
@@ -228,12 +264,8 @@ export const NormalRecoveryChecklist = () => {
               <ShieldCheck className="h-5 w-5 text-primary" />
               Checklist de Recuperação
             </CardTitle>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setShowAllItems(!showAllItems)}
-            >
-              {showAllItems ? "Ver relevantes" : "Ver todos"}
+            <Button variant="ghost" size="sm" onClick={() => setShowAllItems(!showAllItems)}>
+              {showAllItems ? 'Ver relevantes' : 'Ver todos'}
             </Button>
           </div>
         </CardHeader>
@@ -245,14 +277,14 @@ export const NormalRecoveryChecklist = () => {
                 {weekLabel}
               </h4>
               <div className="space-y-3">
-                {items.map((item) => (
+                {items.map(item => (
                   <div
                     key={item.id}
                     className={`flex items-start gap-3 p-2 rounded-lg transition-colors ${
-                      checkedItems.has(item.id) 
-                        ? "bg-green-50 dark:bg-green-950/20" 
-                        : "hover:bg-muted/50"
-                    } ${item.episiotomy ? "border-l-2 border-pink-300" : ""}`}
+                      checkedItems.has(item.id)
+                        ? 'bg-green-50 dark:bg-green-950/20'
+                        : 'hover:bg-muted/50'
+                    } ${item.episiotomy ? 'border-l-2 border-pink-300' : ''}`}
                   >
                     <Checkbox
                       id={item.id}
@@ -261,7 +293,9 @@ export const NormalRecoveryChecklist = () => {
                       className="mt-0.5"
                     />
                     <Label htmlFor={item.id} className="flex-1 cursor-pointer">
-                      <span className={`${checkedItems.has(item.id) ? "line-through text-muted-foreground" : ""}`}>
+                      <span
+                        className={`${checkedItems.has(item.id) ? 'line-through text-muted-foreground' : ''}`}
+                      >
                         {item.label}
                       </span>
                       {item.episiotomy && (
@@ -293,7 +327,11 @@ export const NormalRecoveryChecklist = () => {
                   <Flower2 className="h-5 w-5 text-pink-500" />
                   Exercícios de Kegel
                 </span>
-                {kegelOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {kegelOpen ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
               </CardTitle>
               <CardDescription>
                 Fortalecem o assoalho pélvico e ajudam na recuperação
@@ -303,7 +341,7 @@ export const NormalRecoveryChecklist = () => {
           <CollapsibleContent>
             <CardContent className="pt-0">
               <div className="space-y-3">
-                {KEGEL_EXERCISES.map((exercise) => (
+                {KEGEL_EXERCISES.map(exercise => (
                   <div key={exercise.step} className="flex items-start gap-3">
                     <div className="w-6 h-6 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-medium">
                       {exercise.step}

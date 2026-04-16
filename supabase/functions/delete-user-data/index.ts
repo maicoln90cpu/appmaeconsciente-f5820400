@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
+
 import { getCorsHeaders, handleCorsOptions, logSecurityEvent, getRequestInfo } from "../_shared/cors.ts";
 
 // Lista de todas as tabelas com dados do usuário

@@ -1,2 +1,2 @@
-export { CrossModuleInsights } from "./CrossModuleInsights";
-export { ActionableInsights } from "./ActionableInsights";
+export { CrossModuleInsights } from './CrossModuleInsights';
+export { ActionableInsights } from './ActionableInsights';

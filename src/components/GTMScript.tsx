@@ -1,18 +1,17 @@
-import { useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from 'react';
+
+import { useQuery } from '@tanstack/react-query';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export const GTMScript = () => {
   const { data: settings } = useQuery({
-    queryKey: ["site-settings-public"],
+    queryKey: ['site-settings-public'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .select("gtm_id")
-        .single();
+      const { data, error } = await supabase.from('site_settings').select('gtm_id').single();
 
       if (error) {
-        console.error("Error fetching GTM settings:", error);
+        console.error('Error fetching GTM settings:', error);
         return null;
       }
       return data;
@@ -22,7 +21,7 @@ export const GTMScript = () => {
 
   useEffect(() => {
     const gtmId = settings?.gtm_id;
-    
+
     if (!gtmId) return;
 
     // Check if GTM is already loaded
@@ -34,7 +33,7 @@ export const GTMScript = () => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       'gtm.start': new Date().getTime(),
-      event: 'gtm.js'
+      event: 'gtm.js',
     });
 
     // Load GTM script
@@ -47,10 +46,10 @@ export const GTMScript = () => {
     const noscript = document.createElement('noscript');
     const iframe = document.createElement('iframe');
     iframe.src = `https://www.googletagmanager.com/ns.html?id=${gtmId}`;
-    iframe.height = "0";
-    iframe.width = "0";
-    iframe.style.display = "none";
-    iframe.style.visibility = "hidden";
+    iframe.height = '0';
+    iframe.width = '0';
+    iframe.style.display = 'none';
+    iframe.style.visibility = 'hidden';
     noscript.appendChild(iframe);
     document.body.insertBefore(noscript, document.body.firstChild);
 

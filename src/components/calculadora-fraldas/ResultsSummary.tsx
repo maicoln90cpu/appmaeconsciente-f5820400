@@ -1,13 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Download, Share2, ShoppingCart, PieChart, Plus, Lightbulb } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
-import { Progress } from "@/components/ui/progress";
-import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
-import { usePDFExport } from "@/hooks/usePDFExport";
-import { toast } from "sonner";
+import { useState } from 'react';
+
+import { Download, Share2, ShoppingCart, PieChart, Plus, Lightbulb } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import { usePDFExport } from '@/hooks/usePDFExport';
+
+import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
+
 
 interface Props {
   estimate: DiaperEstimate;
@@ -15,27 +23,35 @@ interface Props {
 
 const getSavingsTips = (estimate: DiaperEstimate): string[] => {
   const tips: string[] = [];
-  const sizes = estimate.estimates.map((e) => e.size);
+  const sizes = estimate.estimates.map(e => e.size);
 
-  if (sizes.includes("RN")) {
-    tips.push("⚠️ Compre no máximo 2 pacotes de RN — bebês crescem muito rápido nessa fase!");
+  if (sizes.includes('RN')) {
+    tips.push('⚠️ Compre no máximo 2 pacotes de RN — bebês crescem muito rápido nessa fase!');
   }
 
   const biggestSize = estimate.estimates.reduce((a, b) => (a.monthlyQty > b.monthlyQty ? a : b));
-  tips.push(`📦 Foque em estocar tamanho ${biggestSize.size} — é o que você mais vai usar (${biggestSize.monthlyQty} unidades).`);
+  tips.push(
+    `📦 Foque em estocar tamanho ${biggestSize.size} — é o que você mais vai usar (${biggestSize.monthlyQty} unidades).`
+  );
 
   if (estimate.totalDiapers > 300) {
-    tips.push("💰 Compre pacotes hiper/mega em promoção — economia de até 30% por fralda!");
+    tips.push('💰 Compre pacotes hiper/mega em promoção — economia de até 30% por fralda!');
   }
 
   if (estimate.calculationPeriod >= 6) {
-    tips.push("🛒 Assine clubes de fraldas (ex: Amazon, drogarias) para descontos recorrentes de 10-15%.");
+    tips.push(
+      '🛒 Assine clubes de fraldas (ex: Amazon, drogarias) para descontos recorrentes de 10-15%.'
+    );
   }
 
-  tips.push("🌿 Considere usar fraldas de pano durante o dia — pode economizar até 40% no longo prazo.");
+  tips.push(
+    '🌿 Considere usar fraldas de pano durante o dia — pode economizar até 40% no longo prazo.'
+  );
 
   if (estimate.totalDiapers > 500) {
-    tips.push("🎁 Peça fraldas de diferentes tamanhos no chá de bebê — evite acumular só um tamanho.");
+    tips.push(
+      '🎁 Peça fraldas de diferentes tamanhos no chá de bebê — evite acumular só um tamanho.'
+    );
   }
 
   return tips;
@@ -49,25 +65,25 @@ export const ResultsSummary = ({ estimate }: Props) => {
 
   const handleDownloadPDF = async () => {
     await generatePDF({
-      title: "Relatório de Fraldas",
-      subtitle: `Estimativa para ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? "mês" : "meses"}`,
-      filename: "relatorio-fraldas",
+      title: 'Relatório de Fraldas',
+      subtitle: `Estimativa para ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? 'mês' : 'meses'}`,
+      filename: 'relatorio-fraldas',
       sections: [
         {
-          title: "Dados do Bebê",
-          type: "text",
+          title: 'Dados do Bebê',
+          type: 'text',
           content: [
             `Idade: ${estimate.babyAge}`,
             `Peso: ${estimate.babyWeight} kg`,
-            `Período calculado: ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? "mês" : "meses"}`,
+            `Período calculado: ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? 'mês' : 'meses'}`,
             `Total estimado: ${estimate.totalDiapers} fraldas`,
           ],
         },
         {
-          title: "Distribuição por Tamanho",
-          type: "table",
-          tableHead: ["Tamanho", "Quantidade", "Média/dia", "% do Total"],
-          tableBody: estimate.estimates.map((est) => [
+          title: 'Distribuição por Tamanho',
+          type: 'table',
+          tableHead: ['Tamanho', 'Quantidade', 'Média/dia', '% do Total'],
+          tableBody: estimate.estimates.map(est => [
             est.size,
             String(est.monthlyQty),
             String(est.dailyAvg),
@@ -76,55 +92,57 @@ export const ResultsSummary = ({ estimate }: Props) => {
           tableColor: [147, 51, 234],
         },
         {
-          title: "Dicas de Economia",
-          type: "text",
-          content: savingsTips.map((tip) => tip.replace(/^[^\s]+ /, "")),
+          title: 'Dicas de Economia',
+          type: 'text',
+          content: savingsTips.map(tip => tip.replace(/^[^\s]+ /, '')),
         },
       ],
-      footer: "Mãe Consciente — Calculadora de Fraldas",
+      footer: 'Mãe Consciente — Calculadora de Fraldas',
     });
   };
 
   const handleShare = () => {
-    const text = `🍼 Calculadora de Fraldas — Mãe Consciente\n\nVou precisar de aproximadamente ${estimate.totalDiapers} fraldas nos próximos ${estimate.calculationPeriod} meses!\n\nDistribuição:\n${estimate.estimates.map((e) => `• ${e.size}: ${e.monthlyQty} unidades`).join("\n")}`;
+    const text = `🍼 Calculadora de Fraldas — Mãe Consciente\n\nVou precisar de aproximadamente ${estimate.totalDiapers} fraldas nos próximos ${estimate.calculationPeriod} meses!\n\nDistribuição:\n${estimate.estimates.map(e => `• ${e.size}: ${e.monthlyQty} unidades`).join('\n')}`;
 
     if (navigator.share) {
-      navigator.share({ title: "Minha Calculadora de Fraldas", text });
+      navigator.share({ title: 'Minha Calculadora de Fraldas', text });
     } else {
       navigator.clipboard.writeText(text);
-      toast.success("Texto copiado para a área de transferência!");
+      toast.success('Texto copiado para a área de transferência!');
     }
   };
 
   const handleAddToEnxoval = async () => {
     setAddingToEnxoval(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) {
-        toast.error("Você precisa estar logado para adicionar ao enxoval.");
+        toast.error('Você precisa estar logado para adicionar ao enxoval.');
         return;
       }
 
-      const itemsToAdd = estimate.estimates.map((est) => ({
+      const itemsToAdd = estimate.estimates.map(est => ({
         user_id: user.id,
-        categoria: "Higiene",
+        categoria: 'Higiene',
         item: `Fraldas tamanho ${est.size}`,
-        necessidade: "Necessário",
-        prioridade: "Alta",
+        necessidade: 'Necessário',
+        prioridade: 'Alta',
         qtd_planejada: est.monthlyQty,
         preco_planejado: 0,
         qtd_comprada: 0,
-        status: "A comprar",
+        status: 'A comprar',
         obs: `Estimativa para ${estimate.calculationPeriod} ${estimate.calculationPeriod === 1 ? 'mês' : 'meses'}. Média: ${est.dailyAvg} fraldas/dia`,
       }));
 
-      const { error } = await supabase.from("itens_enxoval").insert(itemsToAdd);
+      const { error } = await supabase.from('itens_enxoval').insert(itemsToAdd);
       if (error) throw error;
 
       toast.success(`${estimate.estimates.length} itens de fraldas adicionados ao enxoval!`);
     } catch (error) {
-      console.error("Error adding to enxoval:", error);
-      toast.error("Não foi possível adicionar ao enxoval. Tente novamente.");
+      console.error('Error adding to enxoval:', error);
+      toast.error('Não foi possível adicionar ao enxoval. Tente novamente.');
     } finally {
       setAddingToEnxoval(false);
     }
@@ -152,7 +170,8 @@ export const ResultsSummary = ({ estimate }: Props) => {
               <p className="text-sm text-muted-foreground mb-1">Total de fraldas</p>
               <p className="text-4xl font-bold text-primary">{estimate.totalDiapers}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                nos próximos {estimate.calculationPeriod} {estimate.calculationPeriod === 1 ? "mês" : "meses"}
+                nos próximos {estimate.calculationPeriod}{' '}
+                {estimate.calculationPeriod === 1 ? 'mês' : 'meses'}
               </p>
             </div>
             <div>
@@ -167,7 +186,7 @@ export const ResultsSummary = ({ estimate }: Props) => {
         <div>
           <h3 className="font-semibold text-lg mb-4">Distribuição por Tamanho</h3>
           <div className="space-y-4">
-            {totalPercentages.map((item) => (
+            {totalPercentages.map(item => (
               <div key={item.size}>
                 <div className="flex justify-between items-center mb-2">
                   <div className="flex items-center gap-2">
@@ -195,7 +214,9 @@ export const ResultsSummary = ({ estimate }: Props) => {
           </h3>
           <div className="space-y-2">
             {savingsTips.map((tip, i) => (
-              <p key={i} className="text-sm leading-relaxed">{tip}</p>
+              <p key={i} className="text-sm leading-relaxed">
+                {tip}
+              </p>
             ))}
           </div>
         </div>
@@ -207,7 +228,7 @@ export const ResultsSummary = ({ estimate }: Props) => {
             Lista de Compras Otimizada
           </h3>
           <div className="space-y-2">
-            {estimate.estimates.map((item) => (
+            {estimate.estimates.map(item => (
               <div key={item.size} className="flex justify-between items-center text-sm">
                 <span>Fraldas tamanho {item.size}</span>
                 <span className="font-medium">{item.monthlyQty} unidades</span>
@@ -225,7 +246,7 @@ export const ResultsSummary = ({ estimate }: Props) => {
             disabled={addingToEnxoval}
           >
             <Plus className="mr-2 h-4 w-4" />
-            {addingToEnxoval ? "Adicionando..." : "Adicionar ao Meu Enxoval"}
+            {addingToEnxoval ? 'Adicionando...' : 'Adicionar ao Meu Enxoval'}
           </Button>
 
           <div className="grid md:grid-cols-2 gap-3">
@@ -243,8 +264,8 @@ export const ResultsSummary = ({ estimate }: Props) => {
         {/* Footer */}
         <div className="text-center text-xs text-muted-foreground pt-4 border-t">
           <p>
-            Estimativas baseadas em médias de consumo. Cada bebê é único e pode ter necessidades diferentes.
-            Consulte seu pediatra para orientações personalizadas.
+            Estimativas baseadas em médias de consumo. Cada bebê é único e pode ter necessidades
+            diferentes. Consulte seu pediatra para orientações personalizadas.
           </p>
         </div>
       </CardContent>

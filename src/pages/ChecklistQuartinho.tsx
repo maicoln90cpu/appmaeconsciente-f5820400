@@ -1,15 +1,30 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Progress } from "@/components/ui/progress";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, Bed, Bath, Shield, Palette, Utensils, DollarSign, Star } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+
+import {
+  ArrowLeft,
+  Plus,
+  Bed,
+  Bath,
+  Shield,
+  Palette,
+  Utensils,
+  DollarSign,
+  Star,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface ChecklistItem {
   id?: string;
@@ -19,14 +34,14 @@ interface ChecklistItem {
   is_custom: boolean;
 }
 
-type Priority = "essential" | "optional";
+type Priority = 'essential' | 'optional';
 
 const CATEGORIES = [
-  { key: "sono", label: "Berço & Sono", icon: Bed, color: "text-indigo-500" },
-  { key: "banho", label: "Banho & Troca", icon: Bath, color: "text-sky-500" },
-  { key: "alimentacao", label: "Alimentação", icon: Utensils, color: "text-emerald-500" },
-  { key: "seguranca", label: "Segurança", icon: Shield, color: "text-amber-500" },
-  { key: "decoracao", label: "Decoração", icon: Palette, color: "text-pink-500" },
+  { key: 'sono', label: 'Berço & Sono', icon: Bed, color: 'text-indigo-500' },
+  { key: 'banho', label: 'Banho & Troca', icon: Bath, color: 'text-sky-500' },
+  { key: 'alimentacao', label: 'Alimentação', icon: Utensils, color: 'text-emerald-500' },
+  { key: 'seguranca', label: 'Segurança', icon: Shield, color: 'text-amber-500' },
+  { key: 'decoracao', label: 'Decoração', icon: Palette, color: 'text-pink-500' },
 ];
 
 interface ItemMeta {
@@ -35,43 +50,77 @@ interface ItemMeta {
 }
 
 const ITEM_META: Record<string, ItemMeta> = {
-  "Berço com certificação INMETRO": { price: 600, priority: "essential" },
-  "Colchão firme": { price: 150, priority: "essential" },
-  "2 lençóis de elástico": { price: 60, priority: "essential" },
-  "Mosquiteiro": { price: 40, priority: "optional" },
-  "Babá eletrônica": { price: 250, priority: "optional" },
-  "Luminária noturna": { price: 50, priority: "essential" },
-  "Cortina blackout": { price: 120, priority: "optional" },
-  "Banheira com suporte": { price: 180, priority: "essential" },
-  "2 toalhas com capuz": { price: 70, priority: "essential" },
-  "Kit higiene (algodão, cotonete, tesoura)": { price: 45, priority: "essential" },
-  "Trocador acolchoado": { price: 80, priority: "essential" },
-  "Lixeira com pedal": { price: 60, priority: "optional" },
-  "Fraldas (estoque inicial)": { price: 150, priority: "essential" },
-  "Pomada para assaduras": { price: 30, priority: "essential" },
-  "Cadeira de alimentação": { price: 350, priority: "essential" },
-  "Babadores (kit 5+)": { price: 50, priority: "essential" },
-  "Kit prato/colher/copo": { price: 60, priority: "essential" },
-  "Esterilizador": { price: 120, priority: "optional" },
-  "Escova para mamadeiras": { price: 20, priority: "essential" },
-  "Protetores de tomada": { price: 15, priority: "essential" },
-  "Grades de proteção": { price: 100, priority: "essential" },
-  "Travas para gavetas": { price: 25, priority: "essential" },
-  "Protetor de quina": { price: 20, priority: "essential" },
-  "Tela de proteção (janelas)": { price: 200, priority: "essential" },
-  "Tapete emborrachado/EVA": { price: 80, priority: "optional" },
-  "Prateleiras para livros/brinquedos": { price: 90, priority: "optional" },
-  "Cesto organizador de roupas": { price: 50, priority: "optional" },
-  "Adesivos decorativos": { price: 40, priority: "optional" },
-  "Móbile para berço": { price: 70, priority: "optional" },
+  'Berço com certificação INMETRO': { price: 600, priority: 'essential' },
+  'Colchão firme': { price: 150, priority: 'essential' },
+  '2 lençóis de elástico': { price: 60, priority: 'essential' },
+  Mosquiteiro: { price: 40, priority: 'optional' },
+  'Babá eletrônica': { price: 250, priority: 'optional' },
+  'Luminária noturna': { price: 50, priority: 'essential' },
+  'Cortina blackout': { price: 120, priority: 'optional' },
+  'Banheira com suporte': { price: 180, priority: 'essential' },
+  '2 toalhas com capuz': { price: 70, priority: 'essential' },
+  'Kit higiene (algodão, cotonete, tesoura)': { price: 45, priority: 'essential' },
+  'Trocador acolchoado': { price: 80, priority: 'essential' },
+  'Lixeira com pedal': { price: 60, priority: 'optional' },
+  'Fraldas (estoque inicial)': { price: 150, priority: 'essential' },
+  'Pomada para assaduras': { price: 30, priority: 'essential' },
+  'Cadeira de alimentação': { price: 350, priority: 'essential' },
+  'Babadores (kit 5+)': { price: 50, priority: 'essential' },
+  'Kit prato/colher/copo': { price: 60, priority: 'essential' },
+  Esterilizador: { price: 120, priority: 'optional' },
+  'Escova para mamadeiras': { price: 20, priority: 'essential' },
+  'Protetores de tomada': { price: 15, priority: 'essential' },
+  'Grades de proteção': { price: 100, priority: 'essential' },
+  'Travas para gavetas': { price: 25, priority: 'essential' },
+  'Protetor de quina': { price: 20, priority: 'essential' },
+  'Tela de proteção (janelas)': { price: 200, priority: 'essential' },
+  'Tapete emborrachado/EVA': { price: 80, priority: 'optional' },
+  'Prateleiras para livros/brinquedos': { price: 90, priority: 'optional' },
+  'Cesto organizador de roupas': { price: 50, priority: 'optional' },
+  'Adesivos decorativos': { price: 40, priority: 'optional' },
+  'Móbile para berço': { price: 70, priority: 'optional' },
 };
 
 const DEFAULT_ITEMS: Record<string, string[]> = {
-  sono: ["Berço com certificação INMETRO", "Colchão firme", "2 lençóis de elástico", "Mosquiteiro", "Babá eletrônica", "Luminária noturna", "Cortina blackout"],
-  banho: ["Banheira com suporte", "2 toalhas com capuz", "Kit higiene (algodão, cotonete, tesoura)", "Trocador acolchoado", "Lixeira com pedal", "Fraldas (estoque inicial)", "Pomada para assaduras"],
-  alimentacao: ["Cadeira de alimentação", "Babadores (kit 5+)", "Kit prato/colher/copo", "Esterilizador", "Escova para mamadeiras"],
-  seguranca: ["Protetores de tomada", "Grades de proteção", "Travas para gavetas", "Protetor de quina", "Tela de proteção (janelas)"],
-  decoracao: ["Tapete emborrachado/EVA", "Prateleiras para livros/brinquedos", "Cesto organizador de roupas", "Adesivos decorativos", "Móbile para berço"],
+  sono: [
+    'Berço com certificação INMETRO',
+    'Colchão firme',
+    '2 lençóis de elástico',
+    'Mosquiteiro',
+    'Babá eletrônica',
+    'Luminária noturna',
+    'Cortina blackout',
+  ],
+  banho: [
+    'Banheira com suporte',
+    '2 toalhas com capuz',
+    'Kit higiene (algodão, cotonete, tesoura)',
+    'Trocador acolchoado',
+    'Lixeira com pedal',
+    'Fraldas (estoque inicial)',
+    'Pomada para assaduras',
+  ],
+  alimentacao: [
+    'Cadeira de alimentação',
+    'Babadores (kit 5+)',
+    'Kit prato/colher/copo',
+    'Esterilizador',
+    'Escova para mamadeiras',
+  ],
+  seguranca: [
+    'Protetores de tomada',
+    'Grades de proteção',
+    'Travas para gavetas',
+    'Protetor de quina',
+    'Tela de proteção (janelas)',
+  ],
+  decoracao: [
+    'Tapete emborrachado/EVA',
+    'Prateleiras para livros/brinquedos',
+    'Cesto organizador de roupas',
+    'Adesivos decorativos',
+    'Móbile para berço',
+  ],
 };
 
 const ChecklistQuartinho = () => {
@@ -86,9 +135,11 @@ const ChecklistQuartinho = () => {
 
   // Carregar preços personalizados
   useEffect(() => {
-    const saved = localStorage.getItem("quartinho_custom_prices");
+    const saved = localStorage.getItem('quartinho_custom_prices');
     if (saved) {
-      try { setCustomPrices(JSON.parse(saved)); } catch {}
+      try {
+        setCustomPrices(JSON.parse(saved));
+      } catch {}
     }
   }, []);
 
@@ -96,20 +147,22 @@ const ChecklistQuartinho = () => {
     if (!user) return;
     const load = async () => {
       const { data } = await supabase
-        .from("baby_room_checklist")
-        .select("id, category, item_name, completed, is_custom")
-        .eq("user_id", user.id);
+        .from('baby_room_checklist')
+        .select('id, category, item_name, completed, is_custom')
+        .eq('user_id', user.id);
 
       if (data && data.length > 0) {
         setItems(data);
       } else {
         const defaults: ChecklistItem[] = [];
         Object.entries(DEFAULT_ITEMS).forEach(([cat, names]) => {
-          names.forEach((name) => defaults.push({ category: cat, item_name: name, completed: false, is_custom: false }));
+          names.forEach(name =>
+            defaults.push({ category: cat, item_name: name, completed: false, is_custom: false })
+          );
         });
         setItems(defaults);
-        const inserts = defaults.map((item) => ({ user_id: user.id, ...item }));
-        await supabase.from("baby_room_checklist").insert(inserts);
+        const inserts = defaults.map(item => ({ user_id: user.id, ...item }));
+        await supabase.from('baby_room_checklist').insert(inserts);
       }
       setLoading(false);
     };
@@ -120,9 +173,9 @@ const ChecklistQuartinho = () => {
     if (!user) return;
     const item = items[index];
     const newVal = !item.completed;
-    setItems((prev) => prev.map((it, i) => i === index ? { ...it, completed: newVal } : it));
+    setItems(prev => prev.map((it, i) => (i === index ? { ...it, completed: newVal } : it)));
     if (item.id) {
-      await supabase.from("baby_room_checklist").update({ completed: newVal }).eq("id", item.id);
+      await supabase.from('baby_room_checklist').update({ completed: newVal }).eq('id', item.id);
     }
   };
 
@@ -130,16 +183,20 @@ const ChecklistQuartinho = () => {
     if (!user || !newItemText[category]?.trim()) return;
     const name = newItemText[category].trim();
     const newItem: ChecklistItem = { category, item_name: name, completed: false, is_custom: true };
-    const { data } = await supabase.from("baby_room_checklist").insert({ user_id: user.id, ...newItem }).select("id").single();
+    const { data } = await supabase
+      .from('baby_room_checklist')
+      .insert({ user_id: user.id, ...newItem })
+      .select('id')
+      .single();
     if (data) {
-      setItems((prev) => [...prev, { ...newItem, id: data.id }]);
-      setNewItemText((prev) => ({ ...prev, [category]: "" }));
-      toast.success("Item adicionado!");
+      setItems(prev => [...prev, { ...newItem, id: data.id }]);
+      setNewItemText(prev => ({ ...prev, [category]: '' }));
+      toast.success('Item adicionado!');
     }
   };
 
   const getItemMeta = (name: string): ItemMeta => {
-    const base = ITEM_META[name] || { price: 0, priority: "optional" as Priority };
+    const base = ITEM_META[name] || { price: 0, priority: 'optional' as Priority };
     const customPrice = customPrices[name];
     return customPrice !== undefined ? { ...base, price: customPrice } : base;
   };
@@ -147,23 +204,28 @@ const ChecklistQuartinho = () => {
   const updateCustomPrice = (name: string, price: number) => {
     const updated = { ...customPrices, [name]: price };
     setCustomPrices(updated);
-    localStorage.setItem("quartinho_custom_prices", JSON.stringify(updated));
+    localStorage.setItem('quartinho_custom_prices', JSON.stringify(updated));
     setEditingPrice(null);
-    toast.success("Preço atualizado!");
+    toast.success('Preço atualizado!');
   };
 
   const totalItems = items.length;
-  const completedItems = items.filter((i) => i.completed).length;
+  const completedItems = items.filter(i => i.completed).length;
   const progress = totalItems > 0 ? (completedItems / totalItems) * 100 : 0;
 
   // Cálculo de custo estimado
-  const totalEstimatedCost = items.reduce((sum, item) => sum + getItemMeta(item.item_name).price, 0);
-  const remainingCost = items.filter((i) => !i.completed).reduce((sum, item) => sum + getItemMeta(item.item_name).price, 0);
+  const totalEstimatedCost = items.reduce(
+    (sum, item) => sum + getItemMeta(item.item_name).price,
+    0
+  );
+  const remainingCost = items
+    .filter(i => !i.completed)
+    .reduce((sum, item) => sum + getItemMeta(item.item_name).price, 0);
 
   const getFilteredItems = (catKey: string) => {
-    let catItems = items.filter((i) => i.category === catKey);
+    let catItems = items.filter(i => i.category === catKey);
     if (filterEssential) {
-      catItems = catItems.filter((i) => getItemMeta(i.item_name).priority === "essential");
+      catItems = catItems.filter(i => getItemMeta(i.item_name).priority === 'essential');
     }
     return catItems;
   };
@@ -171,7 +233,7 @@ const ChecklistQuartinho = () => {
   return (
     <div className="container max-w-2xl mx-auto p-4 space-y-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/materiais")}>
+        <Button variant="ghost" size="icon" onClick={() => navigate('/materiais')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -183,7 +245,9 @@ const ChecklistQuartinho = () => {
       <Card>
         <CardContent className="pt-6 space-y-4">
           <div className="flex justify-between text-sm">
-            <span>{completedItems} de {totalItems} itens</span>
+            <span>
+              {completedItems} de {totalItems} itens
+            </span>
             <span className="font-bold">{progress.toFixed(0)}%</span>
           </div>
           <Progress value={progress} className="h-3" />
@@ -194,14 +258,14 @@ const ChecklistQuartinho = () => {
               <p className="text-xs text-muted-foreground">Estimativa total</p>
               <p className="text-lg font-bold text-primary flex items-center justify-center gap-1">
                 <DollarSign className="h-4 w-4" />
-                R$ {totalEstimatedCost.toLocaleString("pt-BR")}
+                R$ {totalEstimatedCost.toLocaleString('pt-BR')}
               </p>
             </div>
             <div className="p-3 rounded-lg bg-muted/50 text-center">
               <p className="text-xs text-muted-foreground">Falta comprar</p>
               <p className="text-lg font-bold flex items-center justify-center gap-1">
                 <DollarSign className="h-4 w-4" />
-                R$ {remainingCost.toLocaleString("pt-BR")}
+                R$ {remainingCost.toLocaleString('pt-BR')}
               </p>
             </div>
           </div>
@@ -211,22 +275,22 @@ const ChecklistQuartinho = () => {
       {/* Filtro essencial/opcional */}
       <div className="flex items-center gap-2">
         <Button
-          variant={filterEssential ? "default" : "outline"}
+          variant={filterEssential ? 'default' : 'outline'}
           size="sm"
           onClick={() => setFilterEssential(!filterEssential)}
           className="gap-1.5 text-xs"
         >
           <Star className="h-3.5 w-3.5" />
-          {filterEssential ? "Ver todos" : "Só essenciais"}
+          {filterEssential ? 'Ver todos' : 'Só essenciais'}
         </Button>
         <span className="text-xs text-muted-foreground">
-          {filterEssential ? "Mostrando apenas itens essenciais" : "Mostrando todos os itens"}
+          {filterEssential ? 'Mostrando apenas itens essenciais' : 'Mostrando todos os itens'}
         </span>
       </div>
 
-      {CATEGORIES.map((cat) => {
+      {CATEGORIES.map(cat => {
         const catItems = getFilteredItems(cat.key);
-        const catDone = catItems.filter((i) => i.completed).length;
+        const catDone = catItems.filter(i => i.completed).length;
         const catCost = catItems.reduce((s, i) => s + getItemMeta(i.item_name).price, 0);
         const Icon = cat.icon;
 
@@ -240,22 +304,30 @@ const ChecklistQuartinho = () => {
                 </span>
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-muted-foreground font-normal">
-                    ~R$ {catCost.toLocaleString("pt-BR")}
+                    ~R$ {catCost.toLocaleString('pt-BR')}
                   </span>
-                  <Badge variant="outline" className="text-xs">{catDone}/{catItems.length}</Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {catDone}/{catItems.length}
+                  </Badge>
                 </div>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {catItems.map((item) => {
+              {catItems.map(item => {
                 const idx = items.indexOf(item);
                 const meta = getItemMeta(item.item_name);
-                const isEssential = meta.priority === "essential";
+                const isEssential = meta.priority === 'essential';
 
                 return (
                   <div key={idx} className="flex items-center gap-3 py-1">
-                    <Checkbox checked={item.completed} onCheckedChange={() => toggle(idx)} disabled={loading} />
-                    <span className={`text-sm flex-1 ${item.completed ? "line-through text-muted-foreground" : ""}`}>
+                    <Checkbox
+                      checked={item.completed}
+                      onCheckedChange={() => toggle(idx)}
+                      disabled={loading}
+                    />
+                    <span
+                      className={`text-sm flex-1 ${item.completed ? 'line-through text-muted-foreground' : ''}`}
+                    >
                       {item.item_name}
                     </span>
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -264,7 +336,9 @@ const ChecklistQuartinho = () => {
                           <Star className="h-2.5 w-2.5" /> Essencial
                         </Badge>
                       ) : (
-                        <Badge variant="secondary" className="text-[9px]">Opcional</Badge>
+                        <Badge variant="secondary" className="text-[9px]">
+                          Opcional
+                        </Badge>
                       )}
                       {editingPrice === item.item_name ? (
                         <Input
@@ -272,10 +346,16 @@ const ChecklistQuartinho = () => {
                           defaultValue={meta.price}
                           className="h-6 w-20 text-[10px] px-1"
                           autoFocus
-                          onBlur={(e) => updateCustomPrice(item.item_name, Number(e.target.value) || 0)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") updateCustomPrice(item.item_name, Number((e.target as HTMLInputElement).value) || 0);
-                            if (e.key === "Escape") setEditingPrice(null);
+                          onBlur={e =>
+                            updateCustomPrice(item.item_name, Number(e.target.value) || 0)
+                          }
+                          onKeyDown={e => {
+                            if (e.key === 'Enter')
+                              updateCustomPrice(
+                                item.item_name,
+                                Number((e.target as HTMLInputElement).value) || 0
+                              );
+                            if (e.key === 'Escape') setEditingPrice(null);
                           }}
                         />
                       ) : (
@@ -284,10 +364,15 @@ const ChecklistQuartinho = () => {
                           className="text-[10px] text-muted-foreground whitespace-nowrap hover:text-primary hover:underline cursor-pointer transition-colors"
                           title="Clique para editar o preço"
                         >
-                          {customPrices[item.item_name] !== undefined ? "R$" : "~R$"}{meta.price}
+                          {customPrices[item.item_name] !== undefined ? 'R$' : '~R$'}
+                          {meta.price}
                         </button>
                       )}
-                      {item.is_custom && <Badge variant="secondary" className="text-[9px]">Custom</Badge>}
+                      {item.is_custom && (
+                        <Badge variant="secondary" className="text-[9px]">
+                          Custom
+                        </Badge>
+                      )}
                     </div>
                   </div>
                 );
@@ -295,12 +380,17 @@ const ChecklistQuartinho = () => {
               <div className="flex gap-2 mt-2">
                 <Input
                   placeholder="Adicionar item..."
-                  value={newItemText[cat.key] || ""}
-                  onChange={(e) => setNewItemText((p) => ({ ...p, [cat.key]: e.target.value }))}
-                  onKeyDown={(e) => e.key === "Enter" && addItem(cat.key)}
+                  value={newItemText[cat.key] || ''}
+                  onChange={e => setNewItemText(p => ({ ...p, [cat.key]: e.target.value }))}
+                  onKeyDown={e => e.key === 'Enter' && addItem(cat.key)}
                   className="text-sm h-8"
                 />
-                <Button size="sm" variant="outline" onClick={() => addItem(cat.key)} className="h-8 px-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => addItem(cat.key)}
+                  className="h-8 px-2"
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>

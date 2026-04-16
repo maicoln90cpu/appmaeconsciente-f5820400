@@ -1,11 +1,15 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Image, Heart, Calendar } from "lucide-react";
-import { useUltrasounds } from "@/hooks/useUltrasounds";
-import { UltrasoundUploader } from "./UltrasoundUploader";
-import { UltrasoundTimeline } from "./UltrasoundTimeline";
+import { Image, Heart, Calendar } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+import { useUltrasounds } from '@/hooks/useUltrasounds';
+
+import { UltrasoundTimeline } from './UltrasoundTimeline';
+import { UltrasoundUploader } from './UltrasoundUploader';
 
 export const UltrasoundAlbum = () => {
   const { ultrasounds, isLoading, groupedByTrimester, favorites } = useUltrasounds();
@@ -44,7 +48,7 @@ export const UltrasoundAlbum = () => {
           <UltrasoundUploader />
         </div>
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Summary Stats */}
         {ultrasounds.length > 0 && (

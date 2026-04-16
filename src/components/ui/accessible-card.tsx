@@ -3,9 +3,11 @@
  * Enhances cards with proper ARIA attributes and keyboard support
  */
 
-import { forwardRef, useCallback, KeyboardEvent } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { forwardRef, useCallback, KeyboardEvent } from 'react';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { cn } from '@/lib/utils';
 
 export interface AccessibleCardProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -34,7 +36,7 @@ export const AccessibleCard = forwardRef<HTMLDivElement, AccessibleCardProps>(
   ) => {
     const handleKeyDown = useCallback(
       (e: KeyboardEvent<HTMLDivElement>) => {
-        if (isInteractive && onSelect && (e.key === "Enter" || e.key === " ")) {
+        if (isInteractive && onSelect && (e.key === 'Enter' || e.key === ' ')) {
           e.preventDefault();
           onSelect();
         }
@@ -46,11 +48,11 @@ export const AccessibleCard = forwardRef<HTMLDivElement, AccessibleCardProps>(
       <Card
         ref={ref}
         className={cn(
-          isInteractive && "cursor-pointer hover:shadow-md transition-shadow",
-          isSelected && "ring-2 ring-primary",
+          isInteractive && 'cursor-pointer hover:shadow-md transition-shadow',
+          isSelected && 'ring-2 ring-primary',
           className
         )}
-        role={isInteractive ? "button" : undefined}
+        role={isInteractive ? 'button' : undefined}
         tabIndex={isInteractive ? 0 : undefined}
         aria-pressed={isInteractive ? isSelected : undefined}
         onClick={isInteractive ? onSelect : undefined}
@@ -61,13 +63,9 @@ export const AccessibleCard = forwardRef<HTMLDivElement, AccessibleCardProps>(
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg">{title}</CardTitle>
-              {description && (
-                <CardDescription>{description}</CardDescription>
-              )}
+              {description && <CardDescription>{description}</CardDescription>}
             </div>
-            {headerAction && (
-              <div aria-label="Ações do card">{headerAction}</div>
-            )}
+            {headerAction && <div aria-label="Ações do card">{headerAction}</div>}
           </div>
         </CardHeader>
         <CardContent>{children}</CardContent>
@@ -76,4 +74,4 @@ export const AccessibleCard = forwardRef<HTMLDivElement, AccessibleCardProps>(
   }
 );
 
-AccessibleCard.displayName = "AccessibleCard";
+AccessibleCard.displayName = 'AccessibleCard';

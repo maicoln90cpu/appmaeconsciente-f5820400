@@ -1,8 +1,12 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Lightbulb, Gift } from "lucide-react";
-import { useState } from "react";
-import { ToolSuggestionDialog } from "./ToolSuggestionDialog";
+import { useState } from 'react';
+
+import { Lightbulb, Gift } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+
+import { ToolSuggestionDialog } from './ToolSuggestionDialog';
 
 export const ToolSuggestionCard = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -30,8 +34,9 @@ export const ToolSuggestionCard = () => {
               <div className="text-sm">
                 <p className="font-semibold text-foreground">🎁 Ganhe 3 meses gratuitos!</p>
                 <p className="text-muted-foreground mt-1">
-                  Se sua ideia for aprovada e você compartilhar o site com uma gestante que se cadastrar,
-                  você ganha <strong>3 meses de acesso premium grátis</strong> a todas as ferramentas!
+                  Se sua ideia for aprovada e você compartilhar o site com uma gestante que se
+                  cadastrar, você ganha <strong>3 meses de acesso premium grátis</strong> a todas as
+                  ferramentas!
                 </p>
               </div>
             </div>
@@ -39,8 +44,8 @@ export const ToolSuggestionCard = () => {
 
           <div className="space-y-2">
             <p className="text-sm text-muted-foreground">
-              Tem uma ideia de ferramenta que seria útil para você ou outras mães? 
-              Queremos ouvir! Conte-nos sobre:
+              Tem uma ideia de ferramenta que seria útil para você ou outras mães? Queremos ouvir!
+              Conte-nos sobre:
             </p>
             <ul className="text-sm text-muted-foreground space-y-1 ml-4">
               <li>• Qual problema a ferramenta resolveria</li>
@@ -50,21 +55,14 @@ export const ToolSuggestionCard = () => {
             </ul>
           </div>
 
-          <Button 
-            onClick={() => setDialogOpen(true)}
-            className="w-full"
-            size="lg"
-          >
+          <Button onClick={() => setDialogOpen(true)} className="w-full" size="lg">
             <Lightbulb className="mr-2 h-5 w-5" />
             Enviar Minha Sugestão
           </Button>
         </CardContent>
       </Card>
 
-      <ToolSuggestionDialog 
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-      />
+      <ToolSuggestionDialog open={dialogOpen} onOpenChange={setDialogOpen} />
     </>
   );
 };

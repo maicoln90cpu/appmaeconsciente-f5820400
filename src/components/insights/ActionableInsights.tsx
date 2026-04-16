@@ -1,18 +1,14 @@
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Lightbulb, 
-  ArrowRight,
-  AlertTriangle,
-  Sparkles,
-  TrendingUp,
-  Search
-} from "lucide-react";
-import { useCrossModuleAnalytics, type Insight } from "@/hooks/useCrossModuleAnalytics";
-import { cn } from "@/lib/utils";
+import { Lightbulb, ArrowRight, AlertTriangle, Sparkles, TrendingUp, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { useCrossModuleAnalytics, type Insight } from '@/hooks/useCrossModuleAnalytics';
+
+import { cn } from '@/lib/utils';
 
 interface ActionableInsightsProps {
   maxItems?: number;
@@ -31,7 +27,7 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
           </CardHeader>
         )}
         <CardContent className="space-y-3">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <Skeleton key={i} className="h-16 w-full" />
           ))}
         </CardContent>
@@ -41,42 +37,50 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
 
   const displayInsights = insights.slice(0, maxItems);
 
-  const getTypeIcon = (type: Insight["type"]) => {
+  const getTypeIcon = (type: Insight['type']) => {
     switch (type) {
-      case "warning":
+      case 'warning':
         return <AlertTriangle className="h-4 w-4" />;
-      case "suggestion":
+      case 'suggestion':
         return <Lightbulb className="h-4 w-4" />;
-      case "achievement":
+      case 'achievement':
         return <Sparkles className="h-4 w-4" />;
-      case "pattern":
+      case 'pattern':
         return <Search className="h-4 w-4" />;
       default:
         return <TrendingUp className="h-4 w-4" />;
     }
   };
 
-  const getTypeStyles = (type: Insight["type"], priority: Insight["priority"]) => {
-    if (type === "warning") {
-      return priority === "high" 
-        ? "bg-destructive/10 border-destructive/30 text-destructive"
-        : "bg-orange-500/10 border-orange-500/30 text-orange-600";
+  const getTypeStyles = (type: Insight['type'], priority: Insight['priority']) => {
+    if (type === 'warning') {
+      return priority === 'high'
+        ? 'bg-destructive/10 border-destructive/30 text-destructive'
+        : 'bg-orange-500/10 border-orange-500/30 text-orange-600';
     }
-    if (type === "achievement") {
-      return "bg-green-500/10 border-green-500/30 text-green-600";
+    if (type === 'achievement') {
+      return 'bg-green-500/10 border-green-500/30 text-green-600';
     }
-    if (type === "pattern") {
-      return "bg-blue-500/10 border-blue-500/30 text-blue-600";
+    if (type === 'pattern') {
+      return 'bg-blue-500/10 border-blue-500/30 text-blue-600';
     }
-    return "bg-primary/10 border-primary/30 text-primary";
+    return 'bg-primary/10 border-primary/30 text-primary';
   };
 
-  const getPriorityBadge = (priority: Insight["priority"]) => {
+  const getPriorityBadge = (priority: Insight['priority']) => {
     switch (priority) {
-      case "high":
-        return <Badge variant="destructive" className="text-xs">Urgente</Badge>;
-      case "medium":
-        return <Badge variant="secondary" className="text-xs">Importante</Badge>;
+      case 'high':
+        return (
+          <Badge variant="destructive" className="text-xs">
+            Urgente
+          </Badge>
+        );
+      case 'medium':
+        return (
+          <Badge variant="secondary" className="text-xs">
+            Importante
+          </Badge>
+        );
       default:
         return null;
     }
@@ -101,14 +105,10 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
             </p>
             <div className="flex flex-col xs:flex-row gap-2 justify-center mt-3 sm:mt-4">
               <Button variant="outline" size="sm" className="text-xs h-8" asChild>
-                <Link to="/materiais/rastreador-amamentacao">
-                  Registrar Mamada
-                </Link>
+                <Link to="/materiais/rastreador-amamentacao">Registrar Mamada</Link>
               </Button>
               <Button variant="outline" size="sm" className="text-xs h-8" asChild>
-                <Link to="/materiais/diario-sono">
-                  Registrar Sono
-                </Link>
+                <Link to="/materiais/diario-sono">Registrar Sono</Link>
               </Button>
             </div>
           </div>
@@ -133,11 +133,11 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
         </CardHeader>
       )}
       <CardContent className="space-y-2 sm:space-y-3">
-        {displayInsights.map((insight) => (
+        {displayInsights.map(insight => (
           <div
             key={insight.id}
             className={cn(
-              "p-2.5 sm:p-3 rounded-lg border transition-all hover:shadow-sm",
+              'p-2.5 sm:p-3 rounded-lg border transition-all hover:shadow-sm',
               getTypeStyles(insight.type, insight.priority)
             )}
           >
@@ -148,9 +148,7 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
                   <p className="font-medium text-xs sm:text-sm truncate">{insight.title}</p>
                   {getPriorityBadge(insight.priority)}
                 </div>
-                <p className="text-xs sm:text-sm opacity-80 line-clamp-2">
-                  {insight.description}
-                </p>
+                <p className="text-xs sm:text-sm opacity-80 line-clamp-2">{insight.description}</p>
                 {insight.action && (
                   <Button
                     variant="ghost"
@@ -165,9 +163,7 @@ export const ActionableInsights = ({ maxItems = 4, showTitle = true }: Actionabl
                   </Button>
                 )}
               </div>
-              <div className="shrink-0 opacity-60">
-                {getTypeIcon(insight.type)}
-              </div>
+              <div className="shrink-0 opacity-60">{getTypeIcon(insight.type)}</div>
             </div>
           </div>
         ))}

@@ -1,12 +1,24 @@
-import { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Calculator, TrendingUp, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import type { DiaperEstimate } from "@/pages/CalculadoraFraldas";
-import { Progress } from "@/components/ui/progress";
+import { useState } from 'react';
+
+import { Calculator, TrendingUp, AlertCircle } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+
+
+import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
+
 
 interface Props {
   onEstimateCalculated: (estimate: DiaperEstimate) => void;
@@ -22,18 +34,18 @@ const DIAPER_USAGE = {
 };
 
 export const FraldaCalculator = ({ onEstimateCalculated }: Props) => {
-  const [babyAge, setBabyAge] = useState("");
-  const [babyWeight, setBabyWeight] = useState("");
-  const [period, setPeriod] = useState("1");
+  const [babyAge, setBabyAge] = useState('');
+  const [babyWeight, setBabyWeight] = useState('');
+  const [period, setPeriod] = useState('1');
 
   const calculateEstimate = () => {
     const weight = parseFloat(babyWeight);
     const months = parseInt(period);
-    
+
     if (!babyAge || !weight || !months) return;
 
     // Determinar tamanho atual
-    let currentSize = "RN";
+    let currentSize = 'RN';
     for (const [size, data] of Object.entries(DIAPER_USAGE)) {
       if (weight >= data.weightRange[0] && weight <= data.weightRange[1]) {
         currentSize = size;
@@ -53,7 +65,7 @@ export const FraldaCalculator = ({ onEstimateCalculated }: Props) => {
       }
 
       // Determinar tamanho para este mês
-      let sizeForMonth = "RN";
+      let sizeForMonth = 'RN';
       for (const [size, data] of Object.entries(DIAPER_USAGE)) {
         if (currentWeight >= data.weightRange[0] && currentWeight <= data.weightRange[1]) {
           sizeForMonth = size;
@@ -122,7 +134,7 @@ export const FraldaCalculator = ({ onEstimateCalculated }: Props) => {
             max="20"
             placeholder="Ex: 3.5"
             value={babyWeight}
-            onChange={(e) => setBabyWeight(e.target.value)}
+            onChange={e => setBabyWeight(e.target.value)}
           />
         </div>
 
@@ -151,8 +163,8 @@ export const FraldaCalculator = ({ onEstimateCalculated }: Props) => {
       <Alert>
         <TrendingUp className="h-4 w-4" />
         <AlertDescription>
-          <strong>Dica:</strong> Compre menos fraldas RN e mais P! 
-          Bebês crescem rápido nos primeiros meses.
+          <strong>Dica:</strong> Compre menos fraldas RN e mais P! Bebês crescem rápido nos
+          primeiros meses.
         </AlertDescription>
       </Alert>
     </div>

@@ -34,19 +34,16 @@ export interface RateLimitResult {
 /**
  * Verifica e atualiza o rate limit para uma chave
  */
-export function checkRateLimit(
-  key: string,
-  config: RateLimitConfig = {}
-): RateLimitResult {
-  const { 
+export function checkRateLimit(key: string, config: RateLimitConfig = {}): RateLimitResult {
+  const {
     maxAttempts = DEFAULT_CONFIG.maxAttempts,
     windowMs = DEFAULT_CONFIG.windowMs,
-    lockoutMs = DEFAULT_CONFIG.lockoutMs 
+    lockoutMs = DEFAULT_CONFIG.lockoutMs,
   } = config;
-  
+
   const now = Date.now();
   const entry = rateLimitStore.get(key);
-  
+
   if (entry?.lockedUntil) {
     if (now < entry.lockedUntil) {
       const unlockTime = new Date(entry.lockedUntil);
@@ -54,13 +51,13 @@ export function checkRateLimit(
         allowed: false,
         remainingAttempts: 0,
         lockedUntil: unlockTime,
-        message: `Muitas tentativas. Tente novamente em ${Math.ceil((entry.lockedUntil - now) / 1000)} segundos.`
+        message: `Muitas tentativas. Tente novamente em ${Math.ceil((entry.lockedUntil - now) / 1000)} segundos.`,
       };
     }
     rateLimitStore.delete(key);
   }
-  
-  if (!entry || (now - entry.firstAttempt) > windowMs) {
+
+  if (!entry || now - entry.firstAttempt > windowMs) {
     rateLimitStore.set(key, {
       count: 1,
       firstAttempt: now,
@@ -70,21 +67,21 @@ export function checkRateLimit(
       remainingAttempts: maxAttempts - 1,
     };
   }
-  
+
   entry.count++;
-  
+
   if (entry.count > maxAttempts) {
     entry.lockedUntil = now + lockoutMs;
     rateLimitStore.set(key, entry);
-    
+
     return {
       allowed: false,
       remainingAttempts: 0,
       lockedUntil: new Date(entry.lockedUntil),
-      message: `Muitas tentativas. Conta bloqueada por ${lockoutMs / 1000} segundos.`
+      message: `Muitas tentativas. Conta bloqueada por ${lockoutMs / 1000} segundos.`,
     };
   }
-  
+
   rateLimitStore.set(key, entry);
   return {
     allowed: true,
@@ -102,25 +99,19 @@ export function resetRateLimit(key: string): void {
 /**
  * Obtém o status atual do rate limit sem incrementar
  */
-export function getRateLimitStatus(
-  key: string,
-  config: RateLimitConfig = {}
-): RateLimitResult {
-  const { 
-    maxAttempts = DEFAULT_CONFIG.maxAttempts,
-    windowMs = DEFAULT_CONFIG.windowMs,
-  } = config;
-  
+export function getRateLimitStatus(key: string, config: RateLimitConfig = {}): RateLimitResult {
+  const { maxAttempts = DEFAULT_CONFIG.maxAttempts, windowMs = DEFAULT_CONFIG.windowMs } = config;
+
   const now = Date.now();
   const entry = rateLimitStore.get(key);
-  
+
   if (!entry) {
     return {
       allowed: true,
       remainingAttempts: maxAttempts,
     };
   }
-  
+
   if (entry.lockedUntil && now < entry.lockedUntil) {
     return {
       allowed: false,
@@ -128,14 +119,14 @@ export function getRateLimitStatus(
       lockedUntil: new Date(entry.lockedUntil),
     };
   }
-  
-  if ((now - entry.firstAttempt) > windowMs) {
+
+  if (now - entry.firstAttempt > windowMs) {
     return {
       allowed: true,
       remainingAttempts: maxAttempts,
     };
   }
-  
+
   return {
     allowed: entry.count < maxAttempts,
     remainingAttempts: Math.max(0, maxAttempts - entry.count),
@@ -148,11 +139,11 @@ export function getRateLimitStatus(
 export function cleanupRateLimitStore(): void {
   const now = Date.now();
   const maxAge = 10 * 60 * 1000; // 10 minutos
-  
+
   for (const [key, entry] of rateLimitStore.entries()) {
     const age = now - entry.firstAttempt;
     const isUnlocked = !entry.lockedUntil || now > entry.lockedUntil;
-    
+
     if (age > maxAge && isUnlocked) {
       rateLimitStore.delete(key);
     }

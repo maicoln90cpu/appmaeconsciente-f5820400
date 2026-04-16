@@ -1,8 +1,10 @@
-import { useState, KeyboardEvent } from "react";
-import { X } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, KeyboardEvent } from 'react';
+
+import { X } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface TagsInputProps {
   tags: string[];
@@ -10,16 +12,16 @@ interface TagsInputProps {
 }
 
 export const TagsInput = ({ tags, onChange }: TagsInputProps) => {
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && inputValue.trim()) {
+    if (e.key === 'Enter' && inputValue.trim()) {
       e.preventDefault();
       if (!tags.includes(inputValue.trim())) {
         onChange([...tags, inputValue.trim()]);
       }
-      setInputValue("");
-    } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
+      setInputValue('');
+    } else if (e.key === 'Backspace' && !inputValue && tags.length > 0) {
       onChange(tags.slice(0, -1));
     }
   };
@@ -32,12 +34,8 @@ export const TagsInput = ({ tags, onChange }: TagsInputProps) => {
     <div className="space-y-2">
       <Label>Tags / Etiquetas</Label>
       <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[42px] focus-within:ring-2 focus-within:ring-ring">
-        {tags.map((tag) => (
-          <Badge
-            key={tag}
-            variant="secondary"
-            className="gap-1 pl-2 pr-1"
-          >
+        {tags.map(tag => (
+          <Badge key={tag} variant="secondary" className="gap-1 pl-2 pr-1">
             {tag}
             <button
               type="button"
@@ -50,9 +48,9 @@ export const TagsInput = ({ tags, onChange }: TagsInputProps) => {
         ))}
         <Input
           value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={e => setInputValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={tags.length === 0 ? "Digite e pressione Enter" : ""}
+          placeholder={tags.length === 0 ? 'Digite e pressione Enter' : ''}
           className="flex-1 min-w-[120px] border-0 focus-visible:ring-0 p-0 h-auto"
         />
       </div>

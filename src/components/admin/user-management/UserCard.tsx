@@ -1,13 +1,22 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { format, formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Shield, UserPlus, KeyRound, Trash2, X } from "lucide-react";
-import { UserData, ProductData, ProductAccessData, AccessGrantState } from "./types";
+import { format, formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Shield, UserPlus, KeyRound, Trash2, X } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+
+import { UserData, ProductData, ProductAccessData, AccessGrantState } from './types';
 
 interface UserCardProps {
   user: UserData;
@@ -38,9 +47,10 @@ export const UserCard = ({
   onLifetimeChange,
   onGrantAccess,
 }: UserCardProps) => {
-  const isAdmin = Array.isArray(user.user_roles) && user.user_roles.length > 0
-    ? user.user_roles.some((r) => r?.role === "admin")
-    : false;
+  const isAdmin =
+    Array.isArray(user.user_roles) && user.user_roles.length > 0
+      ? user.user_roles.some(r => r?.role === 'admin')
+      : false;
 
   const isSelected = accessState.selectedUser === user.id;
 
@@ -59,7 +69,8 @@ export const UserCard = ({
               )}
               {user.hasUsedTools ? (
                 <Badge variant="secondary">
-                  Ativo há {user.lastActivity
+                  Ativo há{' '}
+                  {user.lastActivity
                     ? formatDistanceToNow(new Date(user.lastActivity), { locale: ptBR })
                     : ''}
                 </Badge>
@@ -68,22 +79,18 @@ export const UserCard = ({
               )}
             </div>
             <p className="text-sm text-muted-foreground">
-              Cadastrado em {format(new Date(user.created_at), "dd/MM/yyyy")}
+              Cadastrado em {format(new Date(user.created_at), 'dd/MM/yyyy')}
             </p>
           </div>
           <div className="flex gap-2">
             <Button
-              variant={isAdmin ? "destructive" : "outline"}
+              variant={isAdmin ? 'destructive' : 'outline'}
               size="sm"
               onClick={() => onToggleAdmin(user.id, isAdmin)}
             >
-              {isAdmin ? "Remover Admin" : "Tornar Admin"}
+              {isAdmin ? 'Remover Admin' : 'Tornar Admin'}
             </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onResetPassword(user.email)}
-            >
+            <Button variant="outline" size="sm" onClick={() => onResetPassword(user.email)}>
               <KeyRound className="h-4 w-4 mr-2" />
               Resetar Senha
             </Button>
@@ -100,9 +107,7 @@ export const UserCard = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <p className="text-sm">
-            Perfil: {user.perfil_completo ? "Completo" : "Incompleto"}
-          </p>
+          <p className="text-sm">Perfil: {user.perfil_completo ? 'Completo' : 'Incompleto'}</p>
 
           {/* Produtos com acesso */}
           {userAccess && userAccess.length > 0 && (
@@ -110,12 +115,15 @@ export const UserCard = ({
               <Label className="text-xs mb-2 block">Produtos com Acesso</Label>
               <div className="flex flex-wrap gap-2">
                 {userAccess.map((access, idx) => (
-                  <div key={idx} className="flex items-center gap-1 bg-secondary rounded-md px-2 py-1 group">
+                  <div
+                    key={idx}
+                    className="flex items-center gap-1 bg-secondary rounded-md px-2 py-1 group"
+                  >
                     <span className="text-xs">
                       {access.product_title}
                       {access.expires_at && (
                         <span className="ml-1 text-muted-foreground">
-                          (até {format(new Date(access.expires_at), "dd/MM/yyyy")})
+                          (até {format(new Date(access.expires_at), 'dd/MM/yyyy')})
                         </span>
                       )}
                     </span>
@@ -123,7 +131,9 @@ export const UserCard = ({
                       variant="ghost"
                       size="sm"
                       className="h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => onRevokeAccess(user.id, access.product_id, access.product_title, user.email)}
+                      onClick={() =>
+                        onRevokeAccess(user.id, access.product_id, access.product_title, user.email)
+                      }
                     >
                       <X className="h-3 w-3 text-destructive" />
                     </Button>
@@ -137,14 +147,14 @@ export const UserCard = ({
             <div className="flex-1 space-y-2">
               <Label className="text-xs">Conceder Acesso ao Produto</Label>
               <Select
-                value={isSelected ? accessState.selectedProduct : ""}
-                onValueChange={(value) => onSelectProduct(user.id, value)}
+                value={isSelected ? accessState.selectedProduct : ''}
+                onValueChange={value => onSelectProduct(user.id, value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um produto" />
                 </SelectTrigger>
                 <SelectContent>
-                  {products?.map((product) => (
+                  {products?.map(product => (
                     <SelectItem key={product.id} value={product.id}>
                       {product.title}
                     </SelectItem>
@@ -157,7 +167,7 @@ export const UserCard = ({
                   <Input
                     type="number"
                     value={accessState.accessDuration}
-                    onChange={(e) => onAccessDurationChange(parseInt(e.target.value) || 30)}
+                    onChange={e => onAccessDurationChange(parseInt(e.target.value) || 30)}
                     disabled={accessState.lifetimeAccess}
                     min={1}
                     className="w-20"
@@ -167,7 +177,7 @@ export const UserCard = ({
                     <input
                       type="checkbox"
                       checked={accessState.lifetimeAccess}
-                      onChange={(e) => onLifetimeChange(e.target.checked)}
+                      onChange={e => onLifetimeChange(e.target.checked)}
                       className="rounded"
                     />
                     <Label className="text-xs">Vitalício</Label>

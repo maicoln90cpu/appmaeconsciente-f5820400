@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface DashboardBebeStats24hProps {
   feedingCount: number;
@@ -13,7 +13,7 @@ export const DashboardBebeStats24h = ({
   totalFeedingTime,
   sleepCount,
   totalSleepTime,
-  averageSleepDuration
+  averageSleepDuration,
 }: DashboardBebeStats24hProps) => {
   return (
     <div className="grid md:grid-cols-3 gap-4 mb-8">
@@ -23,9 +23,7 @@ export const DashboardBebeStats24h = ({
         </CardHeader>
         <CardContent>
           <p className="text-3xl font-bold text-primary">{feedingCount}</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {totalFeedingTime} minutos no total
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">{totalFeedingTime} minutos no total</p>
         </CardContent>
       </Card>
 
@@ -49,9 +47,7 @@ export const DashboardBebeStats24h = ({
           <p className="text-3xl font-bold text-primary">
             {Math.floor(averageSleepDuration / 60)}h {averageSleepDuration % 60}min
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Por soneca
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">Por soneca</p>
         </CardContent>
       </Card>
     </div>

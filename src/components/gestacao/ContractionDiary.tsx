@@ -2,26 +2,41 @@
  * @fileoverview Diário de Contrações com Timer
  */
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Slider } from "@/components/ui/slider";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useContractions } from "@/hooks/useContractions";
-import { Timer, Play, Square, AlertTriangle, Clock, Activity, Trash2, Hospital, Loader2 } from "lucide-react";
-import { format, parseISO, differenceInMinutes } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { useState } from 'react';
+
+import { format, parseISO, differenceInMinutes } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  Timer,
+  Play,
+  Square,
+  AlertTriangle,
+  Clock,
+  Activity,
+  Trash2,
+  Hospital,
+  Loader2,
+} from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Slider } from '@/components/ui/slider';
+
+import { useContractions } from '@/hooks/useContractions';
+
+
+import { cn } from '@/lib/utils';
 
 export const ContractionDiary = () => {
   const [showEndDialog, setShowEndDialog] = useState(false);
   const [intensity, setIntensity] = useState(5);
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState('');
 
   const {
     contractions,
@@ -40,7 +55,7 @@ export const ContractionDiary = () => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   const handleStopTimer = () => {
@@ -51,7 +66,7 @@ export const ContractionDiary = () => {
     stopTimer(intensity, notes);
     setShowEndDialog(false);
     setIntensity(5);
-    setNotes("");
+    setNotes('');
   };
 
   const hospitalAlert = checkHospitalAlert();
@@ -59,8 +74,8 @@ export const ContractionDiary = () => {
 
   // Group contractions by session
   const sessionMap = new Map<string, typeof contractions>();
-  contractions.forEach((c) => {
-    const key = c.session_id || "sem-sessao";
+  contractions.forEach(c => {
+    const key = c.session_id || 'sem-sessao';
     if (!sessionMap.has(key)) {
       sessionMap.set(key, []);
     }
@@ -88,51 +103,52 @@ export const ContractionDiary = () => {
     <div className="space-y-6">
       {/* Hospital Alert */}
       {hospitalAlert && (
-        <Alert variant={hospitalAlert.type === "hospital" ? "destructive" : "default"} className="border-2">
+        <Alert
+          variant={hospitalAlert.type === 'hospital' ? 'destructive' : 'default'}
+          className="border-2"
+        >
           <Hospital className="h-5 w-5" />
           <AlertTitle className="text-lg">
-            {hospitalAlert.type === "hospital" ? "🏥 Hora de ir ao hospital!" : "⚠️ Atenção"}
+            {hospitalAlert.type === 'hospital' ? '🏥 Hora de ir ao hospital!' : '⚠️ Atenção'}
           </AlertTitle>
           <AlertDescription className="text-base">{hospitalAlert.message}</AlertDescription>
         </Alert>
       )}
 
       {/* Timer Card */}
-      <Card className={cn(
-        "transition-all duration-300",
-        isTimerRunning && "ring-2 ring-primary ring-offset-2 bg-primary/5"
-      )}>
+      <Card
+        className={cn(
+          'transition-all duration-300',
+          isTimerRunning && 'ring-2 ring-primary ring-offset-2 bg-primary/5'
+        )}
+      >
         <CardHeader className="text-center">
           <CardTitle className="flex items-center justify-center gap-2 text-2xl">
             <Timer className="h-6 w-6" />
             Cronômetro de Contrações
           </CardTitle>
-          <CardDescription>
-            Pressione iniciar quando a contração começar
-          </CardDescription>
+          <CardDescription>Pressione iniciar quando a contração começar</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Timer Display */}
           <div className="text-center">
-            <div className={cn(
-              "text-7xl font-mono font-bold tabular-nums transition-colors",
-              isTimerRunning ? "text-primary animate-pulse" : "text-muted-foreground"
-            )}>
+            <div
+              className={cn(
+                'text-7xl font-mono font-bold tabular-nums transition-colors',
+                isTimerRunning ? 'text-primary animate-pulse' : 'text-muted-foreground'
+              )}
+            >
               {formatTime(timerSeconds)}
             </div>
             <p className="text-sm text-muted-foreground mt-2">
-              {isTimerRunning ? "Contração em andamento..." : "Pronto para iniciar"}
+              {isTimerRunning ? 'Contração em andamento...' : 'Pronto para iniciar'}
             </p>
           </div>
 
           {/* Timer Button */}
           <div className="flex justify-center">
             {!isTimerRunning ? (
-              <Button
-                size="lg"
-                className="h-20 w-20 rounded-full text-xl"
-                onClick={startTimer}
-              >
+              <Button size="lg" className="h-20 w-20 rounded-full text-xl" onClick={startTimer}>
                 <Play className="h-8 w-8" />
               </Button>
             ) : (
@@ -184,9 +200,15 @@ export const ContractionDiary = () => {
             Regra 5-1-1 (Quando ir ao hospital)
           </h4>
           <ul className="text-sm text-muted-foreground space-y-1">
-            <li>• Contrações a cada <strong>5 minutos</strong> ou menos</li>
-            <li>• Durando pelo menos <strong>1 minuto</strong> cada</li>
-            <li>• Por pelo menos <strong>1 hora</strong></li>
+            <li>
+              • Contrações a cada <strong>5 minutos</strong> ou menos
+            </li>
+            <li>
+              • Durando pelo menos <strong>1 minuto</strong> cada
+            </li>
+            <li>
+              • Por pelo menos <strong>1 hora</strong>
+            </li>
           </ul>
         </CardContent>
       </Card>
@@ -217,21 +239,23 @@ export const ContractionDiary = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <p className="font-medium">
-                          {format(parseISO(contraction.start_time), "HH:mm", { locale: ptBR })}
+                          {format(parseISO(contraction.start_time), 'HH:mm', { locale: ptBR })}
                         </p>
-                        <Badge variant="secondary">
-                          {contraction.duration_seconds}s
-                        </Badge>
+                        <Badge variant="secondary">{contraction.duration_seconds}s</Badge>
                         {contraction.intensity && (
-                          <Badge variant={contraction.intensity >= 7 ? "destructive" : "outline"}>
+                          <Badge variant={contraction.intensity >= 7 ? 'destructive' : 'outline'}>
                             Intensidade: {contraction.intensity}/10
                           </Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                        <span>{format(parseISO(contraction.start_time), "dd/MM/yyyy", { locale: ptBR })}</span>
+                        <span>
+                          {format(parseISO(contraction.start_time), 'dd/MM/yyyy', { locale: ptBR })}
+                        </span>
                         {getIntervalFromPrevious(index, contractions) && (
-                          <span>• Intervalo: {getIntervalFromPrevious(index, contractions)} min</span>
+                          <span>
+                            • Intervalo: {getIntervalFromPrevious(index, contractions)} min
+                          </span>
                         )}
                       </div>
                       {contraction.notes && (
@@ -274,7 +298,7 @@ export const ContractionDiary = () => {
               </div>
               <Slider
                 value={[intensity]}
-                onValueChange={(v) => setIntensity(v[0])}
+                onValueChange={v => setIntensity(v[0])}
                 min={1}
                 max={10}
                 step={1}
@@ -292,7 +316,7 @@ export const ContractionDiary = () => {
                 id="notes"
                 placeholder="Ex: Dor nas costas, posição..."
                 value={notes}
-                onChange={(e) => setNotes(e.target.value)}
+                onChange={e => setNotes(e.target.value)}
               />
             </div>
             <Button className="w-full" onClick={handleSaveContraction}>

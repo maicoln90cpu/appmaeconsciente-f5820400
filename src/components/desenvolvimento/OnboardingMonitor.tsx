@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useState } from 'react';
+
+import { AlertCircle, Heart, Baby, BookOpen, ChevronRight, ChevronLeft } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, Heart, Baby, BookOpen, ChevronRight, ChevronLeft } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+} from '@/components/ui/dialog';
 
 interface OnboardingMonitorProps {
   open: boolean;
@@ -18,7 +20,7 @@ interface OnboardingMonitorProps {
 
 const ONBOARDING_STEPS = [
   {
-    title: "Bem-vinda ao Monitor de Desenvolvimento! 💕",
+    title: 'Bem-vinda ao Monitor de Desenvolvimento! 💕',
     icon: Heart,
     content: (
       <div className="space-y-4">
@@ -29,8 +31,8 @@ const ONBOARDING_STEPS = [
           <AlertCircle className="h-4 w-4 text-pink-600" />
           <AlertTitle className="text-pink-800">Importante saber</AlertTitle>
           <AlertDescription className="text-pink-700">
-            Cada bebê tem seu próprio ritmo único e especial. As idades apresentadas são
-            referências médias, não regras absolutas.
+            Cada bebê tem seu próprio ritmo único e especial. As idades apresentadas são referências
+            médias, não regras absolutas.
           </AlertDescription>
         </Alert>
         <div className="space-y-2">
@@ -58,7 +60,7 @@ const ONBOARDING_STEPS = [
     ),
   },
   {
-    title: "Áreas do Desenvolvimento",
+    title: 'Áreas do Desenvolvimento',
     icon: Baby,
     content: (
       <div className="space-y-4">
@@ -126,7 +128,7 @@ const ONBOARDING_STEPS = [
     ),
   },
   {
-    title: "Como Usar com Amor e Sem Paranoia",
+    title: 'Como Usar com Amor e Sem Paranoia',
     icon: BookOpen,
     content: (
       <div className="space-y-4">
@@ -134,11 +136,11 @@ const ONBOARDING_STEPS = [
           <AlertCircle className="h-4 w-4 text-amber-600" />
           <AlertTitle className="text-amber-800">Lembre-se sempre</AlertTitle>
           <AlertDescription className="text-amber-700">
-            Prematuridade, estimulação, temperamento e individualidade influenciam o ritmo.
-            Não compare, apenas observe e celebre!
+            Prematuridade, estimulação, temperamento e individualidade influenciam o ritmo. Não
+            compare, apenas observe e celebre!
           </AlertDescription>
         </Alert>
-        
+
         <div className="space-y-3">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -147,11 +149,12 @@ const ONBOARDING_STEPS = [
             <div>
               <h4 className="font-semibold text-foreground mb-1">Registre as conquistas</h4>
               <p className="text-sm text-muted-foreground">
-                Quando seu bebê alcançar um marco, marque como alcançado e adicione uma foto especial
+                Quando seu bebê alcançar um marco, marque como alcançado e adicione uma foto
+                especial
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               <span className="text-primary font-bold">2</span>
@@ -163,7 +166,7 @@ const ONBOARDING_STEPS = [
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               <span className="text-primary font-bold">3</span>
@@ -175,13 +178,15 @@ const ONBOARDING_STEPS = [
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
               <span className="text-primary font-bold">4</span>
             </div>
             <div>
-              <h4 className="font-semibold text-foreground mb-1">Leve ao pediatra quando necessário</h4>
+              <h4 className="font-semibold text-foreground mb-1">
+                Leve ao pediatra quando necessário
+              </h4>
               <p className="text-sm text-muted-foreground">
                 Gere relatórios para facilitar a conversa nas consultas
               </p>
@@ -222,7 +227,7 @@ export const OnboardingMonitor = ({ open, onComplete }: OnboardingMonitorProps) 
   const StepIcon = step.icon;
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && onComplete()}>
+    <Dialog open={open} onOpenChange={open => !open && onComplete()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
@@ -232,7 +237,8 @@ export const OnboardingMonitor = ({ open, onComplete }: OnboardingMonitorProps) 
             <DialogTitle className="text-xl">{step.title}</DialogTitle>
           </div>
           <DialogDescription className="sr-only">
-            Passo {currentStep + 1} de {ONBOARDING_STEPS.length} do tutorial do Monitor de Desenvolvimento
+            Passo {currentStep + 1} de {ONBOARDING_STEPS.length} do tutorial do Monitor de
+            Desenvolvimento
           </DialogDescription>
         </DialogHeader>
 
@@ -244,7 +250,7 @@ export const OnboardingMonitor = ({ open, onComplete }: OnboardingMonitorProps) 
               <div
                 key={index}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentStep ? "bg-primary" : "bg-muted"
+                  index === currentStep ? 'bg-primary' : 'bg-muted'
                 }`}
               />
             ))}
@@ -259,7 +265,7 @@ export const OnboardingMonitor = ({ open, onComplete }: OnboardingMonitorProps) 
             )}
             <Button onClick={handleNext}>
               {currentStep === ONBOARDING_STEPS.length - 1 ? (
-                "Começar"
+                'Começar'
               ) : (
                 <>
                   Próximo

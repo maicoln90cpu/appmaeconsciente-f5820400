@@ -1,9 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { logger } from "@/lib/logger";
-import { useAuth } from "@/contexts/AuthContext";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { useEffect, useMemo } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+
+import { logger } from '@/lib/logger';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Notification {
   id: string;
@@ -28,7 +32,8 @@ export const useNotifications = () => {
 
       const { data, error } = await supabase
         .from('user_notifications')
-        .select(`
+        .select(
+          `
           id,
           is_read,
           read_at,
@@ -38,7 +43,8 @@ export const useNotifications = () => {
             message,
             created_at
           )
-        `)
+        `
+        )
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -53,7 +59,7 @@ export const useNotifications = () => {
         message: item.notifications?.message ?? '',
         created_at: item.notifications?.created_at ?? '',
         is_read: item.is_read,
-        read_at: item.read_at
+        read_at: item.read_at,
       }));
     },
     enabled: !!user,
@@ -62,10 +68,7 @@ export const useNotifications = () => {
   });
 
   // Contagem de não lidas (memoizada)
-  const unreadCount = useMemo(() => 
-    notifications.filter(n => !n.is_read).length, 
-    [notifications]
-  );
+  const unreadCount = useMemo(() => notifications.filter(n => !n.is_read).length, [notifications]);
 
   // Mutation para marcar como lida
   const markAsReadMutation = useMutation({
@@ -83,9 +86,9 @@ export const useNotifications = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Error marking notification as read', error, { context: 'useNotifications' });
-    }
+    },
   });
 
   // Setup realtime com filtro de user_id para segurança
@@ -94,14 +97,18 @@ export const useNotifications = () => {
 
     const channel = supabase
       .channel(`user-notifications-${user.id}`)
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'user_notifications',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        queryClient.invalidateQueries({ queryKey });
-      })
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_notifications',
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey });
+        }
+      )
       .subscribe();
 
     return () => {
@@ -109,11 +116,11 @@ export const useNotifications = () => {
     };
   }, [user, queryClient, queryKey]);
 
-  return { 
-    notifications, 
-    unreadCount, 
-    loading, 
-    markAsRead: markAsReadMutation.mutate, 
-    reloadNotifications: () => queryClient.invalidateQueries({ queryKey })
+  return {
+    notifications,
+    unreadCount,
+    loading,
+    markAsRead: markAsReadMutation.mutate,
+    reloadNotifications: () => queryClient.invalidateQueries({ queryKey }),
   };
 };
