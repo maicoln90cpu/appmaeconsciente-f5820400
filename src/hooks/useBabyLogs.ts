@@ -4,11 +4,17 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAchievements } from '@/hooks/useAchievements';
-import { logger } from '@/lib/logger';
-import type { Database } from '@/integrations/supabase/types';
+
 import { toast } from 'sonner';
+
+import { useAchievements } from '@/hooks/useAchievements';
+
+import { logger } from '@/lib/logger';
+
+import type { Database } from '@/integrations/supabase/types';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 type BabyLogTable =
   | 'baby_feeding_logs'

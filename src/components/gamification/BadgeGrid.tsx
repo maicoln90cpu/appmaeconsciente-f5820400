@@ -1,17 +1,7 @@
 import { memo, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge as BadgeUI } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGamification, Badge } from '@/hooks/useGamification';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Award,
   Lock,
@@ -33,8 +23,22 @@ import {
   Share2,
   Trophy,
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+import { Badge as BadgeUI } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { useGamification, Badge } from '@/hooks/useGamification';
+
 
 const iconMap: Record<string, React.ElementType> = {
   MessageSquare,

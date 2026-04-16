@@ -1,8 +1,11 @@
 import * as React from 'react';
+
 import { Phone } from 'lucide-react';
-import { Input } from './input';
+
 import { cn } from '@/lib/utils';
 import { formatWhatsApp } from '@/lib/validators/auth';
+
+import { Input } from './input';
 
 interface PhoneInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   value: string;

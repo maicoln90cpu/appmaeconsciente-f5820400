@@ -1,12 +1,18 @@
 import { memo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { useGamification } from '@/hooks/useGamification';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { Trophy, Medal, Crown, Flame, Star, TrendingUp, Shield, Eye, EyeOff } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Switch } from '@/components/ui/switch';
+
+import { useGamification } from '@/hooks/useGamification';
+
+import { useAuth } from '@/contexts/AuthContext';
+
+
 
 const getRankIcon = (position: number) => {
   switch (position) {

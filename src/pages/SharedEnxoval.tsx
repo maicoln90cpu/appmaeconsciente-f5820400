@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { EnxovalItem, Config } from '@/types/enxoval';
-import { EnxovalTable } from '@/components/EnxovalTable';
-import { DashboardTab } from '@/components/DashboardTab';
+
 import { Baby } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { DashboardTab } from '@/components/DashboardTab';
+import { EnxovalTable } from '@/components/EnxovalTable';
+
+import { EnxovalItem, Config } from '@/types/enxoval';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export default function SharedEnxoval() {
   const { token } = useParams();

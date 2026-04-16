@@ -1,12 +1,15 @@
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { User, Lock, Eye, EyeOff, Check, X } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PhoneInput } from '@/components/ui/phone-input';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { PasswordStrength } from '@/components/ui/password-strength';
-import { User, Lock, Eye, EyeOff, Check, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { PhoneInput } from '@/components/ui/phone-input';
+
 import type { FormErrors } from '@/hooks/useAuthForm';
+
+import { cn } from '@/lib/utils';
 
 interface SignUpFieldsProps {
   fullName: string;

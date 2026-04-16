@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+import { differenceInWeeks, differenceInDays } from 'date-fns';
 import {
   Scissors,
   AlertTriangle,
@@ -16,10 +12,19 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
-import { differenceInWeeks, differenceInDays } from 'date-fns';
-import { useProfile } from '@/hooks/useProfile';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+
+
+import { useProfile } from '@/hooks/useProfile';
+
 
 interface ChecklistItem {
   id: string;

@@ -1,14 +1,17 @@
 import { useMemo } from 'react';
-import { Trophy, Star, Heart, Moon, Utensils, Footprints, Calendar, Award } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { useBabyAchievements } from '@/hooks/useBabyGamification';
-import { useBabySleep } from '@/hooks/useBabySleep';
-import { useBabyFeeding } from '@/hooks/useBabyFeeding';
-import { useBabyFirstTimes } from '@/hooks/useBabyGamification';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Trophy, Star, Heart, Moon, Utensils, Footprints, Calendar, Award } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import { useBabyFeeding } from '@/hooks/useBabyFeeding';
+import { useBabyAchievements } from '@/hooks/useBabyGamification';
+import { useBabyFirstTimes } from '@/hooks/useBabyGamification';
+import { useBabySleep } from '@/hooks/useBabySleep';
 
 interface BabyAchievementsProps {
   babyProfileId?: string;

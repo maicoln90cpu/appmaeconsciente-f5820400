@@ -1,4 +1,10 @@
 import { useState } from 'react';
+
+import { AlertCircle, Heart, Baby, BookOpen, ChevronRight, ChevronLeft } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -6,10 +12,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { AlertCircle, Heart, Baby, BookOpen, ChevronRight, ChevronLeft } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface OnboardingMonitorProps {
   open: boolean;

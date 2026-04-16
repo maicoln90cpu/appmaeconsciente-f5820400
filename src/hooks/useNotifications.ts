@@ -1,9 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+
 import { logger } from '@/lib/logger';
-import { useAuth } from '@/contexts/AuthContext';
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Notification {
   id: string;

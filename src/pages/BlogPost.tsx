@@ -1,10 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Calendar,
   Clock,
@@ -17,9 +14,15 @@ import {
   ChevronRight,
   ExternalLink,
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface Post {
   id: string;

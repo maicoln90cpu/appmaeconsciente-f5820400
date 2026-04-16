@@ -1,5 +1,7 @@
-import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Baby } from 'lucide-react';
+
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { AuthMode } from '@/hooks/useAuthForm';
 
 interface AuthHeaderProps {

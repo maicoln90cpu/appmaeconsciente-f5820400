@@ -1,5 +1,9 @@
 import { useMemo, useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
+
+import { differenceInMinutes, format, startOfDay, subDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Baby, Droplets, Timer, TrendingUp, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart,
   Bar,
@@ -14,13 +18,13 @@ import {
   LineChart,
   Line,
 } from 'recharts';
-import { Baby, Droplets, Timer, TrendingUp, AlertCircle } from 'lucide-react';
-import { differenceInMinutes, format, startOfDay, subDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import type { BabyFeedingLog } from '@/types/babyFeeding';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components/ui/card';
+
+import type { BabyFeedingLog } from '@/types/babyFeeding';
+
 import { supabase } from '@/integrations/supabase/client';
 
 interface DashboardAmamentacaoProps {

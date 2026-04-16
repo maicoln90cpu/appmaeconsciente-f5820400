@@ -1,16 +1,19 @@
 import { createRoot } from 'react-dom/client';
+
 import App from './App.tsx';
+
 import './index.css';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { initSentry } from '@/lib/sentry';
+
+import { observeLongTasks } from '@/lib/bundle-analyzer';
+import { prefetchCommonRoutes } from '@/lib/lazy-utils';
 import {
   initPerformanceObserver,
   instrumentFetch,
   preconnectCriticalOrigins,
   trackWebVital,
 } from '@/lib/performance';
-import { observeLongTasks } from '@/lib/bundle-analyzer';
-import { prefetchCommonRoutes } from '@/lib/lazy-utils';
+import { initSentry } from '@/lib/sentry';
 
 // Preconnect to critical origins ASAP
 preconnectCriticalOrigins();

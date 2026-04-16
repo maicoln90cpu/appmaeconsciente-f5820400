@@ -1,7 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Config } from '@/types/enxoval';
+
 import { toast } from 'sonner';
+
+import { Config } from '@/types/enxoval';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export const useConfig = () => {
   const [config, setConfig] = useState<Config | null>(null);

@@ -1,6 +1,12 @@
 import { useState } from 'react';
-import { Card } from '@/components/ui/card';
+
+import { format, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Droplets, AlertCircle, CheckCircle2, Snowflake, Refrigerator } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -10,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Table,
   TableBody,
@@ -19,10 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Droplets, AlertCircle, CheckCircle2, Snowflake, Refrigerator } from 'lucide-react';
-import { format, differenceInDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Textarea } from '@/components/ui/textarea';
+
+
 import type { BreastMilkStorage } from '@/types/babyFeeding';
 
 interface GestaoOrdenhaProps {

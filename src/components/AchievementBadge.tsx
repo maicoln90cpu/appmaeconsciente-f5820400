@@ -1,9 +1,11 @@
-import { Trophy, Star, TrendingUp, Heart, Award, Sparkles, Moon } from 'lucide-react';
-import { Card, CardContent } from './ui/card';
-import { Badge } from './ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { Button } from './ui/button';
 import { useState } from 'react';
+
+import { Trophy, Star, TrendingUp, Heart, Award, Sparkles, Moon } from 'lucide-react';
+
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { Card, CardContent } from './ui/card';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
 
 export interface Achievement {
   code: string;

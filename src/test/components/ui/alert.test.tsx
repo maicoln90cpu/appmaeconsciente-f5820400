@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, CheckCircle } from 'lucide-react';
+import { describe, it, expect } from 'vitest';
+
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+
 
 describe('Alert Components', () => {
   describe('Alert', () => {

@@ -1,14 +1,11 @@
 import { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { differenceInMonths } from 'date-fns';
+import { Info, Check, Clock, AlertCircle } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Info, Check, Clock, AlertCircle } from 'lucide-react';
-import { differenceInMonths } from 'date-fns';
-import type {
-  BabyVaccinationProfile,
-  VaccinationCalendar,
-  BabyVaccination,
-} from '@/types/vaccination';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -17,6 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+
+import type {
+  BabyVaccinationProfile,
+  VaccinationCalendar,
+  BabyVaccination,
+} from '@/types/vaccination';
 
 interface CalendarioVacinasProps {
   profile: BabyVaccinationProfile;

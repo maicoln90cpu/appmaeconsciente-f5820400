@@ -9,8 +9,8 @@
  * - sentry.ts must NOT import from logger.ts
  */
 
-import { captureError, addBreadcrumb } from './sentry';
 import { trackError } from './performance';
+import { captureError, addBreadcrumb } from './sentry';
 
 const isDevelopment = import.meta.env.DEV;
 

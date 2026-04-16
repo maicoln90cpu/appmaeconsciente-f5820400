@@ -1,10 +1,13 @@
 import { useCallback } from 'react';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { getLastAutoTableY } from '@/types/jspdf';
+import { toast } from 'sonner';
 
 import type { jsPDF } from 'jspdf';
-import { toast } from 'sonner';
+
+import { getLastAutoTableY } from '@/types/jspdf';
+
 
 export interface PDFSection {
   title: string;

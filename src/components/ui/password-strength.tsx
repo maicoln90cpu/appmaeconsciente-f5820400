@@ -1,7 +1,9 @@
 import * as React from 'react';
+
+import { Check, X } from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 import { calculatePasswordStrength } from '@/lib/validators/auth';
-import { Check, X } from 'lucide-react';
 
 interface PasswordStrengthProps {
   password: string;

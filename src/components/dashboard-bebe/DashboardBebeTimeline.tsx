@@ -1,9 +1,12 @@
 import { useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Milk, Moon, TrendingUp } from 'lucide-react';
+
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Milk, Moon, TrendingUp } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 import type { FeedingLog, SleepLog } from '@/hooks/useDashboardBebe';
 
 interface DashboardBebeTimelineProps {

@@ -4,6 +4,7 @@
  */
 
 import { memo } from 'react';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -17,13 +18,16 @@ import {
   Clock,
   Database,
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { useOfflineSync } from '@/hooks/useOfflineSync';
-import { cn } from '@/lib/utils';
+
 import { SyncTask } from '@/lib/offline-sync';
+import { cn } from '@/lib/utils';
 
 const operationLabels: Record<string, string> = {
   insert: 'Adicionar',

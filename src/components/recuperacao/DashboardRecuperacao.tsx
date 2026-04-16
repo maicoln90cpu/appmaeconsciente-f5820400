@@ -1,15 +1,20 @@
+import { useMemo } from 'react';
+
+import { Activity, Heart, Pill, Calendar, Droplet, AlertTriangle } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { useProfile } from '@/hooks/useProfile';
+
 import {
   usePostpartumSymptoms,
   usePostpartumMedications,
   usePostpartumAppointments,
   useEmotionalLogs,
 } from '@/hooks/postpartum';
-import { Activity, Heart, Pill, Calendar, Droplet, AlertTriangle } from 'lucide-react';
-import { useMemo } from 'react';
+import { useProfile } from '@/hooks/useProfile';
+
+
 
 export const DashboardRecuperacao = () => {
   const { profile } = useProfile();

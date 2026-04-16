@@ -1,15 +1,18 @@
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Calendar, Baby, ArrowLeft, Share2, Sparkles, Hourglass } from 'lucide-react';
+
 import { differenceInDays, addDays, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Calendar, Baby, ArrowLeft, Share2, Sparkles, Hourglass } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+
 
 const FRUIT_COMPARISONS: Record<number, { fruit: string; size: string }> = {
   4: { fruit: '🫐', size: 'Semente de papoula' },

@@ -1,6 +1,8 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Search, UserPlus } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
 import { CreateUserDialog } from '../CreateUserDialog';
 
 interface NoResultsProps {

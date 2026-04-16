@@ -1,12 +1,15 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { DevelopmentSummary } from '@/types/development';
-import { AREA_LABELS, AREA_ICONS } from '@/types/development';
-import { AlertCircle, TrendingUp, Baby } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { AlertCircle, TrendingUp, Baby } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import { DevelopmentSummary } from '@/types/development';
+import { AREA_LABELS, AREA_ICONS } from '@/types/development';
+
 
 interface DashboardDesenvolvimentoProps {
   summary: DevelopmentSummary;

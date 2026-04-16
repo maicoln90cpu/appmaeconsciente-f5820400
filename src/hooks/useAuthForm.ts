@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+
+import { toast } from 'sonner';
+
+import { logger } from '@/lib/logger';
 import { checkRateLimit, resetRateLimit, getRateLimitStatus } from '@/lib/rate-limiter';
 import { signUpSchema, signInSchema, forgotPasswordSchema } from '@/lib/validators/auth';
-import { logger } from '@/lib/logger';
-import { toast } from 'sonner';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export type AuthMode = 'sign_in' | 'sign_up' | 'forgot_password';
 

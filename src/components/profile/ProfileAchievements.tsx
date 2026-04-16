@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+
 import { Trophy, Star, TrendingUp, Heart, Award, Sparkles, Moon, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
 import { LevelProgress } from '@/components/gamification/LevelProgress';
+
+import { supabase } from '@/integrations/supabase/client';
 
 const iconMap: Record<string, React.ElementType> = {
   trophy: Trophy,

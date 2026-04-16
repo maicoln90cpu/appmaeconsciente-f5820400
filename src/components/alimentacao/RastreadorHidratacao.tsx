@@ -1,14 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useSubmitGuard } from '@/hooks/useSubmitGuard';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/integrations/supabase/client';
-import { Droplets, Plus, Trash2, Target } from 'lucide-react';
-import { toast } from 'sonner';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Droplets, Plus, Trash2, Target } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Progress } from '@/components/ui/progress';
+
+import { useSubmitGuard } from '@/hooks/useSubmitGuard';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface WaterIntake {
   id: string;

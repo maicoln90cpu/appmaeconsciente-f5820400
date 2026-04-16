@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
-import { SortableTableHead } from '@/components/ui/sortable-table-head';
-import { useSortableTable } from '@/hooks/useSortableTable';
-import { supabase } from '@/integrations/supabase/client';
+
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CheckCircle2, Clock, AlertCircle, RefreshCw, XCircle } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
+
+import { useSortableTable } from '@/hooks/useSortableTable';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface Transaction {
   id: string;

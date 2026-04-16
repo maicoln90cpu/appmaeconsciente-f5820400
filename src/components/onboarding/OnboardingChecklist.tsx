@@ -1,12 +1,14 @@
-import { Link } from 'react-router-dom';
 import { CheckCircle2, Circle, ChevronRight, Sparkles, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
 
 import { useOnboarding } from '@/hooks/useOnboarding';
+
+import { cn } from '@/lib/utils';
+
 
 interface OnboardingChecklistProps {
   onDismiss?: () => void;

@@ -1,5 +1,7 @@
-import { TableHead } from '@/components/ui/table';
 import { ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+
+import { TableHead } from '@/components/ui/table';
+
 import type { SortConfig } from '@/hooks/useTableSort';
 
 interface SortableTableHeaderProps<T> {

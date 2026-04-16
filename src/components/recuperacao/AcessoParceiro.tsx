@@ -1,13 +1,17 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { usePartnerAccess } from '@/hooks/usePartnerAccess';
-import { Users, Link as LinkIcon, Copy, X, Check } from 'lucide-react';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Users, Link as LinkIcon, Copy, X, Check } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
+import { usePartnerAccess } from '@/hooks/usePartnerAccess';
+
 
 export const AcessoParceiro = () => {
   const { partnerAccesses, isLoading, grantAccess, revokeAccess, getShareLink } =

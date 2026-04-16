@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+
 import { Calculator } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -9,9 +12,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
 
 export const SizeCalculator = () => {
   const [open, setOpen] = useState(false);

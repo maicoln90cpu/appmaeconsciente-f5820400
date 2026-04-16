@@ -1,9 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
+
+import { Play, Square, Save } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DraftIndicator } from '@/components/ui/draft-indicator';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -11,11 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Play, Square, Save } from 'lucide-react';
-import { BabySleepLog, SleepLocation, WakeupMood, MomMood } from '@/types/babySleep';
-import { toast } from 'sonner';
+import { Textarea } from '@/components/ui/textarea';
+
 import { useAutoSave } from '@/hooks/useAutoSave';
-import { DraftIndicator } from '@/components/ui/draft-indicator';
+
+import { BabySleepLog, SleepLocation, WakeupMood, MomMood } from '@/types/babySleep';
+
+
+
 
 interface RegistroSonoProps {
   onSave: (log: Omit<BabySleepLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<any>;

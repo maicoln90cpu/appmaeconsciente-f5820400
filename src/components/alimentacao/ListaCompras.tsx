@@ -1,13 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+
 import { ShoppingCart, Trash2, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+
 import { useProfile } from '@/hooks/useProfile';
+
 import { AddItemDialog } from './ListaComprasEditable';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface ShoppingItem {
   item: string;

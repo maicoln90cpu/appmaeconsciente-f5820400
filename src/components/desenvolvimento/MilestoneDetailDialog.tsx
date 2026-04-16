@@ -1,4 +1,12 @@
 import { useState } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { CheckCircle2, AlertCircle, Lightbulb, Calendar } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -6,17 +14,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
+
 import { BabyMilestoneRecord } from '@/types/development';
 import { AREA_LABELS, AREA_ICONS } from '@/types/development';
-import { CheckCircle2, AlertCircle, Lightbulb, Calendar } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 
 interface MilestoneDetailDialogProps {
   record: BabyMilestoneRecord | null;

@@ -1,43 +1,6 @@
 import { useState, useMemo } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { SortableTableHeader } from './SortableTableHeader';
-import { useTableSort } from '@/hooks/useTableSort';
-import { usePagination } from '@/hooks/usePagination';
-import {
-  fetchHealthStatus,
-  fetchHealthLogs,
-  fetchClientErrors,
-  fetchPerformanceLogs,
-  fetchFeatureUsage,
-  fetchAuditLog,
-  fetchCronJobLogs,
-  groupErrorsByComponent,
-  aggregatePerformance,
-  aggregateFeatureUsage,
-  aggregateCronJobs,
-  exportAuditLogCSV,
-} from '@/services/systemHealthService';
 import {
   Activity,
   TrendingUp,
@@ -67,6 +30,49 @@ import {
   BarChart,
   Bar,
 } from 'recharts';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+import { usePagination } from '@/hooks/usePagination';
+import { useTableSort } from '@/hooks/useTableSort';
+
+import { SortableTableHeader } from './SortableTableHeader';
+
+import {
+  fetchHealthStatus,
+  fetchHealthLogs,
+  fetchClientErrors,
+  fetchPerformanceLogs,
+  fetchFeatureUsage,
+  fetchAuditLog,
+  fetchCronJobLogs,
+  groupErrorsByComponent,
+  aggregatePerformance,
+  aggregateFeatureUsage,
+  aggregateCronJobs,
+  exportAuditLogCSV,
+} from '@/services/systemHealthService';
+
 
 // ─── Helpers ───
 function scoreBadge(score: number) {

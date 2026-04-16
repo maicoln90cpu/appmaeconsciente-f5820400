@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useProfile } from '@/hooks/useProfile';
+
 import {
   TrendingUp,
   Ruler,
@@ -28,6 +27,10 @@ import {
   Sparkles,
   ShieldAlert,
 } from 'lucide-react';
+
+import { TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { useProfile } from '@/hooks/useProfile';
 
 interface TabConfig {
   value: string;

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+
+import { format, subDays, eachDayOfInterval, isSameDay, startOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   AreaChart,
   Area,
@@ -18,9 +19,12 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { BabySleepLog } from '@/types/babySleep';
-import { format, subDays, eachDayOfInterval, isSameDay, startOfDay } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 
 interface SleepPatternChartProps {
   sleepLogs: BabySleepLog[];

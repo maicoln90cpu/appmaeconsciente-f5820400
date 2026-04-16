@@ -1,13 +1,17 @@
 import { useState } from 'react';
+
 import { Bell, BellOff, Clock, Calendar, Pill, Moon, AlertTriangle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { PushNotificationToggle } from '@/components/pwa/PushNotificationToggle';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+
+import { PushNotificationToggle } from '@/components/pwa/PushNotificationToggle';
+
 
 interface NotificationPreferences {
   feedingReminders: boolean;

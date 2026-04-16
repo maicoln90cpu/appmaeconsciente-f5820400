@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useProfile } from '@/hooks/useProfile';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+
+import { format, differenceInDays, differenceInMonths } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Syringe,
   Brain,
@@ -17,8 +14,15 @@ import {
   Apple,
   Heart,
 } from 'lucide-react';
-import { format, differenceInDays, differenceInMonths } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useNavigate } from 'react-router-dom';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+import { useProfile } from '@/hooks/useProfile';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ContextCard {
   id: string;

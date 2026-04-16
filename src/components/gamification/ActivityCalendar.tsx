@@ -1,6 +1,5 @@
 import { memo, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useGamification } from '@/hooks/useGamification';
+
 import {
   format,
   parseISO,
@@ -11,8 +10,12 @@ import {
   subDays,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Calendar, Flame } from 'lucide-react';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+import { useGamification } from '@/hooks/useGamification';
 
 const LEVEL_COLORS = [
   'bg-muted', // 0 - sem atividade

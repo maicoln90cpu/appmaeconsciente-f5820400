@@ -1,6 +1,13 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Pill, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -8,9 +15,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -18,13 +25,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Pill, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+
+
 import { useBabyMedications, MEDICATION_FREQUENCIES } from '@/hooks/useBabyMedications';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 
 interface MedicationTimerProps {
   babyProfileId?: string;

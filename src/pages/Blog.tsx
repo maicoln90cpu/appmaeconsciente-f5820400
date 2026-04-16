@@ -1,13 +1,16 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Calendar, Clock, Eye, ArrowRight, BookOpen, ArrowLeft } from 'lucide-react';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Search, Calendar, Clock, Eye, ArrowRight, BookOpen, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface BlogPost {
   id: string;

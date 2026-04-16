@@ -3,8 +3,9 @@
  * @module lib/realtime-utils
  */
 
-import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
 
 const log = logger.scoped('realtime');
 

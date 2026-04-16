@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { Mail, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -10,10 +15,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
 import { supabase } from '@/integrations/supabase/client';
-import { Mail, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from 'sonner';
+
+
+
 
 interface Product {
   id: string;

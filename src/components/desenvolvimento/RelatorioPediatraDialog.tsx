@@ -1,4 +1,9 @@
 import { useState } from 'react';
+
+import { format } from 'date-fns';
+import { FileText, Download } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,11 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { FileText, Download } from 'lucide-react';
+
 import { BabyMilestoneRecord, DevelopmentSummary } from '@/types/development';
 import { AREA_LABELS } from '@/types/development';
-import { format } from 'date-fns';
+
 
 interface RelatorioPediatraDialogProps {
   summary: DevelopmentSummary;

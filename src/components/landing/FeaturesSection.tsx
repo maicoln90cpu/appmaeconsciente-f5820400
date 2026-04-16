@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 import {
   Heart,
   ShieldCheck,
@@ -11,6 +11,8 @@ import {
   HeadphonesIcon,
   Sparkles,
 } from 'lucide-react';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Feature {
   icon: React.ReactNode;

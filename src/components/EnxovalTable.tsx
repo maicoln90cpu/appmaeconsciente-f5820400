@@ -1,8 +1,8 @@
 import { memo, useState, useCallback } from 'react';
-import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+
 import { Card, CardContent } from '@/components/ui/card';
-import { EnxovalItem, Config } from '@/types/enxoval';
-import { useIsMobile } from '@/hooks/useMobile';
+import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
+
 import {
   EnxovalTableRow,
   EnxovalMobileCard,
@@ -10,6 +10,12 @@ import {
   EnxovalTableHeader,
   useEnxovalTableStyles,
 } from '@/components/enxoval';
+
+import { useIsMobile } from '@/hooks/useMobile';
+
+import { EnxovalItem, Config } from '@/types/enxoval';
+
+
 
 interface EnxovalTableProps {
   items: EnxovalItem[];

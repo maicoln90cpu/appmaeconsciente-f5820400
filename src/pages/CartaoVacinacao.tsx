@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+
 import { Loader2, Baby, Activity } from 'lucide-react';
-import { useVaccination } from '@/hooks/useVaccination';
+import { Link } from 'react-router-dom';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
 import { CadastroBebe } from '@/components/vacinacao/CadastroBebe';
-import { DashboardVacinacao } from '@/components/vacinacao/DashboardVacinacao';
 import { CalendarioVacinas } from '@/components/vacinacao/CalendarioVacinas';
-import { RegistroVacina } from '@/components/vacinacao/RegistroVacina';
 import { ConfiguracoesLembretes } from '@/components/vacinacao/ConfiguracoesLembretes';
+import { DashboardVacinacao } from '@/components/vacinacao/DashboardVacinacao';
+import { RegistroVacina } from '@/components/vacinacao/RegistroVacina';
+
+import { useVaccination } from '@/hooks/useVaccination';
+
 import type { VaccinationCalendar } from '@/types/vaccination';
 
 const CartaoVacinacao = () => {

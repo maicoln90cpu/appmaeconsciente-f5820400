@@ -6,18 +6,22 @@
  */
 
 import { useCallback, useMemo } from 'react';
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { differenceInMonths } from 'date-fns';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
 import {
   DevelopmentMilestoneType,
   BabyMilestoneRecord,
   MilestoneStatus,
   DevelopmentSummary,
 } from '@/types/development';
-import { differenceInMonths } from 'date-fns';
-import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useDevelopmentMilestones = (babyProfileId: string | null) => {
   const { user } = useAuth();

@@ -3,28 +3,30 @@ import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 
-import { Toaster } from '@/components/ui/toaster';
-import { Toaster as Sonner } from '@/components/ui/sonner';
-import { TooltipProvider } from '@/components/ui/tooltip';
 import { PageLoader } from '@/components/ui/page-loader';
+import { Toaster as Sonner } from '@/components/ui/sonner';
+import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
+import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
 import { GTMScript } from '@/components/GTMScript';
+import { InstallPrompt } from '@/components/install/InstallPrompt';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { ProductRoute } from '@/components/ProductRoute';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { SkipLink } from '@/components/SkipLink';
-import { InstallPrompt } from '@/components/install/InstallPrompt';
 import { UpdatePrompt } from '@/components/pwa/UpdatePrompt';
-import { FeatureErrorBoundary } from '@/components/FeatureErrorBoundary';
-
-import { AuthProvider } from '@/contexts/AuthContext';
-import { FeatureFlagsProvider } from '@/contexts/FeatureFlagsContext';
+import { SkipLink } from '@/components/SkipLink';
 
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring';
 
 import { lazyWithRetry, prefetchCommonRoutes } from '@/lib/lazy-utils';
 import { defaultQueryClientConfig } from '@/lib/query-config';
+
+import { AuthProvider } from '@/contexts/AuthContext';
+import { FeatureFlagsProvider } from '@/contexts/FeatureFlagsContext';
+
+
 
 // Lazy load com retry automático para resiliência de rede
 const Landing = lazyWithRetry(() => import('./pages/Landing'));

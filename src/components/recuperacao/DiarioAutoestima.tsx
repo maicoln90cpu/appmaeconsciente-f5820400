@@ -1,8 +1,19 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Heart, Camera, Smile, Meh, Frown, Lock, Users, Globe, Trash2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -11,17 +22,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+
 import { useBodyImageLog } from '@/hooks/postpartum';
-import { Heart, Camera, Smile, Meh, Frown, Lock, Users, Globe, Trash2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 
 export const DiarioAutoestima = () => {
   const { logs, isLoading, addLog, deleteLog } = useBodyImageLog();

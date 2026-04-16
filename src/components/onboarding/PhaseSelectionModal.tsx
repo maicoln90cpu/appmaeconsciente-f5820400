@@ -1,6 +1,8 @@
 import { useState } from 'react';
+
 import { Baby, Heart } from 'lucide-react';
-import { useProfile } from '@/hooks/useProfile';
+import { toast } from 'sonner';
+
 import {
   Dialog,
   DialogContent,
@@ -8,7 +10,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { toast } from 'sonner';
+
+import { useProfile } from '@/hooks/useProfile';
 
 interface PhaseSelectionModalProps {
   open: boolean;

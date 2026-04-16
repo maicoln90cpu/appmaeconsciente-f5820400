@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 
+import { Plus, Baby, AlertCircle, HelpCircle } from 'lucide-react';
+
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 import { ConfiguracoesAlertas } from '@/components/desenvolvimento/ConfiguracoesAlertas';
 import { DashboardDesenvolvimento } from '@/components/desenvolvimento/DashboardDesenvolvimento';
 import { LinhaTempoMarcos } from '@/components/desenvolvimento/LinhaTempoMarcos';
@@ -17,7 +20,6 @@ import { useVaccination } from '@/hooks/useVaccination';
 
 import { logger } from '@/lib/logger';
 
-import { Plus, Baby, AlertCircle, HelpCircle } from 'lucide-react';
 
 import type { BabyMilestoneRecord, DevelopmentAlertSettings } from '@/types/development';
 

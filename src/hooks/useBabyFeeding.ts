@@ -5,11 +5,17 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useBabyLogs } from '@/hooks/useBabyLogs';
-import { logger } from '@/lib/logger';
-import type { BabyFeedingLog, BreastMilkStorage, FeedingSettings } from '@/types/babyFeeding';
+
 import { toast } from 'sonner';
+
+import { useBabyLogs } from '@/hooks/useBabyLogs';
+
+import { logger } from '@/lib/logger';
+
+import type { BabyFeedingLog, BreastMilkStorage, FeedingSettings } from '@/types/babyFeeding';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 const log = logger.scoped('useBabyFeeding');
 

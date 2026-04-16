@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
-import { checkRateLimit, getRateLimitHeaders } from "../_shared/rate-limiter.ts";
+
 import { handleCorsOptions } from "../_shared/cors.ts";
 import {
   createErrorResponse,
@@ -8,6 +8,7 @@ import {
   withErrorHandling,
   logEvent,
 } from "../_shared/error-handler.ts";
+import { checkRateLimit, getRateLimitHeaders } from "../_shared/rate-limiter.ts";
 
 serve(withErrorHandling(async (req) => {
   if (req.method === 'OPTIONS') {

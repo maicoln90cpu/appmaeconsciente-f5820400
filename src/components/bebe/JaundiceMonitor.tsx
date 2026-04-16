@@ -1,15 +1,20 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { AlertTriangle, Baby, Plus, Trash2, Eye } from 'lucide-react';
-import { useJaundiceLogs } from '@/hooks/useJaundiceLogs';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { AlertTriangle, Baby, Plus, Trash2, Eye } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+
+
+import { useJaundiceLogs } from '@/hooks/useJaundiceLogs';
+
 
 const KRAMER_ZONES = [
   { zone: 1, label: 'Rosto', color: 'bg-yellow-200', bilirubin: '~5 mg/dL', risk: 'low' },

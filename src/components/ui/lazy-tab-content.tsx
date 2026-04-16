@@ -1,4 +1,5 @@
 import { Suspense, ReactNode } from 'react';
+
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface LazyTabContentProps {

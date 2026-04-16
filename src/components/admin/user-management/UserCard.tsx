@@ -1,8 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { format, formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Shield, UserPlus, KeyRound, Trash2, X } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -10,9 +14,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { format, formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Shield, UserPlus, KeyRound, Trash2, X } from 'lucide-react';
+
+
 import { UserData, ProductData, ProductAccessData, AccessGrantState } from './types';
 
 interface UserCardProps {

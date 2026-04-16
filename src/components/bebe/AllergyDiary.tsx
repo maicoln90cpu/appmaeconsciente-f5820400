@@ -1,13 +1,12 @@
 import { useState, useCallback } from 'react';
-import { useSubmitGuard } from '@/hooks/useSubmitGuard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Trash2, AlertTriangle, ShieldCheck, ShieldAlert, Clock } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -15,6 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -22,15 +23,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+
 import {
   useAllergyDiary,
   REACTION_TYPES,
   ALLERGY_SYMPTOMS,
   COMMON_ALLERGENS,
 } from '@/hooks/useAllergyDiary';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Plus, Trash2, AlertTriangle, ShieldCheck, ShieldAlert, Clock } from 'lucide-react';
+import { useSubmitGuard } from '@/hooks/useSubmitGuard';
 
 interface Props {
   babyProfileId?: string;

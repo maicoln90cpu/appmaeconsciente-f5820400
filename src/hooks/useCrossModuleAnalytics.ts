@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+
 import {
   differenceInHours,
   differenceInMinutes,
@@ -9,6 +8,9 @@ import {
   format,
   parseISO,
 } from 'date-fns';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface FeedingSleepCorrelation {
   feedingTime: string;

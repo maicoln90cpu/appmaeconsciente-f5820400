@@ -1,19 +1,25 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { FileText, Download, Baby, Ruler, Apple, Pill, Calendar, Activity } from 'lucide-react';
-import { useVaccination } from '@/hooks/useVaccination';
-import { useGrowthMeasurements } from '@/hooks/useGrowthMeasurements';
-import { useBabyAppointments } from '@/hooks/useBabyAppointments';
-import { useBabyMedications } from '@/hooks/useBabyMedications';
-import { useBabyColic } from '@/hooks/useBabyColic';
-import { useFoodIntroduction } from '@/hooks/useFoodIntroduction';
-import { useDevelopmentMilestones } from '@/hooks/useDevelopmentMilestones';
-import { getLastAutoTableY } from '@/types/jspdf';
+
 import { format, differenceInMonths, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { FileText, Download, Baby, Ruler, Apple, Pill, Calendar, Activity } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+
+
+import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+import { useBabyColic } from '@/hooks/useBabyColic';
+import { useBabyMedications } from '@/hooks/useBabyMedications';
+import { useDevelopmentMilestones } from '@/hooks/useDevelopmentMilestones';
+import { useFoodIntroduction } from '@/hooks/useFoodIntroduction';
+import { useGrowthMeasurements } from '@/hooks/useGrowthMeasurements';
+import { useVaccination } from '@/hooks/useVaccination';
+
+import { getLastAutoTableY } from '@/types/jspdf';
+
 
 interface PediatricReportGeneratorProps {
   babyProfileId?: string;

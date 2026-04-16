@@ -1,17 +1,20 @@
 import { useMemo } from 'react';
-import { Clock, Moon, Heart, Utensils, Pill, Calendar, Star, Baby, Milestone } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useBabySleep } from '@/hooks/useBabySleep';
-import { useBabyFeeding } from '@/hooks/useBabyFeeding';
-import { useBabyColic } from '@/hooks/useBabyColic';
-import { useBabyMedications } from '@/hooks/useBabyMedications';
-import { useBabyAppointments } from '@/hooks/useBabyAppointments';
-import { useBabyFirstTimes } from '@/hooks/useBabyGamification';
-import { useDevelopmentMilestones } from '@/hooks/useDevelopmentMilestones';
+
 import { format, parseISO, isToday, isYesterday, startOfDay, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Clock, Moon, Heart, Utensils, Pill, Calendar, Star, Baby, Milestone } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+import { useBabyColic } from '@/hooks/useBabyColic';
+import { useBabyFeeding } from '@/hooks/useBabyFeeding';
+import { useBabyFirstTimes } from '@/hooks/useBabyGamification';
+import { useBabyMedications } from '@/hooks/useBabyMedications';
+import { useBabySleep } from '@/hooks/useBabySleep';
+import { useDevelopmentMilestones } from '@/hooks/useDevelopmentMilestones';
 
 interface VisualTimelineProps {
   babyProfileId?: string;

@@ -1,12 +1,16 @@
 import { memo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { ExternalLink, Edit, Trash2, Calendar, Package, Tag, TrendingDown } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { EnxovalItem } from '@/types/enxoval';
+
 import { formatCurrency } from '@/lib/calculations';
-import { ExternalLink, Edit, Trash2, Calendar, Package, Tag, TrendingDown } from 'lucide-react';
+
+import { EnxovalItem } from '@/types/enxoval';
 
 interface EnxovalMobileCardProps {
   item: EnxovalItem;

@@ -1,8 +1,14 @@
 import { useState } from 'react';
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { formatDistance } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Trash2, Copy } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -12,8 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Trash2, Copy } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -22,9 +26,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { formatDistance } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { toast } from 'sonner';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface NewCoupon {
   code: string;

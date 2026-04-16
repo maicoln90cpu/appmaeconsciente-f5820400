@@ -1,13 +1,7 @@
 import { memo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import {
-  useStreaksAndChallenges,
-  type Challenge,
-  type UserChallenge,
-} from '@/hooks/useStreaksAndChallenges';
+
+import { format, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Trophy,
   Target,
@@ -22,8 +16,18 @@ import {
   Briefcase,
   Loader2,
 } from 'lucide-react';
-import { format, differenceInDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import {
+  useStreaksAndChallenges,
+  type Challenge,
+  type UserChallenge,
+} from '@/hooks/useStreaksAndChallenges';
+
 
 const iconMap: Record<string, React.ElementType> = {
   MessageSquare,

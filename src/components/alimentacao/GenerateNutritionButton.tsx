@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+
 import { Sparkles, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,7 +13,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
 
 interface GenerateNutritionButtonProps {
   onSuccess?: () => void;

@@ -1,16 +1,24 @@
 import { useState, useMemo } from 'react';
-import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
-import { usePosts } from '@/hooks/usePosts';
+
+import { MessageSquare, Trophy, Target } from 'lucide-react';
+
+import { EmptyState } from '@/components/ui/empty-state';
+import { LoadingCards } from '@/components/ui/loading-card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { ChallengesPanel } from '@/components/comunidade/ChallengesPanel';
 import { CreatePostDialog } from '@/components/comunidade/CreatePostDialog';
 import { PostCard } from '@/components/comunidade/PostCard';
 import { PostFilters } from '@/components/comunidade/PostFilters';
-import { ChallengesPanel } from '@/components/comunidade/ChallengesPanel';
 import { Leaderboard } from '@/components/gamification';
 import { InstallPrompt } from '@/components/install/InstallPrompt';
-import { LoadingCards } from '@/components/ui/loading-card';
-import { EmptyState } from '@/components/ui/empty-state';
-import { MessageSquare, Trophy, Target } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+
+
+import { usePosts } from '@/hooks/usePosts';
+
+import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
 
 const Comunidade = () => {
   const { badgesEnabled } = useFeatureFlags();

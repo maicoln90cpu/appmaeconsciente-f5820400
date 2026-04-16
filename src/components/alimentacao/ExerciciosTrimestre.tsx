@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Dumbbell, Play, Clock, AlertCircle, CheckCircle2, Calendar, Heart } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
-import { Dumbbell, Play, Clock, AlertCircle, CheckCircle2, Calendar, Heart } from 'lucide-react';
-import { toast } from 'sonner';
-import { useProfile } from '@/hooks/useProfile';
+
 import { useFavorites } from '@/hooks/useFavorites';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface Exercise {
   id: string;

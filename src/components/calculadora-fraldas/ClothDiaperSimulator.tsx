@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
+
+import { Leaf, DollarSign, Clock, TrendingDown } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Leaf, DollarSign, Clock, TrendingDown } from 'lucide-react';
-import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
 import { Progress } from '@/components/ui/progress';
+
+import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
 
 interface Props {
   estimate: DiaperEstimate | null;

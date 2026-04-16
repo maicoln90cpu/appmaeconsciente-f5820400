@@ -1,14 +1,19 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
+
 import { Loader2, Send } from 'lucide-react';
-import { useTickets, TicketFormData } from '@/hooks/useTickets';
-import { useProfile } from '@/hooks/useProfile';
-import { backgroundSync } from '@/lib/background-sync';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useProfile } from '@/hooks/useProfile';
+import { useTickets, TicketFormData } from '@/hooks/useTickets';
+
+import { backgroundSync } from '@/lib/background-sync';
+
 
 export const TicketForm = () => {
   const { createTicket } = useTickets();

@@ -4,7 +4,9 @@
  */
 
 import { forwardRef, useCallback, KeyboardEvent } from 'react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { cn } from '@/lib/utils';
 
 export interface AccessibleCardProps extends React.HTMLAttributes<HTMLDivElement> {

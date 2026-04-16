@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/integrations/supabase/client';
-import { useProfile } from '@/hooks/useProfile';
-import { Droplets, Pill, Scale, Dumbbell, TrendingUp, Calendar } from 'lucide-react';
+
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Droplets, Pill, Scale, Dumbbell, TrendingUp, Calendar } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface DashboardData {
   waterToday: number;

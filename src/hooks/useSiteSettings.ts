@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
 import { toast } from 'sonner';
+
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface SiteSettings {
   id: string;

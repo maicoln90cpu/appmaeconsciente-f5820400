@@ -1,11 +1,13 @@
+import { useState } from 'react';
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, CheckCircle, XCircle, Code, Rocket, Gift, Star } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useState } from 'react';
-import { Loader2, CheckCircle, XCircle, Code, Rocket, Gift, Star } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -13,13 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
 import {
   getSuggestionStatusBadgeVariant,
   getSuggestionStatusLabel,
   type SuggestionStatus,
 } from '@/lib/ticket-utils';
-import { toast } from 'sonner';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export const ToolSuggestionManagement = () => {
   const queryClient = useQueryClient();

@@ -1,5 +1,6 @@
-import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
 
 // VAPID public key - generate a pair for production
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || '';

@@ -10,10 +10,10 @@
  * - useDailyActivity: atividade diária e calendário
  */
 
-import { useUserLevel, XP_REWARDS } from './gamification/useUserLevel';
 import { useBadges } from './gamification/useBadges';
-import { useLeaderboard } from './gamification/useLeaderboard';
 import { useDailyActivity } from './gamification/useDailyActivity';
+import { useLeaderboard } from './gamification/useLeaderboard';
+import { useUserLevel, XP_REWARDS } from './gamification/useUserLevel';
 
 // Re-exportar tipos para compatibilidade
 export type { UserLevel } from './gamification/useUserLevel';

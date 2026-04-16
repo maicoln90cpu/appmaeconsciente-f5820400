@@ -1,7 +1,10 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+
+import { AlertTriangle, RefreshCw, Home, WifiOff, Bug } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw, Home, WifiOff, Bug } from 'lucide-react';
+
 import { analytics } from '@/lib/analytics';
 import { captureError, addBreadcrumb } from '@/lib/sentry';
 

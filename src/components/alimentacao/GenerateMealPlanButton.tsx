@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+
 import { Loader2, Utensils } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+
 import { useAbortController, isAbortError } from '@/hooks/useAbortController';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface GenerateMealPlanButtonProps {
   onSuccess: () => void;

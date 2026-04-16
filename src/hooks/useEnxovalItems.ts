@@ -6,11 +6,11 @@
  * para a lista de itens do enxoval do usuário.
  */
 
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { EnxovalItem, Config } from '@/types/enxoval';
+
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+
 import {
   calculatePriority,
   calculateSubtotalPlanned,
@@ -18,9 +18,13 @@ import {
   calculateSavings,
   calculateSavingsPercent,
 } from '@/lib/calculations';
-import { useAuth } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { EnxovalItem, Config } from '@/types/enxoval';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 /** Quantidade de itens carregados por página */
 const ITEMS_PER_PAGE = 50;

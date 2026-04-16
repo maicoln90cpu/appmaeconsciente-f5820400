@@ -1,12 +1,6 @@
 import { useState, lazy } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { LazyTabContent } from '@/components/ui/lazy-tab-content';
-import { DashboardSaude } from '@/components/alimentacao/DashboardSaude';
-import { GenerateMealPlanButton } from '@/components/alimentacao/GenerateMealPlanButton';
-import { GenerateRecipesButton } from '@/components/alimentacao/GenerateRecipesButton';
-import { GenerateExercisesButton } from '@/components/alimentacao/GenerateExercisesButton';
-import { ProfileRequiredDialog } from '@/components/alimentacao/ProfileRequiredDialog';
+
+import { useQuery } from '@tanstack/react-query';
 import {
   Utensils,
   Pill,
@@ -19,9 +13,23 @@ import {
   ShoppingCart,
   BarChart3,
 } from 'lucide-react';
-import { useProfile } from '@/hooks/useProfile';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useQuery } from '@tanstack/react-query';
+import { LazyTabContent } from '@/components/ui/lazy-tab-content';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { DashboardSaude } from '@/components/alimentacao/DashboardSaude';
+import { GenerateExercisesButton } from '@/components/alimentacao/GenerateExercisesButton';
+import { GenerateMealPlanButton } from '@/components/alimentacao/GenerateMealPlanButton';
+import { GenerateRecipesButton } from '@/components/alimentacao/GenerateRecipesButton';
+import { ProfileRequiredDialog } from '@/components/alimentacao/ProfileRequiredDialog';
+
+
+import { useProfile } from '@/hooks/useProfile';
+
+
+
 import { supabase } from '@/integrations/supabase/client';
 
 // Lazy load tab components for better initial bundle size

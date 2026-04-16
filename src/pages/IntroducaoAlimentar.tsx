@@ -1,7 +1,9 @@
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
 import { FoodIntroductionDiary } from '@/components/alimentacao-bebe/FoodIntroductionDiary';
 
 const IntroducaoAlimentar = () => {

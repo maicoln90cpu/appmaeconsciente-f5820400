@@ -4,6 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
+
 import {
   calculatePriority,
   calculateSubtotalPlanned,
@@ -13,6 +14,7 @@ import {
   calculateTotals,
   formatCurrency,
 } from '@/lib/calculations';
+
 import { EnxovalItem } from '@/types/enxoval';
 
 describe('calculatePriority', () => {

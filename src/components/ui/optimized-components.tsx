@@ -1,6 +1,9 @@
 import React, { memo, useMemo, useCallback, useState } from 'react';
-import { useDebouncedCallback, useDeepMemo } from '@/hooks/useMemoizedCallback';
+
 import { Input } from '@/components/ui/input';
+
+import { useDebouncedCallback, useDeepMemo } from '@/hooks/useMemoizedCallback';
+
 import { cn } from '@/lib/utils';
 
 interface OptimizedSelectProps<T> {

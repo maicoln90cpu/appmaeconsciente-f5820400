@@ -1,11 +1,17 @@
 import { lazy } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LazyTabContent } from '@/components/ui/lazy-tab-content';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+
 import { Baby, BarChart3, History, Droplets, Settings, Info, Loader2 } from 'lucide-react';
-import { useBabyFeeding } from '@/hooks/useBabyFeeding';
-import { RegistroMamada } from '@/components/amamentacao/RegistroMamada';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { LazyTabContent } from '@/components/ui/lazy-tab-content';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+import { ConfiguracoesAmamentacao as ConfiguracoesAmamentacaoSetup } from '@/components/amamentacao/ConfiguracoesAmamentacao';
 import { ExportAmamentacaoPDF } from '@/components/amamentacao/ExportAmamentacaoPDF';
+import { RegistroMamada } from '@/components/amamentacao/RegistroMamada';
+
+import { useBabyFeeding } from '@/hooks/useBabyFeeding';
 
 // Lazy load tab components for better initial bundle size
 const DashboardAmamentacao = lazy(() =>
@@ -26,7 +32,6 @@ const ConfiguracoesAmamentacao = lazy(() =>
 );
 
 // Import ConfiguracoesAmamentacao directly for initial setup (when no settings exist)
-import { ConfiguracoesAmamentacao as ConfiguracoesAmamentacaoSetup } from '@/components/amamentacao/ConfiguracoesAmamentacao';
 
 const RastreadorAmamentacao = () => {
   const {

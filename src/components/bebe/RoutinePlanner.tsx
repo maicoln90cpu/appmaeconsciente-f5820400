@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { Plus, CalendarClock, CheckCircle2, Circle, Trash2, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -9,9 +14,10 @@ import {
   DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -19,13 +25,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Progress } from '@/components/ui/progress';
-import { Plus, CalendarClock, CheckCircle2, Circle, Trash2, Sparkles } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+
+
 import { useBabyRoutines, ROUTINE_TYPES, DAYS_OF_WEEK } from '@/hooks/useBabyRoutines';
+
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+
 
 const AGE_TEMPLATES = {
   '0-3': {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+
 import { X, ChevronLeft, ChevronRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -11,10 +12,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
-import { cn } from '@/lib/utils';
+
 
 import { useOnboarding, ONBOARDING_STEPS } from '@/hooks/useOnboarding';
 import { useProfile } from '@/hooks/useProfile';
+
+import { cn } from '@/lib/utils';
 
 const WIZARD_STEPS = [
   {

@@ -1,10 +1,11 @@
-import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
 import {
   LevelProgress,
   DailyLoginTracker,
   WeeklyGoalCard,
   ActivityCalendar,
 } from '@/components/gamification';
+
+import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
 
 export const DashboardBebeGamification = () => {
   const { badgesEnabled, loading } = useFeatureFlags();

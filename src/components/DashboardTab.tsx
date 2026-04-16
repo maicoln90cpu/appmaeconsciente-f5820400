@@ -1,6 +1,11 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { EnxovalItem } from '@/types/enxoval';
-import { formatCurrency } from '@/lib/calculations';
+import {
+  TrendingDown,
+  TrendingUp,
+  ShoppingCart,
+  CheckCircle2,
+  Package,
+  Sparkles,
+} from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -13,17 +18,17 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import {
-  TrendingDown,
-  TrendingUp,
-  ShoppingCart,
-  CheckCircle2,
-  Package,
-  Sparkles,
-} from 'lucide-react';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { ClothingSizeCalculator } from '@/components/enxoval/ClothingSizeCalculator';
+
 import { useDashboardStats } from '@/hooks/useDashboardStats';
+
+import { formatCurrency } from '@/lib/calculations';
+
+import { EnxovalItem } from '@/types/enxoval';
 
 interface DashboardTabProps {
   items: EnxovalItem[];

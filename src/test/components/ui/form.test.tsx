@@ -3,10 +3,11 @@
  * @module test/components/ui/form.test
  */
 
-import { describe, it, expect } from 'vitest';
-import { render } from '@testing-library/react';
 import { screen } from '@testing-library/dom';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { describe, it, expect } from 'vitest';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 

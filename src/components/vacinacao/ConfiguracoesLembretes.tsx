@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -9,7 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+
 import type { VaccinationReminderSettings } from '@/types/vaccination';
 
 interface ConfiguracoesLembretesProps {

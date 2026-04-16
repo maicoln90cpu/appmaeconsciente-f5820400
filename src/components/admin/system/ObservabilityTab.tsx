@@ -1,32 +1,6 @@
 import { useState } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
-import {
-  fetchSLAMetrics,
-  fetchAICosts,
-  fetchDeliveryStatus,
-  fetchRecentErrors,
-  fetchPerformanceMetrics,
-} from '@/services/observabilityService';
 import {
   Shield,
   DollarSign,
@@ -50,6 +24,36 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Progress } from '@/components/ui/progress';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+
+import { supabase } from '@/integrations/supabase/client';
+import {
+  fetchSLAMetrics,
+  fetchAICosts,
+  fetchDeliveryStatus,
+  fetchRecentErrors,
+  fetchPerformanceMetrics,
+} from '@/services/observabilityService';
 
 // ─── Helpers ───
 function PanelWrapper({
@@ -512,7 +516,6 @@ function MetricsHealthPanel() {
 }
 
 // Need supabase import for MetricsHealthPanel
-import { supabase } from '@/integrations/supabase/client';
 
 // ═══════════════════════════════════════════════
 // MAIN CONTAINER

@@ -4,9 +4,11 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Tipos de role disponíveis no sistema

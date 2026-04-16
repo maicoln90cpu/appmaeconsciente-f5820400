@@ -3,8 +3,8 @@
  * @module test/hooks/useNotifications.test
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 // Mock user data
 const mockUser = {

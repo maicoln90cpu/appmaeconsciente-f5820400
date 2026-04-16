@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+
 import { Loader2, Star, Lightbulb, Filter, FileText, ArrowRight } from 'lucide-react';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useProfile } from '@/hooks/useProfile';
-import { ToolIconGrid } from '@/components/materiais/ToolIconGrid';
-import { PremiumUpgradeModal } from '@/components/materiais/PremiumUpgradeModal';
-import { ToolSuggestionDialog } from '@/components/materiais/ToolSuggestionDialog';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
+import { PremiumUpgradeModal } from '@/components/materiais/PremiumUpgradeModal';
+import { ToolIconGrid } from '@/components/materiais/ToolIconGrid';
+import { ToolSuggestionDialog } from '@/components/materiais/ToolSuggestionDialog';
+
+import { useProfile } from '@/hooks/useProfile';
+import { useUserRole } from '@/hooks/useUserRole';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 // Tools relevant per phase — others still show but are deprioritized
 const GESTANTE_SLUGS = new Set([

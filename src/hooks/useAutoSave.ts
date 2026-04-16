@@ -4,9 +4,12 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { indexedDBManager, DraftEntry } from '@/lib/indexed-db';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { toast } from 'sonner';
+
+import { indexedDBManager, DraftEntry } from '@/lib/indexed-db';
+
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface UseAutoSaveOptions {
   /** Unique type identifier for this form (e.g., 'enxoval-item', 'post') */

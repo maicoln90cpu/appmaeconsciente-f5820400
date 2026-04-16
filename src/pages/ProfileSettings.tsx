@@ -1,24 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useProfile } from '@/hooks/useProfile';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
+
 import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { SyncQueuePanel } from '@/components/offline';
-import { ProfileAchievements } from '@/components/profile/ProfileAchievements';
-import { SimpleModeToggle } from '@/components/profile/SimpleModeToggle';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,7 +15,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+
+import { SyncQueuePanel } from '@/components/offline';
+import { ProfileAchievements } from '@/components/profile/ProfileAchievements';
+import { SimpleModeToggle } from '@/components/profile/SimpleModeToggle';
+
+import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
 
 const ESTADOS = [
   'AC',

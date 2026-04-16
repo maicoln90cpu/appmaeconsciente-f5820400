@@ -1,8 +1,12 @@
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Badge } from '@/hooks/useGamification';
-import { Trophy, Star, Award, Users, Flame, Compass, Heart, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
+
+import { Trophy, Star, Award, Users, Flame, Compass, Heart, Sparkles } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+
+import { Badge } from '@/hooks/useGamification';
+
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   trophy: Trophy,

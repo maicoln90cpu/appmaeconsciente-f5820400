@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import { EnxovalItem, Category } from '@/types/enxoval';
+
 import { calculateTotals } from '@/lib/calculations';
+
+import { EnxovalItem, Category } from '@/types/enxoval';
 
 interface CategoryData {
   planned: number;

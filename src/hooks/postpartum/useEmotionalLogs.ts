@@ -1,8 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
-import type { Database } from '@/integrations/supabase/types';
 import { toast } from 'sonner';
+
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import type { Database } from '@/integrations/supabase/types';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 type EmotionalLogRow = Database['public']['Tables']['emotional_logs']['Row'];
 type EmotionalLogInsert = Database['public']['Tables']['emotional_logs']['Insert'];

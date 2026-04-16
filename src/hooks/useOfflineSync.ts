@@ -3,9 +3,12 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { offlineSync, SyncTask } from '@/lib/offline-sync';
-import { supabase } from '@/integrations/supabase/client';
+
 import { toast } from 'sonner';
+
+import { offlineSync, SyncTask } from '@/lib/offline-sync';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface OfflineSyncState {
   isOnline: boolean;

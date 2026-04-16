@@ -3,13 +3,17 @@
  * @module hooks/gamification/useBadges
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { useUserLevel } from './useUserLevel';
+
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useUserLevel } from './useUserLevel';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface Badge {
   id: string;

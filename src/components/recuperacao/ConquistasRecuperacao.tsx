@@ -1,9 +1,11 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { usePostpartumAchievements, ACHIEVEMENT_DEFINITIONS } from '@/hooks/postpartum';
-import { Trophy, Star, Lock } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Trophy, Star, Lock } from 'lucide-react';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import { usePostpartumAchievements, ACHIEVEMENT_DEFINITIONS } from '@/hooks/postpartum';
 
 export const ConquistasRecuperacao = () => {
   const { achievements, wellnessScores, isLoading, getGoodDaysStreak } =

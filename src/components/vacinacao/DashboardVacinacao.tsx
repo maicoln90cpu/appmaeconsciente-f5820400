@@ -1,12 +1,17 @@
 import { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Download, Syringe, CalendarClock } from 'lucide-react';
+
 import { differenceInMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Download, Syringe, CalendarClock } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+
 import { usePDFExport } from '@/hooks/usePDFExport';
+
 import type {
   BabyVaccinationProfile,
   VaccinationCalendar,

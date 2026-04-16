@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+
 import { EnxovalItem } from '@/types/enxoval';
 
 export const useEnxovalTableStyles = () => {

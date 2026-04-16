@@ -1,8 +1,12 @@
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Search, X } from 'lucide-react';
 import { useState } from 'react';
+
+import { Search, X } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+
 
 interface PostFiltersProps {
   onSearch: (query: string) => void;

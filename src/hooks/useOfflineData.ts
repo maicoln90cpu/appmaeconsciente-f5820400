@@ -4,10 +4,14 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+
+import { toast } from 'sonner';
+
 import { offlineCache } from '@/lib/offline-cache';
 import { offlineSync } from '@/lib/offline-sync';
-import { toast } from 'sonner';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export interface UseOfflineDataOptions<T> {
   tableName: string;

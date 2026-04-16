@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { Calendar, Clock, Flame, AlertCircle } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { supabase } from '@/integrations/supabase/client';
+
 import { Profile } from '@/hooks/useProfile';
-import { Calendar, Clock, Flame, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface MealPlan {
   id: string;

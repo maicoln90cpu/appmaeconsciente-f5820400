@@ -1,3 +1,6 @@
+import { Info } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Table,
   TableBody,
@@ -6,8 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Info } from 'lucide-react';
+
 import { DEFAULT_RN_LIMITS } from '@/constants/rnLimits';
 
 export const RNGuideTable = () => {

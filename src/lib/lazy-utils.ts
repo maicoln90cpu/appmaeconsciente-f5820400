@@ -7,6 +7,7 @@
  */
 
 import { lazy, ComponentType } from 'react';
+
 import { trackChunkLoad } from './bundle-analyzer';
 
 /**

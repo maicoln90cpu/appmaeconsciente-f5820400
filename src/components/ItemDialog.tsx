@@ -1,4 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+
+import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -6,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { DraftIndicator } from '@/components/ui/draft-indicator';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -17,7 +22,21 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
+
+
+import { TagsInput } from '@/components/TagsInput';
+
+import { useAutoSave } from '@/hooks/useAutoSave';
+
+import {
+  calculatePriority,
+  calculateSubtotalPlanned,
+  calculateSubtotalPaid,
+  calculateSavings,
+  calculateSavingsPercent,
+} from '@/lib/calculations';
+import { sanitizeUrl } from '@/lib/url-validator';
+
 import {
   EnxovalItem,
   Category,
@@ -29,18 +48,10 @@ import {
   Classificacao,
   Emocao,
 } from '@/types/enxoval';
-import {
-  calculatePriority,
-  calculateSubtotalPlanned,
-  calculateSubtotalPaid,
-  calculateSavings,
-  calculateSavingsPercent,
-} from '@/lib/calculations';
-import { TagsInput } from '@/components/TagsInput';
-import { sanitizeUrl } from '@/lib/url-validator';
-import { useAutoSave } from '@/hooks/useAutoSave';
-import { DraftIndicator } from '@/components/ui/draft-indicator';
-import { toast } from 'sonner';
+
+
+
+
 
 interface ItemDialogProps {
   onAdd?: (item: EnxovalItem) => void;

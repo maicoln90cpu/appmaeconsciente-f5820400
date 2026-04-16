@@ -1,7 +1,11 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Lightbulb, Gift } from 'lucide-react';
 import { useState } from 'react';
+
+import { Lightbulb, Gift } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+
 import { ToolSuggestionDialog } from './ToolSuggestionDialog';
 
 export const ToolSuggestionCard = () => {

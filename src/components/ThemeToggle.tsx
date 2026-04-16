@@ -1,6 +1,8 @@
-import { Moon, Sun } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { useEffect, useState, useCallback } from 'react';
+
+import { Moon, Sun } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 
 const THEME_COLORS = {
   light: '#F8EDEE',

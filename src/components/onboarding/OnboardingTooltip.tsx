@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+
 import { X, ArrowRight, ArrowLeft } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+
 import { cn } from '@/lib/utils';
 
 export interface TourStep {

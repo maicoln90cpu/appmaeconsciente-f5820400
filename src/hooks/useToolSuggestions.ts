@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { z } from 'zod';
+
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ToolSuggestion {
   id: string;

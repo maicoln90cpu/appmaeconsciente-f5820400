@@ -1,4 +1,3 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Bell,
   BookOpen,
@@ -17,6 +16,8 @@ import {
   Users,
   User,
 } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -29,17 +30,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+import { QuickRecordFAB } from '@/components/layout/QuickRecordFAB';
 import { NotificationBell } from '@/components/NotificationBell';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { OfflineBanner, SyncQueueManager } from '@/components/offline';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
 
-import { supabase } from '@/integrations/supabase/client';
 import { preloadComponent, routeImports } from '@/lib/lazy-utils';
-import { QuickRecordFAB } from '@/components/layout/QuickRecordFAB';
-import { toast } from 'sonner';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface MainLayoutProps {
   children: React.ReactNode;

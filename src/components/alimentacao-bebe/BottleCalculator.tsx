@@ -3,6 +3,11 @@
  */
 
 import { useState, useMemo } from 'react';
+
+import { Baby, Calculator, Info, Milk } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,9 +26,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { Baby, Calculator, Info, Milk } from 'lucide-react';
+
+
 import { useGrowthMeasurements } from '@/hooks/useGrowthMeasurements';
 
 interface BottleCalculatorProps {

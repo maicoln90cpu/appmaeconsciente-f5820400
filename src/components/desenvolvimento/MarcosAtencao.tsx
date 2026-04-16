@@ -1,16 +1,20 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { AlertCircle, CheckCircle2, MessageSquare, FileText } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+
 import {
   BabyMilestoneRecord,
   DevelopmentMilestoneType,
   AREA_LABELS,
   AREA_ICONS,
 } from '@/types/development';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 
 interface MarcosAtencaoProps {
   attentionRecords: (BabyMilestoneRecord & { milestone?: DevelopmentMilestoneType })[];

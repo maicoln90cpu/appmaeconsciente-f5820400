@@ -1,6 +1,8 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+
+import { cn } from '@/lib/utils';
 
 interface SortableTableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElement> {
   sortKey?: string;

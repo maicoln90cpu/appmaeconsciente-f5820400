@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { Check, Star, Sparkles, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { supabase } from '@/integrations/supabase/client';
 
 const ClubePremium = () => {
   const [loading, setLoading] = useState(true);

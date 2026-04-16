@@ -1,9 +1,12 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { Eye, EyeOff } from 'lucide-react';
-import { useProfile } from '@/hooks/useProfile';
 import { toast } from 'sonner';
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+
+import { useProfile } from '@/hooks/useProfile';
+
 
 export const SimpleModeToggle = () => {
   const { profile, updateProfile } = useProfile();

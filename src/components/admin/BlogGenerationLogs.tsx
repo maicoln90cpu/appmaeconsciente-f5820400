@@ -1,7 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import {
   Table,
   TableBody,
@@ -10,11 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { SortableTableHead } from '@/components/ui/sortable-table-head';
+
 import { useSortableTable } from '@/hooks/useSortableTable';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { RefreshCw, CheckCircle, XCircle, Clock } from 'lucide-react';
+
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface LogEntry {
   id: string;

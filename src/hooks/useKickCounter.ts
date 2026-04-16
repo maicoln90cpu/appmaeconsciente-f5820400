@@ -1,9 +1,14 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
-import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
+
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+
+import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export interface KickSession {
   id: string;

@@ -1,9 +1,12 @@
 import { Bell, BellOff, BellRing, Loader2 } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { toast } from 'sonner';
+
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+
+import { usePushNotifications } from '@/hooks/usePushNotifications';
+
 
 interface PushNotificationToggleProps {
   showDescription?: boolean;

@@ -1,15 +1,20 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Ticket, TicketMessage, useTickets } from '@/hooks/useTickets';
-import { supabase } from '@/integrations/supabase/client';
-import { Send } from 'lucide-react';
+
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Send } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { Ticket, TicketMessage, useTickets } from '@/hooks/useTickets';
+
 import { TICKET_STATUS_CONFIG, type TicketStatus } from '@/lib/ticket-utils';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface TicketDetailProps {
   ticket: Ticket | null;

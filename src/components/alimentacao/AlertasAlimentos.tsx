@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { supabase } from '@/integrations/supabase/client';
+
 import { AlertTriangle, Info, ChefHat } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface FoodAlert {
   id: string;

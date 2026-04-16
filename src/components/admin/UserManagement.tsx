@@ -1,6 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { useState, useMemo } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+
 import { CreateUserDialog } from './CreateUserDialog';
 import {
   UserFilters,
@@ -15,7 +17,9 @@ import {
   UserFiltersState,
   AccessGrantState,
 } from './user-management';
-import { toast } from 'sonner';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();

@@ -1,6 +1,19 @@
 import { useState, useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+
+import { format, subDays, startOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Trash2, Baby, Milk, Droplets } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Table,
   TableBody,
@@ -9,17 +22,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Trash2, Baby, Milk, Droplets } from 'lucide-react';
-import { format, subDays, startOfDay } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+
 import type { BabyFeedingLog } from '@/types/babyFeeding';
 
 interface HistoricoMamadasProps {

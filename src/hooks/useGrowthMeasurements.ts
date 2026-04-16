@@ -4,8 +4,11 @@
  */
 
 import { useMemo } from 'react';
+
 import { createSupabaseCRUD } from '@/hooks/factories/createSupabaseCRUD';
+
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
 import type { Database } from '@/integrations/supabase/types';
 
 type GrowthMeasurementRow = Database['public']['Tables']['growth_measurements']['Row'];

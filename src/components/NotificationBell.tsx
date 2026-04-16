@@ -1,11 +1,14 @@
-import { Bell } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
-import { useNotifications } from '@/hooks/useNotifications';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Bell } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { useNotifications } from '@/hooks/useNotifications';
+
 
 export const NotificationBell = () => {
   const { notifications, unreadCount, markAsRead } = useNotifications();

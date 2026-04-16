@@ -1,14 +1,17 @@
 import { useMemo } from 'react';
-import { Baby, Moon, Pill, Clock, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useBabySleep } from '@/hooks/useBabySleep';
-import { useBabyFeeding } from '@/hooks/useBabyFeeding';
-import { useBabyColic } from '@/hooks/useBabyColic';
-import { useBabyMedications } from '@/hooks/useBabyMedications';
-import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+
 import { format, isToday, isTomorrow, differenceInHours, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Baby, Moon, Pill, Clock, Calendar, TrendingUp, AlertCircle } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+import { useBabyColic } from '@/hooks/useBabyColic';
+import { useBabyFeeding } from '@/hooks/useBabyFeeding';
+import { useBabyMedications } from '@/hooks/useBabyMedications';
+import { useBabySleep } from '@/hooks/useBabySleep';
 
 export const BabySummaryWidget = () => {
   const { sleepLogs } = useBabySleep();

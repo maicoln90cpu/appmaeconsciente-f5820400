@@ -1,6 +1,12 @@
 import { useState } from 'react';
-import { Label } from '@/components/ui/label';
+
+import { Calculator, TrendingUp, AlertCircle } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 import {
   Select,
   SelectContent,
@@ -8,11 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Calculator, TrendingUp, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+
+
+
 import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
-import { Progress } from '@/components/ui/progress';
+
 
 interface Props {
   onEstimateCalculated: (estimate: DiaperEstimate) => void;

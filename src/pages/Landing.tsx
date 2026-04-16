@@ -1,15 +1,5 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useEffect, useState, useRef, useMemo } from 'react';
 
-import fernandaImg from '@/assets/testimonials/fernanda-lima.jpg';
-import marianaImg from '@/assets/testimonials/mariana-costa.jpg';
-import camilaImg from '@/assets/testimonials/camila-rodrigues.jpg';
-import patriciaImg from '@/assets/testimonials/patricia-alves.jpg';
-import beatrizImg from '@/assets/testimonials/beatriz-santos.jpg';
-import robertaImg from '@/assets/testimonials/roberta-mendes.jpg';
-import julianaImg from '@/assets/testimonials/juliana-freitas.jpg';
 import {
   ArrowRight,
   Users,
@@ -46,9 +36,23 @@ import {
   CalendarClock,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
 import { InstallPrompt } from '@/components/install/InstallPrompt';
+
+import beatrizImg from '@/assets/testimonials/beatriz-santos.jpg';
+import camilaImg from '@/assets/testimonials/camila-rodrigues.jpg';
+import fernandaImg from '@/assets/testimonials/fernanda-lima.jpg';
+import julianaImg from '@/assets/testimonials/juliana-freitas.jpg';
+import marianaImg from '@/assets/testimonials/mariana-costa.jpg';
+import patriciaImg from '@/assets/testimonials/patricia-alves.jpg';
+import robertaImg from '@/assets/testimonials/roberta-mendes.jpg';
 import { supabase } from '@/integrations/supabase/client';
-import { useEffect, useState, useRef, useMemo } from 'react';
+
 
 interface Testimonial {
   name: string;

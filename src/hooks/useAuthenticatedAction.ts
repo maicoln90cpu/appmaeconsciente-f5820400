@@ -1,7 +1,10 @@
 import { useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/lib/logger';
+
 import { toast } from 'sonner';
+
+import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * Hook centralizado para ações autenticadas.

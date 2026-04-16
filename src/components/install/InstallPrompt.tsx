@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 
+import { Download, X, Share, PlusSquare, Smartphone } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { logger } from '@/lib/logger';
 
-import { Download, X, Share, PlusSquare, Smartphone } from 'lucide-react';
 
 export const InstallPrompt = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);

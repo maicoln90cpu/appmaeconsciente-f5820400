@@ -1,9 +1,13 @@
 import { useState } from 'react';
+
+import { Baby, Upload, Info } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useProfile } from '@/hooks/useProfile';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -13,11 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Baby, Upload, Info } from 'lucide-react';
+
+import { useProfile } from '@/hooks/useProfile';
+
+import { supabase } from '@/integrations/supabase/client';
+
 import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { toast } from 'sonner';
+
 
 const ESTADOS = [
   'AC',

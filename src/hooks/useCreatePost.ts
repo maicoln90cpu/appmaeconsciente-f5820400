@@ -1,10 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useAutoSave } from '@/hooks/useAutoSave';
-import { z } from 'zod';
-import { logger } from '@/lib/logger';
+
 import { toast } from 'sonner';
+import { z } from 'zod';
+
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { useUserRole } from '@/hooks/useUserRole';
+
+import { logger } from '@/lib/logger';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
+
 
 const postSchema = z.object({
   content: z.string().max(5000, 'O post deve ter no máximo 5000 caracteres'),

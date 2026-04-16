@@ -1,8 +1,12 @@
 import { useState } from 'react';
+
+import { Bell, Mail, Smartphone, Info } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -10,10 +14,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Bell, Mail, Smartphone, Info } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+
+
 import { DevelopmentAlertSettings } from '@/types/development';
-import { toast } from 'sonner';
+
 
 interface ConfiguracoesAlertasProps {
   settings: DevelopmentAlertSettings | null;

@@ -1,14 +1,18 @@
+import { differenceInMonths } from 'date-fns';
+import { Loader2 } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RegistroSono } from '@/components/sono/RegistroSono';
+
+import { ConfiguracoesSono } from '@/components/sono/ConfiguracoesSono';
 import { DashboardSono } from '@/components/sono/DashboardSono';
 import { HistoricoSono } from '@/components/sono/HistoricoSono';
-import { ConfiguracoesSono } from '@/components/sono/ConfiguracoesSono';
+import { RegistroSono } from '@/components/sono/RegistroSono';
 import { SleepAIInsights } from '@/components/sono/SleepAIInsights';
 import { SleepPatternChart } from '@/components/sono/SleepPatternChart';
+
 import { useBabySleep } from '@/hooks/useBabySleep';
-import { Loader2 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { differenceInMonths } from 'date-fns';
+
 
 export default function DiarioSono() {
   const { sleepLogs, settings, milestones, loading, saveSettings, addSleepLog, deleteSleepLog } =

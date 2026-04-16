@@ -23,6 +23,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Lock } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 
 interface Product {

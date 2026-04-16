@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 
-import { useNavigate } from 'react-router-dom';
 import { Baby, Info, LogOut, Save, Shield, Star, Trophy, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
@@ -26,10 +27,10 @@ import { useEnxovalItems } from '@/hooks/useEnxovalItems';
 import { useProfile } from '@/hooks/useProfile';
 import { useUserRole } from '@/hooks/useUserRole';
 
+import type { EnxovalItem } from '@/types/enxoval';
+
 import { supabase } from '@/integrations/supabase/client';
 
-import type { EnxovalItem } from '@/types/enxoval';
-import { toast } from 'sonner';
 
 const Index = () => {
   const navigate = useNavigate();

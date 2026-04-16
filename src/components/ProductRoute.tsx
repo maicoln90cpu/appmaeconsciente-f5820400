@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 
+import { Loader2, Lock } from 'lucide-react';
 import { Navigate, Outlet, useParams } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-import { supabase } from '@/integrations/supabase/client';
 
 import { analytics } from '@/lib/analytics';
 import { logger } from '@/lib/logger';
 
-import { Loader2, Lock } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface ProductRouteProps {
   productSlug: string;

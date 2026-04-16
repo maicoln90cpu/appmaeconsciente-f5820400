@@ -1,7 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Pill, Check, Clock, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -19,11 +25,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, Pill, Check, Clock, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 
 interface Supplement {
   id: string;

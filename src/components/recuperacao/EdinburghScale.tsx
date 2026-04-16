@@ -3,16 +3,9 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Textarea } from '@/components/ui/textarea';
-import { useEmotionalLogs } from '@/hooks/postpartum/useEmotionalLogs';
+
+import { format, parseISO, subDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Heart,
   AlertTriangle,
@@ -26,9 +19,6 @@ import {
   Loader2,
   Info,
 } from 'lucide-react';
-import { format, parseISO, subDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
 import {
   LineChart,
   Line,
@@ -39,6 +29,22 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useEmotionalLogs } from '@/hooks/postpartum/useEmotionalLogs';
+
+
+import { cn } from '@/lib/utils';
+
 
 // Questões da Escala de Edinburgh
 const EDINBURGH_QUESTIONS = [

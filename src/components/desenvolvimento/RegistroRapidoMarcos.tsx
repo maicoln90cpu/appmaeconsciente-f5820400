@@ -1,4 +1,10 @@
 import { useState } from 'react';
+
+import { CheckCircle2, Calendar } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogContent,
@@ -7,14 +13,12 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
+
 import { DevelopmentMilestoneType } from '@/types/development';
 import { AREA_LABELS, AREA_ICONS } from '@/types/development';
-import { CheckCircle2, Calendar } from 'lucide-react';
+
 
 interface RegistroRapidoMarcosProps {
   milestones: DevelopmentMilestoneType[];

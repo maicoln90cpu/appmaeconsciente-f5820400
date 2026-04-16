@@ -1,14 +1,18 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
-import { useAuthForm } from '@/hooks/useAuthForm';
-import { AuthHeader } from '@/components/auth/AuthHeader';
+
+
 import { AuthFooter } from '@/components/auth/AuthFooter';
+import { AuthHeader } from '@/components/auth/AuthHeader';
 import { EmailField } from '@/components/auth/EmailField';
 import { PasswordField } from '@/components/auth/PasswordField';
 import { SignUpFields } from '@/components/auth/SignUpFields';
+
+import { useAuthForm } from '@/hooks/useAuthForm';
 
 export const Auth = () => {
   const {

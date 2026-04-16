@@ -3,12 +3,15 @@
  * @module hooks/gamification/useDailyActivity
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format, subDays, eachDayOfInterval } from 'date-fns';
+
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface DailyActivity {
   activity_date: string;

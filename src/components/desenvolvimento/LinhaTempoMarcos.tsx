@@ -1,9 +1,12 @@
-import { Card, CardContent } from '@/components/ui/card';
+import { CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+
 import { BabyMilestoneRecord } from '@/types/development';
 import { AREA_ICONS } from '@/types/development';
-import { CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+
 
 interface LinhaTempoMarcosProps {
   records: BabyMilestoneRecord[];

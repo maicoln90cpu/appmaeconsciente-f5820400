@@ -1,11 +1,15 @@
 import { useState, useMemo } from 'react';
-import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+import {
+  format,
+  subDays,
+  differenceInHours,
+  startOfWeek,
+  endOfWeek,
+  eachDayOfInterval,
+  isSameDay,
+} from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Brain,
   TrendingUp,
@@ -22,17 +26,19 @@ import {
   CheckCircle2,
   XCircle,
 } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
 import { BabySleepLog, BabySleepMilestone } from '@/types/babySleep';
-import {
-  format,
-  subDays,
-  differenceInHours,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  isSameDay,
-} from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+
+import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
 
 interface SleepAIInsightsProps {
   sleepLogs: BabySleepLog[];

@@ -1,5 +1,6 @@
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface DashboardBebeAlertsProps {
   alerts: string[];

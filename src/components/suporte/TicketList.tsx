@@ -1,8 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Ticket } from '@/hooks/useTickets';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { Ticket } from '@/hooks/useTickets';
+
+
 import {
   TICKET_STATUS_CONFIG,
   TICKET_PRIORITY_CONFIG,

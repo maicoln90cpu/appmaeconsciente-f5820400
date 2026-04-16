@@ -1,7 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Sparkles } from 'lucide-react';
+
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { useDashboardBebe } from '@/hooks/useDashboardBebe';
-import { useProfile } from '@/hooks/useProfile';
+
 import {
   DashboardBebeHeader,
   DashboardBebeAlerts,
@@ -15,13 +20,12 @@ import {
   DashboardBebeGamification,
 } from '@/components/dashboard-bebe';
 import { ContextCards } from '@/components/dashboard-bebe/ContextCards';
+import { ActionableInsights, CrossModuleInsights } from '@/components/insights';
 import { OnboardingWizard, OnboardingChecklist } from '@/components/onboarding';
 import { PhaseSelectionModal } from '@/components/onboarding/PhaseSelectionModal';
-import { ActionableInsights, CrossModuleInsights } from '@/components/insights';
-import { Skeleton } from '@/components/ui/skeleton';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { Sparkles } from 'lucide-react';
+
+import { useDashboardBebe } from '@/hooks/useDashboardBebe';
+import { useProfile } from '@/hooks/useProfile';
 
 // Lazy load heavy tab components
 const GrowthChart = lazy(() =>

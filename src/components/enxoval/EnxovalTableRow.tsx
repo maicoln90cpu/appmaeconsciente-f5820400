@@ -1,10 +1,14 @@
 import { memo } from 'react';
-import { TableCell, TableRow } from '@/components/ui/table';
+
+import { ExternalLink, Edit, Trash2 } from 'lucide-react';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { EnxovalItem } from '@/types/enxoval';
+import { TableCell, TableRow } from '@/components/ui/table';
+
 import { formatCurrency } from '@/lib/calculations';
-import { ExternalLink, Edit, Trash2 } from 'lucide-react';
+
+import { EnxovalItem } from '@/types/enxoval';
 
 interface EnxovalTableRowProps {
   item: EnxovalItem;

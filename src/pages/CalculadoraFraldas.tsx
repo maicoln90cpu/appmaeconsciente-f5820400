@@ -1,11 +1,14 @@
 import { useState } from 'react';
+
+import { Baby, DollarSign, Leaf } from 'lucide-react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { FraldaCalculator } from '@/components/calculadora-fraldas/FraldaCalculator';
+
 import { BrandComparison } from '@/components/calculadora-fraldas/BrandComparison';
 import { ClothDiaperSimulator } from '@/components/calculadora-fraldas/ClothDiaperSimulator';
+import { FraldaCalculator } from '@/components/calculadora-fraldas/FraldaCalculator';
 import { ResultsSummary } from '@/components/calculadora-fraldas/ResultsSummary';
-import { Baby, DollarSign, Leaf } from 'lucide-react';
 
 export interface DiaperEstimate {
   babyAge: string;

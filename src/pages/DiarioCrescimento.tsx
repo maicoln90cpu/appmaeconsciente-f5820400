@@ -1,7 +1,9 @@
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Ruler } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
 import { GrowthChart } from '@/components/crescimento/GrowthChart';
 
 const DiarioCrescimento = () => {

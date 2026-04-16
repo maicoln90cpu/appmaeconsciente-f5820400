@@ -1,13 +1,21 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Download, Share2, ShoppingCart, PieChart, Plus, Lightbulb } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
-import { Progress } from '@/components/ui/progress';
-import { supabase } from '@/integrations/supabase/client';
 import { useState } from 'react';
-import { usePDFExport } from '@/hooks/usePDFExport';
+
+import { Download, Share2, ShoppingCart, PieChart, Plus, Lightbulb } from 'lucide-react';
 import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import { usePDFExport } from '@/hooks/usePDFExport';
+
+import type { DiaperEstimate } from '@/pages/CalculadoraFraldas';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
+
 
 interface Props {
   estimate: DiaperEstimate;

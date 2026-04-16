@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+
+import { Loader2, Save } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -11,8 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+
 import { useSiteSettings } from '@/hooks/useSiteSettings';
-import { Loader2, Save } from 'lucide-react';
+
 
 const TIMEZONES = [
   { value: 'America/Sao_Paulo', label: 'São Paulo (BRT -3)' },

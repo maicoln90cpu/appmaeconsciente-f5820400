@@ -1,9 +1,5 @@
 import { useEffect, lazy, Suspense } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useUserRole } from '@/hooks/useUserRole';
-import { useAdminStats } from '@/hooks/useAdminStats';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+
 import {
   Users,
   Package,
@@ -17,8 +13,16 @@ import {
   Settings,
   FileText,
 } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { AdminSubTabs } from '@/components/admin/AdminSubTabs';
+
+import { useAdminStats } from '@/hooks/useAdminStats';
+import { useUserRole } from '@/hooks/useUserRole';
 
 // Lazy load all admin components
 const HotmartMappings = lazy(() =>

@@ -1,5 +1,6 @@
-import { test as base, Page, BrowserContext } from '@playwright/test';
 import path from 'path';
+
+import { test as base, Page, BrowserContext } from '@playwright/test';
 
 // Test user credentials - should be configured via environment variables
 const TEST_USER_EMAIL = process.env.TEST_USER_EMAIL || 'test@example.com';

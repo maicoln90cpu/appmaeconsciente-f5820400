@@ -4,7 +4,9 @@
  */
 
 import { useMemo } from 'react';
+
 import { createSupabaseCRUD } from '@/hooks/factories/createSupabaseCRUD';
+
 import type { Database } from '@/integrations/supabase/types';
 
 type PostpartumAppointmentRow = Database['public']['Tables']['postpartum_appointments']['Row'];

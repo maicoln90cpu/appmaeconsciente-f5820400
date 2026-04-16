@@ -1,15 +1,16 @@
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { ScrollArea } from '@/components/ui/scroll-area';
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameDay,
+  addMonths,
+  subMonths,
+  isToday,
+} from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   CalendarDays,
   ChevronLeft,
@@ -22,22 +23,26 @@ import {
   Frown,
   CalendarClock,
 } from 'lucide-react';
-import { useVaccination } from '@/hooks/useVaccination';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
 import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+import { useBabyColic } from '@/hooks/useBabyColic';
 import { useBabyMedications } from '@/hooks/useBabyMedications';
 import { useBabyRoutines } from '@/hooks/useBabyRoutines';
-import { useBabyColic } from '@/hooks/useBabyColic';
-import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  eachDayOfInterval,
-  isSameDay,
-  addMonths,
-  subMonths,
-  isToday,
-} from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { useVaccination } from '@/hooks/useVaccination';
+
+
 import { cn } from '@/lib/utils';
 
 interface UnifiedCalendarProps {

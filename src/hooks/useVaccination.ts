@@ -1,16 +1,20 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+
 import { logger } from '@/lib/logger';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
 import type {
   BabyVaccinationProfile,
   VaccinationCalendar,
   BabyVaccination,
   VaccinationReminderSettings,
 } from '@/types/vaccination';
+
 import { useAuth } from '@/contexts/AuthContext';
-import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useVaccination = () => {
   const queryClient = useQueryClient();

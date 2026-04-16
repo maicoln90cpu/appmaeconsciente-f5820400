@@ -1,11 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
+
 import {
   Search,
   Clock,
@@ -17,8 +11,12 @@ import {
   ChevronUp,
   Save,
 } from 'lucide-react';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useFavorites } from '@/hooks/useFavorites';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -26,6 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useFavorites } from '@/hooks/useFavorites';
+
+import { supabase } from '@/integrations/supabase/client';
 
 interface Recipe {
   id: string;

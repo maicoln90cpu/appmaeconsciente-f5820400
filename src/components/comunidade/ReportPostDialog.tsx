@@ -1,4 +1,8 @@
 import { useState } from 'react';
+
+import { Flag, Loader2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,12 +11,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
+
 import { useModeration } from '@/hooks/useModeration';
-import { Flag, Loader2 } from 'lucide-react';
+
 
 interface ReportPostDialogProps {
   postId: string;

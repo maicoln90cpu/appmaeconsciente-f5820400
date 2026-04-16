@@ -1,5 +1,6 @@
-import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, Circle } from 'lucide-react';
+
+import { Progress } from '@/components/ui/progress';
 
 interface ChecklistItem {
   id: string;

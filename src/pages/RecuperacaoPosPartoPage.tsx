@@ -1,13 +1,4 @@
 // NOTA: MainLayout é aplicado globalmente no App.tsx - NÃO adicionar aqui
-import { DashboardRecuperacao } from '@/components/recuperacao/DashboardRecuperacao';
-import { RastreadorSintomas } from '@/components/recuperacao/RastreadorSintomas';
-import { ControleMedicamentos } from '@/components/recuperacao/ControleMedicamentos';
-import { DiarioAutoestima } from '@/components/recuperacao/DiarioAutoestima';
-import { AcessoParceiro } from '@/components/recuperacao/AcessoParceiro';
-import { ConquistasRecuperacao } from '@/components/recuperacao/ConquistasRecuperacao';
-import { EdinburghScale } from '@/components/recuperacao/EdinburghScale';
-import { DeliveryTypeContent } from '@/components/recuperacao/DeliveryTypeContent';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Activity,
   Pill,
@@ -19,6 +10,19 @@ import {
   Trophy,
   Baby,
 } from 'lucide-react';
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { AcessoParceiro } from '@/components/recuperacao/AcessoParceiro';
+import { ConquistasRecuperacao } from '@/components/recuperacao/ConquistasRecuperacao';
+import { ControleMedicamentos } from '@/components/recuperacao/ControleMedicamentos';
+import { DashboardRecuperacao } from '@/components/recuperacao/DashboardRecuperacao';
+import { DeliveryTypeContent } from '@/components/recuperacao/DeliveryTypeContent';
+import { DiarioAutoestima } from '@/components/recuperacao/DiarioAutoestima';
+import { EdinburghScale } from '@/components/recuperacao/EdinburghScale';
+import { RastreadorSintomas } from '@/components/recuperacao/RastreadorSintomas';
+
+
 
 const RecuperacaoPosPartoPage = () => {
   return (

@@ -2,11 +2,15 @@
  * @fileoverview Card de metas semanais
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { useWeeklyGoal } from '@/hooks/useWeeklyGoal';
 import { Target, Gift, CheckCircle2, Circle, Loader2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+
+import { useWeeklyGoal } from '@/hooks/useWeeklyGoal';
+
+
 import { cn } from '@/lib/utils';
 
 export const WeeklyGoalCard = () => {

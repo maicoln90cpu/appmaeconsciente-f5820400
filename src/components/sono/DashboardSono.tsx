@@ -1,6 +1,9 @@
 import { useMemo, useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BabySleepLog, BabySleepMilestone } from '@/types/babySleep';
+
+import { format, subDays, startOfDay, differenceInMinutes, formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby, AlertCircle, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   BarChart,
   Bar,
@@ -14,12 +17,13 @@ import {
   Cell,
   Legend,
 } from 'recharts';
-import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby, AlertCircle, Info } from 'lucide-react';
-import { format, subDays, startOfDay, differenceInMinutes, formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { BabySleepLog, BabySleepMilestone } from '@/types/babySleep';
+
 import { supabase } from '@/integrations/supabase/client';
 
 interface DashboardSonoProps {

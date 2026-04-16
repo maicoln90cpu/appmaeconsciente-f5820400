@@ -1,4 +1,5 @@
 import { memo } from 'react';
+
 import { TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export const EnxovalTableHeader = memo(() => (

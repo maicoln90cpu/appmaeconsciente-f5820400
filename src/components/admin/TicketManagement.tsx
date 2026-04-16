@@ -1,8 +1,13 @@
 import React from 'react';
+import { useState } from 'react';
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
@@ -10,19 +15,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
+
 import { useSortableTable } from '@/hooks/useSortableTable';
-import { toast } from 'sonner';
-import { format } from 'date-fns';
-import { useState } from 'react';
-import { MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
+
+
+
+
 import {
   getTicketStatusBadgeVariant,
   getTicketStatusLabel,
   getTicketPriorityBadgeVariant,
 } from '@/lib/ticket-utils';
+
+import { supabase } from '@/integrations/supabase/client';
 
 export const TicketManagement = () => {
   const queryClient = useQueryClient();

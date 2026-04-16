@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.74.0";
-import { checkRateLimit, getRateLimitHeaders } from "../_shared/rate-limiter.ts";
+
 import { handleCorsOptions } from "../_shared/cors.ts";
 import {
   createErrorResponse,
@@ -9,6 +9,7 @@ import {
   parseRequestBody,
   logEvent,
 } from "../_shared/error-handler.ts";
+import { checkRateLimit, getRateLimitHeaders } from "../_shared/rate-limiter.ts";
 
 interface ChatRequest {
   message: string;

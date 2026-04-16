@@ -4,7 +4,9 @@
  */
 
 import { useEffect, useCallback } from 'react';
+
 import { useLocation } from 'react-router-dom';
+
 import { setupSmartPrefetch, trackRouteVisit, prefetchRoute } from '@/lib/bundle-analyzer';
 
 // Define lazy imports for prefetching

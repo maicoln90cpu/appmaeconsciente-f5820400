@@ -1,13 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { supabase } from '@/integrations/supabase/client';
+
 import { Send, Bot, User, Plus, MessageSquare, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
-import { useAbortController, isAbortError } from '@/hooks/useAbortController';
+import { toast } from 'sonner';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +14,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+import { useAbortController, isAbortError } from '@/hooks/useAbortController';
+
+import { supabase } from '@/integrations/supabase/client';
+
 
 interface Message {
   id: string;

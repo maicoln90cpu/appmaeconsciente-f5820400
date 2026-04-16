@@ -1,10 +1,13 @@
-import { Link } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Lightbulb, ArrowRight, AlertTriangle, Sparkles, TrendingUp, Search } from 'lucide-react';
+import { Link } from 'react-router-dom';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
 import { useCrossModuleAnalytics, type Insight } from '@/hooks/useCrossModuleAnalytics';
+
 import { cn } from '@/lib/utils';
 
 interface ActionableInsightsProps {

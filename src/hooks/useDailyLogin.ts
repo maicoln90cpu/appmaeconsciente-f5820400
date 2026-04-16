@@ -3,12 +3,16 @@
  * @module hooks/useDailyLogin
  */
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { useGamification, XP_REWARDS } from '@/hooks/useGamification';
-import { format, differenceInDays, parseISO } from 'date-fns';
 import { useEffect, useRef } from 'react';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { format, differenceInDays, parseISO } from 'date-fns';
+
+import { useGamification, XP_REWARDS } from '@/hooks/useGamification';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+
 
 export interface DailyLoginData {
   id: string;

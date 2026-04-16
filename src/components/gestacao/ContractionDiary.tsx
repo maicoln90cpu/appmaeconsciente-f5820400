@@ -3,16 +3,9 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Slider } from '@/components/ui/slider';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useContractions } from '@/hooks/useContractions';
+
+import { format, parseISO, differenceInMinutes } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Timer,
   Play,
@@ -24,8 +17,20 @@ import {
   Hospital,
   Loader2,
 } from 'lucide-react';
-import { format, parseISO, differenceInMinutes } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Slider } from '@/components/ui/slider';
+
+import { useContractions } from '@/hooks/useContractions';
+
+
 import { cn } from '@/lib/utils';
 
 export const ContractionDiary = () => {

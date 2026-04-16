@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import {
   Activity,
   AlertTriangle,
@@ -18,16 +14,6 @@ import {
   Package,
   Download,
 } from 'lucide-react';
-import { getMetricsSummary } from '@/lib/performance';
-import {
-  getBundleAnalysis,
-  analyzePageLoad,
-  getMemoryInfo,
-  formatBytes,
-  exportBundleReport,
-} from '@/lib/bundle-analyzer';
-import { supabase } from '@/integrations/supabase/client';
-import { logger } from '@/lib/logger';
 import {
   AreaChart,
   Area,
@@ -42,6 +28,27 @@ import {
   PieChart,
   Pie,
 } from 'recharts';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
+import {
+  getBundleAnalysis,
+  analyzePageLoad,
+  getMemoryInfo,
+  formatBytes,
+  exportBundleReport,
+} from '@/lib/bundle-analyzer';
+import { logger } from '@/lib/logger';
+import { getMetricsSummary } from '@/lib/performance';
+
+import { supabase } from '@/integrations/supabase/client';
+
+
 
 interface HealthMetrics {
   webVitals: Array<{

@@ -4,7 +4,12 @@
  */
 
 import { useState } from 'react';
+
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Cloud, CloudOff, Check, Loader2, FileText, Trash2, Clock } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,11 +19,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+
 import { DraftEntry } from '@/lib/indexed-db';
-import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface DraftIndicatorProps {
   isSaving: boolean;

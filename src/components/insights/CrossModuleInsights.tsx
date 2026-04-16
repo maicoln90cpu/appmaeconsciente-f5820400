@@ -1,7 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Skeleton } from '@/components/ui/skeleton';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   TrendingUp,
   TrendingDown,
@@ -11,7 +9,6 @@ import {
   Moon,
   Utensils,
 } from 'lucide-react';
-import { useCrossModuleAnalytics, type CrossModuleStats } from '@/hooks/useCrossModuleAnalytics';
 import {
   BarChart,
   Bar,
@@ -24,8 +21,15 @@ import {
   LineChart,
   Line,
 } from 'recharts';
-import { format, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+import { useCrossModuleAnalytics, type CrossModuleStats } from '@/hooks/useCrossModuleAnalytics';
+
 
 export const CrossModuleInsights = () => {
   const { loading, stats, dailyPatterns, correlations } = useCrossModuleAnalytics();

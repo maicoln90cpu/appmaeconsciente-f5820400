@@ -3,8 +3,10 @@
  */
 
 import { lazy, Suspense } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { Timer, Calculator, Image, Baby, ClipboardCheck, FileText } from 'lucide-react';
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const ContractionDiary = lazy(() =>
   import('@/components/gestacao/ContractionDiary').then(m => ({ default: m.ContractionDiary }))

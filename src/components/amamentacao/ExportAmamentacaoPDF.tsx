@@ -1,3 +1,8 @@
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Share2, FileText, Mail } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -5,12 +10,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Share2, FileText, Mail } from 'lucide-react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 import { usePDFExport, shareViaWhatsApp, shareViaEmail } from '@/hooks/usePDFExport';
+
 import type { BabyFeedingLog, FeedingSettings } from '@/types/babyFeeding';
-import { toast } from 'sonner';
+
 
 interface ExportAmamentacaoPDFProps {
   feedingLogs: BabyFeedingLog[];

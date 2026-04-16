@@ -4,9 +4,13 @@
  */
 
 import { memo } from 'react';
+
 import { WifiOff, CloudOff, RefreshCw, AlertCircle, Check, Loader2 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
+
 import { useOfflineSync } from '@/hooks/useOfflineSync';
+
 import { cn } from '@/lib/utils';
 
 export const OfflineBanner = memo(() => {

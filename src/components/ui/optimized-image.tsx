@@ -2,6 +2,7 @@
  * OptimizedImage component with lazy loading, blur placeholder, and responsive sizing
  */
 import { useState, useRef, useEffect, memo, ImgHTMLAttributes } from 'react';
+
 import { cn } from '@/lib/utils';
 
 interface OptimizedImageProps extends Omit<

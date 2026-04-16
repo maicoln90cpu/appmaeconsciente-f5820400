@@ -3,26 +3,10 @@
  */
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
+
+import { format, differenceInMonths, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Plus, Ruler, Scale, TrendingUp, Loader2, Trash2, FileDown } from 'lucide-react';
 import {
   LineChart,
   Line,
@@ -35,6 +19,30 @@ import {
   Area,
   ComposedChart,
 } from 'recharts';
+import { toast } from 'sonner';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+
 import {
   useGrowthMeasurements,
   WHO_WEIGHT_BOYS,
@@ -43,10 +51,8 @@ import {
   WHO_HEIGHT_GIRLS,
 } from '@/hooks/useGrowthMeasurements';
 import { useVaccination } from '@/hooks/useVaccination';
-import { Plus, Ruler, Scale, TrendingUp, Loader2, Trash2, FileDown } from 'lucide-react';
-import { format, differenceInMonths, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { toast } from 'sonner';
+
+
 import { cn } from '@/lib/utils';
 
 interface GrowthChartProps {

@@ -1,18 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Slider } from '@/components/ui/slider';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { Heart, TrendingUp, Moon, Zap, Brain, Utensils } from 'lucide-react';
-import { useMomWellness } from '@/hooks/useMomWellness';
 import {
   ResponsiveContainer,
   LineChart,
@@ -22,8 +12,23 @@ import {
   Tooltip,
   CartesianGrid,
 } from 'recharts';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
+
+
+import { useMomWellness } from '@/hooks/useMomWellness';
+
 
 const MOOD_LABELS = ['', '😢 Muito mal', '😔 Mal', '😐 Regular', '🙂 Bem', '😊 Muito bem'];
 const ENERGY_LABELS = ['', '🔋 Exausta', '😩 Cansada', '😌 Normal', '💪 Disposta', '⚡ Energizada'];

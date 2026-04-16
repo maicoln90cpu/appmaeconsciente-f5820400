@@ -6,12 +6,16 @@
  */
 
 import { useMemo, useCallback } from 'react';
+
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+
 import { useVaccination } from '@/hooks/useVaccination';
-import { useAuth } from '@/contexts/AuthContext';
+
 import { logger } from '@/lib/logger';
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface FeedingLog {
   id: string;

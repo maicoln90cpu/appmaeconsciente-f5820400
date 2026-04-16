@@ -1,10 +1,41 @@
 import { useState } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { format, subDays, startOfDay, endOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  Shield,
+  AlertTriangle,
+  Activity,
+  Users,
+  Trash2,
+  Download,
+  RefreshCw,
+  Search,
+  Clock,
+  Globe,
+  Smartphone,
+} from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -21,36 +52,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  Shield,
-  AlertTriangle,
-  Activity,
-  Users,
-  Trash2,
-  Download,
-  RefreshCw,
-  Search,
-  Clock,
-  Globe,
-  Smartphone,
-} from 'lucide-react';
-import { format, subDays, startOfDay, endOfDay } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import {
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
+
+import { supabase } from '@/integrations/supabase/client';
 
 const COLORS = [
   'hsl(var(--primary))',

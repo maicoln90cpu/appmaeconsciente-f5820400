@@ -1,3 +1,6 @@
+import { Plus, Image as ImageIcon, X, Loader2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -6,8 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { DraftIndicator } from '@/components/ui/draft-indicator';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -17,8 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Image as ImageIcon, X, Loader2 } from 'lucide-react';
-import { DraftIndicator } from '@/components/ui/draft-indicator';
+import { Textarea } from '@/components/ui/textarea';
+
 import { useCreatePost, CATEGORIES } from '@/hooks/useCreatePost';
 
 interface CreatePostDialogProps {

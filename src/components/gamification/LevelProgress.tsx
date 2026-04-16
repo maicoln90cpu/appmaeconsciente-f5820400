@@ -1,9 +1,13 @@
 import { memo } from 'react';
+
+import { Sparkles, Star, TrendingUp } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
+
 import { useGamification } from '@/hooks/useGamification';
-import { Sparkles, Star, TrendingUp } from 'lucide-react';
+
 
 interface LevelProgressProps {
   compact?: boolean;

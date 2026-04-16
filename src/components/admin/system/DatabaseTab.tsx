@@ -1,28 +1,6 @@
 import { useState, useMemo } from 'react';
+
 import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { SortableTableHeader } from './SortableTableHeader';
-import { useTableSort } from '@/hooks/useTableSort';
-import { usePagination } from '@/hooks/usePagination';
-import {
-  fetchDatabaseStats,
-  TABLE_DESCRIPTIONS,
-  TRIGGERS_CATALOG,
-  CRON_JOBS_CATALOG,
-  EDGE_FUNCTIONS_CATALOG,
-} from '@/services/databaseMonitorService';
 import {
   Database,
   TableProperties,
@@ -34,6 +12,35 @@ import {
   Hash,
   HardDrive,
 } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import { usePagination } from '@/hooks/usePagination';
+import { useTableSort } from '@/hooks/useTableSort';
+
+import { SortableTableHeader } from './SortableTableHeader';
+
+
+import {
+  fetchDatabaseStats,
+  TABLE_DESCRIPTIONS,
+  TRIGGERS_CATALOG,
+  CRON_JOBS_CATALOG,
+  EDGE_FUNCTIONS_CATALOG,
+} from '@/services/databaseMonitorService';
+
 
 function EmptyState({ message }: { message: string }) {
   return <p className="text-center text-sm text-muted-foreground py-6">{message}</p>;

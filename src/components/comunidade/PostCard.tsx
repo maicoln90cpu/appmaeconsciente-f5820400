@@ -1,15 +1,9 @@
 import { useState, useCallback, memo } from 'react';
-import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Heart, MessageCircle, Trash2, MoreVertical, Flag, UserX } from 'lucide-react';
-import { Post } from '@/hooks/usePosts';
+
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { CommentSection } from './CommentSection';
-import { useAuth } from '@/contexts/AuthContext';
-import { useModeration } from '@/hooks/useModeration';
-import { ReportPostDialog } from './ReportPostDialog';
+import { Heart, MessageCircle, Trash2, MoreVertical, Flag, UserX } from 'lucide-react';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +15,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +25,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
+import { useModeration } from '@/hooks/useModeration';
+import { Post } from '@/hooks/usePosts';
+
+import { CommentSection } from './CommentSection';
+import { ReportPostDialog } from './ReportPostDialog';
+
+import { useAuth } from '@/contexts/AuthContext';
+
 
 interface PostCardProps {
   post: Post;

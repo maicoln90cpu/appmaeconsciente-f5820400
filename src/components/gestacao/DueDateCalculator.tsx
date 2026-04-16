@@ -3,21 +3,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import {
-  usePregnancyInfo,
-  calculateDueDate,
-  calculateGestationalAge,
-  PREGNANCY_MILESTONES,
-} from '@/hooks/usePregnancyInfo';
+
+import { format, parseISO, addDays, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Calendar,
   Baby,
@@ -30,8 +18,25 @@ import {
   Target,
   Sparkles,
 } from 'lucide-react';
-import { format, parseISO, addDays, differenceInDays } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+import {
+  usePregnancyInfo,
+  calculateDueDate,
+  calculateGestationalAge,
+  PREGNANCY_MILESTONES,
+} from '@/hooks/usePregnancyInfo';
+
+
 import { cn } from '@/lib/utils';
 
 export const DueDateCalculator = () => {

@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Heart,
   Calendar,
@@ -15,9 +13,7 @@ import {
   ChevronRight,
   Columns,
 } from 'lucide-react';
-import { UltrasoundImage, useUltrasounds } from '@/hooks/useUltrasounds';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +24,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+
+import { UltrasoundImage, useUltrasounds } from '@/hooks/useUltrasounds';
+
+
 
 interface UltrasoundTimelineProps {
   ultrasounds: UltrasoundImage[];

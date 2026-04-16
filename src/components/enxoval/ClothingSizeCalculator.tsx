@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+
 import { Calculator, Ruler } from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -9,10 +13,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+
 import { CLOTHING_SIZES, DIAPER_SIZES } from '@/lib/size-predictions';
 
 export const ClothingSizeCalculator = () => {
