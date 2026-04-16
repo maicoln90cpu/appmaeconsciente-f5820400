@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 import { usePosts } from "@/hooks/usePosts";
 import { CreatePostDialog } from "@/components/comunidade/CreatePostDialog";
 import { PostCard } from "@/components/comunidade/PostCard";
