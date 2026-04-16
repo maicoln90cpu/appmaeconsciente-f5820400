@@ -245,6 +245,49 @@
     transform: translateY(-8px);
     transition: opacity 0.2s ease-in, transform 0.2s ease-in;
   }
+
+  /* ============================================
+     REDUCED MOTION — Acessibilidade (WCAG 2.3.3)
+     Respeita preferência do SO para reduzir animações.
+     Spinners (animate-spin) são preservados como feedback essencial.
+     ============================================ */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    /* Preservar spinners — feedback essencial de carregamento */
+    .animate-spin {
+      animation-duration: 1s !important;
+      animation-iteration-count: infinite !important;
+    }
+
+    /* Remover efeitos decorativos */
+    .ripple-effect {
+      display: none !important;
+    }
+
+    .page-transition-enter,
+    .page-transition-enter-active,
+    .page-transition-exit,
+    .page-transition-exit-active {
+      transition: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+
+    .animate-bounce,
+    .animate-pulse,
+    .animate-ping,
+    .animate-bounce-slow {
+      animation: none !important;
+    }
+  }
 }
 
 /* === Utility Classes === */
