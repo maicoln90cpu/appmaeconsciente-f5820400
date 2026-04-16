@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Gift, Trash2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAdminAction } from '@/services/monitoringService';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -98,7 +99,8 @@ export function PromotionManagement() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      logAdminAction('create_promotion', { entityType: 'promotions', newValues: { name: newPromo.name } });
       toast('Promoção criada com sucesso!');
       setNewPromo({
         name: '',
@@ -120,8 +122,9 @@ export function PromotionManagement() {
       const { error } = await supabase.from('promotions').delete().eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       toast('Promoção deletada');
+      logAdminAction('delete_promotion', { entityType: 'promotions', entityId: id });
       queryClient.invalidateQueries({ queryKey: ['promotions'] });
     },
   });
@@ -135,10 +138,11 @@ export function PromotionManagement() {
       if (error) throw error;
       return data;
     },
-    onSuccess: data => {
+    onSuccess: (data, promotionId) => {
       toast('Promoção aplicada!', {
         description: `${data.users_affected} usuários receberam acesso`,
       });
+      logAdminAction('apply_promotion', { entityType: 'promotions', entityId: promotionId, newValues: { usersAffected: data.users_affected } });
     },
     onError: (error: any) => {
       toast.error('Erro ao aplicar promoção', { description: error.message });

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Save, Plus, X, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAdminAction } from '@/services/monitoringService';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -97,6 +98,7 @@ export const BlogSettingsPanel = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-blog-settings'] });
       toast.success('Configurações salvas');
+      logAdminAction('update_blog_settings', { entityType: 'blog_settings', newValues: { ai_model: form.ai_model, auto_publish: form.auto_publish } });
     },
     onError: (err: any) => toast.error(err.message),
   });

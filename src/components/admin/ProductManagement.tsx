@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAdminAction } from '@/services/monitoringService';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -89,6 +90,7 @@ export const ProductManagement = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       toast.success('Produto criado');
+      logAdminAction('create_product', { entityType: 'products', newValues: { title: formData.title } });
       setNewProduct(false);
       resetForm();
     },
@@ -100,9 +102,10 @@ export const ProductManagement = () => {
       const { error } = await supabase.from('products').update(data).eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       toast.success('Produto atualizado');
+      logAdminAction('update_product', { entityType: 'products', entityId: variables.id, newValues: variables.data });
       setEditingId(null);
       resetForm();
     },
@@ -114,9 +117,10 @@ export const ProductManagement = () => {
       const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       toast.success('Produto deletado');
+      logAdminAction('delete_product', { entityType: 'products', entityId: id });
     },
     onError: () => toast.error('Erro ao deletar produto'),
   });

@@ -19,6 +19,7 @@ import {
 } from './user-management';
 
 import { supabase } from '@/integrations/supabase/client';
+import { logAdminAction } from '@/services/monitoringService';
 
 
 export const UserManagement = () => {
@@ -147,9 +148,14 @@ export const UserManagement = () => {
         );
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['user-product-access'] });
       toast('Acesso concedido com sucesso');
+      logAdminAction('grant_access', {
+        entityType: 'user_product_access',
+        entityId: variables.userId,
+        newValues: { productId: variables.productId, expiresAt: variables.expiresAt },
+      });
       setAccessState(prev => ({ ...prev, selectedUser: null, selectedProduct: '' }));
     },
     onError: (error: any) => toast.error('Erro ao conceder acesso', { description: error.message }),
@@ -164,9 +170,14 @@ export const UserManagement = () => {
         .eq('product_id', productId);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['user-product-access'] });
       toast('Acesso revogado com sucesso');
+      logAdminAction('revoke_access', {
+        entityType: 'user_product_access',
+        entityId: variables.userId,
+        oldValues: { productId: variables.productId },
+      });
     },
     onError: (error: any) => toast.error('Erro ao revogar acesso', { description: error.message }),
   });
@@ -187,9 +198,15 @@ export const UserManagement = () => {
         if (error) throw error;
       }
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast('Role atualizado');
+      logAdminAction(variables.isAdmin ? 'remove_admin' : 'grant_admin', {
+        entityType: 'user_roles',
+        entityId: variables.userId,
+        oldValues: { role: variables.isAdmin ? 'admin' : 'user' },
+        newValues: { role: variables.isAdmin ? 'user' : 'admin' },
+      });
     },
     onError: () => toast.error('Erro ao atualizar role'),
   });
@@ -203,9 +220,13 @@ export const UserManagement = () => {
       if (data?.error) throw new Error(data.error);
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (_, userId) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast('Usuário excluído com sucesso');
+      logAdminAction('delete_user', {
+        entityType: 'profiles',
+        entityId: userId,
+      });
     },
     onError: (error: any) => toast.error('Erro ao excluir usuário', { description: error.message }),
   });
@@ -217,7 +238,13 @@ export const UserManagement = () => {
       });
       if (error) throw error;
     },
-    onSuccess: () => toast('Email de recuperação enviado'),
+    onSuccess: (_, email) => {
+      toast('Email de recuperação enviado');
+      logAdminAction('reset_password', {
+        entityType: 'auth',
+        metadata: { email },
+      });
+    },
     onError: () => toast.error('Erro ao enviar email de recuperação'),
   });
 
