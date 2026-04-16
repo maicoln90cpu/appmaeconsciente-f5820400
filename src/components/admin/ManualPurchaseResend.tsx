@@ -65,7 +65,13 @@ export const ManualPurchaseResend = () => {
         return;
       }
 
-      toast(data.success ? "✅ Sucesso!" : "⚠️ Parcialmente concluído", { description: data.message || ( });
+      const title = data.success ? "✅ Sucesso!" : "⚠️ Parcialmente concluído";
+      const desc = data.message || "Operação realizada";
+      if (data.success) {
+        toast(title, { description: desc });
+      } else {
+        toast.error(title, { description: desc });
+      }
 
       // Limpar formulário
       setBuyerEmail("");
