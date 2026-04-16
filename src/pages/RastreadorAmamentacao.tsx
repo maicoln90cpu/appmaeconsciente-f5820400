@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 
-import { Baby, BarChart3, History, Droplets, Settings, Info, Loader2 } from 'lucide-react';
+import { Baby, BarChart3, History, Droplets, Settings, Info } from 'lucide-react';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LazyTabContent } from '@/components/ui/lazy-tab-content';
@@ -47,11 +47,7 @@ const RastreadorAmamentacao = () => {
   } = useBabyFeeding();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (!settings) {
