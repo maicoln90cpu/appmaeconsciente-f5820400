@@ -63,7 +63,7 @@ export const useStreaksAndChallenges = () => {
       
       const { data, error } = await supabase
         .from('user_streaks')
-        .select('*')
+        .select('id, user_id, streak_type, current_streak, longest_streak, last_activity_date, created_at, updated_at')
         .eq('user_id', user.id);
 
       if (error) throw error;
@@ -78,7 +78,7 @@ export const useStreaksAndChallenges = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('challenges')
-        .select('*')
+        .select('id, title, description, challenge_type, target_count, reward_points, icon, duration_days, is_active, created_at')
         .eq('is_active', true);
 
       if (error) throw error;
@@ -95,8 +95,8 @@ export const useStreaksAndChallenges = () => {
       const { data, error } = await supabase
         .from('user_challenges')
         .select(`
-          *,
-          challenge:challenges(*)
+          id, user_id, challenge_id, progress, completed, completed_at, started_at, expires_at,
+          challenge:challenges(id, title, description, challenge_type, target_count, reward_points, icon, duration_days, is_active, created_at)
         `)
         .eq('user_id', user.id)
         .order('started_at', { ascending: false });
@@ -117,7 +117,7 @@ export const useStreaksAndChallenges = () => {
       // Get current streak
       const { data: existing } = await supabase
         .from('user_streaks')
-        .select('*')
+        .select('id, current_streak, longest_streak, last_activity_date')
         .eq('user_id', user.id)
         .eq('streak_type', streakType)
         .maybeSingle();

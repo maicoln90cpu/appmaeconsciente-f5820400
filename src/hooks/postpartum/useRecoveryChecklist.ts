@@ -95,7 +95,7 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
 
       let query = supabase
         .from('recovery_checklist')
-        .select('*')
+        .select('id, user_id, week_number, item, completed, completed_at, created_at')
         .eq('user_id', userId);
 
       if (weekNumber) {

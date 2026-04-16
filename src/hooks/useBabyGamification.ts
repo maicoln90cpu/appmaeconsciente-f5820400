@@ -63,7 +63,7 @@ export const useBabyAchievements = (babyProfileId?: string) => {
 
       let query = supabase
         .from('baby_achievements')
-        .select('*')
+        .select('id, user_id, baby_profile_id, achievement_type, title, description, icon, achieved_at, metadata, created_at')
         .eq('user_id', user.id)
         .order('achieved_at', { ascending: false });
 
@@ -128,7 +128,7 @@ export const useBabyFirstTimes = (babyProfileId?: string) => {
 
       let query = supabase
         .from('baby_first_times')
-        .select('*')
+        .select('id, user_id, baby_profile_id, event_type, title, description, event_date, photo_url, video_url, location, witnesses, mood, notes, is_favorite, created_at, updated_at')
         .eq('user_id', user.id)
         .order('event_date', { ascending: false });
 
@@ -214,7 +214,7 @@ export const useBabyTimeline = (babyProfileId?: string) => {
 
       let query = supabase
         .from('baby_timeline_events')
-        .select('*')
+        .select('id, user_id, baby_profile_id, event_type, title, description, event_date, event_time, icon, color, photo_url, related_record_id, related_record_type, is_milestone, created_at')
         .eq('user_id', user.id)
         .order('event_date', { ascending: false });
 

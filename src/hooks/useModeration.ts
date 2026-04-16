@@ -44,7 +44,7 @@ export const useModeration = () => {
       
       const { data, error } = await supabase
         .from('blocked_users')
-        .select('*')
+        .select('id, blocker_id, blocked_id, reason, created_at')
         .eq('blocker_id', user.id);
 
       if (error) throw error;
@@ -61,7 +61,7 @@ export const useModeration = () => {
       
       const { data, error } = await supabase
         .from('post_reports')
-        .select('*')
+        .select('id, post_id, reporter_id, reason, description, status, created_at')
         .eq('reporter_id', user.id)
         .order('created_at', { ascending: false });
 
