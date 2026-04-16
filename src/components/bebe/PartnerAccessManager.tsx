@@ -38,7 +38,7 @@ export const PartnerAccessManager = () => {
 
       const { data, error } = await supabase
         .from('partner_access')
-        .select('id, user_id, partner_email, partner_name, access_token, is_active, permissions, expires_at, created_at, updated_at')
+        .select('id, user_id, partner_email, access_token, is_active, expires_at, granted_at, last_accessed, created_at, updated_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
