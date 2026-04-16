@@ -110,19 +110,17 @@ export const EnxovalMobileCard = memo(
           <div className="flex gap-1 flex-shrink-0">
             <Button
               variant="outline"
-              size="sm"
+              size="icon"
               onClick={() => onEdit(item)}
-              className="h-8 w-8 p-0"
             >
-              <Edit className="h-3 w-3" />
+              <Edit className="h-4 w-4" />
             </Button>
             <Button
               variant="destructive"
-              size="sm"
+              size="icon"
               onClick={() => onDeleteClick(item.id)}
-              className="h-8 w-8 p-0"
             >
-              <Trash2 className="h-3 w-3" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </div>
         </div>

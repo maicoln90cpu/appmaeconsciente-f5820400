@@ -544,7 +544,7 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        className="text-muted-foreground hover:text-destructive"
                         onClick={() => deleteRoutine(routine.id)}
                       >
                         <Trash2 className="h-4 w-4" />
