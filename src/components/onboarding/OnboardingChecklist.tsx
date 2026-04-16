@@ -73,7 +73,7 @@ export const OnboardingChecklist = ({ onDismiss, compact = false }: OnboardingCh
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 -mr-2 -mt-2"
+            className="-mr-2 -mt-2"
             onClick={handleDismiss}
           >
             <X className="h-4 w-4" />

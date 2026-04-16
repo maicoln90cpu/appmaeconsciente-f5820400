@@ -95,7 +95,7 @@ const TaskItem = memo(
             <Button
               size="icon"
               variant="ghost"
-              className="h-8 w-8"
+              className=""
               onClick={() => onRetry(task.id)}
             >
               <RefreshCw className="h-3.5 w-3.5" />

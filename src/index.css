@@ -513,6 +513,11 @@
      INTERACTIVE UTILITIES
      ============================================ */
 
+  /* Touch target mínimo de 44px (WCAG 2.5.5) */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
   .tap-highlight {
     @apply transition-transform duration-150 active:scale-[0.97];
   }
