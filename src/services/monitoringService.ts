@@ -9,6 +9,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 
 // ─── Controle de taxa (debounce/throttle por tipo) ────────────────────────────
 const THROTTLE_MS = 2000; // mínimo 2s entre writes do mesmo tipo
