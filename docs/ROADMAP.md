@@ -1,7 +1,7 @@
 # 🗺️ ROADMAP - Mãe Consciente
 
-**Última atualização:** Janeiro 2026  
-**Próxima revisão:** Abril 2026
+**Última atualização:** Abril 2026  
+**Próxima revisão:** Julho 2026
 
 ---
 
