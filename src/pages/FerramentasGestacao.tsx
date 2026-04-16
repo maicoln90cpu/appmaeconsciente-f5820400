@@ -27,9 +27,9 @@ const BirthPlanBuilder = lazy(() =>
   import('@/components/gestacao/BirthPlanBuilder').then(m => ({ default: m.BirthPlanBuilder }))
 );
 
-const TabFallback = () => (
-  <div className="text-center py-8 text-muted-foreground">Carregando...</div>
-);
+import { PageLoader } from '@/components/ui/page-loader';
+
+const TabFallback = () => <PageLoader />;
 
 const FerramentasGestacao = () => {
   return (
