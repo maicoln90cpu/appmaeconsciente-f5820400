@@ -37,6 +37,10 @@ const SiteSettings = lazy(() => import("@/components/admin/SiteSettings").then((
 const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPanel").then((m) => ({ default: m.SecurityAuditPanel })));
 const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then((m) => ({ default: m.AdminCharts })));
 const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then((m) => ({ default: m.AppHealthDashboard })));
+const SystemHealthTab = lazy(() => import("@/components/admin/system/SystemHealthTab").then((m) => ({ default: m.SystemHealthTab })));
+const ObservabilityTab = lazy(() => import("@/components/admin/system/ObservabilityTab").then((m) => ({ default: m.ObservabilityTab })));
+const DatabaseTab = lazy(() => import("@/components/admin/system/DatabaseTab").then((m) => ({ default: m.DatabaseTab })));
+const GtmDiagnosticTab = lazy(() => import("@/components/admin/system/GtmDiagnosticTab").then((m) => ({ default: m.GtmDiagnosticTab })));
 const AIEngagementPanel = lazy(() => import("@/components/admin/AIEngagementPanel").then((m) => ({ default: m.AIEngagementPanel })));
 const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserManagement").then((m) => ({ default: m.VirtualUserManagement })));
 const AutoModerationPanel = lazy(() => import("@/components/admin/AutoModerationPanel").then((m) => ({ default: m.AutoModerationPanel })));
@@ -261,11 +265,15 @@ export default function AdminDashboard() {
           <TabsContent value="sistema">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
-                defaultValue="users"
+                defaultValue="health"
                 tabs={[
+                  { value: "health", label: "Saúde", content: <SystemHealthTab /> },
+                  { value: "observability", label: "Observabilidade", content: <ObservabilityTab /> },
+                  { value: "database", label: "Banco de Dados", content: <DatabaseTab /> },
                   { value: "users", label: "Usuários", content: <UserManagement /> },
                   { value: "security", label: "Segurança", content: <SecurityAuditPanel /> },
                   { value: "settings", label: "Configurações", content: <SiteSettings /> },
+                  { value: "gtm", label: "GTM / Diag.", content: <GtmDiagnosticTab /> },
                 ]}
               />
             </Suspense>

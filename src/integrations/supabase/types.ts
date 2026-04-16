@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json | null
+          new_values: Json | null
+          old_values: Json | null
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json | null
+          new_values?: Json | null
+          old_values?: Json | null
+        }
+        Relationships: []
+      }
       ai_engagement_logs: {
         Row: {
           action_type: string
@@ -1653,6 +1689,39 @@ export type Database = {
         }
         Relationships: []
       }
+      client_error_logs: {
+        Row: {
+          component_name: string | null
+          created_at: string
+          error_message: string
+          id: string
+          metadata: Json | null
+          stack_trace: string | null
+          url: string | null
+          user_id: string | null
+        }
+        Insert: {
+          component_name?: string | null
+          created_at?: string
+          error_message: string
+          id?: string
+          metadata?: Json | null
+          stack_trace?: string | null
+          url?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          component_name?: string | null
+          created_at?: string
+          error_message?: string
+          id?: string
+          metadata?: Json | null
+          stack_trace?: string | null
+          url?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       config: {
         Row: {
           created_at: string
@@ -1810,6 +1879,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      cron_job_logs: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          error_message: string | null
+          executed_at: string
+          id: string
+          job_name: string
+          metadata: Json | null
+          schedule: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          executed_at?: string
+          id?: string
+          job_name: string
+          metadata?: Json | null
+          schedule?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          error_message?: string | null
+          executed_at?: string
+          id?: string
+          job_name?: string
+          metadata?: Json | null
+          schedule?: string | null
+          status?: string
+        }
+        Relationships: []
       }
       daily_activity: {
         Row: {
@@ -2113,6 +2218,30 @@ export type Database = {
           trimester?: number[]
           updated_at?: string
           video_url?: string | null
+        }
+        Relationships: []
+      }
+      feature_usage_logs: {
+        Row: {
+          created_at: string
+          feature_name: string
+          id: string
+          metadata: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          feature_name: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          feature_name?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -3049,6 +3178,39 @@ export type Database = {
           partner_email?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      performance_logs: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          id: string
+          is_slow: boolean | null
+          metadata: Json | null
+          operation_name: string
+          operation_type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms: number
+          id?: string
+          is_slow?: boolean | null
+          metadata?: Json | null
+          operation_name: string
+          operation_type?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          id?: string
+          is_slow?: boolean | null
+          metadata?: Json | null
+          operation_name?: string
+          operation_type?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -4140,6 +4302,69 @@ export type Database = {
           },
         ]
       }
+      system_health_logs: {
+        Row: {
+          id: string
+          module_name: string
+          recorded_at: string
+          score: number
+          status: string
+        }
+        Insert: {
+          id?: string
+          module_name: string
+          recorded_at?: string
+          score: number
+          status: string
+        }
+        Update: {
+          id?: string
+          module_name?: string
+          recorded_at?: string
+          score?: number
+          status?: string
+        }
+        Relationships: []
+      }
+      system_health_status: {
+        Row: {
+          checked_at: string
+          created_at: string
+          id: string
+          issues: Json | null
+          metrics: Json | null
+          module_name: string
+          recommendations: Json | null
+          score: number
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          checked_at?: string
+          created_at?: string
+          id?: string
+          issues?: Json | null
+          metrics?: Json | null
+          module_name: string
+          recommendations?: Json | null
+          score?: number
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          checked_at?: string
+          created_at?: string
+          id?: string
+          issues?: Json | null
+          metrics?: Json | null
+          module_name?: string
+          recommendations?: Json | null
+          score?: number
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ticket_messages: {
         Row: {
           created_at: string
@@ -5084,6 +5309,10 @@ export type Database = {
         }[]
       }
       calculate_level: { Args: { xp: number }; Returns: number }
+      cleanup_monitoring_logs: {
+        Args: { days_to_keep?: number }
+        Returns: number
+      }
       cleanup_old_logs: { Args: { days_to_keep?: number }; Returns: number }
       get_user_last_activities: {
         Args: { user_ids: string[] }
