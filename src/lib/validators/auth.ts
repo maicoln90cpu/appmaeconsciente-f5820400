@@ -38,7 +38,7 @@ export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
-// Password strength calculation
+// Cálculo de força da senha
 export const calculatePasswordStrength = (
   password: string
 ): {
@@ -63,7 +63,7 @@ export const calculatePasswordStrength = (
   }
 };
 
-// WhatsApp mask formatter
+// Formatador de máscara WhatsApp
 export const formatWhatsApp = (value: string): string => {
   const digits = value.replace(/\D/g, '').slice(0, 11);
 
