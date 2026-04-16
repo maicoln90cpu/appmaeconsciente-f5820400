@@ -148,3 +148,38 @@ export const logFeatureUsage = (
     }]);
   });
 };
+
+// ─── Audit Log para Ações Admin ───────────────────────────────────────────────
+
+/**
+ * Registra uma ação administrativa sensível no banco (tabela: admin_audit_log)
+ * Ações: delete_user, change_role, grant_access, revoke_access, etc.
+ *
+ * Diferente dos outros logs, este NÃO é throttled (cada ação é única)
+ * e roda também em DEV para facilitar testes.
+ */
+export const logAdminAction = (
+  action: string,
+  options?: {
+    entityType?: string;
+    entityId?: string;
+    oldValues?: Record<string, unknown>;
+    newValues?: Record<string, unknown>;
+    metadata?: Record<string, unknown>;
+  }
+): void => {
+  enqueue(async () => {
+    const userId = getCurrentUserId();
+    if (!userId) return; // admin precisa estar autenticado
+
+    await supabase.from('admin_audit_log').insert([{
+      admin_id: userId,
+      action,
+      entity_type: options?.entityType ?? null,
+      entity_id: options?.entityId ?? null,
+      old_values: (options?.oldValues ?? null) as unknown as Json,
+      new_values: (options?.newValues ?? null) as unknown as Json,
+      metadata: (options?.metadata ?? null) as unknown as Json,
+    }]);
+  });
+};
