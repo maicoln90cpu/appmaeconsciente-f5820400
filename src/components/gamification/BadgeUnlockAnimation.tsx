@@ -44,11 +44,11 @@ export const BadgeUnlockAnimation = ({ badge, onClose }: BadgeUnlockAnimationPro
       <DialogContent className="sm:max-w-md text-center overflow-hidden">
         {/* Confetti animation */}
         {showConfetti && (
-          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none overflow-hidden motion-reduce:hidden">
             {[...Array(20)].map((_, i) => (
               <div
                 key={i}
-                className="absolute animate-bounce"
+                className="absolute motion-safe:animate-bounce"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
@@ -68,8 +68,8 @@ export const BadgeUnlockAnimation = ({ badge, onClose }: BadgeUnlockAnimationPro
         {/* Badge icon with pulse animation */}
         <div className="flex flex-col items-center gap-4 py-6">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full animate-ping opacity-20" />
-            <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-white shadow-lg animate-pulse">
+            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full motion-safe:animate-ping opacity-20" />
+            <div className="relative flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 text-white shadow-lg motion-safe:animate-pulse">
               <Icon className="h-12 w-12" />
             </div>
           </div>

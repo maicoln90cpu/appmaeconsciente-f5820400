@@ -27,7 +27,7 @@
 
 # Plano: Responsividade e UI/UX (5 Etapas)
 
-## Status: Etapa 1 ✅ | Etapa 2 ⬜ | Etapa 3 ⬜ | Etapa 4 ⬜ | Etapa 5 ⬜
+## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ⬜ | Etapa 4 ⬜ | Etapa 5 ⬜
 
 ---
 
@@ -37,10 +37,11 @@
 - [x] Componentes corrigidos: OnboardingWizard, OnboardingChecklist, SyncQueuePanel, FirstTimesAlbum, UpdatePrompt, FoodIntroductionDiary, StimulationBank, RoutinePlanner, EnxovalMobileCard, ExamChecklist
 - [x] Componentes admin mantidos com tamanhos menores (desktop-only)
 
-## Etapa 2 — Reduced Motion + Animações Seguras ⬜
-- [ ] `@media (prefers-reduced-motion: reduce)` global no `index.css`
-- [ ] Desabilitar `animate-*` e reduzir `transition-*`
-- [ ] Aplicar `motion-safe:` em componentes com animação pesada
+## Etapa 2 — Reduced Motion + Animações Seguras ✅
+- [x] `@media (prefers-reduced-motion: reduce)` global no `index.css` — desabilita todas as animações/transições
+- [x] Spinners (`animate-spin`) preservados como feedback essencial de carregamento
+- [x] Efeitos decorativos removidos: ripple, page transitions, bounce, pulse, ping
+- [x] `BadgeUnlockAnimation` atualizado com `motion-safe:` e `motion-reduce:hidden` para confetti
 
 ## Etapa 3 — Loading States Padronizados ⬜
 - [ ] Verificar/criar `PageLoader` reutilizável
