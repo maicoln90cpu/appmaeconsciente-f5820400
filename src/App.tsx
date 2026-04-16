@@ -102,6 +102,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <FeatureFlagsProvider>
         <TooltipProvider>
           <SkipLink />
           <Toaster />
