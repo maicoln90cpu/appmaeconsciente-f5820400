@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 
 import { format, subDays, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Trash2, Baby, Milk, Droplets } from 'lucide-react';
+import { Trash2, Baby, Milk, Droplets, History } from 'lucide-react';
+
+import { EmptyState } from '@/components/ui/empty-state';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

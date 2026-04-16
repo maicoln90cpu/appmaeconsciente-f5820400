@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { PageLoader } from '@/components/ui/page-loader';
 
 import { PremiumUpgradeModal } from '@/components/materiais/PremiumUpgradeModal';

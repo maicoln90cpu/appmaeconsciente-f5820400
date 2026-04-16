@@ -1,6 +1,6 @@
 import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Bell } from 'lucide-react';
+import { Bell, BellOff } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

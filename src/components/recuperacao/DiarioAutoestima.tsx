@@ -6,6 +6,7 @@ import { Heart, Camera, Smile, Meh, Frown, Lock, Users, Globe, Trash2 } from 'lu
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   Dialog,
   DialogContent,
