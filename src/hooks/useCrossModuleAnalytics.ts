@@ -132,7 +132,7 @@ export const useCrossModuleAnalytics = () => {
       const previousFeeding = feedingLogs.find(feeding => {
         const feedingTime = new Date(feeding.start_time);
         const timeDiff = differenceInMinutes(sleepStart, feedingTime);
-        return timeDiff > 0 && timeDiff < 180; // Dentro de 3 horas
+        return timeDiff > 0 && timeDiff < 180; // dentro de 3 horas
       });
 
       if (previousFeeding) {

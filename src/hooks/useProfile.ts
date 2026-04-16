@@ -124,7 +124,7 @@ export const useProfile = () => {
       return updates;
     },
     onSuccess: updates => {
-      // Optimistically update the cache
+      // Atualizar cache otimisticamente
       queryClient.setQueryData(QueryKeys.profile(user?.id ?? ''), (old: Profile | null) => {
         if (!old) return old;
         return { ...old, ...updates };

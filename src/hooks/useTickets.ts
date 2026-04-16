@@ -129,7 +129,7 @@ export const useTickets = () => {
 
       if (error) throw error;
 
-      // Call edge function to send notification email
+      // Chamar função para enviar email de notificação
       await supabase.functions.invoke('notify-ticket-created', {
         body: { ticketId: data.id },
       });

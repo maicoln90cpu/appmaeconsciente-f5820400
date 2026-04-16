@@ -62,7 +62,7 @@ export function useBabyLogs<T extends { id: string }>({
         return;
       }
 
-      // Using any to bypass type complexity
+      // Usando any para contornar complexidade de tipos
       const query = supabase.from(tableName).select('*').eq('user_id', user.id) as any;
 
       // Aplicar filtros adicionais
