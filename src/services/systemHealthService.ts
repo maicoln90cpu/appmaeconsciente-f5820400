@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 export async function fetchHealthStatus() {
   const { data, error } = await supabase
     .from("system_health_status")
-    .select("id, module_name, status, score, metrics, issues, recommendations, last_checked_at, updated_at")
+    .select("id, module_name, status, score, metrics, issues, recommendations, checked_at, updated_at")
     .order("module_name");
   if (error) throw error;
   return data ?? [];
