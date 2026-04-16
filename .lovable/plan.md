@@ -1,20 +1,23 @@
 
-# Plano: Aba Sistema — Monitoramento Avançado (5 Etapas)
+# Plano: Consistência e Padrões de Código (3 Etapas)
 
-## Status: ✅ COMPLETO — Todas as 5 Etapas Implementadas
+## Status: Etapa 1 ✅ | Etapa 2 ⏳ | Etapa 3 ⏳
 
 ---
 
-## Etapa 1 — Infraestrutura Base ✅
-## Etapa 2 — Sub-aba Saúde (10 Painéis) ✅
-## Etapa 3 — Sub-aba Observabilidade (7 Painéis) ✅
-## Etapa 4 — Sub-aba Banco de Dados (5 sub-abas) ✅
+## Etapa 1 — Padronizar Logger e Toast ✅
+- [x] Logger: removido `export default`, forçando `import { logger }` (named only)
+- [x] 9 arquivos migrados de `import logger from` para `import { logger } from`
+- [x] Toast: 63 arquivos migrados de `useToast` (shadcn) para `toast` do Sonner
+- [x] Helper functions (checkEdinburghScore, checkAlerts) simplificadas (removido parâmetro toast)
+- [x] Testes atualizados (mocks de useToast → sonner)
+- [x] Zero erros TypeScript, zero referências residuais a useToast fora da infra
 
-## Etapa 5 — Configurações + GTM/Diagnóstico ✅
-- [x] Migração: 6 novos campos na site_settings (whatsapp, email, domain, timezone, toggles)
-- [x] SiteSettings expandido: 3 cards (Contato, Rastreamento, Funcionalidades)
-- [x] Timezone brasileiro com 9 fusos horários
-- [x] Toggles: Insights IA + Badges de Metas
-- [x] GTM Diagnóstico: verificação automática em 3 etapas com retry (3 tentativas, 2s intervalo)
-- [x] Feedback visual de status (✅/❌/⚠️) por etapa
-- [x] Hook useSiteSettings atualizado com updateAllSettings
+## Etapa 2 — Scripts de Enforcement + ESLint Rules ⏳
+- [ ] Adicionar scripts: lint:fix, format, format:check no package.json
+- [ ] Rodar prettier --write para normalizar formatação global
+- [ ] Adicionar regra ESLint para naming convention de Props
+
+## Etapa 3 — Padronizar Comentários e Documentação ⏳
+- [ ] Definir idioma padrão (PT-BR) para comentários
+- [ ] Revisar hooks, contexts e lib/ mais críticos
