@@ -289,9 +289,12 @@ const Materiais = () => {
       />
 
       {displayProducts.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground text-sm">Nenhuma ferramenta encontrada.</p>
-        </div>
+        <EmptyState
+          icon={Filter}
+          title="Nenhuma ferramenta encontrada"
+          description="Tente ajustar os filtros de busca"
+          action={{ label: 'Limpar Filtros', onClick: () => setFilter('all') }}
+        />
       )}
 
       {/* Suggestion button */}

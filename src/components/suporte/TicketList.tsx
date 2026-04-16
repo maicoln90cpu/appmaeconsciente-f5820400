@@ -1,11 +1,12 @@
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { HelpCircle } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 
 import { Ticket } from '@/hooks/useTickets';
-
 
 import {
   TICKET_STATUS_CONFIG,
@@ -22,11 +23,11 @@ interface TicketListProps {
 export const TicketList = ({ tickets, onTicketClick }: TicketListProps) => {
   if (tickets.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center">
-          <p className="text-muted-foreground">Você ainda não possui tickets de suporte.</p>
-        </CardContent>
-      </Card>
+      <EmptyState
+        icon={HelpCircle}
+        title="Nenhum ticket ainda"
+        description="Você ainda não possui tickets de suporte. Crie um na aba ao lado."
+      />
     );
   }
 

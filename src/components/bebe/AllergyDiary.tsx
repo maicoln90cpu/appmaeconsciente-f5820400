@@ -349,15 +349,11 @@ export const AllergyDiary = ({ babyProfileId }: Props) => {
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center py-8 text-center">
-            <ShieldCheck className="h-10 w-10 text-muted-foreground/40 mb-2" />
-            <p className="text-sm text-muted-foreground">Nenhum alimento registrado</p>
-            <p className="text-xs text-muted-foreground">
-              Comece registrando os alimentos introduzidos na dieta do bebê
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={ShieldCheck}
+          title="Nenhum alimento registrado"
+          description="Comece registrando os alimentos introduzidos na dieta do bebê"
+        />
       )}
     </div>
   );

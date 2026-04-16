@@ -290,15 +290,11 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
           </CardContent>
         </Card>
       ) : (
-        <Card className="border-dashed">
-          <CardContent className="flex flex-col items-center py-8 text-center">
-            <SmilePlus className="h-10 w-10 text-muted-foreground/40 mb-2" />
-            <p className="text-sm text-muted-foreground">Nenhum dente registrado ainda</p>
-            <p className="text-xs text-muted-foreground">
-              O primeiro dente costuma aparecer por volta dos 6 meses
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={SmilePlus}
+          title="Nenhum dente registrado ainda"
+          description="O primeiro dente costuma aparecer por volta dos 6 meses"
+        />
       )}
     </div>
   );
