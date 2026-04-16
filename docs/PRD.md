@@ -2,9 +2,9 @@
 
 ## Mãe Consciente
 
-**Versão:** 1.2  
-**Data:** Janeiro 2026  
-**Status:** MVP Completo + Performance Otimizada + Auto-save
+**Versão:** 1.18  
+**Data:** Abril 2026  
+**Status:** MVP Completo + Performance + Auto-save + Blog + Comunidade + Monitoramento
 
 ---
 
