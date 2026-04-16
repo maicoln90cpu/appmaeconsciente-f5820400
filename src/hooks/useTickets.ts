@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
 import { analytics } from "@/lib/analytics";
 import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { toast } from "sonner";
 
 export interface Ticket {
   id: string;
@@ -59,7 +59,6 @@ const ticketSchema = z.object({
 export type TicketFormData = z.infer<typeof ticketSchema>;
 
 export const useTickets = () => {
-  const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -131,31 +130,20 @@ export const useTickets = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "Ticket criado com sucesso!" });
+      toast("Ticket criado com sucesso!");
     },
     onError: (error) => {
       console.error("Error creating ticket:", error);
       
       if (error.message === "RATE_LIMIT") {
-        toast({
-          title: "Aguarde um momento",
-          description: "Você atingiu o limite de 3 tickets em 5 minutos. Tente novamente mais tarde.",
-          variant: "destructive",
-        });
+        toast.error("Aguarde um momento", { description: "Você atingiu o limite de 3 tickets em 5 minutos. Tente novamente mais tarde." });
         return;
       }
 
       if (error instanceof z.ZodError) {
-        toast({
-          title: "Erro de validação",
-          description: error.errors[0].message,
-          variant: "destructive",
-        });
+        toast.error("Erro de validação", { description: error.errors[0].message });
       } else {
-        toast({
-          title: "Erro ao criar ticket",
-          variant: "destructive",
-        });
+        toast.error("Erro ao criar ticket");
       }
     },
   });
@@ -174,14 +162,11 @@ export const useTickets = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({ title: "Mensagem enviada!" });
+      toast("Mensagem enviada!");
     },
     onError: (error) => {
       console.error("Error adding message:", error);
-      toast({
-        title: "Erro ao enviar mensagem",
-        variant: "destructive",
-      });
+      toast.error("Erro ao enviar mensagem");
     },
   });
 

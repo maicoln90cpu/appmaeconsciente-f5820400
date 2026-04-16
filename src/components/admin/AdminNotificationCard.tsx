@@ -5,22 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/useToast";
 import { logger } from "@/lib/logger";
 import { Send } from "lucide-react";
+import { toast } from "sonner";
 
 export const AdminNotificationCard = () => {
-  const { toast } = useToast();
   const [notification, setNotification] = useState({ title: "", message: "" });
   const [sending, setSending] = useState(false);
 
   const handleSendNotification = async () => {
     if (!notification.title || !notification.message) {
-      toast({
-        title: "Preencha todos os campos",
-        description: "Título e mensagem são obrigatórios.",
-        variant: "destructive",
-      });
+      toast.error("Preencha todos os campos", { description: "Título e mensagem são obrigatórios." });
       return;
     }
 
@@ -62,18 +57,11 @@ export const AdminNotificationCard = () => {
         if (insertError) throw insertError;
       }
 
-      toast({
-        title: "Notificação enviada!",
-        description: `${allUsers?.length || 0} usuários foram notificados.`,
-      });
+      toast("Notificação enviada!", { description: `${allUsers?.length || 0} usuários foram notificados.` });
       setNotification({ title: "", message: "" });
     } catch (error) {
       logger.error("Error sending notification", error, { context: "AdminDashboard" });
-      toast({
-        title: "Erro ao enviar notificação",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao enviar notificação", { description: "Tente novamente mais tarde." });
     } finally {
       setSending(false);
     }

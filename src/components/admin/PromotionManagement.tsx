@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/hooks/useToast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Gift, Trash2, Zap } from "lucide-react";
+import { toast } from "sonner";
 
 interface Promotion {
   id: string;
@@ -25,7 +25,6 @@ interface Promotion {
 }
 
 export function PromotionManagement() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [newPromo, setNewPromo] = useState({
     name: "",
@@ -86,7 +85,7 @@ export function PromotionManagement() {
       return data;
     },
     onSuccess: () => {
-      toast({ title: "Promoção criada com sucesso!" });
+      toast("Promoção criada com sucesso!");
       setNewPromo({
         name: "",
         description: "",
@@ -97,11 +96,7 @@ export function PromotionManagement() {
       queryClient.invalidateQueries({ queryKey: ["promotions"] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Erro ao criar promoção",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error("Erro ao criar promoção", { description: error.message });
     },
   });
 
@@ -112,7 +107,7 @@ export function PromotionManagement() {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({ title: "Promoção deletada" });
+      toast("Promoção deletada");
       queryClient.invalidateQueries({ queryKey: ["promotions"] });
     },
   });
@@ -127,17 +122,10 @@ export function PromotionManagement() {
       return data;
     },
     onSuccess: (data) => {
-      toast({
-        title: "Promoção aplicada!",
-        description: `${data.users_affected} usuários receberam acesso`,
-      });
+      toast("Promoção aplicada!", { description: `${data.users_affected} usuários receberam acesso` });
     },
     onError: (error: any) => {
-      toast({
-        title: "Erro ao aplicar promoção",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error("Erro ao aplicar promoção", { description: error.message });
     },
   });
 

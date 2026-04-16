@@ -8,10 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/useToast";
 import { Baby, Upload, Info } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 const ESTADOS = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
@@ -21,7 +21,6 @@ const ESTADOS = [
 export default function CompleteProfile() {
   const navigate = useNavigate();
   const { profile, updateProfile } = useProfile();
-  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [uploading, setUploading] = useState(false);
 
@@ -45,22 +44,14 @@ export default function CompleteProfile() {
     // Validação de tamanho (5MB)
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "O tamanho máximo permitido é 5MB.",
-        variant: "destructive",
-      });
+      toast.error("Arquivo muito grande", { description: "O tamanho máximo permitido é 5MB." });
       return;
     }
 
     // Validação de tipo MIME
     const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!ALLOWED_TYPES.includes(file.type)) {
-      toast({
-        title: "Formato inválido",
-        description: "Use apenas imagens JPEG, PNG, WebP ou GIF.",
-        variant: "destructive",
-      });
+      toast.error("Formato inválido", { description: "Use apenas imagens JPEG, PNG, WebP ou GIF." });
       return;
     }
 
@@ -81,17 +72,10 @@ export default function CompleteProfile() {
 
       setFormData({ ...formData, foto_perfil_url: data.publicUrl });
       
-      toast({
-        title: "Foto carregada!",
-        description: "Sua foto de perfil foi enviada com sucesso.",
-      });
+      toast("Foto carregada!", { description: "Sua foto de perfil foi enviada com sucesso." });
     } catch (error) {
       console.error('Error uploading file:', error);
-      toast({
-        title: "Erro ao enviar foto",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao enviar foto", { description: "Tente novamente mais tarde." });
     } finally {
       setUploading(false);
     }
@@ -101,11 +85,7 @@ export default function CompleteProfile() {
     const { error } = await updateProfile({ perfil_completo: true });
 
     if (error) {
-      toast({
-        title: "Erro",
-        description: error,
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: error });
     } else {
       navigate("/");
     }
@@ -136,16 +116,9 @@ export default function CompleteProfile() {
     const { error } = await updateProfile(updates);
 
     if (error) {
-      toast({
-        title: "Erro ao salvar perfil",
-        description: error,
-        variant: "destructive",
-      });
+      toast.error("Erro ao salvar perfil", { description: error });
     } else {
-      toast({
-        title: "Perfil completo!",
-        description: "Bem-vindo ao sistema.",
-      });
+      toast("Perfil completo!", { description: "Bem-vindo ao sistema." });
       navigate("/");
     }
   };

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { checkRateLimit, resetRateLimit, getRateLimitStatus } from "@/lib/rate-limiter";
 import { signUpSchema, signInSchema, forgotPasswordSchema } from "@/lib/validators/auth";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 export type AuthMode = "sign_in" | "sign_up" | "forgot_password";
 
@@ -37,7 +37,6 @@ export function useAuthForm() {
   const [rememberMe, setRememberMe] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [resetCooldown, setResetCooldown] = useState<number | null>(null);
-  const { toast } = useToast();
 
   // Load saved email
   useEffect(() => {
@@ -104,11 +103,7 @@ export function useAuthForm() {
 
     const rateLimitResult = checkRateLimit(`auth:${email}`);
     if (!rateLimitResult.allowed) {
-      toast({
-        title: "Muitas tentativas",
-        description: rateLimitResult.message || "Aguarde antes de tentar novamente.",
-        variant: "destructive",
-      });
+      toast.error("Muitas tentativas", { description: rateLimitResult.message || "Aguarde antes de tentar novamente." });
       return;
     }
 
@@ -125,14 +120,10 @@ export function useAuthForm() {
         }
 
         resetRateLimit(`auth:${email}`);
-        toast({ title: "Bem-vindo(a)!", description: "Login realizado com sucesso." });
+        toast("Bem-vindo(a)!", { description: "Login realizado com sucesso." });
       } else if (mode === "sign_up") {
         if (!consentAccepted) {
-          toast({
-            title: "Consentimento necessário",
-            description: "Você precisa aceitar os termos para criar uma conta.",
-            variant: "destructive",
-          });
+          toast.error("Consentimento necessário", { description: "Você precisa aceitar os termos para criar uma conta." });
           setLoading(false);
           return;
         }
@@ -160,7 +151,7 @@ export function useAuthForm() {
           });
         }
 
-        toast({ title: "Conta criada!", description: "Sua conta foi criada com sucesso." });
+        toast("Conta criada!", { description: "Sua conta foi criada com sucesso." });
       } else if (mode === "forgot_password") {
         const resetResult = checkRateLimit(`reset:${email}`, RESET_PASSWORD_RATE_LIMIT);
         if (!resetResult.allowed) {
@@ -168,11 +159,7 @@ export function useAuthForm() {
             ? Math.ceil((resetResult.lockedUntil.getTime() - Date.now()) / 1000)
             : 60;
           setResetCooldown(cooldownSeconds);
-          toast({
-            title: "Limite de tentativas atingido",
-            description: `Por segurança, aguarde ${Math.ceil(cooldownSeconds / 60)} minuto(s) antes de tentar novamente.`,
-            variant: "destructive",
-          });
+          toast.error("Limite de tentativas atingido", { description: `Por segurança, aguarde ${Math.ceil(cooldownSeconds / 60)} minuto(s) antes de tentar novamente.` });
           setLoading(false);
           return;
         }
@@ -182,10 +169,7 @@ export function useAuthForm() {
         });
         if (error) throw error;
 
-        toast({
-          title: "Email enviado!",
-          description: "Verifique sua caixa de entrada para redefinir a senha. O link expira em 24 horas.",
-        });
+        toast("Email enviado!", { description: "Verifique sua caixa de entrada para redefinir a senha. O link expira em 24 horas." });
         setMode("sign_in");
       }
     } catch (error: any) {
@@ -202,7 +186,7 @@ export function useAuthForm() {
         message = "A senha deve ter pelo menos 6 caracteres.";
       }
 
-      toast({ title: "Erro", description: message, variant: "destructive" });
+      toast.error("Erro", { description: message });
     } finally {
       setLoading(false);
     }

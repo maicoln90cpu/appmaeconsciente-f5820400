@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 const postSchema = z.object({
   content: z.string().max(5000, "O post deve ter no máximo 5000 caracteres"),
@@ -47,7 +47,6 @@ export function useCreatePost({ onPostCreated }: UseCreatePostOptions) {
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
-  const { toast } = useToast();
   const { isAdmin } = useUserRole();
 
   const autoSave = useAutoSave<PostFormData>({
@@ -72,7 +71,7 @@ export function useCreatePost({ onPostCreated }: UseCreatePostOptions) {
   const handleLoadDraft = useCallback(
     async (id: string) => {
       await autoSave.loadDraftById(id);
-      toast({ title: "Rascunho carregado", description: "O conteúdo do rascunho foi restaurado." });
+      toast("Rascunho carregado", { description: "O conteúdo do rascunho foi restaurado." });
     },
     [autoSave.loadDraftById, toast]
   );
@@ -80,16 +79,16 @@ export function useCreatePost({ onPostCreated }: UseCreatePostOptions) {
   const validateImages = useCallback(
     (files: File[]): boolean => {
       if (files.length + images.length > 4) {
-        toast({ title: "Limite de imagens", description: "Máximo 4 imagens por post.", variant: "destructive" });
+        toast.error("Limite de imagens", { description: "Máximo 4 imagens por post." });
         return false;
       }
       for (const file of files) {
         if (file.size > MAX_IMAGE_SIZE) {
-          toast({ title: "Arquivo muito grande", description: `${file.name} excede 5MB.`, variant: "destructive" });
+          toast.error("Arquivo muito grande", { description: `${file.name} excede 5MB.` });
           return false;
         }
         if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-          toast({ title: "Formato inválido", description: `${file.name} não é JPG, PNG ou WebP.`, variant: "destructive" });
+          toast.error("Formato inválido", { description: `${file.name} não é JPG, PNG ou WebP.` });
           return false;
         }
       }
@@ -126,7 +125,7 @@ export function useCreatePost({ onPostCreated }: UseCreatePostOptions) {
 
   const handleSubmit = useCallback(async () => {
     if (!content.trim() && images.length === 0) {
-      toast({ title: "Post vazio", description: "Adicione texto ou imagens.", variant: "destructive" });
+      toast.error("Post vazio", { description: "Adicione texto ou imagens." });
       return;
     }
 
@@ -134,13 +133,13 @@ export function useCreatePost({ onPostCreated }: UseCreatePostOptions) {
       postSchema.parse({ content, displayName: isAdmin ? displayName : undefined });
     } catch (error) {
       if (error instanceof z.ZodError) {
-        toast({ title: "Erro de validação", description: error.errors[0].message, variant: "destructive" });
+        toast.error("Erro de validação", { description: error.errors[0].message });
         return;
       }
     }
 
     if (DANGEROUS_PATTERNS.some((p) => p.test(content))) {
-      toast({ title: "Conteúdo bloqueado", description: "O post contém código potencialmente perigoso.", variant: "destructive" });
+      toast.error("Conteúdo bloqueado", { description: "O post contém código potencialmente perigoso." });
       return;
     }
 
@@ -164,7 +163,7 @@ export function useCreatePost({ onPostCreated }: UseCreatePostOptions) {
       setOpen(false);
     } catch (error) {
       logger.error("Error creating post", error, { context: "useCreatePost" });
-      toast({ title: "Erro ao criar post", description: "Tente novamente mais tarde.", variant: "destructive" });
+      toast.error("Erro ao criar post", { description: "Tente novamente mais tarde." });
     } finally {
       setUploading(false);
     }

@@ -1,9 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 export interface KickSession {
   id: string;
@@ -20,7 +20,6 @@ export interface KickSession {
 
 export function useKickCounter() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   // Timer local state
   const [isActive, setIsActive] = useState(false);
@@ -77,11 +76,11 @@ export function useKickCounter() {
       setKickCount(0);
       setElapsedSeconds(0);
       setIsActive(true);
-      toast({ title: "Sessão iniciada", description: "Toque cada vez que sentir um movimento 🤰" });
+      toast("Sessão iniciada", { description: "Toque cada vez que sentir um movimento 🤰" });
     },
     onError: (e) => {
       logger.error("Kick session start error", e);
-      toast({ title: "Erro", description: "Não foi possível iniciar a sessão", variant: "destructive" });
+      toast.error("Erro", { description: "Não foi possível iniciar a sessão" });
     },
   });
 
@@ -99,12 +98,12 @@ export function useKickCounter() {
       if (error) {
         logger.error("Kick record error", error);
         setKickCount(kickCount); // rollback UI
-        toast({ title: "Erro ao salvar chute", description: "Tente novamente", variant: "destructive" });
+        toast.error("Erro ao salvar chute", { description: "Tente novamente" });
       }
     } catch (e) {
       logger.error("Kick record exception", e);
       setKickCount(kickCount); // rollback UI
-      toast({ title: "Erro ao salvar chute", description: "Tente novamente", variant: "destructive" });
+      toast.error("Erro ao salvar chute", { description: "Tente novamente" });
     }
   }, [activeSessionId, kickCount, toast]);
 
@@ -130,11 +129,11 @@ export function useKickCounter() {
       setIsActive(false);
       setActiveSessionId(null);
       queryClient.invalidateQueries({ queryKey: ["kick-count-sessions"] });
-      toast({ title: "Sessão finalizada ✅", description: `${kickCount} movimentos registrados em ${Math.ceil(elapsedSeconds / 60)} min` });
+      toast("Sessão finalizada ✅", { description: `${kickCount} movimentos registrados em ${Math.ceil(elapsedSeconds / 60)} min` });
     },
     onError: (e) => {
       logger.error("Kick session end error", e);
-      toast({ title: "Erro", description: "Não foi possível finalizar a sessão", variant: "destructive" });
+      toast.error("Erro", { description: "Não foi possível finalizar a sessão" });
     },
   });
 
@@ -149,7 +148,7 @@ export function useKickCounter() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["kick-count-sessions"] });
-      toast({ title: "Sessão removida" });
+      toast("Sessão removida");
     },
   });
 

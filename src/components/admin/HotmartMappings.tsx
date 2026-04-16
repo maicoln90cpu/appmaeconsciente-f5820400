@@ -9,9 +9,9 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/useToast";
 import { Plus, Trash2 } from "lucide-react";
 import { useHotmartMappings } from "@/hooks/useHotmartMappings";
+import { toast } from "sonner";
 
 const INITIAL_MAPPING = {
   hotmart_id: "",
@@ -24,15 +24,14 @@ export const HotmartMappings = () => {
   const { mappings, products, addMapping, deleteMapping, isAdding } = useHotmartMappings();
   const [newMapping, setNewMapping] = useState({ ...INITIAL_MAPPING });
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { toast } = useToast();
 
   const handleAddMapping = () => {
     if (!newMapping.hotmart_id || !newMapping.product_id) {
-      toast({ title: "Erro", description: "Preencha todos os campos", variant: "destructive" });
+      toast.error("Erro", { description: "Preencha todos os campos" });
       return;
     }
     if (!newMapping.is_lifetime && !newMapping.access_duration_days) {
-      toast({ title: "Erro", description: "Defina a duração do acesso ou marque como vitalício", variant: "destructive" });
+      toast.error("Erro", { description: "Defina a duração do acesso ou marque como vitalício" });
       return;
     }
     addMapping(newMapping, {
@@ -96,7 +95,7 @@ export const HotmartMappings = () => {
           </code>
           <Button variant="outline" size="sm" className="mt-2" onClick={() => {
             navigator.clipboard.writeText(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hotmart-webhook`);
-            toast({ title: "URL copiada!" });
+            toast("URL copiada!");
           }}>
             Copiar URL
           </Button>

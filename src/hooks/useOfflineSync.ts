@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { offlineSync, SyncTask } from "@/lib/offline-sync";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 export interface OfflineSyncState {
   isOnline: boolean;
@@ -331,7 +331,6 @@ export function useOfflineSync() {
     tasks: [],
     isSyncing: false,
   });
-  const { toast } = useToast();
 
   // Register handlers on first use
   useEffect(() => {
@@ -345,19 +344,12 @@ export function useOfflineSync() {
   useEffect(() => {
     const handleOnline = () => {
       setState((prev) => ({ ...prev, isOnline: true }));
-      toast({
-        title: "Conexão restaurada",
-        description: "Sincronizando dados pendentes...",
-      });
+      toast("Conexão restaurada", { description: "Sincronizando dados pendentes..." });
     };
 
     const handleOffline = () => {
       setState((prev) => ({ ...prev, isOnline: false }));
-      toast({
-        title: "Modo offline",
-        description: "Suas alterações serão sincronizadas quando a conexão for restaurada.",
-        variant: "destructive",
-      });
+      toast.error("Modo offline", { description: "Suas alterações serão sincronizadas quando a conexão for restaurada." });
     };
 
     window.addEventListener("online", handleOnline);
@@ -419,10 +411,7 @@ export function useOfflineSync() {
 
   const retryFailed = useCallback(async () => {
     await offlineSync.retryAllFailed();
-    toast({
-      title: "Tentando novamente",
-      description: "Sincronizando dados pendentes...",
-    });
+    toast("Tentando novamente", { description: "Sincronizando dados pendentes..." });
   }, [toast]);
 
   const retryTask = useCallback(async (taskId: string) => {
@@ -432,20 +421,14 @@ export function useOfflineSync() {
   const discardTask = useCallback(
     async (taskId: string) => {
       await offlineSync.discardTask(taskId);
-      toast({
-        title: "Tarefa descartada",
-        description: "A operação foi removida da fila.",
-      });
+      toast("Tarefa descartada", { description: "A operação foi removida da fila." });
     },
     [toast]
   );
 
   const clearQueue = useCallback(async () => {
     await offlineSync.clearQueue();
-    toast({
-      title: "Fila limpa",
-      description: "Todas as operações pendentes foram removidas.",
-    });
+    toast("Fila limpa", { description: "Todas as operações pendentes foram removidas." });
   }, [toast]);
 
   const forceSync = useCallback(async () => {

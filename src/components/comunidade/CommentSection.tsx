@@ -4,9 +4,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Trash2 } from "lucide-react";
-import { useToast } from "@/hooks/useToast";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface Comment {
   id: string;
@@ -25,7 +25,6 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     loadComments();
@@ -81,10 +80,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
     });
 
     if (error) {
-      toast({
-        title: "Erro ao comentar",
-        variant: "destructive",
-      });
+      toast.error("Erro ao comentar");
       return;
     }
 
@@ -99,10 +95,7 @@ export const CommentSection = ({ postId }: CommentSectionProps) => {
       .eq("id", commentId);
 
     if (error) {
-      toast({
-        title: "Erro ao deletar comentário",
-        variant: "destructive",
-      });
+      toast.error("Erro ao deletar comentário");
       return;
     }
 

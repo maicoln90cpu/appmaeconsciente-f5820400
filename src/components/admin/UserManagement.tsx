@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useMemo } from "react";
-import { useToast } from "@/hooks/useToast";
 import { CreateUserDialog } from "./CreateUserDialog";
 import {
+import { toast } from "sonner";
   UserFilters,
   UserCard,
   NoSearchResults,
@@ -19,7 +19,6 @@ import {
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
   
   // Filter and sort state
   const [filters, setFilters] = useState<UserFiltersState>({
@@ -132,10 +131,10 @@ export const UserManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-product-access'] });
-      toast({ title: "Acesso concedido com sucesso" });
+      toast("Acesso concedido com sucesso");
       setAccessState(prev => ({ ...prev, selectedUser: null, selectedProduct: "" }));
     },
-    onError: (error: any) => toast({ title: "Erro ao conceder acesso", description: error.message, variant: "destructive" }),
+    onError: (error: any) => toast.error("Erro ao conceder acesso", { description: error.message }),
   });
 
   const revokeAccessMutation = useMutation({
@@ -149,9 +148,9 @@ export const UserManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['user-product-access'] });
-      toast({ title: "Acesso revogado com sucesso" });
+      toast("Acesso revogado com sucesso");
     },
-    onError: (error: any) => toast({ title: "Erro ao revogar acesso", description: error.message, variant: "destructive" }),
+    onError: (error: any) => toast.error("Erro ao revogar acesso", { description: error.message }),
   });
 
   const toggleAdminMutation = useMutation({
@@ -166,9 +165,9 @@ export const UserManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast({ title: "Role atualizado" });
+      toast("Role atualizado");
     },
-    onError: () => toast({ title: "Erro ao atualizar role", variant: "destructive" }),
+    onError: () => toast.error("Erro ao atualizar role"),
   });
 
   const deleteUserMutation = useMutation({
@@ -180,9 +179,9 @@ export const UserManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
-      toast({ title: "Usuário excluído com sucesso" });
+      toast("Usuário excluído com sucesso");
     },
-    onError: (error: any) => toast({ title: "Erro ao excluir usuário", description: error.message, variant: "destructive" }),
+    onError: (error: any) => toast.error("Erro ao excluir usuário", { description: error.message }),
   });
 
   const resetPasswordMutation = useMutation({
@@ -190,14 +189,14 @@ export const UserManagement = () => {
       const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth` });
       if (error) throw error;
     },
-    onSuccess: () => toast({ title: "Email de recuperação enviado" }),
-    onError: () => toast({ title: "Erro ao enviar email de recuperação", variant: "destructive" }),
+    onSuccess: () => toast("Email de recuperação enviado"),
+    onError: () => toast.error("Erro ao enviar email de recuperação"),
   });
 
   // Handlers
   const handleGrantAccess = (userId: string) => {
     if (!accessState.selectedProduct) {
-      toast({ title: "Selecione um produto", variant: "destructive" });
+      toast.error("Selecione um produto");
       return;
     }
 

@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { offlineCache } from "@/lib/offline-cache";
 import { offlineSync } from "@/lib/offline-sync";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 export interface UseOfflineDataOptions<T> {
   tableName: string;
@@ -47,7 +47,6 @@ export function useOfflineData<T extends { id: string }>({
   const [error, setError] = useState<Error | null>(null);
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [isCached, setIsCached] = useState(false);
-  const { toast } = useToast();
   const fetchingRef = useRef(false);
 
   // Listen for online/offline status
@@ -121,11 +120,7 @@ export function useOfflineData<T extends { id: string }>({
           onSuccess?.(cachedData);
         } else {
           setData([]);
-          toast({
-            title: "Modo offline",
-            description: "Não há dados em cache disponíveis.",
-            variant: "destructive",
-          });
+          toast.error("Modo offline", { description: "Não há dados em cache disponíveis." });
         }
       }
     } catch (err: any) {
@@ -144,10 +139,7 @@ export function useOfflineData<T extends { id: string }>({
         if (cachedData) {
           setData(cachedData);
           setIsCached(true);
-          toast({
-            title: "Usando dados em cache",
-            description: "Houve um erro de conexão. Mostrando dados salvos.",
-          });
+          toast("Usando dados em cache", { description: "Houve um erro de conexão. Mostrando dados salvos." });
         }
       }
     } finally {
@@ -205,10 +197,7 @@ export function useOfflineData<T extends { id: string }>({
           { ...item, tempId }
         );
 
-        toast({
-          title: "Salvo offline",
-          description: "Será sincronizado quando a conexão for restaurada.",
-        });
+        toast("Salvo offline", { description: "Será sincronizado quando a conexão for restaurada." });
 
         return optimisticItem;
       }
@@ -251,10 +240,7 @@ export function useOfflineData<T extends { id: string }>({
           { id, ...updates }
         );
 
-        toast({
-          title: "Atualização salva offline",
-          description: "Será sincronizado quando a conexão for restaurada.",
-        });
+        toast("Atualização salva offline", { description: "Será sincronizado quando a conexão for restaurada." });
       }
     },
     [userId, tableName, data, toast]
@@ -297,10 +283,7 @@ export function useOfflineData<T extends { id: string }>({
           { id }
         );
 
-        toast({
-          title: "Exclusão salva offline",
-          description: "Será sincronizado quando a conexão for restaurada.",
-        });
+        toast("Exclusão salva offline", { description: "Será sincronizado quando a conexão for restaurada." });
       }
     },
     [userId, tableName, data, toast]

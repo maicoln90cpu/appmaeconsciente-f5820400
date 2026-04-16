@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 /**
  * Hook centralizado para ações autenticadas.
@@ -17,7 +17,6 @@ import { logger } from "@/lib/logger";
  * };
  */
 export const useAuthenticatedAction = () => {
-  const { toast } = useToast();
 
   /**
    * Obtém o ID do usuário atual de forma assíncrona.
@@ -48,11 +47,7 @@ export const useAuthenticatedAction = () => {
       
       if (!user) {
         if (!options?.silentError) {
-          toast({
-            title: "Não autenticado",
-            description: options?.errorMessage ?? "Você precisa estar logado para realizar esta ação.",
-            variant: "destructive",
-          });
+          toast.error("Não autenticado", { description: options?.errorMessage ?? "Você precisa estar logado para realizar esta ação." });
         }
         return null;
       }

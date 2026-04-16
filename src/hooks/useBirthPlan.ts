@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 export interface BirthPlan {
   id: string;
@@ -32,7 +32,6 @@ export type BirthPlanInput = Omit<BirthPlan, "id" | "user_id" | "created_at" | "
 
 export function useBirthPlan() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: plan, isLoading } = useQuery({
     queryKey: ["birth-plan"],
@@ -72,11 +71,11 @@ export function useBirthPlan() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["birth-plan"] });
-      toast({ title: "Plano de parto salvo ✅", description: "Suas preferências foram registradas" });
+      toast("Plano de parto salvo ✅", { description: "Suas preferências foram registradas" });
     },
     onError: (e) => {
       logger.error("Birth plan save error", e);
-      toast({ title: "Erro", description: "Não foi possível salvar o plano", variant: "destructive" });
+      toast.error("Erro", { description: "Não foi possível salvar o plano" });
     },
   });
 

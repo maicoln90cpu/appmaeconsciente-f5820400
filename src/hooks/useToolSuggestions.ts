@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { z } from "zod";
+import { toast } from "sonner";
 
 export interface ToolSuggestion {
   id: string;
@@ -56,7 +56,6 @@ export type ToolSuggestionFormData = z.infer<typeof suggestionSchema>;
 export const useToolSuggestions = () => {
   const [suggestions, setSuggestions] = useState<ToolSuggestion[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const loadSuggestions = async () => {
     try {
@@ -77,10 +76,7 @@ export const useToolSuggestions = () => {
       setSuggestions((data || []) as ToolSuggestion[]);
     } catch (error) {
       console.error("Error loading suggestions:", error);
-      toast({
-        title: "Erro ao carregar sugestões",
-        variant: "destructive",
-      });
+      toast.error("Erro ao carregar sugestões");
     } finally {
       setLoading(false);
     }
@@ -91,11 +87,7 @@ export const useToolSuggestions = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        toast({
-          title: "Erro",
-          description: "Você precisa estar autenticado",
-          variant: "destructive",
-        });
+        toast.error("Erro", { description: "Você precisa estar autenticado" });
         return { success: false };
       }
 
@@ -108,11 +100,7 @@ export const useToolSuggestions = () => {
         .gte("created_at", oneDayAgo);
 
       if (count && count >= 3) {
-        toast({
-          title: "Limite atingido",
-          description: "Você pode enviar no máximo 3 sugestões por dia. Tente novamente amanhã.",
-          variant: "destructive",
-        });
+        toast.error("Limite atingido", { description: "Você pode enviar no máximo 3 sugestões por dia. Tente novamente amanhã." });
         return { success: false };
       }
 
@@ -147,10 +135,7 @@ export const useToolSuggestions = () => {
 
       if (ticketError) console.error("Error creating ticket:", ticketError);
       
-      toast({ 
-        title: "Sugestão enviada com sucesso!",
-        description: "Vamos analisar sua ideia e entraremos em contato em breve.",
-      });
+      toast("Sugestão enviada com sucesso!", { description: "Vamos analisar sua ideia e entraremos em contato em breve." });
       
       await loadSuggestions();
       
@@ -158,16 +143,9 @@ export const useToolSuggestions = () => {
     } catch (error) {
       console.error("Error creating suggestion:", error);
       if (error instanceof z.ZodError) {
-        toast({
-          title: "Erro de validação",
-          description: error.errors[0].message,
-          variant: "destructive",
-        });
+        toast.error("Erro de validação", { description: error.errors[0].message });
       } else {
-        toast({
-          title: "Erro ao enviar sugestão",
-          variant: "destructive",
-        });
+        toast.error("Erro ao enviar sugestão");
       }
       return { success: false };
     }

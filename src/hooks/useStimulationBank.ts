@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/useToast";
 import { QueryCacheConfig } from "@/lib/query-config";
+import { toast } from "sonner";
 
 export interface StimulationActivity {
   id: string;
@@ -57,7 +57,6 @@ export const DEFAULT_ACTIVITIES: Omit<StimulationActivity, "id" | "user_id" | "b
 
 export function useStimulationBank(babyProfileId?: string) {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const queryKey = ["stimulation-activities", user?.id, babyProfileId];
 
@@ -94,10 +93,10 @@ export function useStimulationBank(babyProfileId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "✨ Atividades carregadas!", description: `${DEFAULT_ACTIVITIES.length} atividades disponíveis` });
+      toast("✨ Atividades carregadas!", { description: `${DEFAULT_ACTIVITIES.length} atividades disponíveis` });
     },
     onError: () => {
-      toast({ title: "Erro", description: "Erro ao carregar atividades", variant: "destructive" });
+      toast.error("Erro", { description: "Erro ao carregar atividades" });
     },
   });
 
@@ -114,7 +113,7 @@ export function useStimulationBank(babyProfileId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "Atividade criada!", description: "Nova atividade adicionada" });
+      toast("Atividade criada!", { description: "Nova atividade adicionada" });
     },
   });
 
@@ -130,7 +129,7 @@ export function useStimulationBank(babyProfileId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "✅ Feito!", description: "Atividade registrada" });
+      toast("✅ Feito!", { description: "Atividade registrada" });
     },
   });
 
@@ -156,7 +155,7 @@ export function useStimulationBank(babyProfileId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "Removido", description: "Atividade excluída" });
+      toast("Removido", { description: "Atividade excluída" });
     },
   });
 

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import {
+import { toast } from "sonner";
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -22,7 +22,6 @@ interface GenerateNutritionButtonProps {
 export function GenerateNutritionButton({ onSuccess, hasExistingContent }: GenerateNutritionButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const { toast } = useToast();
 
   const handleGenerate = async () => {
     setIsGenerating(true);
@@ -31,19 +30,12 @@ export function GenerateNutritionButton({ onSuccess, hasExistingContent }: Gener
 
       if (error) throw error;
 
-      toast({
-        title: "✨ Plano gerado com sucesso!",
-        description: `${data.data.meal_plans_count} refeições, ${data.data.recipes_count} receitas e ${data.data.exercises_count} exercícios criados.`,
-      });
+      toast("✨ Plano gerado com sucesso!", { description: `${data.data.meal_plans_count} refeições, ${data.data.recipes_count} receitas e ${data.data.exercises_count} exercícios criados.` });
 
       onSuccess?.();
     } catch (error: any) {
       console.error('Error generating nutrition plan:', error);
-      toast({
-        title: "Erro ao gerar plano",
-        description: error.message || "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao gerar plano", { description: error.message || "Tente novamente mais tarde." });
     } finally {
       setIsGenerating(false);
       setShowConfirmDialog(false);

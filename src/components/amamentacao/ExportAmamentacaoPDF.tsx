@@ -4,8 +4,8 @@ import { Share2, FileText, Mail } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { usePDFExport, shareViaWhatsApp, shareViaEmail } from "@/hooks/usePDFExport";
-import { useToast } from "@/hooks/useToast";
 import type { BabyFeedingLog, FeedingSettings } from "@/types/babyFeeding";
+import { toast } from "sonner";
 
 interface ExportAmamentacaoPDFProps {
   feedingLogs: BabyFeedingLog[];
@@ -13,7 +13,6 @@ interface ExportAmamentacaoPDFProps {
 }
 
 export const ExportAmamentacaoPDF = ({ feedingLogs, settings }: ExportAmamentacaoPDFProps) => {
-  const { toast } = useToast();
   const { generatePDF, formatDate } = usePDFExport();
 
   const breastfeedingCount = feedingLogs.filter(l => l.feeding_type === "breastfeeding").length;
@@ -63,7 +62,7 @@ export const ExportAmamentacaoPDF = ({ feedingLogs, settings }: ExportAmamentaca
       });
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
-      toast({ title: "Erro ao gerar PDF", variant: "destructive" });
+      toast.error("Erro ao gerar PDF");
     }
   };
 

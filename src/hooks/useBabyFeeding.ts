@@ -6,10 +6,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { useBabyLogs } from "@/hooks/useBabyLogs";
 import { logger } from "@/lib/logger";
 import type { 
+import { toast } from "sonner";
   BabyFeedingLog, 
   BreastMilkStorage, 
   FeedingSettings 
@@ -21,7 +21,6 @@ export const useBabyFeeding = () => {
   const [storage, setStorage] = useState<BreastMilkStorage[]>([]);
   const [settings, setSettings] = useState<FeedingSettings | null>(null);
   const [settingsLoading, setSettingsLoading] = useState(true);
-  const { toast } = useToast();
 
   // Usar hook base para logs de amamentação
   const {
@@ -73,11 +72,7 @@ export const useBabyFeeding = () => {
       const err = error as { code?: string };
       if (err.code !== 'PGRST116') {
         log.error("Erro ao carregar configurações e estoque", error);
-        toast({
-          title: "Erro",
-          description: "Erro ao carregar dados de amamentação",
-          variant: "destructive",
-        });
+        toast.error("Erro", { description: "Erro ao carregar dados de amamentação" });
       }
     } finally {
       setSettingsLoading(false);
@@ -104,19 +99,12 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setSettings(data as FeedingSettings);
-      toast({
-        title: "Sucesso",
-        description: "Configurações salvas com sucesso!",
-      });
+      toast("Sucesso", { description: "Configurações salvas com sucesso!" });
       
       return data;
     } catch (error) {
       log.error("Erro ao salvar configurações", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar configurações",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao salvar configurações" });
       throw error;
     }
   }, [toast]);
@@ -173,19 +161,12 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setStorage(prev => [data as BreastMilkStorage, ...prev]);
-      toast({
-        title: "Sucesso",
-        description: "Leite armazenado com sucesso!",
-      });
+      toast("Sucesso", { description: "Leite armazenado com sucesso!" });
       
       return data;
     } catch (error) {
       log.error("Erro ao adicionar estoque", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao armazenar leite",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao armazenar leite" });
       throw error;
     }
   }, [toast]);
@@ -203,17 +184,10 @@ export const useBabyFeeding = () => {
       if (error) throw error;
       
       setStorage(prev => prev.filter(item => item.id !== id));
-      toast({
-        title: "Sucesso",
-        description: "Leite marcado como usado!",
-      });
+      toast("Sucesso", { description: "Leite marcado como usado!" });
     } catch (error) {
       log.error("Erro ao marcar como usado", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar estoque",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao atualizar estoque" });
       throw error;
     }
   }, [toast]);

@@ -3,8 +3,8 @@ import { Download, FileSpreadsheet } from "lucide-react";
 import { EnxovalItem } from "@/types/enxoval";
 import { getLastAutoTableY } from "@/types/jspdf";
 import { formatCurrency } from "@/lib/calculations";
-import { useToast } from "@/hooks/useToast";
 import {
+import { toast } from "sonner";
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -16,7 +16,6 @@ interface ExportEnxovalProps {
 }
 
 export const ExportEnxoval = ({ items }: ExportEnxovalProps) => {
-  const { toast } = useToast();
 
   const exportToPDF = async () => {
     const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
@@ -57,10 +56,7 @@ export const ExportEnxoval = ({ items }: ExportEnxovalProps) => {
     
     doc.save("enxoval.pdf");
     
-    toast({
-      title: "PDF Gerado",
-      description: "Seu enxoval foi exportado com sucesso!",
-    });
+    toast("PDF Gerado", { description: "Seu enxoval foi exportado com sucesso!" });
   };
 
   const exportToExcel = async () => {
@@ -94,10 +90,7 @@ export const ExportEnxoval = ({ items }: ExportEnxovalProps) => {
     
     XLSX.writeFile(workbook, "enxoval.xlsx");
     
-    toast({
-      title: "Excel Gerado",
-      description: "Seu enxoval foi exportado com sucesso!",
-    });
+    toast("Excel Gerado", { description: "Seu enxoval foi exportado com sucesso!" });
   };
 
   return (

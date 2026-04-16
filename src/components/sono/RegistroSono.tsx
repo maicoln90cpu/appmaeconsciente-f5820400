@@ -10,6 +10,7 @@ import { BabySleepLog, SleepLocation, WakeupMood, MomMood } from "@/types/babySl
 import { toast } from "@/hooks/useToast";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { DraftIndicator } from "@/components/ui/draft-indicator";
+import { toast } from "sonner";
 
 interface RegistroSonoProps {
   onSave: (log: Omit<BabySleepLog, "id" | "user_id" | "created_at" | "updated_at">) => Promise<any>;
@@ -72,10 +73,7 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
   // Handle draft load
   const handleLoadDraft = useCallback(async (id: string) => {
     await loadDraftById(id);
-    toast({
-      title: "Rascunho carregado",
-      description: "Os dados do rascunho foram restaurados.",
-    });
+    toast("Rascunho carregado", { description: "Os dados do rascunho foram restaurados." });
   }, [loadDraftById]);
 
   const startTimer = () => {
@@ -83,10 +81,7 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
     setStartTime(now);
     setIsTimerActive(true);
     setSleepStart(now.toISOString().slice(0, 16));
-    toast({
-      title: "Temporizador iniciado",
-      description: "O sono do bebê está sendo registrado.",
-    });
+    toast("Temporizador iniciado", { description: "O sono do bebê está sendo registrado." });
   };
 
   const stopTimer = () => {
@@ -94,20 +89,13 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
       const now = new Date();
       setSleepEnd(now.toISOString().slice(0, 16));
       setIsTimerActive(false);
-      toast({
-        title: "Temporizador pausado",
-        description: "Preencha os detalhes e salve o registro.",
-      });
+      toast("Temporizador pausado", { description: "Preencha os detalhes e salve o registro." });
     }
   };
 
   const handleSubmit = async () => {
     if (!sleepStart) {
-      toast({
-        title: "Erro",
-        description: "Preencha o horário de início do sono.",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Preencha o horário de início do sono." });
       return;
     }
 

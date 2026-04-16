@@ -3,9 +3,9 @@ import { Download, Share2, Mail } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { BabySleepLog } from "@/types/babySleep";
 import { usePDFExport, shareViaWhatsApp, shareViaEmail, downloadAsText } from "@/hooks/usePDFExport";
-import { useToast } from "@/hooks/useToast";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface ExportSonoPDFProps {
   sleepLogs: BabySleepLog[];
@@ -13,7 +13,6 @@ interface ExportSonoPDFProps {
 }
 
 export const ExportSonoPDF = ({ sleepLogs, babyName }: ExportSonoPDFProps) => {
-  const { toast } = useToast();
   const { generatePDF, formatDate } = usePDFExport();
 
   const generateSummary = () => {
@@ -88,17 +87,17 @@ export const ExportSonoPDF = ({ sleepLogs, babyName }: ExportSonoPDFProps) => {
   const downloadTxt = () => {
     const summary = generateSummary();
     downloadAsText(summary, `diario-sono-${babyName || 'bebe'}-${format(new Date(), "dd-MM-yyyy")}.txt`);
-    toast({ title: "Arquivo baixado!", description: "Seu resumo foi salvo como TXT." });
+    toast("Arquivo baixado!", { description: "Seu resumo foi salvo como TXT." });
   };
 
   const handleShareWhatsApp = () => {
     shareViaWhatsApp(generateSummary());
-    toast({ title: "Compartilhando via WhatsApp" });
+    toast("Compartilhando via WhatsApp");
   };
 
   const handleShareEmail = () => {
     shareViaEmail(`Diário de Sono${babyName ? ` - ${babyName}` : ''}`, generateSummary());
-    toast({ title: "Abrindo email..." });
+    toast("Abrindo email...");
   };
 
   return (

@@ -1,10 +1,10 @@
 import { useCallback } from "react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useToast } from "@/hooks/useToast";
 import { getLastAutoTableY } from "@/types/jspdf";
 
 import type { jsPDF } from "jspdf";
+import { toast } from "sonner";
 
 export interface PDFSection {
   title: string;
@@ -32,7 +32,6 @@ interface PDFExportReturn {
 }
 
 export const usePDFExport = (): PDFExportReturn => {
-  const { toast } = useToast();
 
   const loadJsPDF = useCallback(async () => {
     const { default: jsPDF } = await import("jspdf");
@@ -175,17 +174,10 @@ export const usePDFExport = (): PDFExportReturn => {
         // Save
         doc.save(`${config.filename}-${format(new Date(), "yyyy-MM-dd")}.pdf`);
 
-        toast({
-          title: "PDF gerado com sucesso!",
-          description: "Seu relatório foi baixado.",
-        });
+        toast("PDF gerado com sucesso!", { description: "Seu relatório foi baixado." });
       } catch (error) {
         console.error("Error generating PDF:", error);
-        toast({
-          title: "Erro ao gerar PDF",
-          description: "Tente novamente.",
-          variant: "destructive",
-        });
+        toast.error("Erro ao gerar PDF", { description: "Tente novamente." });
       }
     },
     [loadJsPDF, loadAutoTable, formatDateTime, addSection, toast]

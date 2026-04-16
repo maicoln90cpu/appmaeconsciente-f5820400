@@ -9,7 +9,7 @@ import { Calendar, Baby, ArrowLeft, Share2, Sparkles, Hourglass } from "lucide-r
 import { differenceInDays, addDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 const FRUIT_COMPARISONS: Record<number, { fruit: string; size: string }> = {
   4: { fruit: "🫐", size: "Semente de papoula" },
@@ -97,7 +97,6 @@ const WEEK_TIPS: Record<number, string> = {
 
 const CalculadoraSemanas = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [dum, setDum] = useState("");
 
   const result = useMemo(() => {
@@ -136,7 +135,7 @@ const CalculadoraSemanas = () => {
       }
     } else {
       await navigator.clipboard.writeText(text);
-      toast({ title: "Copiado!", description: "Texto copiado para a área de transferência." });
+      toast("Copiado!", { description: "Texto copiado para a área de transferência." });
     }
   };
 

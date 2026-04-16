@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/useToast";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Copy } from "lucide-react";
 import {
@@ -19,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { formatDistance } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface NewCoupon {
   code: string;
@@ -30,7 +30,6 @@ interface NewCoupon {
 }
 
 export const CouponManagement = () => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [newCoupon, setNewCoupon] = useState<NewCoupon>({
     code: "",
@@ -90,7 +89,7 @@ export const CouponManagement = () => {
       return data;
     },
     onSuccess: () => {
-      toast({ title: "Cupom criado com sucesso!" });
+      toast("Cupom criado com sucesso!");
       setNewCoupon({
         code: "",
         discount_type: "percentage",
@@ -102,11 +101,7 @@ export const CouponManagement = () => {
       queryClient.invalidateQueries({ queryKey: ["coupons"] });
     },
     onError: (error: any) => {
-      toast({
-        title: "Erro ao criar cupom",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error("Erro ao criar cupom", { description: error.message });
     },
   });
 
@@ -117,7 +112,7 @@ export const CouponManagement = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({ title: "Cupom deletado" });
+      toast("Cupom deletado");
       queryClient.invalidateQueries({ queryKey: ["coupons"] });
     },
   });
@@ -129,7 +124,7 @@ export const CouponManagement = () => {
 
   const copyToClipboard = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast({ title: "Código copiado!" });
+    toast("Código copiado!");
   };
 
   return (

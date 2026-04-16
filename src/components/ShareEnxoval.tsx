@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Share2, Copy, Check, X } from "lucide-react";
-import { useToast } from "@/hooks/useToast";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -13,13 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 export const ShareEnxoval = () => {
   const [open, setOpen] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
-  const { toast } = useToast();
 
   const generateShareLink = async () => {
     setLoading(true);
@@ -47,17 +46,10 @@ export const ShareEnxoval = () => {
       const url = `${window.location.origin}/shared/${token}`;
       setShareUrl(url);
 
-      toast({
-        title: "Link criado!",
-        description: "O link expira em 7 dias.",
-      });
+      toast("Link criado!", { description: "O link expira em 7 dias." });
     } catch (error) {
       console.error("Erro ao criar link:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível criar o link de compartilhamento.",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Não foi possível criar o link de compartilhamento." });
     } finally {
       setLoading(false);
     }
@@ -68,10 +60,7 @@ export const ShareEnxoval = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     
-    toast({
-      title: "Copiado!",
-      description: "Link copiado para a área de transferência.",
-    });
+    toast("Copiado!", { description: "Link copiado para a área de transferência." });
   };
 
   const revokeLink = async () => {
@@ -86,16 +75,9 @@ export const ShareEnxoval = () => {
       if (error) throw error;
 
       setShareUrl("");
-      toast({
-        title: "Link revogado",
-        description: "O link de compartilhamento foi desativado.",
-      });
+      toast("Link revogado", { description: "O link de compartilhamento foi desativado." });
     } catch (_error) {
-      toast({
-        title: "Erro",
-        description: "Não foi possível revogar o link.",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Não foi possível revogar o link." });
     }
   };
 

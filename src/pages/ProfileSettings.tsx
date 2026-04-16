@@ -8,13 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/useToast";
 import { Baby, Upload, ArrowLeft, Save, Download, Trash2, AlertTriangle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { SyncQueuePanel } from "@/components/offline";
 import { ProfileAchievements } from "@/components/profile/ProfileAchievements";
 import { SimpleModeToggle } from "@/components/profile/SimpleModeToggle";
 import {
+import { toast } from "sonner";
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -34,7 +34,6 @@ const ESTADOS = [
 export default function ProfileSettings() {
   const navigate = useNavigate();
   const { profile, updateProfile } = useProfile();
-  const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -59,7 +58,7 @@ export default function ProfileSettings() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast({ title: "Erro", description: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+        toast.error("Erro", { description: "Sessão expirada. Faça login novamente." });
         return;
       }
 
@@ -80,17 +79,10 @@ export default function ProfileSettings() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast({ 
-        title: "Dados exportados!", 
-        description: "Seu arquivo de dados pessoais foi baixado." 
-      });
+      toast("Dados exportados!", { description: "Seu arquivo de dados pessoais foi baixado." });
     } catch (error) {
       console.error('Erro ao exportar dados:', error);
-      toast({ 
-        title: "Erro ao exportar", 
-        description: "Tente novamente mais tarde.", 
-        variant: "destructive" 
-      });
+      toast.error("Erro ao exportar", { description: "Tente novamente mais tarde." });
     } finally {
       setExporting(false);
     }
@@ -99,11 +91,7 @@ export default function ProfileSettings() {
   // Excluir conta (LGPD)
   const handleDeleteAccount = async () => {
     if (deleteConfirmEmail !== profile?.email) {
-      toast({ 
-        title: "Email incorreto", 
-        description: "Digite seu email corretamente para confirmar a exclusão.", 
-        variant: "destructive" 
-      });
+      toast.error("Email incorreto", { description: "Digite seu email corretamente para confirmar a exclusão." });
       return;
     }
 
@@ -111,7 +99,7 @@ export default function ProfileSettings() {
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
-        toast({ title: "Erro", description: "Sessão expirada. Faça login novamente.", variant: "destructive" });
+        toast.error("Erro", { description: "Sessão expirada. Faça login novamente." });
         return;
       }
 
@@ -122,21 +110,14 @@ export default function ProfileSettings() {
 
       if (response.error) throw response.error;
 
-      toast({ 
-        title: "Conta excluída", 
-        description: "Sua conta e todos os dados foram excluídos permanentemente." 
-      });
+      toast("Conta excluída", { description: "Sua conta e todos os dados foram excluídos permanentemente." });
 
       // Fazer logout e redirecionar
       await supabase.auth.signOut();
       navigate("/", { replace: true });
     } catch (error) {
       console.error('Erro ao excluir conta:', error);
-      toast({ 
-        title: "Erro ao excluir conta", 
-        description: "Contate o suporte se o problema persistir.", 
-        variant: "destructive" 
-      });
+      toast.error("Erro ao excluir conta", { description: "Contate o suporte se o problema persistir." });
     } finally {
       setDeleting(false);
     }
@@ -149,22 +130,14 @@ export default function ProfileSettings() {
     // Validação de tamanho (5MB)
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     if (file.size > MAX_FILE_SIZE) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "O tamanho máximo permitido é 5MB.",
-        variant: "destructive",
-      });
+      toast.error("Arquivo muito grande", { description: "O tamanho máximo permitido é 5MB." });
       return;
     }
 
     // Validação de tipo MIME
     const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!ALLOWED_TYPES.includes(file.type)) {
-      toast({
-        title: "Formato inválido",
-        description: "Use apenas imagens JPEG, PNG, WebP ou GIF.",
-        variant: "destructive",
-      });
+      toast.error("Formato inválido", { description: "Use apenas imagens JPEG, PNG, WebP ou GIF." });
       return;
     }
 
@@ -185,17 +158,10 @@ export default function ProfileSettings() {
 
       setFormData({ ...formData, foto_perfil_url: data.publicUrl });
       
-      toast({
-        title: "Foto carregada!",
-        description: "Sua foto de perfil foi enviada com sucesso.",
-      });
+      toast("Foto carregada!", { description: "Sua foto de perfil foi enviada com sucesso." });
     } catch (error) {
       console.error('Error uploading file:', error);
-      toast({
-        title: "Erro ao enviar foto",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao enviar foto", { description: "Tente novamente mais tarde." });
     } finally {
       setUploading(false);
     }
@@ -225,16 +191,9 @@ export default function ProfileSettings() {
     const { error } = await updateProfile(updates);
 
     if (error) {
-      toast({
-        title: "Erro ao salvar",
-        description: error,
-        variant: "destructive",
-      });
+      toast.error("Erro ao salvar", { description: error });
     } else {
-      toast({
-        title: "Perfil atualizado!",
-        description: "Suas informações foram salvas com sucesso.",
-      });
+      toast("Perfil atualizado!", { description: "Suas informações foram salvas com sucesso." });
       navigate("/");
     }
   };

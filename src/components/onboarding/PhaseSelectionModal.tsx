@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Baby, Heart } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
-import { useToast } from "@/hooks/useToast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 interface PhaseSelectionModalProps {
   open: boolean;
@@ -28,7 +28,6 @@ const phases = [
 
 export const PhaseSelectionModal = ({ open, onOpenChange }: PhaseSelectionModalProps) => {
   const { updateProfile } = useProfile();
-  const { toast } = useToast();
   const [saving, setSaving] = useState(false);
 
   const handleSelect = async (phase: string) => {
@@ -36,7 +35,7 @@ export const PhaseSelectionModal = ({ open, onOpenChange }: PhaseSelectionModalP
     const { error } = await updateProfile({ fase_maternidade: phase } as any);
     setSaving(false);
     if (!error) {
-      toast({ title: "Perfil atualizado!", description: phase === "gestante" ? "Mostrando ferramentas de gestação" : "Mostrando ferramentas para o bebê" });
+      toast("Perfil atualizado!", { description: phase === "gestante" ? "Mostrando ferramentas de gestação" : "Mostrando ferramentas para o bebê" });
       onOpenChange(false);
     }
   };

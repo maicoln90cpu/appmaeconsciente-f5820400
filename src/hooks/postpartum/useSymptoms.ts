@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
 type PostpartumSymptomRow = Database['public']['Tables']['postpartum_symptoms']['Row'];
 type PostpartumSymptomInsert = Database['public']['Tables']['postpartum_symptoms']['Insert'];
@@ -11,7 +11,6 @@ export type PostpartumSymptom = PostpartumSymptomRow;
 
 export const usePostpartumSymptoms = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: symptoms, isLoading } = useQuery({
     queryKey: ['postpartum-symptoms'],
@@ -45,17 +44,10 @@ export const usePostpartumSymptoms = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
       checkAlerts(data, toast);
-      toast({
-        title: "Sucesso",
-        description: "Sintomas registrados com sucesso",
-      });
+      toast("Sucesso", { description: "Sintomas registrados com sucesso" });
     },
     onError: (error) => {
-      toast({
-        title: "Erro",
-        description: "Erro ao registrar sintomas",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao registrar sintomas" });
       console.error(error);
     },
   });
@@ -75,10 +67,7 @@ export const usePostpartumSymptoms = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
       checkAlerts(data, toast);
-      toast({
-        title: "Sucesso",
-        description: "Sintomas atualizados",
-      });
+      toast("Sucesso", { description: "Sintomas atualizados" });
     },
   });
 
@@ -95,57 +84,31 @@ export const usePostpartumSymptoms = () => {
 function checkAlerts(symptom: PostpartumSymptom, toast: ReturnType<typeof useToast>['toast']) {
   // Sangramento intenso
   if (symptom.bleeding_intensity === 'very_heavy') {
-    toast({
-      title: "⚠️ ALERTA",
-      description: "Sangramento muito intenso. Procure atendimento médico imediatamente!",
-      variant: "destructive",
-    });
+    toast.error("⚠️ ALERTA", { description: "Sangramento muito intenso. Procure atendimento médico imediatamente!" });
   } else if (symptom.bleeding_intensity === 'heavy') {
-    toast({
-      title: "⚠️ Atenção",
-      description: "Sangramento intenso detectado. Monitore de perto e contate seu médico se persistir.",
-      variant: "destructive",
-    });
+    toast.error("⚠️ Atenção", { description: "Sangramento intenso detectado. Monitore de perto e contate seu médico se persistir." });
   }
 
   // Febre
   if (symptom.fever) {
-    toast({
-      title: "⚠️ ALERTA",
-      description: "Febre pode indicar infecção. Entre em contato com seu médico.",
-      variant: "destructive",
-    });
+    toast.error("⚠️ ALERTA", { description: "Febre pode indicar infecção. Entre em contato com seu médico." });
   }
 
   // Cicatrização preocupante
   if (symptom.healing_status === 'infected') {
-    toast({
-      title: "⚠️ ALERTA",
-      description: "Sinais de infecção na cicatrização. Procure atendimento médico!",
-      variant: "destructive",
-    });
+    toast.error("⚠️ ALERTA", { description: "Sinais de infecção na cicatrização. Procure atendimento médico!" });
   } else if (symptom.healing_status === 'concerning') {
-    toast({
-      title: "⚠️ Atenção",
-      description: "Cicatrização preocupante. Agende consulta com seu médico para avaliação.",
-      variant: "destructive",
-    });
+    toast.error("⚠️ Atenção", { description: "Cicatrização preocupante. Agende consulta com seu médico para avaliação." });
   }
 
   // Dor alta persistente
   if (symptom.pain_level && symptom.pain_level >= 4) {
-    toast({
-      title: "Dor intensa",
-      description: "Se persistir, consulte seu médico sobre medicação adequada.",
-    });
+    toast("Dor intensa", { description: "Se persistir, consulte seu médico sobre medicação adequada." });
   }
 
   // Energia muito baixa
   if (symptom.energy_level !== undefined && symptom.energy_level !== null && 
       symptom.energy_level <= 1 && symptom.sleep_quality && symptom.sleep_quality < 4) {
-    toast({
-      title: "💙 Cuide-se",
-      description: "Você está com energia muito baixa. Tente descansar quando o bebê dormir.",
-    });
+    toast("💙 Cuide-se", { description: "Você está com energia muito baixa. Tente descansar quando o bebê dormir." });
   }
 }
