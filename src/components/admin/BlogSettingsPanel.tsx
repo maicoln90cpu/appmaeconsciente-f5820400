@@ -33,7 +33,7 @@ export const BlogSettingsPanel = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("blog_settings")
-        .select("*")
+        .select("id, ai_model, image_model, system_prompt, image_prompt_template, auto_publish, cron_schedule, cron_days, default_author, is_active, topics_pool, categories_list, created_at, updated_at")
         .limit(1)
         .single();
       if (error) throw error;

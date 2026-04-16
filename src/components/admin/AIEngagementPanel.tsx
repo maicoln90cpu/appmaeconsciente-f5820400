@@ -105,7 +105,7 @@ export const AIEngagementPanel = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("ai_engagement_logs")
-        .select("*")
+        .select("id, post_id, virtual_user_id, action_type, content, created_at")
         .order("created_at", { ascending: false })
         .limit(30);
       if (error) throw error;

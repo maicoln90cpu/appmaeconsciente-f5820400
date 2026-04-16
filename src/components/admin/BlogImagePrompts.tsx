@@ -33,7 +33,7 @@ export const BlogImagePrompts = () => {
   const { data: prompts, isLoading } = useQuery({
     queryKey: ["admin-blog-image-prompts"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("blog_image_prompts").select("*").order("created_at");
+      const { data, error } = await supabase.from("blog_image_prompts").select("id, name, prompt_template, style_description, is_active, usage_count, last_used_at, created_at, updated_at").order("created_at");
       if (error) throw error;
       return data as ImagePrompt[];
     },

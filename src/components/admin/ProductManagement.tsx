@@ -65,7 +65,7 @@ export const ProductManagement = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select("id, title, slug, description, price, is_active, display_order, image_url, features, destination_url, hotmart_product_id, payment_url, access_duration_days, trial_enabled, trial_days, created_at, updated_at")
         .order("display_order", { ascending: true });
 
       if (error) throw error;
