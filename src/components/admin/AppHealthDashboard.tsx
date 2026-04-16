@@ -649,7 +649,7 @@ function BundleAnalysisTab() {
                   key={index}
                   className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg"
                 >
-                  <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="h-4 w-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" />
                   <p className="text-sm">{rec}</p>
                 </div>
               ))}

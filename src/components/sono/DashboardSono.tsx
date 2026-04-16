@@ -191,9 +191,9 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
   const getStatusColor = () => {
     if (!currentMilestone) return 'text-muted-foreground';
     const totalHours = stats.totalHours24h;
-    if (totalHours >= currentMilestone.recommended_total_hours_min) return 'text-green-600';
-    if (totalHours >= currentMilestone.recommended_total_hours_min - 2) return 'text-yellow-600';
-    return 'text-red-600';
+    if (totalHours >= currentMilestone.recommended_total_hours_min) return 'text-green-600 dark:text-green-400';
+    if (totalHours >= currentMilestone.recommended_total_hours_min - 2) return 'text-yellow-600 dark:text-yellow-400';
+    return 'text-red-600 dark:text-red-400';
   };
 
   return (
@@ -201,7 +201,7 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
       {/* Alerta de Sono Abaixo do Ideal */}
       {sleepBelowIdeal && (
         <Alert variant="default" className="border-yellow-500 bg-yellow-50 dark:bg-yellow-950/20">
-          <AlertCircle className="h-4 w-4 text-yellow-600" />
+          <AlertCircle className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
           <AlertDescription className="flex items-center justify-between">
             <span className="text-yellow-800 dark:text-yellow-200">
               💡 Sono abaixo do ideal nos últimos 3 dias. A alimentação pode influenciar o sono do

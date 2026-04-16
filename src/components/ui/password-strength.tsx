@@ -35,8 +35,8 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password, className
           className={cn(
             'text-xs font-medium capitalize',
             score <= 2 && 'text-destructive',
-            score === 3 && 'text-yellow-600',
-            score >= 4 && 'text-green-600'
+            score === 3 && 'text-yellow-600 dark:text-yellow-400',
+            score >= 4 && 'text-green-600 dark:text-green-400'
           )}
         >
           {label}
@@ -49,7 +49,7 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password, className
             key={index}
             className={cn(
               'flex items-center gap-1 text-xs transition-colors',
-              req.met ? 'text-green-600' : 'text-muted-foreground'
+              req.met ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'
             )}
           >
             {req.met ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}

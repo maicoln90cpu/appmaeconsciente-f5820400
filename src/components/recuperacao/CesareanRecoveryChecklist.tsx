@@ -140,14 +140,14 @@ export const CesareanRecoveryChecklist = () => {
   return (
     <div className="space-y-4">
       {/* Header com progresso */}
-      <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
+      <Card className="border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20">
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
               <Scissors className="h-5 w-5" />
               Recuperação Pós-Cesárea
             </CardTitle>
-            <Badge variant="outline" className="bg-purple-100 text-purple-700">
+            <Badge variant="outline" className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
               Semana {postpartumWeek || 1}
             </Badge>
           </div>

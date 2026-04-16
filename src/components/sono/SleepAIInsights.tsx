@@ -509,10 +509,10 @@ export const SleepAIInsights = ({
                 key={i}
                 className={`flex gap-4 p-4 rounded-lg ${
                   insight.type === 'positive'
-                    ? 'bg-green-500/10 border border-green-500/20'
+                    ? 'bg-green-500/10 border border-green-500/20 dark:bg-green-500/20'
                     : insight.type === 'warning'
-                      ? 'bg-amber-500/10 border border-amber-500/20'
-                      : 'bg-blue-500/10 border border-blue-500/20'
+                      ? 'bg-amber-500/10 border border-amber-500/20 dark:bg-amber-500/20'
+                      : 'bg-blue-500/10 border border-blue-500/20 dark:bg-blue-500/20'
                 }`}
               >
                 <Icon
