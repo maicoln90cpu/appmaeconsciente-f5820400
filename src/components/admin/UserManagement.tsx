@@ -3,7 +3,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useMemo } from "react";
 import { CreateUserDialog } from "./CreateUserDialog";
 import {
-import { toast } from "sonner";
   UserFilters,
   UserCard,
   NoSearchResults,
@@ -16,6 +15,7 @@ import { toast } from "sonner";
   UserFiltersState,
   AccessGrantState,
 } from "./user-management";
+import { toast } from "sonner";
 
 export const UserManagement = () => {
   const queryClient = useQueryClient();

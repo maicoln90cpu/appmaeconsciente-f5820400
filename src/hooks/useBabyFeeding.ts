@@ -9,11 +9,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useBabyLogs } from "@/hooks/useBabyLogs";
 import { logger } from "@/lib/logger";
 import type { 
-import { toast } from "sonner";
   BabyFeedingLog, 
   BreastMilkStorage, 
   FeedingSettings 
 } from "@/types/babyFeeding";
+import { toast } from "sonner";
 
 const log = logger.scoped("useBabyFeeding");
 

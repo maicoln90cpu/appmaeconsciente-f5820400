@@ -14,7 +14,6 @@ import { SyncQueuePanel } from "@/components/offline";
 import { ProfileAchievements } from "@/components/profile/ProfileAchievements";
 import { SimpleModeToggle } from "@/components/profile/SimpleModeToggle";
 import {
-import { toast } from "sonner";
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -25,6 +24,7 @@ import { toast } from "sonner";
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 
 const ESTADOS = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
