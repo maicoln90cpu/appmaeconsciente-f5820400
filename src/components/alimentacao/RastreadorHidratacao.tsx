@@ -225,7 +225,8 @@ export function RastreadorHidratacao() {
                   <Button
                     key={amount}
                     variant="outline"
-                    onClick={() => addWater(amount)}
+                    onClick={() => guardedAddWater(amount)}
+                    disabled={isAdding}
                     className="h-auto py-4"
                   >
                     <div className="text-center">
@@ -248,8 +249,8 @@ export function RastreadorHidratacao() {
                   min="1"
                 />
                 <Button
-                  onClick={() => customAmount && addWater(parseInt(customAmount))}
-                  disabled={!customAmount || parseInt(customAmount) <= 0}
+                  onClick={() => customAmount && guardedAddWater(parseInt(customAmount))}
+                  disabled={!customAmount || parseInt(customAmount) <= 0 || isAdding}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
