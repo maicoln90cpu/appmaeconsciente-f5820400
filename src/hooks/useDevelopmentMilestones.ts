@@ -8,7 +8,7 @@
 import { useCallback, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/useToast';
+import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   DevelopmentMilestoneType, 
@@ -21,7 +21,6 @@ import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
 
 export const useDevelopmentMilestones = (babyProfileId: string | null) => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const calculateAge = (birthDate: string): number => {
@@ -201,14 +200,14 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
       return data;
     },
     onSuccess: () => {
-      toast({ title: "Marco registrado!", description: "A conquista foi salva com sucesso." });
+      toast("Marco registrado!", { description: "A conquista foi salva com sucesso." });
       if (babyProfileId) {
         queryClient.invalidateQueries({ queryKey: QueryKeys.milestoneRecords(babyProfileId) });
       }
     },
     onError: (error) => {
       console.error('Error marking milestone:', error);
-      toast({ title: "Erro ao salvar", description: "Não foi possível registrar o marco.", variant: "destructive" });
+      toast.error("Erro ao salvar", { description: "Não foi possível registrar o marco." });
     }
   });
 
@@ -223,14 +222,14 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast({ title: "Atualizado!", description: "O marco foi atualizado com sucesso." });
+      toast("Atualizado!", { description: "O marco foi atualizado com sucesso." });
       if (babyProfileId) {
         queryClient.invalidateQueries({ queryKey: QueryKeys.milestoneRecords(babyProfileId) });
       }
     },
     onError: (error) => {
       console.error('Error updating record:', error);
-      toast({ title: "Erro ao atualizar", description: "Não foi possível atualizar o marco.", variant: "destructive" });
+      toast.error("Erro ao atualizar", { description: "Não foi possível atualizar o marco." });
     }
   });
 

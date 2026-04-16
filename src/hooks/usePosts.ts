@@ -8,12 +8,12 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/lib/analytics";
-import logger from "@/lib/logger";
+import { logger } from "@/lib/logger";
 import { createMultiTableSubscription } from "@/lib/realtime-utils";
 import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { toast } from "sonner";
 
 export interface Post {
   id: string;
@@ -35,7 +35,6 @@ const POSTS_PER_PAGE = 20;
 
 export const usePosts = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Cache de profiles
@@ -272,14 +271,14 @@ export const usePosts = () => {
     },
     onSuccess: (data) => {
       analytics.postCreated();
-      toast({ title: "Post criado com sucesso!" });
+      toast("Post criado com sucesso!");
       addPostLocally(data);
     },
     onError: (error: any) => {
       if (error.message?.includes("Aguarde antes de postar")) {
-        toast({ title: "Aguarde um momento", description: "Você está postando muito rápido.", variant: "destructive" });
+        toast.error("Aguarde um momento", { description: "Você está postando muito rápido." });
       } else {
-        toast({ title: "Erro ao criar post", description: "Tente novamente mais tarde.", variant: "destructive" });
+        toast.error("Erro ao criar post", { description: "Tente novamente mais tarde." });
       }
       logger.error("Error creating post", error);
     }
@@ -296,11 +295,11 @@ export const usePosts = () => {
       removePostLocally(postId);
     },
     onSuccess: () => {
-      toast({ title: "Post deletado com sucesso!" });
+      toast("Post deletado com sucesso!");
     },
     onError: (error) => {
       logger.error("Error deleting post", error);
-      toast({ title: "Erro ao deletar post", variant: "destructive" });
+      toast.error("Erro ao deletar post");
       refetch(); // Revert
     }
   });

@@ -34,12 +34,12 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { OfflineBanner, SyncQueueManager } from "@/components/offline";
 
 import { useProfile } from "@/hooks/useProfile";
-import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 
 import { supabase } from "@/integrations/supabase/client";
 import { preloadComponent, routeImports } from "@/lib/lazy-utils";
 import { QuickRecordFAB } from "@/components/layout/QuickRecordFAB";
+import { toast } from "sonner";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -50,13 +50,12 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const { isAdmin } = useUserRole();
-  const { toast } = useToast();
 
   const isActive = (path: string) => location.pathname === path;
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    toast({ title: "Logout realizado com sucesso" });
+    toast("Logout realizado com sucesso");
     navigate("/");
   };
 

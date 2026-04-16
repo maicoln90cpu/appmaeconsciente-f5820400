@@ -19,7 +19,7 @@ import {
   calculateSavingsPercent,
 } from "@/lib/calculations";
 import { useAuth } from "@/contexts/AuthContext";
-import logger from "@/lib/logger";
+import { logger } from "@/lib/logger";
 import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
 /** Quantidade de itens carregados por página */

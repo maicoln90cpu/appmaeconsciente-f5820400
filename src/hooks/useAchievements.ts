@@ -1,9 +1,8 @@
 import { useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 export const useAchievements = () => {
-  const { toast } = useToast();
   const isCheckingRef = useRef(false);
 
   const checkAndUnlockAchievements = useCallback(async () => {
@@ -71,11 +70,7 @@ export const useAchievements = () => {
         });
 
         // Mostrar toast de conquista desbloqueada
-        toast({
-          title: "🏆 Nova Conquista Desbloqueada!",
-          description: achievement.name,
-          duration: 5000,
-        });
+        toast("🏆 Nova Conquista Desbloqueada!", { description: achievement.name, duration: 5000 });
       }
     } catch (error) {
       console.error("Error checking achievements:", error);

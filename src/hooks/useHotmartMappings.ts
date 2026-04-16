@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 interface ProductMapping {
   id: string;
@@ -20,7 +20,6 @@ interface NewMappingData {
 
 export function useHotmartMappings() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: mappings = [], isLoading: loadingMappings } = useQuery({
     queryKey: ["admin", "hotmart-mappings"],
@@ -71,11 +70,11 @@ export function useHotmartMappings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "hotmart-mappings"] });
-      toast({ title: "Mapeamento criado com sucesso!" });
+      toast("Mapeamento criado com sucesso!");
     },
     onError: (error) => {
       logger.error("Add mapping error", error, { context: "useHotmartMappings" });
-      toast({ title: "Erro ao criar mapeamento", variant: "destructive" });
+      toast.error("Erro ao criar mapeamento");
     },
   });
 
@@ -89,11 +88,11 @@ export function useHotmartMappings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "hotmart-mappings"] });
-      toast({ title: "Mapeamento deletado" });
+      toast("Mapeamento deletado");
     },
     onError: (error) => {
       logger.error("Delete mapping error", error, { context: "useHotmartMappings" });
-      toast({ title: "Erro ao deletar mapeamento", variant: "destructive" });
+      toast.error("Erro ao deletar mapeamento");
     },
   });
 

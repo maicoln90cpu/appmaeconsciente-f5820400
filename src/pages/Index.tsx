@@ -24,12 +24,12 @@ import { SizeCalculator } from "@/components/SizeCalculator";
 import { useConfig } from "@/hooks/useConfig";
 import { useEnxovalItems } from "@/hooks/useEnxovalItems";
 import { useProfile } from "@/hooks/useProfile";
-import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 
 import { supabase } from "@/integrations/supabase/client";
 
 import type { EnxovalItem } from "@/types/enxoval";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -44,8 +44,6 @@ const Index = () => {
   const [tempOrcamento, setTempOrcamento] = useState<number>(5000);
   const [tempDiasAlerta, setTempDiasAlerta] = useState<number>(7);
   const [tempMensagemMotivacao, setTempMensagemMotivacao] = useState<string>("");
-
-  const { toast } = useToast();
   const { profile, loading: profileLoading } = useProfile();
   const { isAdmin } = useUserRole();
 
@@ -114,10 +112,7 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    toast({
-      title: "Logout realizado",
-      description: "Você saiu da sua conta com sucesso.",
-    });
+    toast("Logout realizado", { description: "Você saiu da sua conta com sucesso." });
   };
 
   const handleAddItem = async (item: Omit<EnxovalItem, "id">) => {

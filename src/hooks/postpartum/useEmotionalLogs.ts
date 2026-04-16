@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
 type EmotionalLogRow = Database['public']['Tables']['emotional_logs']['Row'];
 type EmotionalLogInsert = Database['public']['Tables']['emotional_logs']['Insert'];
@@ -11,7 +11,6 @@ export type EmotionalLog = EmotionalLogRow;
 
 export const useEmotionalLogs = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: logs, isLoading } = useQuery({
     queryKey: ['emotional-logs'],
@@ -44,18 +43,11 @@ export const useEmotionalLogs = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      checkEdinburghScore(data, toast);
-      toast({
-        title: "Sucesso",
-        description: "Registro emocional salvo",
-      });
+      checkEdinburghScore(data);
+      toast("Sucesso", { description: "Registro emocional salvo" });
     },
     onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar registro",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao salvar registro" });
     },
   });
 
@@ -73,11 +65,8 @@ export const useEmotionalLogs = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      checkEdinburghScore(data, toast);
-      toast({
-        title: "Sucesso",
-        description: "Registro atualizado",
-      });
+      checkEdinburghScore(data);
+      toast("Sucesso", { description: "Registro atualizado" });
     },
   });
 
@@ -90,24 +79,14 @@ export const useEmotionalLogs = () => {
 };
 
 // Sistema de alerta para Edinburgh Depression Scale
-function checkEdinburghScore(log: EmotionalLog, toast: ReturnType<typeof useToast>['toast']) {
+function checkEdinburghScore(log: EmotionalLog) {
   if (!log.edinburgh_score) return;
 
   if (log.edinburgh_score >= 13) {
-    toast({
-      title: "💙 Atenção importante",
-      description: "Seu resultado sugere risco de depressão pós-parto. Por favor, converse com um profissional de saúde mental. Você não está sozinha.",
-      variant: "destructive",
-    });
+    toast.error("💙 Atenção importante", { description: "Seu resultado sugere risco de depressão pós-parto. Por favor, converse com um profissional de saúde mental. Você não está sozinha." });
   } else if (log.edinburgh_score >= 10) {
-    toast({
-      title: "💙 Cuide-se",
-      description: "Alguns sinais de ansiedade ou tristeza foram detectados. Considere conversar com alguém de confiança ou um profissional.",
-    });
+    toast("💙 Cuide-se", { description: "Alguns sinais de ansiedade ou tristeza foram detectados. Considere conversar com alguém de confiança ou um profissional." });
   } else {
-    toast({
-      title: "💕 Tudo bem!",
-      description: "Seu bem-estar emocional está dentro do esperado. Continue cuidando de você!",
-    });
+    toast("💕 Tudo bem!", { description: "Seu bem-estar emocional está dentro do esperado. Continue cuidando de você!" });
   }
 }

@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
+import { toast } from "sonner";
 
 export interface BodyImageLog {
   id: string;
@@ -18,7 +18,6 @@ export interface BodyImageLog {
 
 export const useBodyImageLog = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: logs, isLoading } = useQuery({
     queryKey: ['body-image-logs'],
@@ -86,17 +85,10 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast({
-        title: "💕 Sucesso",
-        description: "Registro de autoestima salvo",
-      });
+      toast("💕 Sucesso", { description: "Registro de autoestima salvo" });
     },
     onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar registro",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao salvar registro" });
     },
   });
 
@@ -117,10 +109,7 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast({
-        title: "Sucesso",
-        description: "Registro atualizado",
-      });
+      toast("Sucesso", { description: "Registro atualizado" });
     },
   });
 
@@ -153,10 +142,7 @@ export const useBodyImageLog = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['body-image-logs'] });
-      toast({
-        title: "Sucesso",
-        description: "Registro removido",
-      });
+      toast("Sucesso", { description: "Registro removido" });
     },
   });
 

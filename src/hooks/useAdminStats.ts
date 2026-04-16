@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 interface Stats {
   totalUsers: number;
@@ -15,7 +15,6 @@ interface Stats {
 export function useAdminStats(isAdmin: boolean) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -68,11 +67,7 @@ export function useAdminStats(isAdmin: boolean) {
         });
       } catch (error) {
         logger.error("Error loading stats", error, { context: "AdminDashboard" });
-        toast({
-          title: "Erro ao carregar estatísticas",
-          description: "Tente novamente mais tarde.",
-          variant: "destructive",
-        });
+        toast.error("Erro ao carregar estatísticas", { description: "Tente novamente mais tarde." });
       } finally {
         setLoading(false);
       }

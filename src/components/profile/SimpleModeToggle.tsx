@@ -3,23 +3,17 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 export const SimpleModeToggle = () => {
   const { profile, updateProfile } = useProfile();
-  const { toast } = useToast();
 
   const simpleMode = profile?.simple_mode ?? false;
 
   const handleToggle = async (checked: boolean) => {
     const { error } = await updateProfile({ simple_mode: checked });
     if (!error) {
-      toast({
-        title: checked ? "Modo Simples ativado" : "Modo Completo ativado",
-        description: checked
-          ? "Funções avançadas foram ocultadas para simplificar a interface."
-          : "Todas as funções estão visíveis novamente.",
-      });
+      toast(checked ? "Modo Simples ativado" : "Modo Completo ativado", { description: checked });
     }
   };
 

@@ -5,10 +5,10 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { useAchievements } from "@/hooks/useAchievements";
-import logger from "@/lib/logger";
+import { logger } from "@/lib/logger";
 import type { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
 type BabyLogTable = 
   | 'baby_feeding_logs' 
@@ -44,7 +44,6 @@ export function useBabyLogs<T extends { id: string }>({
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(true);
   const { checkAchievements } = useAchievements();
-  const { toast } = useToast();
 
   const loadData = useCallback(async () => {
     try {
@@ -80,11 +79,7 @@ export function useBabyLogs<T extends { id: string }>({
       const err = error as { code?: string; message?: string };
       if (err.code !== 'PGRST116') {
         logger.error(`Error loading ${entityName}`, error);
-        toast({
-          title: "Erro",
-          description: `Erro ao carregar ${entityName}`,
-          variant: "destructive",
-        });
+        toast.error("Erro", { description: `Erro ao carregar ${entityName}` });
       }
     } finally {
       setLoading(false);
@@ -107,21 +102,14 @@ export function useBabyLogs<T extends { id: string }>({
 
     if (error) {
       logger.error(`Error adding ${entityName}`, error);
-      toast({
-        title: "Erro",
-        description: `Erro ao adicionar ${entityName}`,
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: `Erro ao adicionar ${entityName}` });
       throw error;
     }
 
     const newItem = result as T;
     setData(prev => [newItem, ...prev]);
     
-    toast({
-      title: "Sucesso",
-      description: `${entityName} registrado(a) com sucesso!`,
-    });
+    toast("Sucesso", { description: `${entityName} registrado(a) com sucesso!` });
 
     if (checkAchievementsOnAdd) {
       setTimeout(() => checkAchievements(), 1000);
@@ -140,21 +128,14 @@ export function useBabyLogs<T extends { id: string }>({
 
     if (error) {
       logger.error(`Error updating ${entityName}`, error);
-      toast({
-        title: "Erro",
-        description: `Erro ao atualizar ${entityName}`,
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: `Erro ao atualizar ${entityName}` });
       throw error;
     }
 
     const updatedItem = result as T;
     setData(prev => prev.map(item => item.id === id ? updatedItem : item));
     
-    toast({
-      title: "Sucesso",
-      description: `${entityName} atualizado(a)!`,
-    });
+    toast("Sucesso", { description: `${entityName} atualizado(a)!` });
 
     return updatedItem;
   }, [tableName, entityName, toast]);
@@ -167,20 +148,13 @@ export function useBabyLogs<T extends { id: string }>({
 
     if (error) {
       logger.error(`Error removing ${entityName}`, error);
-      toast({
-        title: "Erro",
-        description: `Erro ao excluir ${entityName}`,
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: `Erro ao excluir ${entityName}` });
       throw error;
     }
 
     setData(prev => prev.filter(item => item.id !== id));
     
-    toast({
-      title: "Sucesso",
-      description: `${entityName} excluído(a)!`,
-    });
+    toast("Sucesso", { description: `${entityName} excluído(a)!` });
   }, [tableName, entityName, toast]);
 
   useEffect(() => {

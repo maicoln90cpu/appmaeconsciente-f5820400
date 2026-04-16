@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
 type RecoveryChecklistRow = Database['public']['Tables']['recovery_checklist']['Row'];
 
@@ -86,7 +86,6 @@ export const RECOVERY_TIMELINE = [
 
 export const useRecoveryChecklist = (weekNumber?: number) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: checklist, isLoading } = useQuery({
     queryKey: ['recovery-checklist', weekNumber],
@@ -151,10 +150,7 @@ export const useRecoveryChecklist = (weekNumber?: number) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recovery-checklist'] });
-      toast({
-        title: "✅ Sucesso",
-        description: "Item atualizado",
-      });
+      toast("✅ Sucesso", { description: "Item atualizado" });
     },
   });
 

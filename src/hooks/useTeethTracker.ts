@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/useToast";
 import { QueryCacheConfig } from "@/lib/query-config";
+import { toast } from "sonner";
 
 export interface ToothLog {
   id: string;
@@ -58,7 +58,6 @@ export const RELIEF_METHODS = [
 
 export function useTeethTracker(babyProfileId?: string) {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const queryKey = ["teeth-logs", user?.id, babyProfileId];
 
@@ -91,10 +90,10 @@ export function useTeethTracker(babyProfileId?: string) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "🦷 Dente registrado!", description: `${data.tooth_name} anotado com sucesso` });
+      toast("🦷 Dente registrado!", { description: `${data.tooth_name} anotado com sucesso` });
     },
     onError: () => {
-      toast({ title: "Erro", description: "Erro ao registrar dente", variant: "destructive" });
+      toast.error("Erro", { description: "Erro ao registrar dente" });
     },
   });
 
@@ -105,10 +104,10 @@ export function useTeethTracker(babyProfileId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "Removido", description: "Registro excluído" });
+      toast("Removido", { description: "Registro excluído" });
     },
     onError: () => {
-      toast({ title: "Erro", description: "Erro ao remover registro", variant: "destructive" });
+      toast.error("Erro", { description: "Erro ao remover registro" });
     },
   });
 

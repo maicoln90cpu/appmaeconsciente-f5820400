@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 export interface OnboardingStep {
   key: string;
@@ -60,7 +60,6 @@ interface OnboardingProgress {
 
 export const useOnboarding = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Fetch completed steps from database
@@ -101,10 +100,7 @@ export const useOnboarding = () => {
       
       const step = ONBOARDING_STEPS.find(s => s.key === stepKey);
       if (step) {
-        toast({
-          title: "Passo completado! 🎉",
-          description: step.title,
-        });
+        toast("Passo completado! 🎉", { description: step.title });
       }
       
       // Check if all steps are complete
@@ -159,10 +155,7 @@ export const useOnboarding = () => {
         console.error('Failed to unlock badge:', badgeError);
       }
 
-      toast({
-        title: "Parabéns! 🏆",
-        description: "Você completou o onboarding! +50 XP e Badge 'Bem-vinda!' desbloqueado!",
-      });
+      toast("Parabéns! 🏆", { description: "Você completou o onboarding! +50 XP e Badge 'Bem-vinda!' desbloqueado!" });
       
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({ queryKey: ["user-level"] });

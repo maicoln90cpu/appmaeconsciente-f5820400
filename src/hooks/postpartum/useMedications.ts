@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
 type PostpartumMedicationRow = Database['public']['Tables']['postpartum_medications']['Row'];
 type PostpartumMedicationInsert = Database['public']['Tables']['postpartum_medications']['Insert'];
@@ -13,7 +13,6 @@ export type MedicationLog = MedicationLogRow;
 
 export const usePostpartumMedications = () => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: medications, isLoading } = useQuery({
     queryKey: ['postpartum-medications'],
@@ -65,17 +64,10 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-medications'] });
-      toast({
-        title: "Sucesso",
-        description: "Medicamento adicionado com sucesso",
-      });
+      toast("Sucesso", { description: "Medicamento adicionado com sucesso" });
     },
     onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao adicionar medicamento",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao adicionar medicamento" });
     },
   });
 
@@ -93,10 +85,7 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-medications'] });
-      toast({
-        title: "Sucesso",
-        description: "Medicamento atualizado",
-      });
+      toast("Sucesso", { description: "Medicamento atualizado" });
     },
   });
 
@@ -115,10 +104,7 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['medication-logs'] });
-      toast({
-        title: "✅ Sucesso",
-        description: "Medicamento registrado",
-      });
+      toast("✅ Sucesso", { description: "Medicamento registrado" });
     },
   });
 

@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import type { Database } from "@/integrations/supabase/types";
+import { toast } from "sonner";
 
 type BabyRoutineRow = Database['public']['Tables']['baby_routines']['Row'];
 type BabyRoutineInsert = Database['public']['Tables']['baby_routines']['Insert'];
@@ -37,7 +37,6 @@ export const DAYS_OF_WEEK = [
 
 export const useBabyRoutines = (babyProfileId?: string) => {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: routines, isLoading } = useQuery({
     queryKey: ['baby-routines', babyProfileId],
@@ -96,17 +95,10 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routines'] });
-      toast({
-        title: "Sucesso",
-        description: "Rotina criada",
-      });
+      toast("Sucesso", { description: "Rotina criada" });
     },
     onError: () => {
-      toast({
-        title: "Erro",
-        description: "Erro ao criar rotina",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Erro ao criar rotina" });
     },
   });
 
@@ -124,10 +116,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routines'] });
-      toast({
-        title: "Sucesso",
-        description: "Rotina atualizada",
-      });
+      toast("Sucesso", { description: "Rotina atualizada" });
     },
   });
 
@@ -142,10 +131,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routines'] });
-      toast({
-        title: "Sucesso",
-        description: "Rotina removida",
-      });
+      toast("Sucesso", { description: "Rotina removida" });
     },
   });
 
@@ -164,10 +150,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['baby-routine-logs-today'] });
-      toast({
-        title: "Sucesso",
-        description: "Rotina concluída",
-      });
+      toast("Sucesso", { description: "Rotina concluída" });
     },
   });
 

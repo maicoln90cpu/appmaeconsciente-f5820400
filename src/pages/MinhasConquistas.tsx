@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Loader2 } from "lucide-react";
 import { AchievementBadge, Achievement } from "@/components/AchievementBadge";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 interface AchievementProgress {
   user_id: string;
@@ -29,7 +29,6 @@ const MinhasConquistas = () => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<AchievementProgress | null>(null);
   const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
-  const { toast } = useToast();
 
   useEffect(() => {
     loadAchievements();
@@ -58,11 +57,7 @@ const MinhasConquistas = () => {
       setUnlockedAchievements(achievements?.map(a => a.achievement_code) || []);
     } catch (error) {
       console.error("Error loading achievements:", error);
-      toast({
-        title: "Erro ao carregar conquistas",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao carregar conquistas", { description: "Tente novamente mais tarde." });
     } finally {
       setLoading(false);
     }

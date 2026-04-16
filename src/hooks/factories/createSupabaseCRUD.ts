@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient, QueryKey } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import { logger } from "@/lib/logger";
+import { toast } from "sonner";
 
 type OrderDirection = "asc" | "desc";
 
@@ -91,7 +91,6 @@ export function createSupabaseCRUD<
 
   return function useCRUD() {
     const queryClient = useQueryClient();
-    const { toast } = useToast();
 
     // Query principal
     const { data, isLoading, error, refetch } = useQuery({
@@ -133,19 +132,12 @@ export function createSupabaseCRUD<
       },
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey });
-        toast({
-          title: "Sucesso",
-          description: messages.addSuccess ?? "Item adicionado com sucesso",
-        });
+        toast("Sucesso", { description: messages.addSuccess ?? "Item adicionado com sucesso" });
         onAddSuccess?.(data);
       },
       onError: (error) => {
         logger.error("Add error", error, { context: "createSupabaseCRUD", data: { tableName } });
-        toast({
-          title: "Erro",
-          description: messages.addError ?? "Erro ao adicionar item",
-          variant: "destructive",
-        });
+        toast.error("Erro", { description: messages.addError ?? "Erro ao adicionar item" });
       },
     });
 
@@ -164,19 +156,12 @@ export function createSupabaseCRUD<
       },
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey });
-        toast({
-          title: "Sucesso",
-          description: messages.updateSuccess ?? "Item atualizado com sucesso",
-        });
+        toast("Sucesso", { description: messages.updateSuccess ?? "Item atualizado com sucesso" });
         onUpdateSuccess?.(data);
       },
       onError: (error) => {
         logger.error("Update error", error, { context: "createSupabaseCRUD", data: { tableName } });
-        toast({
-          title: "Erro",
-          description: messages.updateError ?? "Erro ao atualizar item",
-          variant: "destructive",
-        });
+        toast.error("Erro", { description: messages.updateError ?? "Erro ao atualizar item" });
       },
     });
 
@@ -193,19 +178,12 @@ export function createSupabaseCRUD<
       },
       onSuccess: (id) => {
         queryClient.invalidateQueries({ queryKey });
-        toast({
-          title: "Sucesso",
-          description: messages.deleteSuccess ?? "Item removido com sucesso",
-        });
+        toast("Sucesso", { description: messages.deleteSuccess ?? "Item removido com sucesso" });
         onDeleteSuccess?.(id);
       },
       onError: (error) => {
         logger.error("Delete error", error, { context: "createSupabaseCRUD", data: { tableName } });
-        toast({
-          title: "Erro",
-          description: messages.deleteError ?? "Erro ao remover item",
-          variant: "destructive",
-        });
+        toast.error("Erro", { description: messages.deleteError ?? "Erro ao remover item" });
       },
     });
 

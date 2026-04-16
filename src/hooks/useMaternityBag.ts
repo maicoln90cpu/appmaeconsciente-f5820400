@@ -8,10 +8,10 @@
 import { useCallback, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { logger } from "@/lib/logger";
 import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { toast } from "sonner";
 
 export interface MaternityBagCategory {
   id: string;
@@ -72,7 +72,6 @@ const DEFAULT_ITEMS: Record<string, string[]> = {
 
 export const useMaternityBag = () => {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Query para categorias
@@ -209,10 +208,10 @@ export const useMaternityBag = () => {
       if (user) {
         queryClient.invalidateQueries({ queryKey: QueryKeys.maternityBagItems(user.id) });
       }
-      toast({ title: "Item adicionado!", description: `${data.name} foi adicionado à sua mala.` });
+      toast("Item adicionado!", { description: `${data.name} foi adicionado à sua mala.` });
     },
     onError: () => {
-      toast({ title: "Erro ao adicionar item", description: "Não foi possível adicionar o item.", variant: "destructive" });
+      toast.error("Erro ao adicionar item", { description: "Não foi possível adicionar o item." });
     }
   });
 
@@ -247,7 +246,7 @@ export const useMaternityBag = () => {
       if (context?.previousItems && user) {
         queryClient.setQueryData(QueryKeys.maternityBagItems(user.id), context.previousItems);
       }
-      toast({ title: "Erro ao atualizar item", description: "Não foi possível atualizar o item.", variant: "destructive" });
+      toast.error("Erro ao atualizar item", { description: "Não foi possível atualizar o item." });
     },
     onSettled: () => {
       if (user) {
@@ -282,13 +281,13 @@ export const useMaternityBag = () => {
       return { previousItems };
     },
     onSuccess: () => {
-      toast({ title: "Item removido", description: "O item foi removido da sua mala." });
+      toast("Item removido", { description: "O item foi removido da sua mala." });
     },
     onError: (_, __, context) => {
       if (context?.previousItems && user) {
         queryClient.setQueryData(QueryKeys.maternityBagItems(user.id), context.previousItems);
       }
-      toast({ title: "Erro ao remover item", description: "Não foi possível remover o item.", variant: "destructive" });
+      toast.error("Erro ao remover item", { description: "Não foi possível remover o item." });
     },
     onSettled: () => {
       if (user) {

@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 export const useFollows = (userId?: string) => {
   const [followers, setFollowers] = useState<string[]>([]);
   const [following, setFollowing] = useState<string[]>([]);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const loadFollows = useCallback(async () => {
     if (!userId) return;
@@ -58,11 +57,7 @@ export const useFollows = (userId?: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast({
-          title: "Faça login",
-          description: "Você precisa estar logado para seguir usuários",
-          variant: "destructive",
-        });
+        toast.error("Faça login", { description: "Você precisa estar logado para seguir usuários" });
         return;
       }
 
@@ -73,7 +68,7 @@ export const useFollows = (userId?: string) => {
           .eq("follower_id", user.id)
           .eq("following_id", targetUserId);
 
-        toast({ title: "Deixou de seguir" });
+        toast("Deixou de seguir");
       } else {
         await supabase
           .from("user_follows")
@@ -82,17 +77,13 @@ export const useFollows = (userId?: string) => {
             following_id: targetUserId,
           });
 
-        toast({ title: "Seguindo!" });
+        toast("Seguindo!");
       }
 
       await loadFollows();
     } catch (error: any) {
       console.error("Error toggling follow:", error);
-      toast({
-        title: "Erro",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: error.message });
     }
   };
 

@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Config } from "@/types/enxoval";
-import { useToast } from "@/hooks/useToast";
+import { toast } from "sonner";
 
 export const useConfig = () => {
   const [config, setConfig] = useState<Config | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
 
   const loadConfig = useCallback(async () => {
     try {
@@ -93,11 +92,7 @@ export const useConfig = () => {
       }
     } catch (error: any) {
       console.error("Erro ao carregar configurações:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar as configurações.",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Não foi possível carregar as configurações." });
     } finally {
       setLoading(false);
     }
@@ -135,17 +130,10 @@ export const useConfig = () => {
 
       await loadConfig();
       
-      toast({
-        title: "Sucesso",
-        description: "Configurações atualizadas com sucesso!",
-      });
+      toast("Sucesso", { description: "Configurações atualizadas com sucesso!" });
     } catch (error: any) {
       console.error("Erro ao atualizar configurações:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível atualizar as configurações.",
-        variant: "destructive",
-      });
+      toast.error("Erro", { description: "Não foi possível atualizar as configurações." });
     }
   };
 

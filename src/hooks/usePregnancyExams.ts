@@ -1,9 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
 import { logger } from "@/lib/logger";
 import { useEffect, useRef } from "react";
+import { toast } from "sonner";
 
 export interface PregnancyExam {
   id: string;
@@ -56,7 +56,6 @@ const DEFAULT_EXAMS = [
 
 export function usePregnancyExams() {
   const queryClient = useQueryClient();
-  const { toast } = useToast();
   const seededRef = useRef(false);
 
   const { data: exams = [], isLoading, refetch } = useQuery({
@@ -119,7 +118,7 @@ export function usePregnancyExams() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
-      toast({ title: "Exame atualizado ✅" });
+      toast("Exame atualizado ✅");
     },
   });
 
@@ -133,7 +132,7 @@ export function usePregnancyExams() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
-      toast({ title: "Exame adicionado ✅" });
+      toast("Exame adicionado ✅");
     },
   });
 
@@ -147,7 +146,7 @@ export function usePregnancyExams() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
-      toast({ title: "Exame removido" });
+      toast("Exame removido");
     },
   });
 

@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { Loader2, Star, Lightbulb, Filter, FileText, ArrowRight } from "lucide-react";
-import { useToast } from "@/hooks/useToast";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useProfile } from "@/hooks/useProfile";
 import { ToolIconGrid } from "@/components/materiais/ToolIconGrid";
 import { PremiumUpgradeModal } from "@/components/materiais/PremiumUpgradeModal";
 import { ToolSuggestionDialog } from "@/components/materiais/ToolSuggestionDialog";
+import { toast } from "sonner";
 
 // Tools relevant per phase — others still show but are deprioritized
 const GESTANTE_SLUGS = new Set(["controle-enxoval", "mala-maternidade", "ferramentas-gestacao", "guia-alimentacao", "calculadora-fraldas", "calculadora-semanas", "checklist-quartinho"]);
@@ -57,7 +57,6 @@ const Materiais = () => {
   const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; product: Product | null }>({ open: false, product: null });
   const [suggestionOpen, setSuggestionOpen] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { isAdmin } = useUserRole();
   const { profile } = useProfile();
 
@@ -84,7 +83,7 @@ const Materiais = () => {
       setClubPaymentUrl(clubProductRes.data?.payment_url || null);
     } catch (error) {
       console.error("Error loading products:", error);
-      toast({ title: "Erro ao carregar ferramentas", description: "Tente novamente mais tarde.", variant: "destructive" });
+      toast.error("Erro ao carregar ferramentas", { description: "Tente novamente mais tarde." });
     } finally {
       setLoading(false);
     }

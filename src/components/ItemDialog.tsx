@@ -10,9 +10,9 @@ import { EnxovalItem, Category, Necessity, Status, Size, Origin, EtapaMaes, Clas
 import { calculatePriority, calculateSubtotalPlanned, calculateSubtotalPaid, calculateSavings, calculateSavingsPercent } from "@/lib/calculations";
 import { TagsInput } from "@/components/TagsInput";
 import { sanitizeUrl } from "@/lib/url-validator";
-import { useToast } from "@/hooks/useToast";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { DraftIndicator } from "@/components/ui/draft-indicator";
+import { toast } from "sonner";
 
 interface ItemDialogProps {
   onAdd?: (item: EnxovalItem) => void;
@@ -88,7 +88,6 @@ const defaultFormData: FormData = {
 };
 
 export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, onOpenChange }: ItemDialogProps) => {
-  const { toast } = useToast();
   const [internalOpen, setInternalOpen] = useState(false);
   const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setIsOpen = onOpenChange || setInternalOpen;
@@ -126,10 +125,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
   // Handle draft load
   const handleLoadDraft = useCallback(async (id: string) => {
     await loadDraftById(id);
-    toast({
-      title: "Rascunho carregado",
-      description: "Os dados do rascunho foram restaurados.",
-    });
+    toast("Rascunho carregado", { description: "Os dados do rascunho foram restaurados." });
   }, [loadDraftById, toast]);
 
   useEffect(() => {
@@ -170,11 +166,7 @@ export const ItemDialog = ({ onAdd, onEdit, editingItem, open: controlledOpen, o
     if (formData.link && formData.link.trim()) {
       const safeUrl = sanitizeUrl(formData.link);
       if (!safeUrl) {
-        toast({
-          title: "URL inválida",
-          description: "A URL fornecida contém caracteres perigosos ou é inválida. Use apenas links HTTP/HTTPS.",
-          variant: "destructive",
-        });
+        toast.error("URL inválida", { description: "A URL fornecida contém caracteres perigosos ou é inválida. Use apenas links HTTP/HTTPS." });
         return;
       }
       formData.link = safeUrl;

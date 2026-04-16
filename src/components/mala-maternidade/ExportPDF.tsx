@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Download, Share2, Mail } from "lucide-react";
 import { usePDFExport, shareViaWhatsApp, shareViaEmail } from "@/hooks/usePDFExport";
-import { useToast } from "@/hooks/useToast";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 interface ChecklistItem {
   id: string;
@@ -28,7 +28,6 @@ export const ExportPDF = ({
   hospital,
   deliveryType,
 }: ExportPDFProps) => {
-  const { toast } = useToast();
   const { loadJsPDF } = usePDFExport();
 
   const generatePDF = async () => {
@@ -138,10 +137,7 @@ export const ExportPDF = ({
 
     doc.save("checklist-mala-maternidade.pdf");
 
-    toast({
-      title: "PDF gerado com sucesso!",
-      description: "Seu checklist foi baixado.",
-    });
+    toast("PDF gerado com sucesso!", { description: "Seu checklist foi baixado." });
   };
 
   const getShareText = () => {
@@ -156,12 +152,12 @@ export const ExportPDF = ({
 
   const handleShareWhatsApp = () => {
     shareViaWhatsApp(getShareText());
-    toast({ title: "Compartilhando via WhatsApp" });
+    toast("Compartilhando via WhatsApp");
   };
 
   const handleShareEmail = () => {
     shareViaEmail("Meu Checklist de Mala da Maternidade", getShareText());
-    toast({ title: "Abrindo email..." });
+    toast("Abrindo email...");
   };
 
   const shareGeneric = async () => {
@@ -170,13 +166,13 @@ export const ExportPDF = ({
     if (navigator.share) {
       try {
         await navigator.share({ title: "Checklist de Mala da Maternidade", text });
-        toast({ title: "Compartilhado com sucesso!" });
+        toast("Compartilhado com sucesso!");
       } catch {
         // User cancelled
       }
     } else {
       navigator.clipboard.writeText(text);
-      toast({ title: "Copiado para a área de transferência!", description: "Cole onde quiser compartilhar." });
+      toast("Copiado para a área de transferência!", { description: "Cole onde quiser compartilhar." });
     }
   };
 

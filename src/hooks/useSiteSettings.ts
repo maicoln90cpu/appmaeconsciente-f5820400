@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { toast } from "sonner";
 
 export interface SiteSettings {
   id: string;
@@ -17,7 +17,6 @@ export interface SiteSettings {
 }
 
 export const useSiteSettings = () => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const queryKey = QueryKeys.siteSettings();
@@ -68,17 +67,10 @@ export const useSiteSettings = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({
-        title: "Configurações atualizadas",
-        description: "As configurações foram salvas com sucesso.",
-      });
+      toast("Configurações atualizadas", { description: "As configurações foram salvas com sucesso." });
     },
     onError: (error) => {
-      toast({
-        title: "Erro ao atualizar",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error("Erro ao atualizar", { description: error.message });
     },
   });
 

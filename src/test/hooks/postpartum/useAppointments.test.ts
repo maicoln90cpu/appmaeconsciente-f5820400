@@ -71,8 +71,8 @@ vi.mock('@/integrations/supabase/client', () => ({
 }));
 
 // Mock do useToast
-vi.mock('@/hooks/useToast', () => ({
-  useToast: () => ({ toast: vi.fn() }),
+vi.mock('sonner', () => ({
+  toast: Object.assign(vi.fn(), { error: vi.fn(), success: vi.fn() }),
 }));
 
 // Mock do getAuthenticatedUser

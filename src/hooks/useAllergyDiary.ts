@@ -1,8 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/useToast";
 import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { toast } from "sonner";
 
 export interface AllergyLog {
   id: string;
@@ -45,7 +45,6 @@ export const COMMON_ALLERGENS = [
 
 export function useAllergyDiary(babyProfileId?: string) {
   const { user } = useAuth();
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const queryKey = ["allergy-logs", user?.id, babyProfileId];
 
@@ -79,10 +78,10 @@ export function useAllergyDiary(babyProfileId?: string) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "🍎 Registrado!", description: `${data.food_name} adicionado ao diário` });
+      toast("🍎 Registrado!", { description: `${data.food_name} adicionado ao diário` });
     },
     onError: () => {
-      toast({ title: "Erro", description: "Erro ao registrar alimento", variant: "destructive" });
+      toast.error("Erro", { description: "Erro ao registrar alimento" });
     },
   });
 
@@ -95,7 +94,7 @@ export function useAllergyDiary(babyProfileId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "Atualizado", description: "Registro atualizado" });
+      toast("Atualizado", { description: "Registro atualizado" });
     },
   });
 
@@ -106,7 +105,7 @@ export function useAllergyDiary(babyProfileId?: string) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast({ title: "Removido", description: "Registro excluído" });
+      toast("Removido", { description: "Registro excluído" });
     },
   });
 

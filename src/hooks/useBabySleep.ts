@@ -6,10 +6,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/useToast";
 import { useBabyLogs } from "@/hooks/useBabyLogs";
-import logger from "@/lib/logger";
+import { logger } from "@/lib/logger";
 import type { BabySleepLog, BabySleepSettings, BabySleepMilestone } from "@/types/babySleep";
+import { toast } from "sonner";
 
 const log = logger.scoped("useBabySleep");
 
@@ -17,7 +17,6 @@ export const useBabySleep = () => {
   const [settings, setSettings] = useState<BabySleepSettings | null>(null);
   const [milestones, setMilestones] = useState<BabySleepMilestone[]>([]);
   const [settingsLoading, setSettingsLoading] = useState(true);
-  const { toast } = useToast();
 
   // Usar hook base para logs de sono
   const {
@@ -44,11 +43,7 @@ export const useBabySleep = () => {
       if (!user) {
         setSettings(null);
         setMilestones([]);
-        toast({
-          title: "Erro",
-          description: "Você precisa estar logado para acessar este recurso.",
-          variant: "destructive",
-        });
+        toast.error("Erro", { description: "Você precisa estar logado para acessar este recurso." });
         return;
       }
 
@@ -70,11 +65,7 @@ export const useBabySleep = () => {
       setMilestones(milestonesResponse.data as BabySleepMilestone[] || []);
     } catch (error) {
       log.error("Erro ao carregar configurações e marcos", error);
-      toast({
-        title: "Erro ao carregar dados",
-        description: "Erro ao carregar configurações de sono",
-        variant: "destructive",
-      });
+      toast.error("Erro ao carregar dados", { description: "Erro ao carregar configurações de sono" });
     } finally {
       setSettingsLoading(false);
     }
@@ -100,19 +91,12 @@ export const useBabySleep = () => {
       if (error) throw error;
 
       setSettings(data as BabySleepSettings);
-      toast({
-        title: "Configurações salvas",
-        description: "Suas configurações foram atualizadas com sucesso!",
-      });
+      toast("Configurações salvas", { description: "Suas configurações foram atualizadas com sucesso!" });
       
       return data;
     } catch (error) {
       log.error("Erro ao salvar configurações", error);
-      toast({
-        title: "Erro ao salvar configurações",
-        description: "Não foi possível salvar as configurações",
-        variant: "destructive",
-      });
+      toast.error("Erro ao salvar configurações", { description: "Não foi possível salvar as configurações" });
       throw error;
     }
   }, [toast]);

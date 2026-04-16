@@ -4,15 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/useToast";
 import { useState } from "react";
 import { Loader2, CheckCircle, XCircle, Code, Rocket, Gift, Star } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { getSuggestionStatusBadgeVariant, getSuggestionStatusLabel, type SuggestionStatus } from "@/lib/ticket-utils";
+import { toast } from "sonner";
 
 export const ToolSuggestionManagement = () => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
@@ -58,14 +57,11 @@ export const ToolSuggestionManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-tool-suggestions"] });
-      toast({ title: "Status atualizado com sucesso!" });
+      toast("Status atualizado com sucesso!");
       setFeedbackMap({});
     },
     onError: () => {
-      toast({
-        title: "Erro ao atualizar status",
-        variant: "destructive",
-      });
+      toast.error("Erro ao atualizar status");
     },
   });
 
@@ -83,16 +79,12 @@ export const ToolSuggestionManagement = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-tool-suggestions"] });
-      toast({ title: "Recompensa concedida com sucesso!" });
+      toast("Recompensa concedida com sucesso!");
     },
     onError: () => {
-      toast({
-        title: "Erro ao conceder recompensa",
-        variant: "destructive",
-      });
+      toast.error("Erro ao conceder recompensa");
     },
   });
-
 
   const filteredSuggestions = suggestions?.filter(s => {
     const matchesStatus = statusFilter === "all" || s.status === statusFilter;
