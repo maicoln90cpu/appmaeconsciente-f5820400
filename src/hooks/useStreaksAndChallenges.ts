@@ -58,13 +58,14 @@ export const useStreaksAndChallenges = () => {
   // Fetch user streaks
   const { data: streaks = [], isLoading: loadingStreaks } = useQuery({
     queryKey: ['user-streaks', user?.id],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!user) return [];
       
       const { data, error } = await supabase
         .from('user_streaks')
         .select('id, user_id, streak_type, current_streak, longest_streak, last_activity_date, created_at, updated_at')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .abortSignal(signal);
 
       if (error) throw error;
       return data as UserStreak[];
@@ -75,11 +76,12 @@ export const useStreaksAndChallenges = () => {
   // Fetch available challenges
   const { data: challenges = [], isLoading: loadingChallenges } = useQuery({
     queryKey: ['challenges'],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const { data, error } = await supabase
         .from('challenges')
         .select('id, title, description, challenge_type, target_count, reward_points, icon, duration_days, is_active, created_at')
-        .eq('is_active', true);
+        .eq('is_active', true)
+        .abortSignal(signal);
 
       if (error) throw error;
       return data as Challenge[];
@@ -89,7 +91,7 @@ export const useStreaksAndChallenges = () => {
   // Fetch user challenges
   const { data: userChallenges = [], isLoading: loadingUserChallenges } = useQuery({
     queryKey: ['user-challenges', user?.id],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!user) return [];
       
       const { data, error } = await supabase
@@ -99,7 +101,8 @@ export const useStreaksAndChallenges = () => {
           challenge:challenges(id, title, description, challenge_type, target_count, reward_points, icon, duration_days, is_active, created_at)
         `)
         .eq('user_id', user.id)
-        .order('started_at', { ascending: false });
+        .order('started_at', { ascending: false })
+        .abortSignal(signal);
 
       if (error) throw error;
       return data as UserChallenge[];

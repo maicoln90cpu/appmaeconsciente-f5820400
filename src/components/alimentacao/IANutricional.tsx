@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Send, Bot, User, Plus, MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import { useAbortController, isAbortError } from "@/hooks/useAbortController";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,6 +41,7 @@ export function IANutricional() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const getSignal = useAbortController();
 
   useEffect(() => {
     loadConversations();
@@ -163,6 +165,8 @@ export function IANutricional() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Não autenticado');
 
+      const signal = getSignal();
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/nutrition-chat`,
         {
@@ -175,6 +179,7 @@ export function IANutricional() {
             message: userMessage,
             conversationId: currentConversationId
           }),
+          signal,
         }
       );
 
@@ -195,6 +200,7 @@ export function IANutricional() {
       await loadMessages();
       await loadConversations();
     } catch (error: any) {
+      if (isAbortError(error)) return; // Request cancelled, safe to ignore
       console.error('Erro ao enviar mensagem:', error);
       
       if (error.message?.includes('Não autenticado')) {

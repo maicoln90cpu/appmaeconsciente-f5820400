@@ -4,6 +4,7 @@ import { Loader2, ChefHat } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
+import { useAbortController, isAbortError } from "@/hooks/useAbortController";
 
 interface GenerateRecipesButtonProps {
   onSuccess: () => void;
@@ -14,6 +15,7 @@ interface GenerateRecipesButtonProps {
 export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile }: GenerateRecipesButtonProps) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const getSignal = useAbortController();
 
   const handleGenerate = async () => {
     if (needsProfile && onNeedsProfile) {
@@ -32,28 +34,39 @@ export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile 
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error("Não autenticado");
 
-      const { error } = await supabase.functions.invoke('generate-recipes', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const signal = getSignal();
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-recipes`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+            'Content-Type': 'application/json',
+          },
+          signal,
+        }
+      );
 
       clearInterval(progressInterval);
       setProgress(100);
 
-      if (error) throw error;
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Erro ${response.status}`);
+      }
 
       toast.success("Receitas geradas com sucesso!");
       onSuccess();
     } catch (error: any) {
+      if (isAbortError(error)) return;
       console.error('Erro ao gerar receitas:', error);
       
-      // Tratamento específico para rate limiting
       if (error.message?.includes('Limite de gerações atingido') || error.message?.includes('429')) {
         toast.error("Limite semanal atingido", {
           description: "Você já gerou receitas esta semana. Tente novamente na próxima semana.",
         });
-      } else if (error.message?.includes('Unauthorized')) {
+      } else if (error.message?.includes('Unauthorized') || error.message?.includes('Não autenticado')) {
         toast.error("Sessão expirada", {
           description: "Faça login novamente para continuar.",
         });
