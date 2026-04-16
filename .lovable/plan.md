@@ -1,7 +1,7 @@
 
 # Plano: Aba Sistema — Monitoramento Avançado (5 Etapas)
 
-## Status: Etapa 1 ✅ Concluída
+## Status: Etapa 2 ✅ Concluída
 
 ---
 
@@ -11,17 +11,19 @@
 - [x] Aba Sistema reestruturada: 7 sub-abas (Saúde, Observabilidade, Banco de Dados, Usuários, Segurança, Configurações, GTM/Diag.)
 - [x] Função cleanup_monitoring_logs para limpeza automática
 
-## Etapa 2 — Sub-aba Saúde (10 Painéis Colapsáveis)
-- [ ] Health Score (0-100 por módulo)
-- [ ] Tendência de Score (gráfico Recharts)
-- [ ] Erros do Frontend
-- [ ] Performance de Operações
-- [ ] Sessões Ativas
-- [ ] Integrações Externas
-- [ ] Cron Monitor
-- [ ] Monitor de Filas
-- [ ] Uso de Funcionalidades
-- [ ] Audit Log com exportação CSV
+## Etapa 2 — Sub-aba Saúde (10 Painéis Colapsáveis) ✅
+- [x] Hook useTableSort + SortableTableHeader criados
+- [x] Service systemHealthService.ts (queries + aggregações + CSV export)
+- [x] Health Score (0-100 por módulo) com badges coloridos
+- [x] Tendência de Score (gráfico Recharts linha, toggle 7d/30d/90d)
+- [x] Erros do Frontend (agrupados por componente, paginados, ordenáveis)
+- [x] Performance de Operações (média/máx ms, benchmarks coloridos)
+- [x] Sessões Ativas (cards resumo)
+- [x] Integrações Externas (status hardcoded Hotmart/Resend/WhatsApp/GTM)
+- [x] Cron Monitor (tabela com taxa de sucesso colorida)
+- [x] Monitor de Filas (cards placeholder)
+- [x] Uso de Funcionalidades (gráfico barras horizontal top 10)
+- [x] Audit Log com filtros + exportação CSV (UTF-8 com BOM)
 
 ## Etapa 3 — Sub-aba Observabilidade
 - [ ] SLA/SLO Metrics
