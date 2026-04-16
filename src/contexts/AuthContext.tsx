@@ -9,6 +9,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 
 import { User, Session } from '@supabase/supabase-js';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { supabase } from '@/integrations/supabase/client';
 import logger from '@/lib/logger';
@@ -38,23 +39,15 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
  * e mantém user/session sincronizados com o Supabase Auth.
  * 
  * @param children - Componentes filhos que terão acesso ao contexto
- * 
- * @example
- * ```tsx
- * // No App.tsx ou main.tsx
- * <AuthProvider>
- *   <App />
- * </AuthProvider>
- * ```
  */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   /**
    * Atualiza manualmente a sessão atual
-   * Útil após operações que podem ter alterado a sessão
    */
   const refreshSession = useCallback(async () => {
     try {
@@ -69,33 +62,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   /**
    * Realiza logout do usuário
-   * Limpa sessão local e remove tokens do Supabase
+   * Limpa sessão local, cache do React Query e remove tokens
    */
   const signOut = useCallback(async () => {
     try {
+      // 1. Limpar cache do React Query ANTES do signOut
+      // para evitar que dados do usuário anterior persistam
+      queryClient.clear();
+      
+      // 2. Realizar signOut no Supabase
       await supabase.auth.signOut();
+      
+      // 3. Limpar estados locais
       setSession(null);
       setUser(null);
-      logger.info('User signed out', { context: 'AuthContext' });
+      
+      logger.info('User signed out — QueryClient cleared', { context: 'AuthContext' });
     } catch (error) {
       logger.error('Failed to sign out', error, { context: 'AuthContext' });
     }
-  }, []);
+  }, [queryClient]);
 
   useEffect(() => {
     // Configura listener de mudanças de auth PRIMEIRO
-    // para não perder eventos durante a verificação inicial
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
-        // Apenas atualizações síncronas aqui para evitar deadlocks
         setSession(newSession);
         setUser(newSession?.user ?? null);
         setLoading(false);
+        
+        // Limpar cache quando o usuário faz logout via outro mecanismo
+        // (ex: token expirado, logout em outra aba)
+        if (event === 'SIGNED_OUT') {
+          queryClient.clear();
+          logger.debug('Auth SIGNED_OUT — QueryClient cleared', { context: 'AuthContext' });
+        }
+        
         logger.debug(`Auth state changed: ${event}`, { context: 'AuthContext' });
       }
     );
 
-    // DEPOIS verifica sessão existente (pode haver token no localStorage)
+    // DEPOIS verifica sessão existente
     supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
       setSession(existingSession);
       setUser(existingSession?.user ?? null);
@@ -104,9 +111,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [queryClient]);
 
-  // Memoiza o valor do contexto para evitar re-renders desnecessários
   const contextValue = useMemo<AuthContextType>(() => ({
     user,
     session,
@@ -124,19 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 /**
  * Hook para acessar o contexto de autenticação
- * 
  * @throws Error se usado fora do AuthProvider
- * @returns Contexto de autenticação com user, session e funções
- * 
- * @example
- * ```tsx
- * const { user, signOut, loading } = useAuth();
- * 
- * if (loading) return <Spinner />;
- * if (!user) return <LoginPage />;
- * 
- * return <button onClick={signOut}>Sair</button>;
- * ```
  */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);

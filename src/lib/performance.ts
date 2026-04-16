@@ -269,11 +269,16 @@ export const trackInteraction = (duration: number, interactionType?: string): vo
   }
 };
 
+// HMR guard — prevent duplicate observers
+let _perfObserverInitialized = false;
+
 // Initialize performance observer for Web Vitals
 export const initPerformanceObserver = (): void => {
+  if (_perfObserverInitialized) return;
   if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
     return;
   }
+  _perfObserverInitialized = true;
   
   try {
     // Observe paint events (FCP, LCP)
@@ -389,8 +394,14 @@ export const initPerformanceObserver = (): void => {
   }
 };
 
+// HMR guard — prevent double-wrapping fetch
+let _fetchInstrumented = false;
+
 // Wrap fetch to track API calls
 export const instrumentFetch = (): void => {
+  if (_fetchInstrumented) return;
+  _fetchInstrumented = true;
+  
   const originalFetch = window.fetch;
   
   window.fetch = async (input, init) => {
