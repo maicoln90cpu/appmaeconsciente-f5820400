@@ -1,4 +1,4 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
 // ─── SLA/SLO: health logs for uptime, error count, latency ───
 export async function fetchSLAMetrics() {
@@ -8,26 +8,26 @@ export async function fetchSLAMetrics() {
 
   // Uptime from health logs (% of "healthy" checks in 7d)
   const { data: healthLogs } = await supabase
-    .from("system_health_logs")
-    .select("id, status")
-    .gte("recorded_at", last7d);
+    .from('system_health_logs')
+    .select('id, status')
+    .gte('recorded_at', last7d);
 
   const total = healthLogs?.length ?? 0;
-  const healthy = healthLogs?.filter((l) => l.status === "healthy").length ?? 0;
+  const healthy = healthLogs?.filter(l => l.status === 'healthy').length ?? 0;
   const uptime = total > 0 ? Math.round((healthy / total) * 10000) / 100 : 99.9;
 
   // Errors/day (last 24h)
   const { count: errorsToday } = await supabase
-    .from("client_error_logs")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", last24h);
+    .from('client_error_logs')
+    .select('id', { count: 'exact', head: true })
+    .gte('created_at', last24h);
 
   // Latency P95 from performance_logs
   const { data: perfLogs } = await supabase
-    .from("performance_logs")
-    .select("duration_ms")
-    .gte("created_at", last7d)
-    .order("duration_ms", { ascending: false })
+    .from('performance_logs')
+    .select('duration_ms')
+    .gte('created_at', last7d)
+    .order('duration_ms', { ascending: false })
     .limit(500);
 
   let p95 = 0;
@@ -43,53 +43,64 @@ export async function fetchSLAMetrics() {
 export async function fetchAICosts(days: number = 30) {
   const since = new Date(Date.now() - days * 86400000).toISOString();
   const { data } = await supabase
-    .from("blog_generation_logs")
-    .select("id, total_cost_usd, text_cost_usd, image_cost_usd, created_at, model_used, status")
-    .gte("created_at", since)
-    .order("created_at");
+    .from('blog_generation_logs')
+    .select('id, total_cost_usd, text_cost_usd, image_cost_usd, created_at, model_used, status')
+    .gte('created_at', since)
+    .order('created_at');
 
   if (!data) return { daily: [], total: 0, textTotal: 0, imageTotal: 0 };
 
   const dailyMap = new Map<string, number>();
-  let total = 0, textTotal = 0, imageTotal = 0;
+  let total = 0,
+    textTotal = 0,
+    imageTotal = 0;
 
   for (const r of data) {
     const cost = r.total_cost_usd ?? 0;
     total += cost;
     textTotal += r.text_cost_usd ?? 0;
     imageTotal += r.image_cost_usd ?? 0;
-    const day = new Date(r.created_at).toLocaleDateString("pt-BR");
+    const day = new Date(r.created_at).toLocaleDateString('pt-BR');
     dailyMap.set(day, (dailyMap.get(day) ?? 0) + cost);
   }
 
-  const daily = Array.from(dailyMap.entries()).map(([date, cost]) => ({ date, cost: Math.round(cost * 100) / 100 }));
-  return { daily, total: Math.round(total * 100) / 100, textTotal: Math.round(textTotal * 100) / 100, imageTotal: Math.round(imageTotal * 100) / 100 };
+  const daily = Array.from(dailyMap.entries()).map(([date, cost]) => ({
+    date,
+    cost: Math.round(cost * 100) / 100,
+  }));
+  return {
+    daily,
+    total: Math.round(total * 100) / 100,
+    textTotal: Math.round(textTotal * 100) / 100,
+    imageTotal: Math.round(imageTotal * 100) / 100,
+  };
 }
 
 // ─── Delivery Status from notifications ───
 export async function fetchDeliveryStatus() {
   const last24h = new Date(Date.now() - 86400000).toISOString();
   const { data } = await supabase
-    .from("notifications")
-    .select("id, is_global, created_at")
-    .gte("created_at", last24h);
+    .from('notifications')
+    .select('id, is_global, created_at')
+    .gte('created_at', last24h);
 
   const { count: readCount } = await supabase
-    .from("user_notifications")
-    .select("id", { count: "exact", head: true })
-    .eq("is_read", true)
-    .gte("created_at", last24h);
+    .from('user_notifications')
+    .select('id', { count: 'exact', head: true })
+    .eq('is_read', true)
+    .gte('created_at', last24h);
 
   const { count: totalDelivered } = await supabase
-    .from("user_notifications")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", last24h);
+    .from('user_notifications')
+    .select('id', { count: 'exact', head: true })
+    .gte('created_at', last24h);
 
   return {
     sent: data?.length ?? 0,
     delivered: totalDelivered ?? 0,
     read: readCount ?? 0,
-    deliveryRate: (totalDelivered ?? 0) > 0 ? Math.round(((readCount ?? 0) / (totalDelivered ?? 1)) * 100) : 0,
+    deliveryRate:
+      (totalDelivered ?? 0) > 0 ? Math.round(((readCount ?? 0) / (totalDelivered ?? 1)) * 100) : 0,
   };
 }
 
@@ -97,10 +108,10 @@ export async function fetchDeliveryStatus() {
 export async function fetchRecentErrors() {
   const last24h = new Date(Date.now() - 86400000).toISOString();
   const { data } = await supabase
-    .from("client_error_logs")
-    .select("id, error_message, component_name, created_at")
-    .gte("created_at", last24h)
-    .order("created_at", { ascending: false })
+    .from('client_error_logs')
+    .select('id, error_message, component_name, created_at')
+    .gte('created_at', last24h)
+    .order('created_at', { ascending: false })
     .limit(200);
 
   if (!data) return { errors: [], hourly: [], hasSpike: false };
@@ -108,13 +119,18 @@ export async function fetchRecentErrors() {
   // Group by hour
   const hourlyMap = new Map<string, number>();
   for (const e of data) {
-    const hour = new Date(e.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: undefined });
+    const hour = new Date(e.created_at).toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: undefined,
+    });
     hourlyMap.set(hour, (hourlyMap.get(hour) ?? 0) + 1);
   }
-  const hourly = Array.from(hourlyMap.entries()).map(([hour, count]) => ({ hour, count })).reverse();
+  const hourly = Array.from(hourlyMap.entries())
+    .map(([hour, count]) => ({ hour, count }))
+    .reverse();
 
   // Spike detection: >10 errors in any single hour
-  const hasSpike = hourly.some((h) => h.count > 10);
+  const hasSpike = hourly.some(h => h.count > 10);
 
   // Group by type
   const typeMap = new Map<string, number>();
@@ -134,10 +150,10 @@ export async function fetchRecentErrors() {
 export async function fetchPerformanceMetrics() {
   const last7d = new Date(Date.now() - 7 * 86400000).toISOString();
   const { data } = await supabase
-    .from("performance_logs")
-    .select("operation_name, operation_type, duration_ms")
-    .gte("created_at", last7d)
-    .order("duration_ms", { ascending: false })
+    .from('performance_logs')
+    .select('operation_name, operation_type, duration_ms')
+    .gte('created_at', last7d)
+    .order('duration_ms', { ascending: false })
     .limit(500);
 
   if (!data || data.length === 0) return { byType: [], slowest: [] };
@@ -158,7 +174,7 @@ export async function fetchPerformanceMetrics() {
   });
 
   // Slowest operations
-  const slowest = data.slice(0, 5).map((l) => ({
+  const slowest = data.slice(0, 5).map(l => ({
     operation: l.operation_name,
     type: l.operation_type,
     duration: l.duration_ms,

@@ -1,34 +1,35 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { usePartnerAccess } from "@/hooks/usePartnerAccess";
-import { Users, Link as LinkIcon, Copy, X, Check } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { usePartnerAccess } from '@/hooks/usePartnerAccess';
+import { Users, Link as LinkIcon, Copy, X, Check } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 export const AcessoParceiro = () => {
-  const { partnerAccesses, isLoading, grantAccess, revokeAccess, getShareLink } = usePartnerAccess();
-  const [email, setEmail] = useState("");
+  const { partnerAccesses, isLoading, grantAccess, revokeAccess, getShareLink } =
+    usePartnerAccess();
+  const [email, setEmail] = useState('');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
 
   const handleGrantAccess = () => {
     if (!email) {
-      toast.error("Digite o email do parceiro/cuidador");
+      toast.error('Digite o email do parceiro/cuidador');
       return;
     }
-    
+
     grantAccess({ partner_email: email });
-    setEmail("");
+    setEmail('');
   };
 
   const copyLink = (token: string) => {
     const link = getShareLink(token);
     navigator.clipboard.writeText(link);
     setCopiedToken(token);
-    toast.success("Link copiado para a área de transferência");
+    toast.success('Link copiado para a área de transferência');
     setTimeout(() => setCopiedToken(null), 2000);
   };
 
@@ -45,7 +46,8 @@ export const AcessoParceiro = () => {
             Acesso do Parceiro/Cuidador
           </CardTitle>
           <CardDescription className="text-base">
-            💙 Permita que seu parceiro ou cuidador acompanhe sua recuperação com um link seguro (apenas visualização).
+            💙 Permita que seu parceiro ou cuidador acompanhe sua recuperação com um link seguro
+            (apenas visualização).
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,11 +60,9 @@ export const AcessoParceiro = () => {
                   type="email"
                   placeholder="parceiro@email.com"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                 />
-                <Button onClick={handleGrantAccess}>
-                  Conceder Acesso
-                </Button>
+                <Button onClick={handleGrantAccess}>Conceder Acesso</Button>
               </div>
             </div>
 
@@ -90,23 +90,27 @@ export const AcessoParceiro = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {partnerAccesses.map((access) => (
+              {partnerAccesses.map(access => (
                 <div
                   key={access.id}
                   className={`flex items-center justify-between p-4 rounded-lg border ${
-                    access.is_active 
-                      ? 'bg-background' 
-                      : 'bg-muted opacity-60'
+                    access.is_active ? 'bg-background' : 'bg-muted opacity-60'
                   }`}
                 >
                   <div className="space-y-1">
                     <p className="font-medium">{access.partner_email}</p>
                     <p className="text-sm text-muted-foreground">
-                      Concedido em {format(new Date(access.granted_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                      Concedido em{' '}
+                      {format(new Date(access.granted_at), "dd/MM/yyyy 'às' HH:mm", {
+                        locale: ptBR,
+                      })}
                     </p>
                     {access.last_accessed && (
                       <p className="text-xs text-muted-foreground">
-                        Último acesso: {format(new Date(access.last_accessed), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                        Último acesso:{' '}
+                        {format(new Date(access.last_accessed), "dd/MM/yyyy 'às' HH:mm", {
+                          locale: ptBR,
+                        })}
                       </p>
                     )}
                     {access.is_active && (
@@ -131,11 +135,7 @@ export const AcessoParceiro = () => {
                     )}
                   </div>
                   {access.is_active && (
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => revokeAccess(access.id)}
-                    >
+                    <Button variant="destructive" size="sm" onClick={() => revokeAccess(access.id)}>
                       <X className="h-4 w-4 mr-2" />
                       Revogar
                     </Button>

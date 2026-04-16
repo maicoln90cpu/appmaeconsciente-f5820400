@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TicketForm } from "@/components/suporte/TicketForm";
-import { TicketList } from "@/components/suporte/TicketList";
-import { TicketDetail } from "@/components/suporte/TicketDetail";
-import { useTickets, Ticket } from "@/hooks/useTickets";
-import { Loader2 } from "lucide-react";
-import { useProfile } from "@/hooks/useProfile";
+import { useState } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TicketForm } from '@/components/suporte/TicketForm';
+import { TicketList } from '@/components/suporte/TicketList';
+import { TicketDetail } from '@/components/suporte/TicketDetail';
+import { useTickets, Ticket } from '@/hooks/useTickets';
+import { Loader2 } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 const Suporte = () => {
   const { tickets, loading } = useTickets();

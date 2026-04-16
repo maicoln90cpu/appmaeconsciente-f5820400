@@ -1,18 +1,42 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { EnxovalItem } from "@/types/enxoval";
-import { formatCurrency } from "@/lib/calculations";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { TrendingDown, TrendingUp, ShoppingCart, CheckCircle2, Package, Sparkles } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ClothingSizeCalculator } from "@/components/enxoval/ClothingSizeCalculator";
-import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { EnxovalItem } from '@/types/enxoval';
+import { formatCurrency } from '@/lib/calculations';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+import {
+  TrendingDown,
+  TrendingUp,
+  ShoppingCart,
+  CheckCircle2,
+  Package,
+  Sparkles,
+} from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ClothingSizeCalculator } from '@/components/enxoval/ClothingSizeCalculator';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
 
 interface DashboardTabProps {
   items: EnxovalItem[];
   budget: number;
 }
 
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--primary) / 0.8)', 'hsl(var(--primary) / 0.6)', 'hsl(var(--primary) / 0.4)', 'hsl(var(--primary) / 0.2)'];
+const COLORS = [
+  'hsl(var(--primary))',
+  'hsl(var(--primary) / 0.8)',
+  'hsl(var(--primary) / 0.6)',
+  'hsl(var(--primary) / 0.4)',
+  'hsl(var(--primary) / 0.2)',
+];
 
 export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
   const { totals, chartData, statusData, progressPercentage } = useDashboardStats(items);
@@ -39,9 +63,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(budget)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Definido para o enxoval
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Definido para o enxoval</p>
           </CardContent>
         </Card>
 
@@ -52,9 +74,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatCurrency(totals.totalPlanned)}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Soma de todos os itens planejados
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Soma de todos os itens planejados</p>
           </CardContent>
         </Card>
 
@@ -71,7 +91,9 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
           </CardContent>
         </Card>
 
-        <Card className={`border-2 ${totals.totalSavings >= 0 ? 'border-success/50 bg-success/5' : 'border-destructive/50 bg-destructive/5'}`}>
+        <Card
+          className={`border-2 ${totals.totalSavings >= 0 ? 'border-success/50 bg-success/5' : 'border-destructive/50 bg-destructive/5'}`}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Economia Total</CardTitle>
             {totals.totalSavings >= 0 ? (
@@ -81,11 +103,14 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
             )}
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${totals.totalSavings >= 0 ? 'text-success' : 'text-destructive'}`}>
+            <div
+              className={`text-2xl font-bold ${totals.totalSavings >= 0 ? 'text-success' : 'text-destructive'}`}
+            >
               {formatCurrency(Math.abs(totals.totalSavings))}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {totals.savingsPercentage.toFixed(1)}% {totals.totalSavings >= 0 ? 'economizado' : 'gasto a mais'}
+              {totals.savingsPercentage.toFixed(1)}%{' '}
+              {totals.totalSavings >= 0 ? 'economizado' : 'gasto a mais'}
             </p>
           </CardContent>
         </Card>
@@ -97,9 +122,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totals.itemsToBuy}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Ainda precisam ser comprados
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Ainda precisam ser comprados</p>
           </CardContent>
         </Card>
 
@@ -110,9 +133,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{progressPercentage}%</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              dos itens já comprados
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">dos itens já comprados</p>
           </CardContent>
         </Card>
 
@@ -126,9 +147,7 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
             <p className="text-xs text-muted-foreground mt-1">
               Economia potencial: {formatCurrency(totals.economiaPotencialSuperfluos)}
             </p>
-            <p className="text-xs text-success font-medium mt-2">
-              Escolhas inteligentes!
-            </p>
+            <p className="text-xs text-success font-medium mt-2">Escolhas inteligentes!</p>
           </CardContent>
         </Card>
       </div>
@@ -137,7 +156,8 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
         <Alert className="border-success/30 bg-success/5">
           <Sparkles className="h-4 w-4 text-success" />
           <AlertDescription className="text-base text-success font-medium">
-            🎉 Parabéns! Você já economizou {formatCurrency(totals.totalSavings)} com suas escolhas conscientes!
+            🎉 Parabéns! Você já economizou {formatCurrency(totals.totalSavings)} com suas escolhas
+            conscientes!
           </AlertDescription>
         </Alert>
       )}
@@ -152,20 +172,20 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis 
-                  dataKey="category" 
+                <XAxis
+                  dataKey="category"
                   tick={{ fontSize: 12 }}
                   angle={-45}
                   textAnchor="end"
                   height={80}
                 />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   formatter={(value: number) => formatCurrency(value)}
-                  contentStyle={{ 
+                  contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
-                    borderRadius: 'var(--radius)'
+                    borderRadius: 'var(--radius)',
                   }}
                 />
                 <Bar dataKey="planejado" fill="hsl(var(--primary))" name="Planejado" />
@@ -196,11 +216,11 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip 
-                  contentStyle={{ 
+                <Tooltip
+                  contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
-                    borderRadius: 'var(--radius)'
+                    borderRadius: 'var(--radius)',
                   }}
                 />
               </PieChart>
@@ -229,12 +249,12 @@ export const DashboardTab = ({ items, budget }: DashboardTabProps) => {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
                   formatter={(value: number) => formatCurrency(value)}
-                  contentStyle={{ 
+                  contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
-                    borderRadius: 'var(--radius)'
+                    borderRadius: 'var(--radius)',
                   }}
                 />
               </PieChart>

@@ -1,8 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { Download, Share2, Mail } from "lucide-react";
-import { usePDFExport, shareViaWhatsApp, shareViaEmail } from "@/hooks/usePDFExport";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
+import { Download, Share2, Mail } from 'lucide-react';
+import { usePDFExport, shareViaWhatsApp, shareViaEmail } from '@/hooks/usePDFExport';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 interface ChecklistItem {
   id: string;
@@ -37,17 +42,17 @@ export const ExportPDF = ({
 
     // Título
     doc.setFontSize(20);
-    doc.text("Checklist de Mala da Maternidade", 20, yPosition);
+    doc.text('Checklist de Mala da Maternidade', 20, yPosition);
     yPosition += 10;
 
     // Informações gerais
     doc.setFontSize(10);
-    if (hospital && hospital !== "none") {
+    if (hospital && hospital !== 'none') {
       doc.text(`Hospital: ${hospital}`, 20, yPosition);
       yPosition += 6;
     }
-    if (deliveryType !== "indefinido") {
-      doc.text(`Tipo de Parto: ${deliveryType === "normal" ? "Normal" : "Cesárea"}`, 20, yPosition);
+    if (deliveryType !== 'indefinido') {
+      doc.text(`Tipo de Parto: ${deliveryType === 'normal' ? 'Normal' : 'Cesárea'}`, 20, yPosition);
       yPosition += 6;
     }
     yPosition += 4;
@@ -59,12 +64,12 @@ export const ExportPDF = ({
       }
 
       doc.setFontSize(14);
-      doc.setFont("helvetica", "bold");
+      doc.setFont('helvetica', 'bold');
       doc.text(title, 20, yPosition);
       yPosition += 8;
 
-      let currentCategory = "";
-      doc.setFont("helvetica", "normal");
+      let currentCategory = '';
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
 
       items.forEach(item => {
@@ -75,15 +80,15 @@ export const ExportPDF = ({
 
         if (item.category !== currentCategory) {
           currentCategory = item.category;
-          doc.setFont("helvetica", "bold");
+          doc.setFont('helvetica', 'bold');
           doc.text(`  ${currentCategory}:`, 20, yPosition);
           yPosition += 6;
-          doc.setFont("helvetica", "normal");
+          doc.setFont('helvetica', 'normal');
         }
 
         doc.rect(25, yPosition - 3, 3, 3);
         if (item.checked) {
-          doc.text("✓", 25.5, yPosition);
+          doc.text('✓', 25.5, yPosition);
         }
 
         let itemText = `  ${item.name}`;
@@ -106,9 +111,9 @@ export const ExportPDF = ({
       yPosition += 6;
     };
 
-    addSection("👩 Mala da Mãe", motherItems);
-    addSection("👶 Mala do Bebê", babyItems);
-    addSection("👤 Mala do Acompanhante", companionItems);
+    addSection('👩 Mala da Mãe', motherItems);
+    addSection('👶 Mala do Bebê', babyItems);
+    addSection('👤 Mala do Acompanhante', companionItems);
 
     // Dicas
     if (yPosition > 240) {
@@ -117,17 +122,17 @@ export const ExportPDF = ({
     }
 
     doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("💡 Dicas Importantes:", 20, yPosition);
+    doc.setFont('helvetica', 'bold');
+    doc.text('💡 Dicas Importantes:', 20, yPosition);
     yPosition += 8;
 
     doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
+    doc.setFont('helvetica', 'normal');
     const tips = [
-      "• Coloque etiquetas com seu nome em todas as malas",
-      "• Deixe a mala no porta-malas do carro após 37 semanas",
-      "• Tenha cópias digitais dos documentos no celular",
-      "• Confirme com o hospital o que eles fornecem",
+      '• Coloque etiquetas com seu nome em todas as malas',
+      '• Deixe a mala no porta-malas do carro após 37 semanas',
+      '• Tenha cópias digitais dos documentos no celular',
+      '• Confirme com o hospital o que eles fornecem',
     ];
 
     tips.forEach(tip => {
@@ -135,9 +140,9 @@ export const ExportPDF = ({
       yPosition += 5;
     });
 
-    doc.save("checklist-mala-maternidade.pdf");
+    doc.save('checklist-mala-maternidade.pdf');
 
-    toast("PDF gerado com sucesso!", { description: "Seu checklist foi baixado." });
+    toast('PDF gerado com sucesso!', { description: 'Seu checklist foi baixado.' });
   };
 
   const getShareText = () => {
@@ -152,27 +157,29 @@ export const ExportPDF = ({
 
   const handleShareWhatsApp = () => {
     shareViaWhatsApp(getShareText());
-    toast("Compartilhando via WhatsApp");
+    toast('Compartilhando via WhatsApp');
   };
 
   const handleShareEmail = () => {
-    shareViaEmail("Meu Checklist de Mala da Maternidade", getShareText());
-    toast("Abrindo email...");
+    shareViaEmail('Meu Checklist de Mala da Maternidade', getShareText());
+    toast('Abrindo email...');
   };
 
   const shareGeneric = async () => {
     const text = getShareText();
-    
+
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Checklist de Mala da Maternidade", text });
-        toast("Compartilhado com sucesso!");
+        await navigator.share({ title: 'Checklist de Mala da Maternidade', text });
+        toast('Compartilhado com sucesso!');
       } catch {
         // User cancelled
       }
     } else {
       navigator.clipboard.writeText(text);
-      toast("Copiado para a área de transferência!", { description: "Cole onde quiser compartilhar." });
+      toast('Copiado para a área de transferência!', {
+        description: 'Cole onde quiser compartilhar.',
+      });
     }
   };
 
@@ -182,7 +189,7 @@ export const ExportPDF = ({
         <Download className="h-4 w-4 mr-2" />
         Baixar PDF
       </Button>
-      
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button className="w-full" variant="outline">

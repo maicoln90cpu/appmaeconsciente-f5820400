@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
-import { ShoppingCart, Trash2, Share2 } from "lucide-react";
-import { toast } from "sonner";
-import { useProfile } from "@/hooks/useProfile";
-import { AddItemDialog } from "./ListaComprasEditable";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { supabase } from '@/integrations/supabase/client';
+import { ShoppingCart, Trash2, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useProfile } from '@/hooks/useProfile';
+import { AddItemDialog } from './ListaComprasEditable';
 
 interface ShoppingItem {
   item: string;
@@ -20,7 +20,7 @@ export function ListaCompras() {
   const [items, setItems] = useState<ShoppingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const trimester = profile?.meses_gestacao 
+  const trimester = profile?.meses_gestacao
     ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
     : 1;
 
@@ -30,8 +30,10 @@ export function ListaCompras() {
 
   const generateShoppingList = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       // Buscar plano alimentar da semana atual do usuário autenticado
       const { data: mealPlans } = await supabase
         .from('meal_plans')
@@ -50,7 +52,7 @@ export function ListaCompras() {
 
       // Combinar todos os ingredientes únicos
       const allIngredients = new Set<string>();
-      
+
       // Extrair ingredientes dos meal_plans
       mealPlans?.forEach(plan => {
         if (Array.isArray(plan.ingredients)) {
@@ -76,11 +78,20 @@ export function ListaCompras() {
       // Criar lista organizada por categorias
       const categorizedItems: ShoppingItem[] = [];
       const categories = {
-        'Frutas e Vegetais': ['banana', 'maçã', 'laranja', 'alface', 'tomate', 'cenoura', 'brócolis', 'espinafre'],
-        'Proteínas': ['frango', 'peixe', 'carne', 'ovo', 'feijão', 'lentilha', 'grão'],
-        'Laticínios': ['leite', 'queijo', 'iogurte', 'requeijão'],
+        'Frutas e Vegetais': [
+          'banana',
+          'maçã',
+          'laranja',
+          'alface',
+          'tomate',
+          'cenoura',
+          'brócolis',
+          'espinafre',
+        ],
+        Proteínas: ['frango', 'peixe', 'carne', 'ovo', 'feijão', 'lentilha', 'grão'],
+        Laticínios: ['leite', 'queijo', 'iogurte', 'requeijão'],
         'Grãos e Cereais': ['arroz', 'aveia', 'pão', 'macarrão', 'quinoa'],
-        'Outros': []
+        Outros: [],
       };
 
       // Se não houver dados suficientes, adicionar itens essenciais básicos
@@ -111,10 +122,12 @@ export function ListaCompras() {
           categorizedItems.push({ item: ingredient, category, checked: false });
         });
 
-        setItems(categorizedItems.sort((a, b) => {
-          if (a.category === b.category) return a.item.localeCompare(b.item);
-          return a.category.localeCompare(b.category);
-        }));
+        setItems(
+          categorizedItems.sort((a, b) => {
+            if (a.category === b.category) return a.item.localeCompare(b.item);
+            return a.category.localeCompare(b.category);
+          })
+        );
       }
     } catch (error) {
       console.error('Erro ao gerar lista:', error);
@@ -136,26 +149,29 @@ export function ListaCompras() {
   const shareList = () => {
     const listText = items
       .filter(item => !item.checked)
-      .reduce((acc, item) => {
-        if (!acc[item.category]) acc[item.category] = [];
-        acc[item.category].push(item.item);
-        return acc;
-      }, {} as Record<string, string[]>);
+      .reduce(
+        (acc, item) => {
+          if (!acc[item.category]) acc[item.category] = [];
+          acc[item.category].push(item.item);
+          return acc;
+        },
+        {} as Record<string, string[]>
+      );
 
-    let shareText = "🛒 *Lista de Compras - Gestação Saudável*\n\n";
-    
+    let shareText = '🛒 *Lista de Compras - Gestação Saudável*\n\n';
+
     Object.entries(listText).forEach(([category, items]) => {
       shareText += `*${category}:*\n`;
       items.forEach(item => {
         shareText += `• ${item}\n`;
       });
-      shareText += "\n";
+      shareText += '\n';
     });
 
     if (navigator.share) {
       navigator.share({
         title: 'Lista de Compras',
-        text: shareText
+        text: shareText,
       });
     } else {
       navigator.clipboard.writeText(shareText);
@@ -172,11 +188,14 @@ export function ListaCompras() {
     return <div className="flex justify-center py-8">Gerando lista...</div>;
   }
 
-  const groupedItems = items.reduce((acc, item) => {
-    if (!acc[item.category]) acc[item.category] = [];
-    acc[item.category].push(item);
-    return acc;
-  }, {} as Record<string, ShoppingItem[]>);
+  const groupedItems = items.reduce(
+    (acc, item) => {
+      if (!acc[item.category]) acc[item.category] = [];
+      acc[item.category].push(item);
+      return acc;
+    },
+    {} as Record<string, ShoppingItem[]>
+  );
 
   const completedCount = items.filter(item => item.checked).length;
   const totalCount = items.length;
@@ -191,7 +210,7 @@ export function ListaCompras() {
           </p>
         </div>
         <div className="flex gap-2">
-          <AddItemDialog onAdd={(item) => setItems([...items, item])} />
+          <AddItemDialog onAdd={item => setItems([...items, item])} />
           <Button variant="outline" onClick={shareList}>
             <Share2 className="h-4 w-4 mr-2" />
             Compartilhar
@@ -215,7 +234,7 @@ export function ListaCompras() {
                 {completedCount} de {totalCount} itens marcados
               </CardDescription>
             </div>
-            <Badge variant={completedCount === totalCount ? "default" : "secondary"}>
+            <Badge variant={completedCount === totalCount ? 'default' : 'secondary'}>
               {Math.round((completedCount / totalCount) * 100)}%
             </Badge>
           </div>
@@ -244,15 +263,11 @@ export function ListaCompras() {
                         checked={item.checked}
                         onCheckedChange={() => toggleItem(globalIndex)}
                       />
-                      <span className={item.checked ? "line-through text-muted-foreground" : ""}>
+                      <span className={item.checked ? 'line-through text-muted-foreground' : ''}>
                         {item.item}
                       </span>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeItem(globalIndex)}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => removeItem(globalIndex)}>
                       <Trash2 className="h-4 w-4 text-muted-foreground" />
                     </Button>
                   </div>

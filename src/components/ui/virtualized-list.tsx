@@ -1,7 +1,7 @@
-import React, { memo, useMemo } from "react";
-import { useVirtualizedList } from "@/hooks/useVirtualizedList";
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
+import React, { memo, useMemo } from 'react';
+import { useVirtualizedList } from '@/hooks/useVirtualizedList';
+import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface VirtualizedListProps<T> {
   /** Items to render */
@@ -29,7 +29,7 @@ interface VirtualizedListProps<T> {
 /**
  * Virtualized list component for rendering large lists efficiently.
  * Only renders items visible in the viewport + overscan buffer.
- * 
+ *
  * @example
  * ```tsx
  * <VirtualizedList
@@ -53,11 +53,7 @@ function VirtualizedListComponent<T>({
   loading = false,
   skeletonCount = 5,
 }: VirtualizedListProps<T>) {
-  const {
-    virtualItems,
-    totalHeight,
-    containerRef,
-  } = useVirtualizedList({
+  const { virtualItems, totalHeight, containerRef } = useVirtualizedList({
     itemCount: items.length,
     itemHeight,
     overscan,
@@ -66,7 +62,7 @@ function VirtualizedListComponent<T>({
 
   if (loading) {
     return (
-      <div className={cn("space-y-2", className)}>
+      <div className={cn('space-y-2', className)}>
         {Array.from({ length: skeletonCount }).map((_, i) => (
           <Skeleton key={i} className="w-full" style={{ height: itemHeight }} />
         ))}
@@ -79,21 +75,17 @@ function VirtualizedListComponent<T>({
   }
 
   return (
-    <div
-      ref={containerRef}
-      className={cn("overflow-auto", className)}
-      style={{ height }}
-    >
+    <div ref={containerRef} className={cn('overflow-auto', className)} style={{ height }}>
       <div
         style={{
           height: totalHeight,
-          position: "relative",
+          position: 'relative',
         }}
       >
         {virtualItems.map(({ index, style }) => {
           const item = items[index];
           if (!item) return null;
-          
+
           return (
             <div key={keyExtractor(item, index)} style={style}>
               {renderItem(item, index)}
@@ -136,8 +128,8 @@ export const SimpleVirtualizedList = memo(function SimpleVirtualizedList({
       renderItem={(item, index) => (
         <div
           className={cn(
-            "flex items-center px-4 h-full border-b border-border",
-            onItemClick && "cursor-pointer hover:bg-muted transition-colors"
+            'flex items-center px-4 h-full border-b border-border',
+            onItemClick && 'cursor-pointer hover:bg-muted transition-colors'
           )}
           onClick={() => onItemClick?.(item, index)}
         >

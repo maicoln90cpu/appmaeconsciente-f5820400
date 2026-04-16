@@ -1,4 +1,4 @@
-import type { jsPDF } from "jspdf";
+import type { jsPDF } from 'jspdf';
 
 /**
  * Extended jsPDF type that includes the lastAutoTable property

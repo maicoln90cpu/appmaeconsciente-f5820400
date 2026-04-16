@@ -1,6 +1,6 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface BabyAchievement {
   id: string;
@@ -58,12 +58,16 @@ export const useBabyAchievements = (babyProfileId?: string) => {
   const { data: achievements, isLoading } = useQuery({
     queryKey: ['baby-achievements', babyProfileId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       let query = supabase
         .from('baby_achievements')
-        .select('id, user_id, baby_profile_id, achievement_type, title, description, icon, achieved_at, metadata, created_at')
+        .select(
+          'id, user_id, baby_profile_id, achievement_type, title, description, icon, achieved_at, metadata, created_at'
+        )
         .eq('user_id', user.id)
         .order('achieved_at', { ascending: false });
 
@@ -87,21 +91,25 @@ export const useBabyAchievements = (babyProfileId?: string) => {
       achieved_at?: string;
       metadata?: Record<string, unknown>;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('baby_achievements')
-        .insert([{ 
-          user_id: user.id,
-          baby_profile_id: achievement.baby_profile_id || null,
-          achievement_type: achievement.achievement_type,
-          title: achievement.title,
-          description: achievement.description || null,
-          icon: achievement.icon || '🏆',
-          achieved_at: achievement.achieved_at || new Date().toISOString(),
-          metadata: (achievement.metadata || {}) as unknown as null,
-        }])
+        .insert([
+          {
+            user_id: user.id,
+            baby_profile_id: achievement.baby_profile_id || null,
+            achievement_type: achievement.achievement_type,
+            title: achievement.title,
+            description: achievement.description || null,
+            icon: achievement.icon || '🏆',
+            achieved_at: achievement.achieved_at || new Date().toISOString(),
+            metadata: (achievement.metadata || {}) as unknown as null,
+          },
+        ])
         .select()
         .single();
 
@@ -123,12 +131,16 @@ export const useBabyFirstTimes = (babyProfileId?: string) => {
   const { data: firstTimes, isLoading } = useQuery({
     queryKey: ['baby-first-times', babyProfileId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       let query = supabase
         .from('baby_first_times')
-        .select('id, user_id, baby_profile_id, event_type, title, description, event_date, photo_url, video_url, location, witnesses, mood, notes, is_favorite, created_at, updated_at')
+        .select(
+          'id, user_id, baby_profile_id, event_type, title, description, event_date, photo_url, video_url, location, witnesses, mood, notes, is_favorite, created_at, updated_at'
+        )
         .eq('user_id', user.id)
         .order('event_date', { ascending: false });
 
@@ -143,8 +155,12 @@ export const useBabyFirstTimes = (babyProfileId?: string) => {
   });
 
   const addFirstTime = useMutation({
-    mutationFn: async (firstTime: Omit<BabyFirstTime, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
+    mutationFn: async (
+      firstTime: Omit<BabyFirstTime, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+    ) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -181,10 +197,7 @@ export const useBabyFirstTimes = (babyProfileId?: string) => {
 
   const deleteFirstTime = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('baby_first_times')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('baby_first_times').delete().eq('id', id);
 
       if (error) throw error;
     },
@@ -209,12 +222,16 @@ export const useBabyTimeline = (babyProfileId?: string) => {
   const { data: events, isLoading } = useQuery({
     queryKey: ['baby-timeline', babyProfileId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       let query = supabase
         .from('baby_timeline_events')
-        .select('id, user_id, baby_profile_id, event_type, title, description, event_date, event_time, icon, color, photo_url, related_record_id, related_record_type, is_milestone, created_at')
+        .select(
+          'id, user_id, baby_profile_id, event_type, title, description, event_date, event_time, icon, color, photo_url, related_record_id, related_record_type, is_milestone, created_at'
+        )
         .eq('user_id', user.id)
         .order('event_date', { ascending: false });
 
@@ -230,7 +247,9 @@ export const useBabyTimeline = (babyProfileId?: string) => {
 
   const addEvent = useMutation({
     mutationFn: async (event: Omit<BabyTimelineEvent, 'id' | 'user_id' | 'created_at'>) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase

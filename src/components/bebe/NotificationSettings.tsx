@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { Bell, BellOff, Clock, Calendar, Pill, Moon, AlertTriangle } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { PushNotificationToggle } from "@/components/pwa/PushNotificationToggle";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Bell, BellOff, Clock, Calendar, Pill, Moon, AlertTriangle } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { PushNotificationToggle } from '@/components/pwa/PushNotificationToggle';
+import { toast } from 'sonner';
 
 interface NotificationPreferences {
   feedingReminders: boolean;
@@ -51,7 +51,7 @@ export const NotificationSettings = () => {
       if (permission === 'granted') {
         setNotificationsEnabled(true);
         toast.success('Notificações ativadas!');
-        
+
         // Show a test notification
         new Notification('MamaConsciente 🍼', {
           body: 'Notificações ativadas com sucesso!',
@@ -86,16 +86,14 @@ export const NotificationSettings = () => {
           <Bell className="h-5 w-5" />
           Notificações
         </CardTitle>
-        <CardDescription>
-          Configure lembretes e alertas para cuidados do bebê
-        </CardDescription>
+        <CardDescription>Configure lembretes e alertas para cuidados do bebê</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Push Notifications Toggle */}
         <PushNotificationToggle className="p-4 rounded-lg bg-muted/50" />
-        
+
         <Separator />
-        
+
         {/* Enable Browser Notifications */}
         {!notificationsEnabled && (
           <div className="flex items-center justify-between p-4 rounded-lg bg-amber-500/10 border border-amber-500/30">
@@ -103,14 +101,10 @@ export const NotificationSettings = () => {
               <BellOff className="h-5 w-5 text-amber-500" />
               <div>
                 <p className="font-medium">Notificações do navegador desativadas</p>
-                <p className="text-sm text-muted-foreground">
-                  Ative para receber lembretes locais
-                </p>
+                <p className="text-sm text-muted-foreground">Ative para receber lembretes locais</p>
               </div>
             </div>
-            <Button onClick={requestNotificationPermission}>
-              Ativar
-            </Button>
+            <Button onClick={requestNotificationPermission}>Ativar</Button>
           </div>
         )}
 
@@ -123,21 +117,17 @@ export const NotificationSettings = () => {
               </div>
               <div>
                 <Label>Lembretes de Mamada</Label>
-                <p className="text-sm text-muted-foreground">
-                  Lembrar de alimentar o bebê
-                </p>
+                <p className="text-sm text-muted-foreground">Lembrar de alimentar o bebê</p>
               </div>
             </div>
             <Switch
               checked={preferences.feedingReminders}
-              onCheckedChange={(checked) => updatePreference('feedingReminders', checked)}
+              onCheckedChange={checked => updatePreference('feedingReminders', checked)}
             />
           </div>
           {preferences.feedingReminders && (
             <div className="ml-12 space-y-2">
-              <Label className="text-sm">
-                Intervalo: {preferences.feedingIntervalHours}h
-              </Label>
+              <Label className="text-sm">Intervalo: {preferences.feedingIntervalHours}h</Label>
               <Slider
                 value={[preferences.feedingIntervalHours]}
                 onValueChange={([value]) => updatePreference('feedingIntervalHours', value)}
@@ -158,14 +148,12 @@ export const NotificationSettings = () => {
             </div>
             <div>
               <Label>Lembretes de Medicamentos</Label>
-              <p className="text-sm text-muted-foreground">
-                Alertar horários de medicação
-              </p>
+              <p className="text-sm text-muted-foreground">Alertar horários de medicação</p>
             </div>
           </div>
           <Switch
             checked={preferences.medicationReminders}
-            onCheckedChange={(checked) => updatePreference('medicationReminders', checked)}
+            onCheckedChange={checked => updatePreference('medicationReminders', checked)}
           />
         </div>
 
@@ -178,14 +166,12 @@ export const NotificationSettings = () => {
               </div>
               <div>
                 <Label>Lembretes de Consultas</Label>
-                <p className="text-sm text-muted-foreground">
-                  Lembrar consultas agendadas
-                </p>
+                <p className="text-sm text-muted-foreground">Lembrar consultas agendadas</p>
               </div>
             </div>
             <Switch
               checked={preferences.appointmentReminders}
-              onCheckedChange={(checked) => updatePreference('appointmentReminders', checked)}
+              onCheckedChange={checked => updatePreference('appointmentReminders', checked)}
             />
           </div>
           {preferences.appointmentReminders && (
@@ -221,14 +207,12 @@ export const NotificationSettings = () => {
             </div>
             <Switch
               checked={preferences.sleepReminders}
-              onCheckedChange={(checked) => updatePreference('sleepReminders', checked)}
+              onCheckedChange={checked => updatePreference('sleepReminders', checked)}
             />
           </div>
           {preferences.sleepReminders && (
             <div className="ml-12 space-y-2">
-              <Label className="text-sm">
-                Meta diária: {preferences.sleepGoalHours}h
-              </Label>
+              <Label className="text-sm">Meta diária: {preferences.sleepGoalHours}h</Label>
               <Slider
                 value={[preferences.sleepGoalHours]}
                 onValueChange={([value]) => updatePreference('sleepGoalHours', value)}
@@ -249,14 +233,12 @@ export const NotificationSettings = () => {
             </div>
             <div>
               <Label>Relatório Semanal</Label>
-              <p className="text-sm text-muted-foreground">
-                Resumo semanal dos cuidados
-              </p>
+              <p className="text-sm text-muted-foreground">Resumo semanal dos cuidados</p>
             </div>
           </div>
           <Switch
             checked={preferences.weeklyReport}
-            onCheckedChange={(checked) => updatePreference('weeklyReport', checked)}
+            onCheckedChange={checked => updatePreference('weeklyReport', checked)}
           />
         </div>
 

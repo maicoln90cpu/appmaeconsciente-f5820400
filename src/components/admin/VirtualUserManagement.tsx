@@ -1,18 +1,16 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Bot, Upload, RefreshCw, MapPin, Edit2, Check, X, Sparkles, Loader2
-} from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Bot, Upload, RefreshCw, MapPin, Edit2, Check, X, Sparkles, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface VirtualUser {
   id: string;
@@ -34,13 +32,15 @@ export const VirtualUserManagement = () => {
   const [generatingAvatarId, setGeneratingAvatarId] = useState<string | null>(null);
 
   const { data: users, isLoading } = useQuery({
-    queryKey: ["virtual-users"],
+    queryKey: ['virtual-users'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("profiles")
-        .select("id, email, full_name, foto_perfil_url, cidade, estado, personality, personality_style, is_active, created_at")
-        .eq("is_virtual", true)
-        .order("created_at", { ascending: true });
+        .from('profiles')
+        .select(
+          'id, email, full_name, foto_perfil_url, cidade, estado, personality, personality_style, is_active, created_at'
+        )
+        .eq('is_virtual', true)
+        .order('created_at', { ascending: true });
       if (error) throw error;
       return (data || []) as VirtualUser[];
     },
@@ -48,15 +48,12 @@ export const VirtualUserManagement = () => {
 
   const updateUser = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<VirtualUser> }) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update(updates)
-        .eq("id", id);
+      const { error } = await supabase.from('profiles').update(updates).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
-      toast.success("Perfil atualizado!");
+      queryClient.invalidateQueries({ queryKey: ['virtual-users'] });
+      toast.success('Perfil atualizado!');
       setEditingId(null);
     },
     onError: (err: any) => toast.error(`Erro: ${err.message}`),
@@ -64,25 +61,22 @@ export const VirtualUserManagement = () => {
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ is_active })
-        .eq("id", id);
+      const { error } = await supabase.from('profiles').update({ is_active }).eq('id', id);
       if (error) throw error;
     },
     onSuccess: (_, vars) => {
-      queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
-      toast.success(vars.is_active ? "Bot ativado" : "Bot desativado");
+      queryClient.invalidateQueries({ queryKey: ['virtual-users'] });
+      toast.success(vars.is_active ? 'Bot ativado' : 'Bot desativado');
     },
     onError: (err: any) => toast.error(`Erro: ${err.message}`),
   });
 
   const handleAvatarUpload = async (userId: string, file: File) => {
-    const ext = file.name.split(".").pop();
+    const ext = file.name.split('.').pop();
     const path = `bots/${userId}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
-      .from("avatars")
+      .from('avatars')
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
@@ -90,29 +84,29 @@ export const VirtualUserManagement = () => {
       return;
     }
 
-    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+    const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path);
 
     const { error: updateError } = await supabase
-      .from("profiles")
+      .from('profiles')
       .update({ foto_perfil_url: urlData.publicUrl })
-      .eq("id", userId);
+      .eq('id', userId);
 
     if (updateError) {
       toast.error(`Erro ao salvar URL: ${updateError.message}`);
       return;
     }
 
-    queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
-    toast.success("Avatar atualizado!");
+    queryClient.invalidateQueries({ queryKey: ['virtual-users'] });
+    toast.success('Avatar atualizado!');
   };
 
   const handleGenerateAvatar = async (user: VirtualUser) => {
     setGeneratingAvatarId(user.id);
     try {
-      const name = user.full_name || "Mãe";
+      const name = user.full_name || 'Mãe';
       toast.info(`Gerando foto por IA para ${name}... Aguarde ~15s`, { duration: 5000 });
 
-      const { data, error } = await supabase.functions.invoke("generate-avatar", {
+      const { data, error } = await supabase.functions.invoke('generate-avatar', {
         body: { userId: user.id, userName: name },
       });
 
@@ -126,7 +120,7 @@ export const VirtualUserManagement = () => {
         return;
       }
 
-      queryClient.invalidateQueries({ queryKey: ["virtual-users"] });
+      queryClient.invalidateQueries({ queryKey: ['virtual-users'] });
       toast.success(`✨ Avatar gerado com sucesso para ${name}!`);
     } catch (err: any) {
       toast.error(`Erro: ${err.message}`);
@@ -183,8 +177,11 @@ export const VirtualUserManagement = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {users?.map((user) => (
-            <Card key={user.id} className={`transition-opacity ${!user.is_active ? "opacity-50" : ""}`}>
+          {users?.map(user => (
+            <Card
+              key={user.id}
+              className={`transition-opacity ${!user.is_active ? 'opacity-50' : ''}`}
+            >
               <CardContent className="pt-6 space-y-3">
                 {/* Avatar + Name */}
                 <div className="flex items-center gap-4">
@@ -201,7 +198,7 @@ export const VirtualUserManagement = () => {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={e => {
                           const file = e.target.files?.[0];
                           if (file) handleAvatarUpload(user.id, file);
                         }}
@@ -211,13 +208,13 @@ export const VirtualUserManagement = () => {
                   <div className="flex-1 min-w-0">
                     {editingId === user.id ? (
                       <Input
-                        value={editForm.full_name || ""}
-                        onChange={(e) => setEditForm({ ...editForm, full_name: e.target.value })}
+                        value={editForm.full_name || ''}
+                        onChange={e => setEditForm({ ...editForm, full_name: e.target.value })}
                         className="text-sm font-semibold"
                         placeholder="Nome"
                       />
                     ) : (
-                      <p className="font-semibold truncate">{user.full_name || "Sem nome"}</p>
+                      <p className="font-semibold truncate">{user.full_name || 'Sem nome'}</p>
                     )}
                     <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                   </div>
@@ -227,14 +224,14 @@ export const VirtualUserManagement = () => {
                 {editingId === user.id ? (
                   <div className="grid grid-cols-2 gap-2">
                     <Input
-                      value={editForm.cidade || ""}
-                      onChange={(e) => setEditForm({ ...editForm, cidade: e.target.value })}
+                      value={editForm.cidade || ''}
+                      onChange={e => setEditForm({ ...editForm, cidade: e.target.value })}
                       placeholder="Cidade"
                       className="text-sm"
                     />
                     <Input
-                      value={editForm.estado || ""}
-                      onChange={(e) => setEditForm({ ...editForm, estado: e.target.value })}
+                      value={editForm.estado || ''}
+                      onChange={e => setEditForm({ ...editForm, estado: e.target.value })}
                       placeholder="UF"
                       className="text-sm"
                       maxLength={2}
@@ -244,7 +241,8 @@ export const VirtualUserManagement = () => {
                   user.cidade && (
                     <p className="text-sm text-muted-foreground flex items-center gap-1">
                       <MapPin className="h-3 w-3" />
-                      {user.cidade}{user.estado ? `, ${user.estado}` : ""}
+                      {user.cidade}
+                      {user.estado ? `, ${user.estado}` : ''}
                     </p>
                   )
                 )}
@@ -255,8 +253,8 @@ export const VirtualUserManagement = () => {
                     <div>
                       <Label className="text-xs text-muted-foreground">Personalidade</Label>
                       <Textarea
-                        value={editForm.personality || ""}
-                        onChange={(e) => setEditForm({ ...editForm, personality: e.target.value })}
+                        value={editForm.personality || ''}
+                        onChange={e => setEditForm({ ...editForm, personality: e.target.value })}
                         placeholder="Ex: Mãe de primeira viagem, ansiosa mas curiosa..."
                         className="text-sm min-h-[60px]"
                       />
@@ -264,8 +262,10 @@ export const VirtualUserManagement = () => {
                     <div>
                       <Label className="text-xs text-muted-foreground">Estilo de Escrita</Label>
                       <Textarea
-                        value={editForm.personality_style || ""}
-                        onChange={(e) => setEditForm({ ...editForm, personality_style: e.target.value })}
+                        value={editForm.personality_style || ''}
+                        onChange={e =>
+                          setEditForm({ ...editForm, personality_style: e.target.value })
+                        }
                         placeholder="Ex: Direta e prática, frases curtas..."
                         className="text-sm min-h-[50px]"
                       />
@@ -280,11 +280,14 @@ export const VirtualUserManagement = () => {
                     )}
                     {user.personality_style && (
                       <p className="text-xs text-muted-foreground line-clamp-2">
-                        <span className="font-medium text-foreground">✍️</span> {user.personality_style}
+                        <span className="font-medium text-foreground">✍️</span>{' '}
+                        {user.personality_style}
                       </p>
                     )}
                     {!user.personality && !user.personality_style && (
-                      <p className="text-xs text-muted-foreground italic">Sem personalidade definida</p>
+                      <p className="text-xs text-muted-foreground italic">
+                        Sem personalidade definida
+                      </p>
                     )}
                   </div>
                 )}
@@ -294,9 +297,11 @@ export const VirtualUserManagement = () => {
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={user.is_active}
-                      onCheckedChange={(checked) => toggleActive.mutate({ id: user.id, is_active: checked })}
+                      onCheckedChange={checked =>
+                        toggleActive.mutate({ id: user.id, is_active: checked })
+                      }
                     />
-                    <Label className="text-xs">{user.is_active ? "Ativo" : "Inativo"}</Label>
+                    <Label className="text-xs">{user.is_active ? 'Ativo' : 'Inativo'}</Label>
                   </div>
 
                   <div className="flex gap-1">
@@ -342,7 +347,9 @@ export const VirtualUserManagement = () => {
         <div className="text-center py-12">
           <Bot className="h-12 w-12 mx-auto text-muted-foreground/50 mb-2" />
           <p className="text-muted-foreground">Nenhum usuário virtual cadastrado</p>
-          <p className="text-sm text-muted-foreground">Execute a automação IA para criar os bots automaticamente</p>
+          <p className="text-sm text-muted-foreground">
+            Execute a automação IA para criar os bots automaticamente
+          </p>
         </div>
       )}
     </div>

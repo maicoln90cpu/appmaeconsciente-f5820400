@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { supabase } from "@/integrations/supabase/client";
-import { useProfile } from "@/hooks/useProfile";
-import { Droplets, Pill, Scale, Dumbbell, TrendingUp, Calendar } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { supabase } from '@/integrations/supabase/client';
+import { useProfile } from '@/hooks/useProfile';
+import { Droplets, Pill, Scale, Dumbbell, TrendingUp, Calendar } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface DashboardData {
   waterToday: number;
@@ -27,7 +27,7 @@ export function DashboardSaude() {
     supplementsTaken: 0,
     latestWeight: null,
     exerciseMinutesToday: 0,
-    weekProgress: 0
+    weekProgress: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -37,10 +37,12 @@ export function DashboardSaude() {
 
   const loadDashboardData = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const today = format(new Date(), "yyyy-MM-dd");
+      const today = format(new Date(), 'yyyy-MM-dd');
 
       // Água de hoje
       const { data: waterData } = await supabase
@@ -67,7 +69,8 @@ export function DashboardSaude() {
         .eq('user_id', user.id)
         .eq('is_active', true);
 
-      const totalDoses = supplementsData?.reduce((sum, s) => sum + (s.time_of_day?.length || 0), 0) || 0;
+      const totalDoses =
+        supplementsData?.reduce((sum, s) => sum + (s.time_of_day?.length || 0), 0) || 0;
 
       const { data: logsData } = await supabase
         .from('supplement_logs')
@@ -99,12 +102,12 @@ export function DashboardSaude() {
       // Progresso da semana (quantos dias teve atividade)
       const weekStart = new Date();
       weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-      
+
       const { data: weekData } = await supabase
         .from('user_exercise_logs')
         .select('date')
         .eq('user_id', user.id)
-        .gte('date', format(weekStart, "yyyy-MM-dd"));
+        .gte('date', format(weekStart, 'yyyy-MM-dd'));
 
       const uniqueDays = new Set(weekData?.map(d => d.date)).size;
       const weekProgress = (uniqueDays / 7) * 100;
@@ -116,7 +119,7 @@ export function DashboardSaude() {
         supplementsTaken,
         latestWeight: weightData?.weight || null,
         exerciseMinutesToday: exerciseMinutes,
-        weekProgress
+        weekProgress,
       });
     } catch (error) {
       console.error('Erro ao carregar dashboard:', error);
@@ -125,22 +128,19 @@ export function DashboardSaude() {
     }
   };
 
-  const trimester = profile?.meses_gestacao 
+  const trimester = profile?.meses_gestacao
     ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
     : 1;
 
-  const weekOfPregnancy = profile?.meses_gestacao 
-    ? Math.floor(profile.meses_gestacao * 4.33)
-    : 0;
+  const weekOfPregnancy = profile?.meses_gestacao ? Math.floor(profile.meses_gestacao * 4.33) : 0;
 
   if (loading) {
     return <div className="flex justify-center py-8">Carregando dashboard...</div>;
   }
 
   const waterProgress = (data.waterToday / data.waterGoal) * 100;
-  const supplementProgress = data.supplementsDue > 0 
-    ? (data.supplementsTaken / data.supplementsDue) * 100 
-    : 0;
+  const supplementProgress =
+    data.supplementsDue > 0 ? (data.supplementsTaken / data.supplementsDue) * 100 : 0;
 
   return (
     <div className="space-y-6">
@@ -163,9 +163,7 @@ export function DashboardSaude() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{trimester}º Trimestre</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {weekOfPregnancy} semanas
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">{weekOfPregnancy} semanas</p>
           </CardContent>
         </Card>
 
@@ -179,11 +177,9 @@ export function DashboardSaude() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {data.latestWeight ? `${data.latestWeight} kg` : "-"}
+              {data.latestWeight ? `${data.latestWeight} kg` : '-'}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Último registro
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Último registro</p>
           </CardContent>
         </Card>
 
@@ -214,9 +210,7 @@ export function DashboardSaude() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.exerciseMinutesToday} min</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Hoje
-            </p>
+            <p className="text-xs text-muted-foreground mt-1">Hoje</p>
           </CardContent>
         </Card>
       </div>
@@ -239,9 +233,7 @@ export function DashboardSaude() {
             {data.supplementsTaken === data.supplementsDue && data.supplementsDue > 0 ? (
               <Badge className="bg-green-500">Completo!</Badge>
             ) : data.supplementsDue === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Nenhum suplemento cadastrado
-              </p>
+              <p className="text-sm text-muted-foreground">Nenhum suplemento cadastrado</p>
             ) : (
               <p className="text-sm text-muted-foreground">
                 Faltam {data.supplementsDue - data.supplementsTaken} doses
@@ -257,14 +249,12 @@ export function DashboardSaude() {
               <TrendingUp className="h-5 w-5" />
               Progresso Semanal
             </CardTitle>
-            <CardDescription>
-              Dias ativos esta semana
-            </CardDescription>
+            <CardDescription>Dias ativos esta semana</CardDescription>
           </CardHeader>
           <CardContent>
             <Progress value={data.weekProgress} className="h-3 mb-4" />
             <p className="text-sm text-muted-foreground">
-              {Math.round(data.weekProgress / 100 * 7)} de 7 dias com atividade
+              {Math.round((data.weekProgress / 100) * 7)} de 7 dias com atividade
             </p>
           </CardContent>
         </Card>
@@ -284,7 +274,7 @@ export function DashboardSaude() {
               </p>
             </div>
           )}
-          
+
           {data.supplementsTaken < data.supplementsDue && data.supplementsDue > 0 && (
             <div className="flex items-start gap-2 p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
               <Pill className="h-4 w-4 mt-0.5 text-purple-500" />
@@ -293,7 +283,7 @@ export function DashboardSaude() {
               </p>
             </div>
           )}
-          
+
           {data.exerciseMinutesToday === 0 && (
             <div className="flex items-start gap-2 p-3 bg-green-50 dark:bg-green-950 rounded-lg">
               <Dumbbell className="h-4 w-4 mt-0.5 text-green-500" />

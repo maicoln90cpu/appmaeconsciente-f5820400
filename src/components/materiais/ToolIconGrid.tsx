@@ -1,12 +1,29 @@
-import { 
-  Baby, Moon, Ruler, ShoppingBag, Pill, Apple, Syringe, 
-  Brain, Stethoscope, Droplets, Wrench, FileText, Heart,
-  Calendar, Timer, ClipboardList, Home, TrendingUp, 
-  CalendarClock, Utensils, Camera,
-  type LucideIcon 
-} from "lucide-react";
-import { Lock } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import {
+  Baby,
+  Moon,
+  Ruler,
+  ShoppingBag,
+  Pill,
+  Apple,
+  Syringe,
+  Brain,
+  Stethoscope,
+  Droplets,
+  Wrench,
+  FileText,
+  Heart,
+  Calendar,
+  Timer,
+  ClipboardList,
+  Home,
+  TrendingUp,
+  CalendarClock,
+  Utensils,
+  Camera,
+  type LucideIcon,
+} from 'lucide-react';
+import { Lock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface Product {
   id: string;
@@ -27,55 +44,63 @@ interface ToolIconGridProps {
 }
 
 const slugIconMap: Record<string, LucideIcon> = {
-  "rastreador-amamentacao": Baby,
-  "diario-sono": Moon,
-  "monitor-desenvolvimento": Brain,
-  "controle-enxoval": ShoppingBag,
-  "calculadora-fraldas": Droplets,
-  "mala-maternidade": FileText,
-  "guia-alimentacao": Apple,
-  "cartao-vacinacao": Syringe,
-  "recuperacao-pos-parto": Heart,
-  "ferramentas-gestacao": Stethoscope,
-  "calculadora-semanas": Calendar,
-  "checklist-documentos": ClipboardList,
-  "checklist-quartinho": Home,
-  "timer-mamada": Timer,
-  "diario-crescimento": TrendingUp,
-  "planejador-rotina": CalendarClock,
-  "introducao-alimentar": Utensils,
-  "album-marcos": Camera,
+  'rastreador-amamentacao': Baby,
+  'diario-sono': Moon,
+  'monitor-desenvolvimento': Brain,
+  'controle-enxoval': ShoppingBag,
+  'calculadora-fraldas': Droplets,
+  'mala-maternidade': FileText,
+  'guia-alimentacao': Apple,
+  'cartao-vacinacao': Syringe,
+  'recuperacao-pos-parto': Heart,
+  'ferramentas-gestacao': Stethoscope,
+  'calculadora-semanas': Calendar,
+  'checklist-documentos': ClipboardList,
+  'checklist-quartinho': Home,
+  'timer-mamada': Timer,
+  'diario-crescimento': TrendingUp,
+  'planejador-rotina': CalendarClock,
+  'introducao-alimentar': Utensils,
+  'album-marcos': Camera,
 };
 
 const slugColorMap: Record<string, string> = {
-  "rastreador-amamentacao": "bg-pink-500/10 text-pink-600 dark:text-pink-400",
-  "diario-sono": "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
-  "monitor-desenvolvimento": "bg-violet-500/10 text-violet-600 dark:text-violet-400",
-  "controle-enxoval": "bg-teal-500/10 text-teal-600 dark:text-teal-400",
-  "calculadora-fraldas": "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  "mala-maternidade": "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-  "guia-alimentacao": "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  "cartao-vacinacao": "bg-rose-500/10 text-rose-600 dark:text-rose-400",
-  "recuperacao-pos-parto": "bg-red-500/10 text-red-600 dark:text-red-400",
-  "ferramentas-gestacao": "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
-  "calculadora-semanas": "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-  "checklist-documentos": "bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  "checklist-quartinho": "bg-lime-500/10 text-lime-600 dark:text-lime-400",
-  "timer-mamada": "bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400",
-  "diario-crescimento": "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  "planejador-rotina": "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
-  "introducao-alimentar": "bg-green-500/10 text-green-600 dark:text-green-400",
-  "album-marcos": "bg-pink-500/10 text-pink-600 dark:text-pink-400",
+  'rastreador-amamentacao': 'bg-pink-500/10 text-pink-600 dark:text-pink-400',
+  'diario-sono': 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400',
+  'monitor-desenvolvimento': 'bg-violet-500/10 text-violet-600 dark:text-violet-400',
+  'controle-enxoval': 'bg-teal-500/10 text-teal-600 dark:text-teal-400',
+  'calculadora-fraldas': 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  'mala-maternidade': 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+  'guia-alimentacao': 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400',
+  'cartao-vacinacao': 'bg-rose-500/10 text-rose-600 dark:text-rose-400',
+  'recuperacao-pos-parto': 'bg-red-500/10 text-red-600 dark:text-red-400',
+  'ferramentas-gestacao': 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400',
+  'calculadora-semanas': 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+  'checklist-documentos': 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+  'checklist-quartinho': 'bg-lime-500/10 text-lime-600 dark:text-lime-400',
+  'timer-mamada': 'bg-fuchsia-500/10 text-fuchsia-600 dark:text-fuchsia-400',
+  'diario-crescimento': 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+  'planejador-rotina': 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
+  'introducao-alimentar': 'bg-green-500/10 text-green-600 dark:text-green-400',
+  'album-marcos': 'bg-pink-500/10 text-pink-600 dark:text-pink-400',
 };
 
-export const ToolIconGrid = ({ products, hasAccess, isAdmin, onProductClick }: ToolIconGridProps) => {
+export const ToolIconGrid = ({
+  products,
+  hasAccess,
+  isAdmin,
+  onProductClick,
+}: ToolIconGridProps) => {
   return (
     <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-      {products.map((product) => {
+      {products.map(product => {
         const Icon = slugIconMap[product.slug] || Wrench;
-        const colorClass = slugColorMap[product.slug] || "bg-muted text-muted-foreground";
+        const colorClass = slugColorMap[product.slug] || 'bg-muted text-muted-foreground';
         const canAccess = product.is_free || hasAccess(product.id) || isAdmin;
-        const shortTitle = product.title.replace(/^(Guia de |Controle de |Calculadora de |Rastreador de |Cartão de |Monitor de |Diário de |Ferramentas de |Recuperação )/, "");
+        const shortTitle = product.title.replace(
+          /^(Guia de |Controle de |Calculadora de |Rastreador de |Cartão de |Monitor de |Diário de |Ferramentas de |Recuperação )/,
+          ''
+        );
 
         return (
           <button
@@ -84,7 +109,9 @@ export const ToolIconGrid = ({ products, hasAccess, isAdmin, onProductClick }: T
             className="group flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl transition-all duration-200 hover:bg-accent/50 active:scale-95 relative"
           >
             {/* Icon circle */}
-            <div className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center ${colorClass} transition-transform group-hover:scale-105`}>
+            <div
+              className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center ${colorClass} transition-transform group-hover:scale-105`}
+            >
               <Icon className="h-6 w-6 sm:h-7 sm:w-7" />
               {/* Lock overlay */}
               {!canAccess && (
@@ -101,7 +128,10 @@ export const ToolIconGrid = ({ products, hasAccess, isAdmin, onProductClick }: T
 
             {/* Free badge */}
             {product.is_free && (
-              <Badge variant="secondary" className="text-[9px] px-1.5 py-0 h-4 absolute top-1 right-1">
+              <Badge
+                variant="secondary"
+                className="text-[9px] px-1.5 py-0 h-4 absolute top-1 right-1"
+              >
                 Grátis
               </Badge>
             )}

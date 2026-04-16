@@ -1,13 +1,20 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { usePostpartumMedications } from "@/hooks/postpartum";
-import { Plus, Pill, Check } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { usePostpartumMedications } from '@/hooks/postpartum';
+import { Plus, Pill, Check } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 export const ControleMedicamentos = () => {
   const { medications, logs, addMedication, logMedication } = usePostpartumMedications();
@@ -76,7 +83,9 @@ export const ControleMedicamentos = () => {
                 <Input
                   id="med-name"
                   value={formData.medication_name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, medication_name: e.target.value }))}
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, medication_name: e.target.value }))
+                  }
                   placeholder="Ex: Ibuprofeno, Ferro, Vitamina D"
                   required
                 />
@@ -86,7 +95,7 @@ export const ControleMedicamentos = () => {
                 <Input
                   id="dosage"
                   value={formData.dosage}
-                  onChange={(e) => setFormData(prev => ({ ...prev, dosage: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, dosage: e.target.value }))}
                   placeholder="Ex: 600mg, 1 comprimido, 10 gotas"
                   required
                 />
@@ -96,7 +105,7 @@ export const ControleMedicamentos = () => {
                 <Input
                   id="frequency"
                   value={formData.frequency}
-                  onChange={(e) => setFormData(prev => ({ ...prev, frequency: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, frequency: e.target.value }))}
                   placeholder="Ex: A cada 6 horas, 1x ao dia"
                   required
                 />
@@ -109,7 +118,9 @@ export const ControleMedicamentos = () => {
                   min={1}
                   max={10}
                   value={formData.times_per_day}
-                  onChange={(e) => setFormData(prev => ({ ...prev, times_per_day: parseInt(e.target.value) }))}
+                  onChange={e =>
+                    setFormData(prev => ({ ...prev, times_per_day: parseInt(e.target.value) }))
+                  }
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -119,7 +130,7 @@ export const ControleMedicamentos = () => {
                     id="start"
                     type="date"
                     value={formData.start_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
+                    onChange={e => setFormData(prev => ({ ...prev, start_date: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
@@ -128,7 +139,7 @@ export const ControleMedicamentos = () => {
                     id="end"
                     type="date"
                     value={formData.end_date}
-                    onChange={(e) => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
+                    onChange={e => setFormData(prev => ({ ...prev, end_date: e.target.value }))}
                   />
                 </div>
               </div>
@@ -137,12 +148,14 @@ export const ControleMedicamentos = () => {
                 <Textarea
                   id="notes"
                   value={formData.notes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
                   placeholder="Ex: Tomar com alimentos, evitar laticínios"
                   rows={2}
                 />
               </div>
-              <Button type="submit" className="w-full">Adicionar Medicamento</Button>
+              <Button type="submit" className="w-full">
+                Adicionar Medicamento
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -150,7 +163,7 @@ export const ControleMedicamentos = () => {
 
       {medications && medications.length > 0 ? (
         <div className="grid gap-3">
-          {medications.map((med) => (
+          {medications.map(med => (
             <Card key={med.id}>
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
@@ -165,22 +178,18 @@ export const ControleMedicamentos = () => {
                     </Badge>
                   )}
                 </div>
-                <CardDescription>{med.dosage} • {med.frequency}</CardDescription>
+                <CardDescription>
+                  {med.dosage} • {med.frequency}
+                </CardDescription>
               </CardHeader>
               <CardContent className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
                     <span className="text-muted-foreground">{med.times_per_day}x ao dia</span>
-                    {med.notes && (
-                      <p className="text-xs text-muted-foreground mt-1">{med.notes}</p>
-                    )}
+                    {med.notes && <p className="text-xs text-muted-foreground mt-1">{med.notes}</p>}
                   </div>
                   {!isTakenToday(med.id) && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleLogMedication(med.id)}
-                    >
+                    <Button size="sm" variant="outline" onClick={() => handleLogMedication(med.id)}>
                       <Check className="h-4 w-4 mr-2" />
                       Marcar como tomado
                     </Button>

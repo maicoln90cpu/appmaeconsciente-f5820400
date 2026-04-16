@@ -1,20 +1,22 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Card } from "@/components/ui/card";
-import type { FeedingSettings } from "@/types/babyFeeding";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Card } from '@/components/ui/card';
+import type { FeedingSettings } from '@/types/babyFeeding';
 
 interface ConfiguracoesAmamentacaoProps {
   settings: FeedingSettings | null;
-  onSave: (settings: Omit<FeedingSettings, "id" | "user_id" | "created_at" | "updated_at">) => Promise<unknown>;
+  onSave: (
+    settings: Omit<FeedingSettings, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+  ) => Promise<unknown>;
 }
 
 export const ConfiguracoesAmamentacao = ({ settings, onSave }: ConfiguracoesAmamentacaoProps) => {
   const [formData, setFormData] = useState({
-    baby_name: "",
-    baby_birthdate: "",
+    baby_name: '',
+    baby_birthdate: '',
     feeding_interval_minutes: 180,
     reminder_enabled: true,
   });
@@ -50,7 +52,7 @@ export const ConfiguracoesAmamentacao = ({ settings, onSave }: ConfiguracoesAmam
             <Input
               id="baby_name"
               value={formData.baby_name}
-              onChange={(e) => setFormData({ ...formData, baby_name: e.target.value })}
+              onChange={e => setFormData({ ...formData, baby_name: e.target.value })}
               placeholder="Ex: Maria"
               required
             />
@@ -62,7 +64,7 @@ export const ConfiguracoesAmamentacao = ({ settings, onSave }: ConfiguracoesAmam
               id="baby_birthdate"
               type="date"
               value={formData.baby_birthdate}
-              onChange={(e) => setFormData({ ...formData, baby_birthdate: e.target.value })}
+              onChange={e => setFormData({ ...formData, baby_birthdate: e.target.value })}
               required
             />
           </div>
@@ -75,12 +77,12 @@ export const ConfiguracoesAmamentacao = ({ settings, onSave }: ConfiguracoesAmam
               min="60"
               max="360"
               value={formData.feeding_interval_minutes}
-              onChange={(e) => setFormData({ ...formData, feeding_interval_minutes: parseInt(e.target.value) })}
+              onChange={e =>
+                setFormData({ ...formData, feeding_interval_minutes: parseInt(e.target.value) })
+              }
               required
             />
-            <p className="text-sm text-muted-foreground">
-              Recomendado: 150-180 minutos (2h30-3h)
-            </p>
+            <p className="text-sm text-muted-foreground">Recomendado: 150-180 minutos (2h30-3h)</p>
           </div>
 
           <div className="flex items-center justify-between">
@@ -92,12 +94,12 @@ export const ConfiguracoesAmamentacao = ({ settings, onSave }: ConfiguracoesAmam
             </div>
             <Switch
               checked={formData.reminder_enabled}
-              onCheckedChange={(checked) => setFormData({ ...formData, reminder_enabled: checked })}
+              onCheckedChange={checked => setFormData({ ...formData, reminder_enabled: checked })}
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={saving}>
-            {saving ? "Salvando..." : "Salvar Configurações"}
+            {saving ? 'Salvando...' : 'Salvar Configurações'}
           </Button>
         </form>
       </Card>

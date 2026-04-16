@@ -23,9 +23,9 @@ export interface ProductAccessData {
 
 export interface UserFiltersState {
   searchTerm: string;
-  roleFilter: "all" | "admin" | "user";
-  sortBy: "date" | "email";
-  sortOrder: "asc" | "desc";
+  roleFilter: 'all' | 'admin' | 'user';
+  sortBy: 'date' | 'email';
+  sortOrder: 'asc' | 'desc';
 }
 
 export interface AccessGrantState {

@@ -1,7 +1,13 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Check, Star, Sparkles, Crown } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Check, Star, Sparkles, Crown } from 'lucide-react';
 
 interface PremiumUpgradeModalProps {
   open: boolean;
@@ -24,13 +30,12 @@ export const PremiumUpgradeModal = ({
   clubPaymentUrl,
   includedCount,
 }: PremiumUpgradeModalProps) => {
-
   const handleBuySingle = () => {
-    if (paymentUrl) window.open(paymentUrl, "_blank");
+    if (paymentUrl) window.open(paymentUrl, '_blank');
   };
 
   const handleSubscribeClub = () => {
-    if (clubPaymentUrl) window.open(clubPaymentUrl, "_blank");
+    if (clubPaymentUrl) window.open(clubPaymentUrl, '_blank');
   };
 
   return (
@@ -41,9 +46,7 @@ export const PremiumUpgradeModal = ({
             <Crown className="h-5 w-5 text-primary" />
             Desbloquear {productTitle}
           </DialogTitle>
-          <DialogDescription>
-            Escolha como acessar esta ferramenta
-          </DialogDescription>
+          <DialogDescription>Escolha como acessar esta ferramenta</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 mt-2">
@@ -64,7 +67,8 @@ export const PremiumUpgradeModal = ({
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-foreground">Clube Premium</p>
                   <p className="text-2xl font-bold text-primary mt-1">
-                    R$ {clubPrice.toFixed(2)}<span className="text-sm font-normal text-muted-foreground">/mês</span>
+                    R$ {clubPrice.toFixed(2)}
+                    <span className="text-sm font-normal text-muted-foreground">/mês</span>
                   </p>
                   <div className="mt-2 space-y-1">
                     <p className="text-xs text-muted-foreground flex items-center gap-1.5">
@@ -94,11 +98,11 @@ export const PremiumUpgradeModal = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium text-foreground text-sm">Compra avulsa</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Acesso apenas a esta ferramenta</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Acesso apenas a esta ferramenta
+                  </p>
                 </div>
-                <p className="text-lg font-bold text-foreground">
-                  R$ {productPrice.toFixed(2)}
-                </p>
+                <p className="text-lg font-bold text-foreground">R$ {productPrice.toFixed(2)}</p>
               </div>
             </button>
           )}

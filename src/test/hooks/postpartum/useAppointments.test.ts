@@ -42,7 +42,8 @@ vi.mock('@/integrations/supabase/client', () => ({
           mockInsert(data);
           return {
             select: () => ({
-              single: () => Promise.resolve({ data: { id: 'new-id', ...data as object }, error: null }),
+              single: () =>
+                Promise.resolve({ data: { id: 'new-id', ...(data as object) }, error: null }),
             }),
           };
         },
@@ -51,7 +52,8 @@ vi.mock('@/integrations/supabase/client', () => ({
           return {
             eq: () => ({
               select: () => ({
-                single: () => Promise.resolve({ data: { id: 'updated-id', ...data as object }, error: null }),
+                single: () =>
+                  Promise.resolve({ data: { id: 'updated-id', ...(data as object) }, error: null }),
               }),
             }),
           };
@@ -91,11 +93,7 @@ const createWrapper = () => {
   });
 
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return React.createElement(
-      QueryClientProvider,
-      { client: queryClient },
-      children
-    );
+    return React.createElement(QueryClientProvider, { client: queryClient }, children);
   };
 };
 
@@ -115,7 +113,7 @@ describe('usePostpartumAppointments', () => {
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.appointments).toEqual([]);
-    
+
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });

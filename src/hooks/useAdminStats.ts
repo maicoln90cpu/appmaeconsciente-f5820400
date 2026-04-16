@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { logger } from "@/lib/logger";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
+import { toast } from 'sonner';
 
 interface Stats {
   totalUsers: number;
@@ -22,26 +22,24 @@ export function useAdminStats(isAdmin: boolean) {
     const loadStats = async () => {
       try {
         const { count: totalUsers } = await supabase
-          .from("profiles")
-          .select("*", { count: "exact", head: true })
-          .neq("is_virtual", true);
+          .from('profiles')
+          .select('*', { count: 'exact', head: true })
+          .neq('is_virtual', true);
 
         const { count: totalItems } = await supabase
-          .from("itens_enxoval")
-          .select("*", { count: "exact", head: true });
+          .from('itens_enxoval')
+          .select('*', { count: 'exact', head: true });
 
         const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
         const { count: itemsThisMonth } = await supabase
-          .from("itens_enxoval")
-          .select("*", { count: "exact", head: true })
-          .gte("created_at", firstDayOfMonth.toISOString());
+          .from('itens_enxoval')
+          .select('*', { count: 'exact', head: true })
+          .gte('created_at', firstDayOfMonth.toISOString());
 
-        const { data: categoryData } = await supabase
-          .from("itens_enxoval")
-          .select("categoria");
+        const { data: categoryData } = await supabase.from('itens_enxoval').select('categoria');
 
         const categoryCounts: Record<string, number> = {};
-        categoryData?.forEach((item) => {
+        categoryData?.forEach(item => {
           categoryCounts[item.categoria] = (categoryCounts[item.categoria] || 0) + 1;
         });
 
@@ -51,10 +49,10 @@ export function useAdminStats(isAdmin: boolean) {
           .slice(0, 5);
 
         const weeklyGrowth = [
-          { week: "Sem 1", items: 12, users: 3 },
-          { week: "Sem 2", items: 18, users: 5 },
-          { week: "Sem 3", items: 25, users: 7 },
-          { week: "Sem 4", items: 30, users: 8 },
+          { week: 'Sem 1', items: 12, users: 3 },
+          { week: 'Sem 2', items: 18, users: 5 },
+          { week: 'Sem 3', items: 25, users: 7 },
+          { week: 'Sem 4', items: 30, users: 8 },
         ];
 
         setStats({
@@ -66,8 +64,10 @@ export function useAdminStats(isAdmin: boolean) {
           weeklyGrowth,
         });
       } catch (error) {
-        logger.error("Error loading stats", error, { context: "AdminDashboard" });
-        toast.error("Erro ao carregar estatísticas", { description: "Tente novamente mais tarde." });
+        logger.error('Error loading stats', error, { context: 'AdminDashboard' });
+        toast.error('Erro ao carregar estatísticas', {
+          description: 'Tente novamente mais tarde.',
+        });
       } finally {
         setLoading(false);
       }

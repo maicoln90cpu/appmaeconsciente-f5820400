@@ -3,7 +3,7 @@
  * Provides IndexedDB caching for offline access to baby data
  */
 
-const CACHE_DB_NAME = "maternidade_cache_db";
+const CACHE_DB_NAME = 'maternidade_cache_db';
 const CACHE_DB_VERSION = 1;
 
 export interface CacheConfig {
@@ -31,7 +31,7 @@ class OfflineCacheManager {
       const request = indexedDB.open(CACHE_DB_NAME, CACHE_DB_VERSION);
 
       request.onerror = () => {
-        console.error("Failed to open cache IndexedDB:", request.error);
+        console.error('Failed to open cache IndexedDB:', request.error);
         reject(request.error);
       };
 
@@ -40,31 +40,31 @@ class OfflineCacheManager {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         // Create stores for different data types
         const stores = [
-          "baby_feeding_logs",
-          "baby_sleep_logs",
-          "baby_colic_logs",
-          "baby_appointments",
-          "baby_medications",
-          "baby_routines",
-          "baby_achievements",
-          "baby_first_times",
-          "baby_timeline_events",
-          "baby_vaccination_profiles",
-          "baby_vaccinations",
-          "growth_measurements",
-          "baby_milestone_records",
+          'baby_feeding_logs',
+          'baby_sleep_logs',
+          'baby_colic_logs',
+          'baby_appointments',
+          'baby_medications',
+          'baby_routines',
+          'baby_achievements',
+          'baby_first_times',
+          'baby_timeline_events',
+          'baby_vaccination_profiles',
+          'baby_vaccinations',
+          'growth_measurements',
+          'baby_milestone_records',
         ];
 
-        stores.forEach((storeName) => {
+        stores.forEach(storeName => {
           if (!db.objectStoreNames.contains(storeName)) {
-            const store = db.createObjectStore(storeName, { keyPath: "cacheKey" });
-            store.createIndex("userId", "userId", { unique: false });
-            store.createIndex("timestamp", "timestamp", { unique: false });
+            const store = db.createObjectStore(storeName, { keyPath: 'cacheKey' });
+            store.createIndex('userId', 'userId', { unique: false });
+            store.createIndex('timestamp', 'timestamp', { unique: false });
           }
         });
       };
@@ -76,21 +76,17 @@ class OfflineCacheManager {
   /**
    * Cache data for a specific table
    */
-  async cacheData<T>(
-    tableName: string,
-    userId: string,
-    data: T[]
-  ): Promise<void> {
+  async cacheData<T>(tableName: string, userId: string, data: T[]): Promise<void> {
     await this.initDB();
 
     return new Promise((resolve, reject) => {
       if (!this.db) {
-        reject(new Error("Database not initialized"));
+        reject(new Error('Database not initialized'));
         return;
       }
 
       try {
-        const transaction = this.db.transaction([tableName], "readwrite");
+        const transaction = this.db.transaction([tableName], 'readwrite');
         const store = transaction.objectStore(tableName);
 
         const cacheEntry: CachedData<T> & { cacheKey: string } = {
@@ -128,13 +124,13 @@ class OfflineCacheManager {
       }
 
       try {
-        const transaction = this.db.transaction([tableName], "readonly");
+        const transaction = this.db.transaction([tableName], 'readonly');
         const store = transaction.objectStore(tableName);
         const request = store.get(userId);
 
         request.onsuccess = () => {
-          const result = request.result as CachedData<T> & { cacheKey: string } | undefined;
-          
+          const result = request.result as (CachedData<T> & { cacheKey: string }) | undefined;
+
           if (!result) {
             resolve(null);
             return;
@@ -170,7 +166,7 @@ class OfflineCacheManager {
       }
 
       try {
-        const transaction = this.db.transaction([tableName], "readwrite");
+        const transaction = this.db.transaction([tableName], 'readwrite');
         const store = transaction.objectStore(tableName);
         const request = store.delete(userId);
 
@@ -192,7 +188,7 @@ class OfflineCacheManager {
     if (!this.db) return;
 
     const storeNames = Array.from(this.db.objectStoreNames);
-    
+
     for (const storeName of storeNames) {
       await this.clearCache(storeName, userId);
     }
@@ -204,14 +200,14 @@ class OfflineCacheManager {
   async getCacheAge(tableName: string, userId: string): Promise<number | null> {
     await this.initDB();
 
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       if (!this.db) {
         resolve(null);
         return;
       }
 
       try {
-        const transaction = this.db.transaction([tableName], "readonly");
+        const transaction = this.db.transaction([tableName], 'readonly');
         const store = transaction.objectStore(tableName);
         const request = store.get(userId);
 

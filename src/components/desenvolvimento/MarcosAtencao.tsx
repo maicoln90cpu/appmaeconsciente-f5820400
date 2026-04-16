@@ -1,11 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle2, MessageSquare, FileText } from "lucide-react";
-import { BabyMilestoneRecord, DevelopmentMilestoneType, AREA_LABELS, AREA_ICONS } from "@/types/development";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { AlertCircle, CheckCircle2, MessageSquare, FileText } from 'lucide-react';
+import {
+  BabyMilestoneRecord,
+  DevelopmentMilestoneType,
+  AREA_LABELS,
+  AREA_ICONS,
+} from '@/types/development';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface MarcosAtencaoProps {
   attentionRecords: (BabyMilestoneRecord & { milestone?: DevelopmentMilestoneType })[];
@@ -36,8 +41,8 @@ export const MarcosAtencao = ({
         </CardHeader>
         <CardContent>
           <p className="text-sm text-green-700">
-            Continue observando e registrando as conquistas do seu bebê. 
-            Você está fazendo um ótimo trabalho! 💕
+            Continue observando e registrando as conquistas do seu bebê. Você está fazendo um ótimo
+            trabalho! 💕
           </p>
         </CardContent>
       </Card>
@@ -45,24 +50,26 @@ export const MarcosAtencao = ({
   }
 
   // Group by area
-  const byArea = attentionRecords.reduce((acc, record) => {
-    if (!record.milestone) return acc;
-    const area = record.milestone.area;
-    if (!acc[area]) acc[area] = [];
-    acc[area].push(record);
-    return acc;
-  }, {} as Record<string, typeof attentionRecords>);
+  const byArea = attentionRecords.reduce(
+    (acc, record) => {
+      if (!record.milestone) return acc;
+      const area = record.milestone.area;
+      if (!acc[area]) acc[area] = [];
+      acc[area].push(record);
+      return acc;
+    },
+    {} as Record<string, typeof attentionRecords>
+  );
 
   return (
     <div className="space-y-6">
       <Alert className="border-amber-200 bg-amber-50/50">
         <AlertCircle className="h-4 w-4 text-amber-600" />
-        <AlertTitle className="text-amber-800">
-          Marcos para observar com mais atenção
-        </AlertTitle>
+        <AlertTitle className="text-amber-800">Marcos para observar com mais atenção</AlertTitle>
         <AlertDescription className="text-amber-700">
-          Estes marcos passaram da faixa de idade típica. Isso <strong>não significa que há algo errado</strong>, 
-          mas é uma boa ideia conversar com o pediatra na próxima consulta para avaliar juntos.
+          Estes marcos passaram da faixa de idade típica. Isso{' '}
+          <strong>não significa que há algo errado</strong>, mas é uma boa ideia conversar com o
+          pediatra na próxima consulta para avaliar juntos.
         </AlertDescription>
       </Alert>
 
@@ -78,11 +85,11 @@ export const MarcosAtencao = ({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {records.map((record) => {
+            {records.map(record => {
               if (!record.milestone) return null;
-              
+
               const monthsOverdue = babyAgeMonths - record.milestone.age_max_months;
-              
+
               return (
                 <div
                   key={record.id || record.milestone_type_id}
@@ -96,7 +103,8 @@ export const MarcosAtencao = ({
                       </p>
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
                         <span>
-                          Faixa típica: {record.milestone.age_min_months}-{record.milestone.age_max_months} meses
+                          Faixa típica: {record.milestone.age_min_months}-
+                          {record.milestone.age_max_months} meses
                         </span>
                         <Badge variant="secondary" className="text-xs">
                           {monthsOverdue} {monthsOverdue === 1 ? 'mês' : 'meses'} além da faixa
@@ -164,15 +172,14 @@ export const MarcosAtencao = ({
         <AlertTitle>Lembre-se</AlertTitle>
         <AlertDescription className="space-y-2">
           <p>
-            <strong>Cada bebê se desenvolve no seu próprio ritmo.</strong> Variações são absolutamente normais.
+            <strong>Cada bebê se desenvolve no seu próprio ritmo.</strong> Variações são
+            absolutamente normais.
           </p>
           <p>
-            Este monitor é uma ferramenta de acompanhamento, não de diagnóstico. 
-            O pediatra é quem pode avaliar de forma completa o desenvolvimento do seu bebê.
+            Este monitor é uma ferramenta de acompanhamento, não de diagnóstico. O pediatra é quem
+            pode avaliar de forma completa o desenvolvimento do seu bebê.
           </p>
-          <p className="text-sm italic">
-            "Observe com amor, não com ansiedade" 💕
-          </p>
+          <p className="text-sm italic">"Observe com amor, não com ansiedade" 💕</p>
         </AlertDescription>
       </Alert>
     </div>

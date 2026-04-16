@@ -2,11 +2,11 @@
  * @fileoverview Hook para gerenciar informações da gestação e DPP
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { addDays, differenceInDays, differenceInWeeks, format } from "date-fns";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { addDays, differenceInDays, differenceInWeeks, format } from 'date-fns';
 
 export interface PregnancyInfo {
   id: string;
@@ -60,18 +60,22 @@ export const getTrimester = (weeks: number): number => {
 
 // Milestones gestacionais
 export const PREGNANCY_MILESTONES = [
-  { week: 4, title: "Implantação", description: "O embrião se implanta no útero" },
-  { week: 6, title: "Batimento cardíaco", description: "É possível detectar o coração batendo" },
-  { week: 8, title: "Embriões → Feto", description: "Transição de embrião para feto" },
-  { week: 12, title: "Fim do 1º trimestre", description: "Risco de aborto diminui significativamente" },
-  { week: 16, title: "Movimentos", description: "Você pode começar a sentir o bebê" },
-  { week: 20, title: "Ultrassom morfológico", description: "Exame detalhado da anatomia fetal" },
-  { week: 24, title: "Viabilidade", description: "Bebê tem chances fora do útero" },
-  { week: 28, title: "3º trimestre", description: "Reta final da gestação" },
-  { week: 32, title: "Preparação", description: "Bebê ganhando peso rapidamente" },
-  { week: 36, title: "Termo precoce", description: "Bebê está quase pronto" },
-  { week: 37, title: "Termo", description: "Gestação considerada a termo" },
-  { week: 40, title: "DPP", description: "Data Provável do Parto" },
+  { week: 4, title: 'Implantação', description: 'O embrião se implanta no útero' },
+  { week: 6, title: 'Batimento cardíaco', description: 'É possível detectar o coração batendo' },
+  { week: 8, title: 'Embriões → Feto', description: 'Transição de embrião para feto' },
+  {
+    week: 12,
+    title: 'Fim do 1º trimestre',
+    description: 'Risco de aborto diminui significativamente',
+  },
+  { week: 16, title: 'Movimentos', description: 'Você pode começar a sentir o bebê' },
+  { week: 20, title: 'Ultrassom morfológico', description: 'Exame detalhado da anatomia fetal' },
+  { week: 24, title: 'Viabilidade', description: 'Bebê tem chances fora do útero' },
+  { week: 28, title: '3º trimestre', description: 'Reta final da gestação' },
+  { week: 32, title: 'Preparação', description: 'Bebê ganhando peso rapidamente' },
+  { week: 36, title: 'Termo precoce', description: 'Bebê está quase pronto' },
+  { week: 37, title: 'Termo', description: 'Gestação considerada a termo' },
+  { week: 40, title: 'DPP', description: 'Data Provável do Parto' },
 ];
 
 export const usePregnancyInfo = () => {
@@ -80,17 +84,19 @@ export const usePregnancyInfo = () => {
 
   // Fetch pregnancy info
   const { data: pregnancyInfo, isLoading } = useQuery({
-    queryKey: ["pregnancy-info", user?.id],
+    queryKey: ['pregnancy-info', user?.id],
     queryFn: async () => {
       if (!user) return null;
 
       const { data, error } = await supabase
-        .from("pregnancy_info")
-        .select("id, user_id, last_menstrual_period, conception_date, due_date, due_date_source, ultrasound_due_date, gestational_weeks, gestational_days, is_high_risk, ob_doctor_name, hospital_name, notes, created_at, updated_at")
-        .eq("user_id", user.id)
+        .from('pregnancy_info')
+        .select(
+          'id, user_id, last_menstrual_period, conception_date, due_date, due_date_source, ultrasound_due_date, gestational_weeks, gestational_days, is_high_risk, ob_doctor_name, hospital_name, notes, created_at, updated_at'
+        )
+        .eq('user_id', user.id)
         .maybeSingle();
 
-      if (error && error.code !== "PGRST116") throw error;
+      if (error && error.code !== 'PGRST116') throw error;
       return data as unknown as PregnancyInfo | null;
     },
     enabled: !!user,
@@ -99,7 +105,7 @@ export const usePregnancyInfo = () => {
   // Save/Update pregnancy info
   const saveMutation = useMutation({
     mutationFn: async (input: PregnancyInfoInput) => {
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
       // Calculate gestational age if LMP provided
       let gestationalWeeks: number | undefined;
@@ -112,7 +118,7 @@ export const usePregnancyInfo = () => {
       }
 
       const { data, error } = await supabase
-        .from("pregnancy_info")
+        .from('pregnancy_info')
         .upsert({
           user_id: user.id,
           ...input,
@@ -126,11 +132,11 @@ export const usePregnancyInfo = () => {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pregnancy-info"] });
-      toast.success("Informações salvas com sucesso!");
+      queryClient.invalidateQueries({ queryKey: ['pregnancy-info'] });
+      toast.success('Informações salvas com sucesso!');
     },
     onError: () => {
-      toast.error("Erro ao salvar informações");
+      toast.error('Erro ao salvar informações');
     },
   });
 
@@ -142,7 +148,7 @@ export const usePregnancyInfo = () => {
 
   // Get effective due date
   const getEffectiveDueDate = () => {
-    if (pregnancyInfo?.due_date_source === "ultrasound" && pregnancyInfo.ultrasound_due_date) {
+    if (pregnancyInfo?.due_date_source === 'ultrasound' && pregnancyInfo.ultrasound_due_date) {
       return pregnancyInfo.ultrasound_due_date;
     }
     return pregnancyInfo?.due_date || null;

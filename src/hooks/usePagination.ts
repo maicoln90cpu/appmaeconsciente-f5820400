@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo } from 'react';
 
 interface PaginationResult<T> {
   currentPage: number;
@@ -36,8 +36,8 @@ export function usePagination<T>(
     paginatedData,
     totalItems,
     setCurrentPage: (page: number) => setCurrentPage(Math.max(1, Math.min(page, totalPages))),
-    nextPage: () => setCurrentPage((p) => Math.min(p + 1, totalPages)),
-    prevPage: () => setCurrentPage((p) => Math.max(p - 1, 1)),
+    nextPage: () => setCurrentPage(p => Math.min(p + 1, totalPages)),
+    prevPage: () => setCurrentPage(p => Math.max(p - 1, 1)),
     canGoNext: safePage < totalPages,
     canGoPrev: safePage > 1,
   };

@@ -1,12 +1,13 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { usePostpartumAchievements, ACHIEVEMENT_DEFINITIONS } from "@/hooks/postpartum";
-import { Trophy, Star, Lock } from "lucide-react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { usePostpartumAchievements, ACHIEVEMENT_DEFINITIONS } from '@/hooks/postpartum';
+import { Trophy, Star, Lock } from 'lucide-react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export const ConquistasRecuperacao = () => {
-  const { achievements, wellnessScores, isLoading, getGoodDaysStreak } = usePostpartumAchievements();
+  const { achievements, wellnessScores, isLoading, getGoodDaysStreak } =
+    usePostpartumAchievements();
 
   const unlockedCodes = new Set(achievements?.map(a => a.achievement_code) || []);
   const goodDaysStreak = getGoodDaysStreak();
@@ -34,7 +35,9 @@ export const ConquistasRecuperacao = () => {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
-              <span>Progresso: {unlockedCount} de {totalAchievements}</span>
+              <span>
+                Progresso: {unlockedCount} de {totalAchievements}
+              </span>
               <span className="font-medium">{Math.round(progressPercent)}%</span>
             </div>
             <Progress value={progressPercent} className="h-3" />
@@ -55,16 +58,16 @@ export const ConquistasRecuperacao = () => {
 
       {/* Grid de conquistas */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {ACHIEVEMENT_DEFINITIONS.map((achievement) => {
+        {ACHIEVEMENT_DEFINITIONS.map(achievement => {
           const isUnlocked = unlockedCodes.has(achievement.code);
           const unlockedData = achievements?.find(a => a.achievement_code === achievement.code);
 
           return (
-            <Card 
+            <Card
               key={achievement.code}
               className={`transition-all ${
-                isUnlocked 
-                  ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30' 
+                isUnlocked
+                  ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30'
                   : 'opacity-60 grayscale'
               }`}
             >
@@ -72,7 +75,11 @@ export const ConquistasRecuperacao = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`text-4xl ${isUnlocked ? 'animate-bounce' : ''}`}>
-                      {isUnlocked ? achievement.icon : <Lock className="h-8 w-8 text-muted-foreground" />}
+                      {isUnlocked ? (
+                        achievement.icon
+                      ) : (
+                        <Lock className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
                     <div>
                       <CardTitle className="text-lg">{achievement.name}</CardTitle>
@@ -87,7 +94,8 @@ export const ConquistasRecuperacao = () => {
               {isUnlocked && unlockedData && (
                 <CardContent>
                   <p className="text-xs text-muted-foreground">
-                    Desbloqueada em {format(new Date(unlockedData.unlocked_at), "dd/MM/yyyy", { locale: ptBR })}
+                    Desbloqueada em{' '}
+                    {format(new Date(unlockedData.unlocked_at), 'dd/MM/yyyy', { locale: ptBR })}
                   </p>
                 </CardContent>
               )}
@@ -100,11 +108,16 @@ export const ConquistasRecuperacao = () => {
       <Card className="bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-950/20 dark:to-purple-950/20 border-pink-200">
         <CardContent className="py-6">
           <p className="text-center text-sm font-medium">
-            {unlockedCount === 0 && "💕 Comece sua jornada — cada pequeno passo conta!"}
-            {unlockedCount > 0 && unlockedCount < 3 && "🌸 Você está indo muito bem! Continue assim."}
-            {unlockedCount >= 3 && unlockedCount < 5 && "✨ Que orgulho da sua dedicação!"}
-            {unlockedCount >= 5 && unlockedCount < totalAchievements && "🌟 Você é inspiração! Quase lá."}
-            {unlockedCount === totalAchievements && "🎉 INCRÍVEL! Todas as conquistas desbloqueadas!"}
+            {unlockedCount === 0 && '💕 Comece sua jornada — cada pequeno passo conta!'}
+            {unlockedCount > 0 &&
+              unlockedCount < 3 &&
+              '🌸 Você está indo muito bem! Continue assim.'}
+            {unlockedCount >= 3 && unlockedCount < 5 && '✨ Que orgulho da sua dedicação!'}
+            {unlockedCount >= 5 &&
+              unlockedCount < totalAchievements &&
+              '🌟 Você é inspiração! Quase lá.'}
+            {unlockedCount === totalAchievements &&
+              '🎉 INCRÍVEL! Todas as conquistas desbloqueadas!'}
           </p>
         </CardContent>
       </Card>

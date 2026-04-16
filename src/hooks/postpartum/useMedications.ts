@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import type { Database } from "@/integrations/supabase/types";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+import type { Database } from '@/integrations/supabase/types';
+import { toast } from 'sonner';
 
 type PostpartumMedicationRow = Database['public']['Tables']['postpartum_medications']['Row'];
 type PostpartumMedicationInsert = Database['public']['Tables']['postpartum_medications']['Insert'];
@@ -21,7 +21,9 @@ export const usePostpartumMedications = () => {
 
       const { data, error } = await supabase
         .from('postpartum_medications')
-        .select('id, user_id, medication_name, dosage, frequency, time_of_day, times_per_day, start_date, end_date, notes, is_active, created_at, updated_at')
+        .select(
+          'id, user_id, medication_name, dosage, frequency, time_of_day, times_per_day, start_date, end_date, notes, is_active, created_at, updated_at'
+        )
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
@@ -64,10 +66,10 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-medications'] });
-      toast("Sucesso", { description: "Medicamento adicionado com sucesso" });
+      toast('Sucesso', { description: 'Medicamento adicionado com sucesso' });
     },
     onError: () => {
-      toast.error("Erro", { description: "Erro ao adicionar medicamento" });
+      toast.error('Erro', { description: 'Erro ao adicionar medicamento' });
     },
   });
 
@@ -85,7 +87,7 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-medications'] });
-      toast("Sucesso", { description: "Medicamento atualizado" });
+      toast('Sucesso', { description: 'Medicamento atualizado' });
     },
   });
 
@@ -104,7 +106,7 @@ export const usePostpartumMedications = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['medication-logs'] });
-      toast("✅ Sucesso", { description: "Medicamento registrado" });
+      toast('✅ Sucesso', { description: 'Medicamento registrado' });
     },
   });
 

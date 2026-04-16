@@ -1,26 +1,38 @@
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Upload, Image, Loader2, Plus } from "lucide-react";
-import { useUltrasounds, UltrasoundInput } from "@/hooks/useUltrasounds";
-import { toast } from "sonner";
+import { useState, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Upload, Image, Loader2, Plus } from 'lucide-react';
+import { useUltrasounds, UltrasoundInput } from '@/hooks/useUltrasounds';
+import { toast } from 'sonner';
 
 interface UltrasoundUploaderProps {
   onSuccess?: () => void;
 }
 
 const ULTRASOUND_TYPES = [
-  { value: "routine", label: "Rotina" },
-  { value: "morphological", label: "Morfológico" },
-  { value: "transvaginal", label: "Transvaginal" },
-  { value: "3d_4d", label: "3D/4D" },
-  { value: "doppler", label: "Doppler" },
-  { value: "other", label: "Outro" },
+  { value: 'routine', label: 'Rotina' },
+  { value: 'morphological', label: 'Morfológico' },
+  { value: 'transvaginal', label: 'Transvaginal' },
+  { value: '3d_4d', label: '3D/4D' },
+  { value: 'doppler', label: 'Doppler' },
+  { value: 'other', label: 'Outro' },
 ];
 
 export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
@@ -33,8 +45,8 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
   const [formData, setFormData] = useState({
     gestational_week: 12,
     ultrasound_date: new Date().toISOString().split('T')[0],
-    ultrasound_type: "routine",
-    notes: "",
+    ultrasound_type: 'routine',
+    notes: '',
     baby_weight_grams: undefined as number | undefined,
     baby_length_cm: undefined as number | undefined,
   });
@@ -47,13 +59,13 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast.error("Por favor, selecione uma imagem válida");
+      toast.error('Por favor, selecione uma imagem válida');
       return;
     }
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 10MB");
+      toast.error('A imagem deve ter no máximo 10MB');
       return;
     }
 
@@ -65,7 +77,7 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
     e.preventDefault();
 
     if (!selectedFile) {
-      toast.error("Por favor, selecione uma imagem");
+      toast.error('Por favor, selecione uma imagem');
       return;
     }
 
@@ -87,24 +99,24 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
       };
 
       addUltrasound(input);
-      
+
       // Reset form
       setSelectedFile(null);
       setPreviewUrl(null);
       setFormData({
         gestational_week: 12,
         ultrasound_date: new Date().toISOString().split('T')[0],
-        ultrasound_type: "routine",
-        notes: "",
+        ultrasound_type: 'routine',
+        notes: '',
         baby_weight_grams: undefined,
         baby_length_cm: undefined,
       });
-      
+
       setOpen(false);
       onSuccess?.();
     } catch (error) {
-      console.error("Error uploading ultrasound:", error);
-      toast.error("Erro ao fazer upload do ultrassom");
+      console.error('Error uploading ultrasound:', error);
+      toast.error('Erro ao fazer upload do ultrassom');
     } finally {
       setIsUploading(false);
     }
@@ -114,12 +126,18 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
     setSelectedFile(null);
     setPreviewUrl(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={(o) => { setOpen(o); if (!o) resetForm(); }}>
+    <Dialog
+      open={open}
+      onOpenChange={o => {
+        setOpen(o);
+        if (!o) resetForm();
+      }}
+    >
       <DialogTrigger asChild>
         <Button className="gap-2">
           <Plus className="h-4 w-4" />
@@ -138,7 +156,7 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
           {/* Image Upload */}
           <div className="space-y-2">
             <Label>Imagem do Ultrassom *</Label>
-            <div 
+            <div
               className={`
                 border-2 border-dashed rounded-lg p-4 text-center cursor-pointer
                 transition-colors hover:border-primary/50
@@ -148,24 +166,18 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
             >
               {previewUrl ? (
                 <div className="space-y-2">
-                  <img 
-                    src={previewUrl} 
-                    alt="Preview" 
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
                     className="max-h-48 mx-auto rounded-md object-contain"
                   />
-                  <p className="text-sm text-muted-foreground">
-                    Clique para trocar a imagem
-                  </p>
+                  <p className="text-sm text-muted-foreground">Clique para trocar a imagem</p>
                 </div>
               ) : (
                 <div className="py-8 space-y-2">
                   <Upload className="h-10 w-10 mx-auto text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Clique ou arraste uma imagem aqui
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    JPG, PNG ou WEBP (máx. 10MB)
-                  </p>
+                  <p className="text-sm text-muted-foreground">Clique ou arraste uma imagem aqui</p>
+                  <p className="text-xs text-muted-foreground">JPG, PNG ou WEBP (máx. 10MB)</p>
                 </div>
               )}
             </div>
@@ -186,7 +198,7 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
                 id="date"
                 type="date"
                 value={formData.ultrasound_date}
-                onChange={(e) => setFormData(prev => ({ ...prev, ultrasound_date: e.target.value }))}
+                onChange={e => setFormData(prev => ({ ...prev, ultrasound_date: e.target.value }))}
                 required
               />
             </div>
@@ -198,7 +210,9 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
                 min={4}
                 max={42}
                 value={formData.gestational_week}
-                onChange={(e) => setFormData(prev => ({ ...prev, gestational_week: Number(e.target.value) }))}
+                onChange={e =>
+                  setFormData(prev => ({ ...prev, gestational_week: Number(e.target.value) }))
+                }
                 required
               />
             </div>
@@ -207,9 +221,9 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
           {/* Type */}
           <div className="space-y-2">
             <Label>Tipo de Ultrassom</Label>
-            <Select 
+            <Select
               value={formData.ultrasound_type}
-              onValueChange={(v) => setFormData(prev => ({ ...prev, ultrasound_type: v }))}
+              onValueChange={v => setFormData(prev => ({ ...prev, ultrasound_type: v }))}
             >
               <SelectTrigger>
                 <SelectValue />
@@ -233,11 +247,13 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
                 type="number"
                 min={0}
                 placeholder="Ex: 350"
-                value={formData.baby_weight_grams || ""}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  baby_weight_grams: e.target.value ? Number(e.target.value) : undefined 
-                }))}
+                value={formData.baby_weight_grams || ''}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    baby_weight_grams: e.target.value ? Number(e.target.value) : undefined,
+                  }))
+                }
               />
             </div>
             <div className="space-y-2">
@@ -248,11 +264,13 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
                 step="0.1"
                 min={0}
                 placeholder="Ex: 25.5"
-                value={formData.baby_length_cm || ""}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  baby_length_cm: e.target.value ? Number(e.target.value) : undefined 
-                }))}
+                value={formData.baby_length_cm || ''}
+                onChange={e =>
+                  setFormData(prev => ({
+                    ...prev,
+                    baby_length_cm: e.target.value ? Number(e.target.value) : undefined,
+                  }))
+                }
               />
             </div>
           </div>
@@ -264,18 +282,18 @@ export const UltrasoundUploader = ({ onSuccess }: UltrasoundUploaderProps) => {
               id="notes"
               placeholder="Observações do médico, sentimentos, etc."
               value={formData.notes}
-              onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+              onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               rows={3}
             />
           </div>
 
           {/* Submit */}
-          <Button 
-            type="submit" 
-            className="w-full" 
+          <Button
+            type="submit"
+            className="w-full"
             disabled={isUploading || isAdding || !selectedFile}
           >
-            {(isUploading || isAdding) ? (
+            {isUploading || isAdding ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                 Salvando...

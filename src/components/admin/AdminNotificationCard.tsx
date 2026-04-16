@@ -1,31 +1,35 @@
-import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { logger } from "@/lib/logger";
-import { Send } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { logger } from '@/lib/logger';
+import { Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const AdminNotificationCard = () => {
-  const [notification, setNotification] = useState({ title: "", message: "" });
+  const [notification, setNotification] = useState({ title: '', message: '' });
   const [sending, setSending] = useState(false);
 
   const handleSendNotification = async () => {
     if (!notification.title || !notification.message) {
-      toast.error("Preencha todos os campos", { description: "Título e mensagem são obrigatórios." });
+      toast.error('Preencha todos os campos', {
+        description: 'Título e mensagem são obrigatórios.',
+      });
       return;
     }
 
     setSending(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data: notificationData, error } = await supabase
-        .from("notifications")
+        .from('notifications')
         .insert({
           title: notification.title,
           message: notification.message,
@@ -38,30 +42,32 @@ export const AdminNotificationCard = () => {
       if (error) throw error;
 
       const { data: allUsers, error: usersError } = await supabase
-        .from("profiles")
-        .select("id")
-        .neq("id", user.id);
+        .from('profiles')
+        .select('id')
+        .neq('id', user.id);
 
       if (usersError) throw usersError;
 
       if (allUsers && allUsers.length > 0) {
-        const userNotifications = allUsers.map((u) => ({
+        const userNotifications = allUsers.map(u => ({
           user_id: u.id,
           notification_id: notificationData.id,
         }));
 
         const { error: insertError } = await supabase
-          .from("user_notifications")
+          .from('user_notifications')
           .insert(userNotifications);
 
         if (insertError) throw insertError;
       }
 
-      toast("Notificação enviada!", { description: `${allUsers?.length || 0} usuários foram notificados.` });
-      setNotification({ title: "", message: "" });
+      toast('Notificação enviada!', {
+        description: `${allUsers?.length || 0} usuários foram notificados.`,
+      });
+      setNotification({ title: '', message: '' });
     } catch (error) {
-      logger.error("Error sending notification", error, { context: "AdminDashboard" });
-      toast.error("Erro ao enviar notificação", { description: "Tente novamente mais tarde." });
+      logger.error('Error sending notification', error, { context: 'AdminDashboard' });
+      toast.error('Erro ao enviar notificação', { description: 'Tente novamente mais tarde.' });
     } finally {
       setSending(false);
     }
@@ -79,7 +85,7 @@ export const AdminNotificationCard = () => {
           <Input
             id="notif-title"
             value={notification.title}
-            onChange={(e) => setNotification({ ...notification, title: e.target.value })}
+            onChange={e => setNotification({ ...notification, title: e.target.value })}
             placeholder="Título da notificação"
           />
         </div>
@@ -88,14 +94,14 @@ export const AdminNotificationCard = () => {
           <Textarea
             id="notif-message"
             value={notification.message}
-            onChange={(e) => setNotification({ ...notification, message: e.target.value })}
+            onChange={e => setNotification({ ...notification, message: e.target.value })}
             placeholder="Conteúdo da mensagem..."
             rows={5}
           />
         </div>
         <Button onClick={handleSendNotification} disabled={sending} className="w-full">
           <Send className="w-4 h-4 mr-2" />
-          {sending ? "Enviando..." : "Enviar para Todos"}
+          {sending ? 'Enviando...' : 'Enviar para Todos'}
         </Button>
       </CardContent>
     </Card>

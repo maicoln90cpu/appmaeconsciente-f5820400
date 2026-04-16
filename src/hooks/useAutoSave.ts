@@ -3,10 +3,10 @@
  * Saves form data automatically with debounce and provides recovery
  */
 
-import { useState, useEffect, useCallback, useRef } from "react";
-import { indexedDBManager, DraftEntry } from "@/lib/indexed-db";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { indexedDBManager, DraftEntry } from '@/lib/indexed-db';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface UseAutoSaveOptions {
   /** Unique type identifier for this form (e.g., 'enxoval-item', 'post') */
@@ -64,16 +64,19 @@ export function useAutoSave<T extends Record<string, unknown>>({
   const [hasSavedRecently, setHasSavedRecently] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const [availableDrafts, setAvailableDrafts] = useState<DraftEntry[]>([]);
-  
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedIndicatorRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Generate unique draft key including user
-  const getDraftKey = useCallback((id?: string) => {
-    const baseId = id || draftId;
-    if (baseId) return baseId;
-    return `${type}_${user?.id || 'anonymous'}_${Date.now()}`;
-  }, [type, user?.id, draftId]);
+  const getDraftKey = useCallback(
+    (id?: string) => {
+      const baseId = id || draftId;
+      if (baseId) return baseId;
+      return `${type}_${user?.id || 'anonymous'}_${Date.now()}`;
+    },
+    [type, user?.id, draftId]
+  );
 
   // Load available drafts on mount
   useEffect(() => {
@@ -83,7 +86,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
       try {
         const drafts = await indexedDBManager.getDraftsByType(type);
         // Filter by user if authenticated
-        const userDrafts = user?.id 
+        const userDrafts = user?.id
           ? drafts.filter(d => (d.data as Record<string, unknown>).__userId === user.id)
           : drafts;
         setAvailableDrafts(userDrafts);
@@ -96,65 +99,70 @@ export function useAutoSave<T extends Record<string, unknown>>({
   }, [type, user?.id, enabled]);
 
   // Save draft function
-  const saveDraft = useCallback(async (data: T): Promise<void> => {
-    if (!enabled) return;
+  const saveDraft = useCallback(
+    async (data: T): Promise<void> => {
+      if (!enabled) return;
 
-    // Check minimum data requirement
-    if (minDataCheck && !minDataCheck(data)) {
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      const dataWithMeta = {
-        ...data,
-        __userId: user?.id,
-        __savedAt: Date.now(),
-      };
-
-      const savedId = await indexedDBManager.saveDraft(type, dataWithMeta, draftId || undefined);
-      
-      if (!draftId) {
-        setDraftId(savedId);
+      // Check minimum data requirement
+      if (minDataCheck && !minDataCheck(data)) {
+        return;
       }
 
-      setLastSavedAt(new Date());
-      setHasSavedRecently(true);
+      setIsSaving(true);
+      try {
+        const dataWithMeta = {
+          ...data,
+          __userId: user?.id,
+          __savedAt: Date.now(),
+        };
 
-      // Clear saved indicator after 3 seconds
-      if (savedIndicatorRef.current) {
-        clearTimeout(savedIndicatorRef.current);
+        const savedId = await indexedDBManager.saveDraft(type, dataWithMeta, draftId || undefined);
+
+        if (!draftId) {
+          setDraftId(savedId);
+        }
+
+        setLastSavedAt(new Date());
+        setHasSavedRecently(true);
+
+        // Clear saved indicator after 3 seconds
+        if (savedIndicatorRef.current) {
+          clearTimeout(savedIndicatorRef.current);
+        }
+        savedIndicatorRef.current = setTimeout(() => {
+          setHasSavedRecently(false);
+        }, 3000);
+
+        // Refresh available drafts
+        const drafts = await indexedDBManager.getDraftsByType(type);
+        const userDrafts = user?.id
+          ? drafts.filter(d => (d.data as Record<string, unknown>).__userId === user.id)
+          : drafts;
+        setAvailableDrafts(userDrafts);
+      } catch (error) {
+        console.error('Error saving draft:', error);
+      } finally {
+        setIsSaving(false);
       }
-      savedIndicatorRef.current = setTimeout(() => {
-        setHasSavedRecently(false);
-      }, 3000);
-
-      // Refresh available drafts
-      const drafts = await indexedDBManager.getDraftsByType(type);
-      const userDrafts = user?.id 
-        ? drafts.filter(d => (d.data as Record<string, unknown>).__userId === user.id)
-        : drafts;
-      setAvailableDrafts(userDrafts);
-
-    } catch (error) {
-      console.error('Error saving draft:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [type, draftId, user?.id, enabled, minDataCheck]);
+    },
+    [type, draftId, user?.id, enabled, minDataCheck]
+  );
 
   // Debounced auto-save trigger
-  const triggerAutoSave = useCallback((data: T) => {
-    if (!enabled) return;
+  const triggerAutoSave = useCallback(
+    (data: T) => {
+      if (!enabled) return;
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
 
-    debounceRef.current = setTimeout(() => {
-      saveDraft(data);
-    }, debounceMs);
-  }, [saveDraft, debounceMs, enabled]);
+      debounceRef.current = setTimeout(() => {
+        saveDraft(data);
+      }, debounceMs);
+    },
+    [saveDraft, debounceMs, enabled]
+  );
 
   // Load draft function
   const loadDraft = useCallback(async (): Promise<T | null> => {
@@ -174,20 +182,23 @@ export function useAutoSave<T extends Record<string, unknown>>({
   }, [draftId, onDraftLoaded]);
 
   // Load draft by ID
-  const loadDraftById = useCallback(async (id: string): Promise<T | null> => {
-    try {
-      const draft = await indexedDBManager.getDraft(id);
-      if (draft) {
-        setDraftId(id);
-        const data = draft.data as T;
-        onDraftLoaded?.(data);
-        return data;
+  const loadDraftById = useCallback(
+    async (id: string): Promise<T | null> => {
+      try {
+        const draft = await indexedDBManager.getDraft(id);
+        if (draft) {
+          setDraftId(id);
+          const data = draft.data as T;
+          onDraftLoaded?.(data);
+          return data;
+        }
+      } catch (error) {
+        console.error('Error loading draft by ID:', error);
       }
-    } catch (error) {
-      console.error('Error loading draft by ID:', error);
-    }
-    return null;
-  }, [onDraftLoaded]);
+      return null;
+    },
+    [onDraftLoaded]
+  );
 
   // Delete current draft
   const deleteDraft = useCallback(async (): Promise<void> => {
@@ -197,10 +208,10 @@ export function useAutoSave<T extends Record<string, unknown>>({
       await indexedDBManager.deleteDraft(draftId);
       setDraftId(null);
       setLastSavedAt(null);
-      
+
       // Refresh available drafts
       const drafts = await indexedDBManager.getDraftsByType(type);
-      const userDrafts = user?.id 
+      const userDrafts = user?.id
         ? drafts.filter(d => (d.data as Record<string, unknown>).__userId === user.id)
         : drafts;
       setAvailableDrafts(userDrafts);
@@ -210,29 +221,32 @@ export function useAutoSave<T extends Record<string, unknown>>({
   }, [draftId, type, user?.id]);
 
   // Delete draft by ID
-  const deleteDraftById = useCallback(async (id: string): Promise<void> => {
-    try {
-      await indexedDBManager.deleteDraft(id);
-      
-      // Clear current draft if it matches
-      if (id === draftId) {
-        setDraftId(null);
-        setLastSavedAt(null);
-      }
-      
-      // Refresh available drafts
-      const drafts = await indexedDBManager.getDraftsByType(type);
-      const userDrafts = user?.id 
-        ? drafts.filter(d => (d.data as Record<string, unknown>).__userId === user.id)
-        : drafts;
-      setAvailableDrafts(userDrafts);
+  const deleteDraftById = useCallback(
+    async (id: string): Promise<void> => {
+      try {
+        await indexedDBManager.deleteDraft(id);
 
-      toast.success('Rascunho excluído');
-    } catch (error) {
-      console.error('Error deleting draft:', error);
-      toast.error('Erro ao excluir rascunho');
-    }
-  }, [draftId, type, user?.id]);
+        // Clear current draft if it matches
+        if (id === draftId) {
+          setDraftId(null);
+          setLastSavedAt(null);
+        }
+
+        // Refresh available drafts
+        const drafts = await indexedDBManager.getDraftsByType(type);
+        const userDrafts = user?.id
+          ? drafts.filter(d => (d.data as Record<string, unknown>).__userId === user.id)
+          : drafts;
+        setAvailableDrafts(userDrafts);
+
+        toast.success('Rascunho excluído');
+      } catch (error) {
+        console.error('Error deleting draft:', error);
+        toast.error('Erro ao excluir rascunho');
+      }
+    },
+    [draftId, type, user?.id]
+  );
 
   // Clear saved indicator
   const clearSavedIndicator = useCallback(() => {

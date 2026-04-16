@@ -1,10 +1,16 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import type { VaccinationReminderSettings } from "@/types/vaccination";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import type { VaccinationReminderSettings } from '@/types/vaccination';
 
 interface ConfiguracoesLembretesProps {
   settings: VaccinationReminderSettings | null;
@@ -54,7 +60,7 @@ export const ConfiguracoesLembretes = ({ settings, onSave }: ConfiguracoesLembre
           </div>
           <Switch
             checked={formData.reminder_enabled}
-            onCheckedChange={(checked) => setFormData({ ...formData, reminder_enabled: checked })}
+            onCheckedChange={checked => setFormData({ ...formData, reminder_enabled: checked })}
           />
         </div>
 
@@ -64,7 +70,9 @@ export const ConfiguracoesLembretes = ({ settings, onSave }: ConfiguracoesLembre
               <Label>Antecedência do lembrete</Label>
               <Select
                 value={formData.reminder_days_before.toString()}
-                onValueChange={(value) => setFormData({ ...formData, reminder_days_before: Number(value) })}
+                onValueChange={value =>
+                  setFormData({ ...formData, reminder_days_before: Number(value) })
+                }
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -80,43 +88,39 @@ export const ConfiguracoesLembretes = ({ settings, onSave }: ConfiguracoesLembre
 
             <div className="space-y-4">
               <h4 className="font-semibold">Canais de notificação</h4>
-              
+
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>Notificações push</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Alertas dentro do aplicativo
-                  </p>
+                  <p className="text-sm text-muted-foreground">Alertas dentro do aplicativo</p>
                 </div>
                 <Switch
                   checked={formData.push_enabled}
-                  onCheckedChange={(checked) => setFormData({ ...formData, push_enabled: checked })}
+                  onCheckedChange={checked => setFormData({ ...formData, push_enabled: checked })}
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>E-mail</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Lembretes por e-mail
-                  </p>
+                  <p className="text-sm text-muted-foreground">Lembretes por e-mail</p>
                 </div>
                 <Switch
                   checked={formData.email_enabled}
-                  onCheckedChange={(checked) => setFormData({ ...formData, email_enabled: checked })}
+                  onCheckedChange={checked => setFormData({ ...formData, email_enabled: checked })}
                 />
               </div>
 
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label>WhatsApp</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Link para enviar no WhatsApp
-                  </p>
+                  <p className="text-sm text-muted-foreground">Link para enviar no WhatsApp</p>
                 </div>
                 <Switch
                   checked={formData.whatsapp_enabled}
-                  onCheckedChange={(checked) => setFormData({ ...formData, whatsapp_enabled: checked })}
+                  onCheckedChange={checked =>
+                    setFormData({ ...formData, whatsapp_enabled: checked })
+                  }
                 />
               </div>
             </div>

@@ -1,17 +1,31 @@
-import { useState } from "react";
-import { Users, Copy, Link2, Trash2, Mail, Clock, Check } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { format, formatDistance } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState } from 'react';
+import { Users, Copy, Link2, Trash2, Mail, Clock, Check } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { format, formatDistance } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface PartnerAccess {
   id: string;
@@ -25,20 +39,24 @@ interface PartnerAccess {
 
 export const PartnerAccessManager = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [partnerEmail, setPartnerEmail] = useState("");
-  const [expiryDays, setExpiryDays] = useState<string>("30");
+  const [partnerEmail, setPartnerEmail] = useState('');
+  const [expiryDays, setExpiryDays] = useState<string>('30');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const { data: accesses, isLoading } = useQuery({
     queryKey: ['partner-access'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('partner_access')
-        .select('id, user_id, partner_email, access_token, is_active, expires_at, granted_at, last_accessed, created_at, updated_at')
+        .select(
+          'id, user_id, partner_email, access_token, is_active, expires_at, granted_at, last_accessed, created_at, updated_at'
+        )
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
@@ -49,19 +67,22 @@ export const PartnerAccessManager = () => {
 
   const grantAccess = useMutation({
     mutationFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const expires_at = expiryDays !== "never" 
-        ? new Date(Date.now() + parseInt(expiryDays) * 24 * 60 * 60 * 1000).toISOString()
-        : null;
+      const expires_at =
+        expiryDays !== 'never'
+          ? new Date(Date.now() + parseInt(expiryDays) * 24 * 60 * 60 * 1000).toISOString()
+          : null;
 
       const { data, error } = await supabase
         .from('partner_access')
-        .insert({ 
+        .insert({
           user_id: user.id,
           partner_email: partnerEmail,
-          expires_at
+          expires_at,
         })
         .select()
         .single();
@@ -72,7 +93,7 @@ export const PartnerAccessManager = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['partner-access'] });
       toast.success('Acesso concedido com sucesso! 💕');
-      setPartnerEmail("");
+      setPartnerEmail('');
       setIsDialogOpen(false);
     },
     onError: (error: Error) => {
@@ -145,7 +166,7 @@ export const PartnerAccessManager = () => {
                     type="email"
                     placeholder="parceiro@email.com"
                     value={partnerEmail}
-                    onChange={(e) => setPartnerEmail(e.target.value)}
+                    onChange={e => setPartnerEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -168,11 +189,11 @@ export const PartnerAccessManager = () => {
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancelar
                 </Button>
-                <Button 
+                <Button
                   onClick={() => grantAccess.mutate()}
                   disabled={!partnerEmail || grantAccess.isPending}
                 >
-                  {grantAccess.isPending ? "Criando..." : "Criar Acesso"}
+                  {grantAccess.isPending ? 'Criando...' : 'Criar Acesso'}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -192,8 +213,8 @@ export const PartnerAccessManager = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {activeAccesses.map((access) => (
-              <div 
+            {activeAccesses.map(access => (
+              <div
                 key={access.id}
                 className="flex items-center justify-between p-4 rounded-lg border bg-card"
               >
@@ -207,14 +228,18 @@ export const PartnerAccessManager = () => {
                       <Clock className="h-3 w-3" />
                       {access.expires_at ? (
                         <span>
-                          Expira em {formatDistance(new Date(access.expires_at), new Date(), { locale: ptBR })}
+                          Expira em{' '}
+                          {formatDistance(new Date(access.expires_at), new Date(), {
+                            locale: ptBR,
+                          })}
                         </span>
                       ) : (
                         <span>Sem expiração</span>
                       )}
                       {access.last_accessed && (
                         <span className="ml-2">
-                          • Último acesso: {format(new Date(access.last_accessed), "dd/MM", { locale: ptBR })}
+                          • Último acesso:{' '}
+                          {format(new Date(access.last_accessed), 'dd/MM', { locale: ptBR })}
                         </span>
                       )}
                     </div>
@@ -224,11 +249,7 @@ export const PartnerAccessManager = () => {
                   <Badge variant="secondary" className="text-green-600">
                     Ativo
                   </Badge>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => copyLink(access.access_token)}
-                  >
+                  <Button size="sm" variant="ghost" onClick={() => copyLink(access.access_token)}>
                     {copiedToken === access.access_token ? (
                       <Check className="h-4 w-4 text-green-500" />
                     ) : (
@@ -253,8 +274,8 @@ export const PartnerAccessManager = () => {
           <div className="mt-6">
             <p className="text-sm text-muted-foreground mb-2">Acessos revogados</p>
             <div className="space-y-2">
-              {inactiveAccesses.slice(0, 3).map((access) => (
-                <div 
+              {inactiveAccesses.slice(0, 3).map(access => (
+                <div
                   key={access.id}
                   className="flex items-center justify-between p-3 rounded-lg border bg-muted/30 opacity-60"
                 >

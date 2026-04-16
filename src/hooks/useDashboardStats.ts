@@ -1,6 +1,6 @@
-import { useMemo } from "react";
-import { EnxovalItem, Category } from "@/types/enxoval";
-import { calculateTotals } from "@/lib/calculations";
+import { useMemo } from 'react';
+import { EnxovalItem, Category } from '@/types/enxoval';
+import { calculateTotals } from '@/lib/calculations';
 
 interface CategoryData {
   planned: number;
@@ -30,29 +30,32 @@ export const useDashboardStats = (items: EnxovalItem[]): DashboardStats => {
   const totals = useMemo(() => calculateTotals(items), [items]);
 
   const categoryData = useMemo(() => {
-    return items.reduce((acc, item) => {
-      const cat = item.category;
-      if (!acc[cat]) {
-        acc[cat] = { planned: 0, paid: 0 };
-      }
-      acc[cat].planned += item.subtotalPlanned;
-      acc[cat].paid += item.subtotalPaid;
-      return acc;
-    }, {} as Record<Category, CategoryData>);
+    return items.reduce(
+      (acc, item) => {
+        const cat = item.category;
+        if (!acc[cat]) {
+          acc[cat] = { planned: 0, paid: 0 };
+        }
+        acc[cat].planned += item.subtotalPlanned;
+        acc[cat].paid += item.subtotalPaid;
+        return acc;
+      },
+      {} as Record<Category, CategoryData>
+    );
   }, [items]);
 
   const chartData = useMemo(() => {
     return Object.entries(categoryData).map(([category, values]) => ({
       category,
       planejado: values.planned,
-      pago: values.paid
+      pago: values.paid,
     }));
   }, [categoryData]);
 
   const statusData = useMemo(() => {
     return [
       { name: 'A comprar', value: items.filter(i => i.status === 'A comprar').length },
-      { name: 'Comprado', value: items.filter(i => i.status === 'Comprado').length }
+      { name: 'Comprado', value: items.filter(i => i.status === 'Comprado').length },
     ].filter(d => d.value > 0);
   }, [items]);
 
@@ -65,6 +68,6 @@ export const useDashboardStats = (items: EnxovalItem[]): DashboardStats => {
     categoryData,
     chartData,
     statusData,
-    progressPercentage
+    progressPercentage,
   };
 };

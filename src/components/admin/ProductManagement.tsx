@@ -1,24 +1,18 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import { useState } from "react";
-import { Plus, Edit2, Trash2, Save, X } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { SortableTableHead } from "@/components/ui/sortable-table-head";
-import { useSortableTable } from "@/hooks/useSortableTable";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
+import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { useSortableTable } from '@/hooks/useSortableTable';
 
 interface Product {
   id: string;
@@ -44,10 +38,10 @@ export const ProductManagement = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [newProduct, setNewProduct] = useState(false);
   const [formData, setFormData] = useState<Partial<Product>>({
-    title: "",
-    slug: "",
-    description: "",
-    short_description: "",
+    title: '',
+    slug: '',
+    description: '',
+    short_description: '',
     price: null,
     is_free: true,
     is_active: true,
@@ -61,12 +55,14 @@ export const ProductManagement = () => {
   });
 
   const { data: products, isLoading } = useQuery({
-    queryKey: ["admin-products"],
+    queryKey: ['admin-products'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("products")
-        .select("id, title, slug, description, short_description, price, is_active, is_free, display_order, category, thumbnail_url, destination_url, hotmart_product_id, payment_url, access_duration_days, trial_enabled, trial_days, created_at, updated_at")
-        .order("display_order", { ascending: true });
+        .from('products')
+        .select(
+          'id, title, slug, description, short_description, price, is_active, is_free, display_order, category, thumbnail_url, destination_url, hotmart_product_id, payment_url, access_duration_days, trial_enabled, trial_days, created_at, updated_at'
+        )
+        .order('display_order', { ascending: true });
 
       if (error) throw error;
       return data as Product[];
@@ -76,59 +72,69 @@ export const ProductManagement = () => {
   const createMutation = useMutation({
     mutationFn: async (product: Partial<Product>) => {
       const productData = {
-        title: product.title || "",
-        slug: product.slug || "",
-        description: product.description || "",
+        title: product.title || '',
+        slug: product.slug || '',
+        description: product.description || '',
         short_description: product.short_description,
         price: product.price,
         is_free: product.is_free ?? true,
         is_active: product.is_active ?? true,
         display_order: product.display_order ?? 0,
       };
-      const { error } = await supabase.from("products").insert([productData]);
+      const { error } = await supabase.from('products').insert([productData]);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
-      toast.success("Produto criado");
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast.success('Produto criado');
       setNewProduct(false);
       resetForm();
     },
-    onError: () => toast.error("Erro ao criar produto"),
+    onError: () => toast.error('Erro ao criar produto'),
   });
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Product> }) => {
-      const { error } = await supabase.from("products").update(data).eq("id", id);
+      const { error } = await supabase.from('products').update(data).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
-      toast.success("Produto atualizado");
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast.success('Produto atualizado');
       setEditingId(null);
       resetForm();
     },
-    onError: () => toast.error("Erro ao atualizar produto"),
+    onError: () => toast.error('Erro ao atualizar produto'),
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("products").delete().eq("id", id);
+      const { error } = await supabase.from('products').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
-      toast.success("Produto deletado");
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      toast.success('Produto deletado');
     },
-    onError: () => toast.error("Erro ao deletar produto"),
+    onError: () => toast.error('Erro ao deletar produto'),
   });
 
   const resetForm = () => {
     setFormData({
-      title: "", slug: "", description: "", short_description: "",
-      price: null, is_free: true, is_active: true, display_order: 0,
-      destination_url: null, hotmart_product_id: null, payment_url: null,
-      access_duration_days: null, trial_enabled: false, trial_days: 3,
+      title: '',
+      slug: '',
+      description: '',
+      short_description: '',
+      price: null,
+      is_free: true,
+      is_active: true,
+      display_order: 0,
+      destination_url: null,
+      hotmart_product_id: null,
+      payment_url: null,
+      access_duration_days: null,
+      trial_enabled: false,
+      trial_days: 3,
     });
   };
 
@@ -169,90 +175,184 @@ export const ProductManagement = () => {
       {isEditing && (
         <Card>
           <CardHeader>
-            <CardTitle>{newProduct ? "Novo Produto" : "Editar Produto"}</CardTitle>
+            <CardTitle>{newProduct ? 'Novo Produto' : 'Editar Produto'}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Título</Label>
-                <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+                <Input
+                  value={formData.title}
+                  onChange={e => setFormData({ ...formData, title: e.target.value })}
+                />
               </div>
               <div>
                 <Label>Slug (URL)</Label>
-                <Input value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} />
+                <Input
+                  value={formData.slug}
+                  onChange={e => setFormData({ ...formData, slug: e.target.value })}
+                />
               </div>
             </div>
             <div>
               <Label>Descrição Curta</Label>
-              <Input value={formData.short_description || ""} onChange={(e) => setFormData({ ...formData, short_description: e.target.value })} />
+              <Input
+                value={formData.short_description || ''}
+                onChange={e => setFormData({ ...formData, short_description: e.target.value })}
+              />
             </div>
             <div>
               <Label>Descrição</Label>
-              <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
+              <Textarea
+                value={formData.description}
+                onChange={e => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Link de Destino</Label>
-                <Input value={formData.destination_url || ""} onChange={(e) => setFormData({ ...formData, destination_url: e.target.value || null })} placeholder="https://..." />
+                <Input
+                  value={formData.destination_url || ''}
+                  onChange={e =>
+                    setFormData({ ...formData, destination_url: e.target.value || null })
+                  }
+                  placeholder="https://..."
+                />
               </div>
               <div>
                 <Label>ID Produto Hotmart</Label>
-                <Input value={formData.hotmart_product_id || ""} onChange={(e) => setFormData({ ...formData, hotmart_product_id: e.target.value || null })} placeholder="12345" />
+                <Input
+                  value={formData.hotmart_product_id || ''}
+                  onChange={e =>
+                    setFormData({ ...formData, hotmart_product_id: e.target.value || null })
+                  }
+                  placeholder="12345"
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>URL de Pagamento</Label>
-                <Input value={formData.payment_url || ""} onChange={(e) => setFormData({ ...formData, payment_url: e.target.value || null })} placeholder="https://pay.hotmart.com/..." />
+                <Input
+                  value={formData.payment_url || ''}
+                  onChange={e => setFormData({ ...formData, payment_url: e.target.value || null })}
+                  placeholder="https://pay.hotmart.com/..."
+                />
               </div>
               <div>
                 <Label>Duração do Acesso (dias)</Label>
-                <Input type="number" value={formData.access_duration_days || ""} onChange={(e) => setFormData({ ...formData, access_duration_days: e.target.value ? parseInt(e.target.value) : null })} placeholder="Vitalício" />
+                <Input
+                  type="number"
+                  value={formData.access_duration_days || ''}
+                  onChange={e =>
+                    setFormData({
+                      ...formData,
+                      access_duration_days: e.target.value ? parseInt(e.target.value) : null,
+                    })
+                  }
+                  placeholder="Vitalício"
+                />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <Switch checked={formData.trial_enabled || false} onCheckedChange={(checked) => setFormData({ ...formData, trial_enabled: checked })} />
+                  <Switch
+                    checked={formData.trial_enabled || false}
+                    onCheckedChange={checked =>
+                      setFormData({ ...formData, trial_enabled: checked })
+                    }
+                  />
                   <Label>Trial para Novos Usuários</Label>
                 </div>
                 {formData.trial_enabled && (
                   <div>
                     <Label>Dias de Trial</Label>
-                    <Input type="number" min="1" value={formData.trial_days || 3} onChange={(e) => setFormData({ ...formData, trial_days: parseInt(e.target.value) })} />
+                    <Input
+                      type="number"
+                      min="1"
+                      value={formData.trial_days || 3}
+                      onChange={e =>
+                        setFormData({ ...formData, trial_days: parseInt(e.target.value) })
+                      }
+                    />
                   </div>
                 )}
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <Label>Preço</Label>
-                  <Input type="number" value={formData.price || ""} onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || null })} disabled={formData.is_free} />
+                  <Input
+                    type="number"
+                    value={formData.price || ''}
+                    onChange={e =>
+                      setFormData({ ...formData, price: parseFloat(e.target.value) || null })
+                    }
+                    disabled={formData.is_free}
+                  />
                 </div>
                 <div className="flex items-center gap-2">
-                  <Switch checked={formData.is_free} onCheckedChange={(checked) => setFormData({ ...formData, is_free: checked, price: checked ? null : formData.price })} />
+                  <Switch
+                    checked={formData.is_free}
+                    onCheckedChange={checked =>
+                      setFormData({
+                        ...formData,
+                        is_free: checked,
+                        price: checked ? null : formData.price,
+                      })
+                    }
+                  />
                   <Label>Gratuito</Label>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })} />
+                  <Switch
+                    checked={formData.is_active}
+                    onCheckedChange={checked => setFormData({ ...formData, is_active: checked })}
+                  />
                   <Label>Ativo</Label>
                 </div>
               </div>
             </div>
             <div className="flex gap-2 justify-end">
-              <Button variant="outline" onClick={handleCancel}><X className="h-4 w-4 mr-2" />Cancelar</Button>
-              <Button onClick={handleSave} disabled={createMutation.isPending || updateMutation.isPending}><Save className="h-4 w-4 mr-2" />Salvar</Button>
+              <Button variant="outline" onClick={handleCancel}>
+                <X className="h-4 w-4 mr-2" />
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={createMutation.isPending || updateMutation.isPending}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Salvar
+              </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
       {/* Product Table */}
-      <ProductTable products={products} isEditing={isEditing} onEdit={handleEdit} onDelete={(id) => deleteMutation.mutate(id)} />
+      <ProductTable
+        products={products}
+        isEditing={isEditing}
+        onEdit={handleEdit}
+        onDelete={id => deleteMutation.mutate(id)}
+      />
     </div>
   );
 };
 
-const ProductTable = ({ products, isEditing, onEdit, onDelete }: { products: Product[] | undefined; isEditing: boolean; onEdit: (p: Product) => void; onDelete: (id: string) => void }) => {
+const ProductTable = ({
+  products,
+  isEditing,
+  onEdit,
+  onDelete,
+}: {
+  products: Product[] | undefined;
+  isEditing: boolean;
+  onEdit: (p: Product) => void;
+  onDelete: (id: string) => void;
+}) => {
   const { sortedData, sortKey, sortDirection, handleSort } = useSortableTable(products);
 
   return (
@@ -261,11 +361,46 @@ const ProductTable = ({ products, isEditing, onEdit, onDelete }: { products: Pro
         <Table>
           <TableHeader>
             <TableRow>
-              <SortableTableHead sortKey="title" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Título</SortableTableHead>
-              <SortableTableHead sortKey="slug" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Slug</SortableTableHead>
-              <SortableTableHead sortKey="price" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Preço</SortableTableHead>
-              <SortableTableHead sortKey="is_active" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Status</SortableTableHead>
-              <SortableTableHead sortKey="trial_enabled" currentSortKey={sortKey as string} sortDirection={sortDirection} onSort={(k) => handleSort(k as keyof Product)}>Trial</SortableTableHead>
+              <SortableTableHead
+                sortKey="title"
+                currentSortKey={sortKey as string}
+                sortDirection={sortDirection}
+                onSort={k => handleSort(k as keyof Product)}
+              >
+                Título
+              </SortableTableHead>
+              <SortableTableHead
+                sortKey="slug"
+                currentSortKey={sortKey as string}
+                sortDirection={sortDirection}
+                onSort={k => handleSort(k as keyof Product)}
+              >
+                Slug
+              </SortableTableHead>
+              <SortableTableHead
+                sortKey="price"
+                currentSortKey={sortKey as string}
+                sortDirection={sortDirection}
+                onSort={k => handleSort(k as keyof Product)}
+              >
+                Preço
+              </SortableTableHead>
+              <SortableTableHead
+                sortKey="is_active"
+                currentSortKey={sortKey as string}
+                sortDirection={sortDirection}
+                onSort={k => handleSort(k as keyof Product)}
+              >
+                Status
+              </SortableTableHead>
+              <SortableTableHead
+                sortKey="trial_enabled"
+                currentSortKey={sortKey as string}
+                sortDirection={sortDirection}
+                onSort={k => handleSort(k as keyof Product)}
+              >
+                Trial
+              </SortableTableHead>
               <SortableTableHead className="text-right">Ações</SortableTableHead>
             </TableRow>
           </TableHeader>
@@ -277,20 +412,25 @@ const ProductTable = ({ products, isEditing, onEdit, onDelete }: { products: Pro
                 </TableCell>
               </TableRow>
             )}
-            {sortedData?.map((product) => (
+            {sortedData?.map(product => (
               <TableRow key={product.id}>
                 <TableCell className="font-medium">{product.title}</TableCell>
                 <TableCell className="text-muted-foreground text-xs">/{product.slug}</TableCell>
                 <TableCell>
                   {product.is_free ? (
-                    <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">Gratuito</Badge>
+                    <Badge
+                      variant="secondary"
+                      className="bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                    >
+                      Gratuito
+                    </Badge>
                   ) : (
                     <span className="text-sm">R$ {product.price?.toFixed(2)}</span>
                   )}
                 </TableCell>
                 <TableCell>
-                  <Badge variant={product.is_active ? "default" : "outline"}>
-                    {product.is_active ? "Ativo" : "Inativo"}
+                  <Badge variant={product.is_active ? 'default' : 'outline'}>
+                    {product.is_active ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </TableCell>
                 <TableCell>
@@ -302,10 +442,21 @@ const ProductTable = ({ products, isEditing, onEdit, onDelete }: { products: Pro
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex gap-1 justify-end">
-                    <Button variant="ghost" size="icon" onClick={() => onEdit(product)} disabled={isEditing}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEdit(product)}
+                      disabled={isEditing}
+                    >
                       <Edit2 className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => onDelete(product.id)} disabled={isEditing} className="text-destructive hover:text-destructive">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDelete(product.id)}
+                      disabled={isEditing}
+                      className="text-destructive hover:text-destructive"
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

@@ -1,13 +1,26 @@
-import { useState, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Trash2, Baby, Milk, Droplets } from "lucide-react";
-import { format, subDays, startOfDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import type { BabyFeedingLog } from "@/types/babyFeeding";
+import { useState, useMemo } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Baby, Milk, Droplets } from 'lucide-react';
+import { format, subDays, startOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import type { BabyFeedingLog } from '@/types/babyFeeding';
 
 interface HistoricoMamadasProps {
   feedingLogs: BabyFeedingLog[];
@@ -15,26 +28,28 @@ interface HistoricoMamadasProps {
 }
 
 export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProps) => {
-  const [periodFilter, setPeriodFilter] = useState<"all" | "today" | "week" | "month">("week");
-  const [typeFilter, setTypeFilter] = useState<"all" | "breastfeeding" | "bottle" | "pumping">("all");
+  const [periodFilter, setPeriodFilter] = useState<'all' | 'today' | 'week' | 'month'>('week');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'breastfeeding' | 'bottle' | 'pumping'>(
+    'all'
+  );
 
   const filteredLogs = useMemo(() => {
     let filtered = [...feedingLogs];
 
     // Filtro de período
     const today = startOfDay(new Date());
-    if (periodFilter === "today") {
+    if (periodFilter === 'today') {
       filtered = filtered.filter(log => new Date(log.start_time) >= today);
-    } else if (periodFilter === "week") {
+    } else if (periodFilter === 'week') {
       const weekAgo = subDays(today, 7);
       filtered = filtered.filter(log => new Date(log.start_time) >= weekAgo);
-    } else if (periodFilter === "month") {
+    } else if (periodFilter === 'month') {
       const monthAgo = subDays(today, 30);
       filtered = filtered.filter(log => new Date(log.start_time) >= monthAgo);
     }
 
     // Filtro de tipo
-    if (typeFilter !== "all") {
+    if (typeFilter !== 'all') {
       filtered = filtered.filter(log => log.feeding_type === typeFilter);
     }
 
@@ -43,11 +58,11 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
 
   const getFeedingIcon = (type: string) => {
     switch (type) {
-      case "breastfeeding":
+      case 'breastfeeding':
         return <Baby className="h-4 w-4" />;
-      case "bottle":
+      case 'bottle':
         return <Milk className="h-4 w-4" />;
-      case "pumping":
+      case 'pumping':
         return <Droplets className="h-4 w-4" />;
       default:
         return null;
@@ -56,12 +71,12 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
 
   const getFeedingLabel = (type: string) => {
     switch (type) {
-      case "breastfeeding":
-        return "Amamentação";
-      case "bottle":
-        return "Mamadeira";
-      case "pumping":
-        return "Ordenha";
+      case 'breastfeeding':
+        return 'Amamentação';
+      case 'bottle':
+        return 'Mamadeira';
+      case 'pumping':
+        return 'Ordenha';
       default:
         return type;
     }
@@ -69,14 +84,14 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
 
   const getFeedingBadgeVariant = (type: string) => {
     switch (type) {
-      case "breastfeeding":
-        return "default";
-      case "bottle":
-        return "secondary";
-      case "pumping":
-        return "outline";
+      case 'breastfeeding':
+        return 'default';
+      case 'bottle':
+        return 'secondary';
+      case 'pumping':
+        return 'outline';
       default:
-        return "default";
+        return 'default';
     }
   };
 
@@ -121,12 +136,10 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
       <div className="sm:hidden space-y-3">
         {filteredLogs.length === 0 ? (
           <Card className="p-6">
-            <p className="text-center text-muted-foreground text-sm">
-              Nenhum registro encontrado
-            </p>
+            <p className="text-center text-muted-foreground text-sm">Nenhum registro encontrado</p>
           </Card>
         ) : (
-          filteredLogs.map((log) => (
+          filteredLogs.map(log => (
             <Card key={log.id} className="p-3">
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
@@ -146,17 +159,21 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                 <div>
-                  <span className="font-medium">Data:</span>{" "}
-                  {format(new Date(log.start_time), "dd/MM HH:mm", { locale: ptBR })}
+                  <span className="font-medium">Data:</span>{' '}
+                  {format(new Date(log.start_time), 'dd/MM HH:mm', { locale: ptBR })}
                 </div>
                 <div>
-                  <span className="font-medium">Duração:</span>{" "}
-                  {log.duration_minutes ? `${log.duration_minutes} min` : "-"}
+                  <span className="font-medium">Duração:</span>{' '}
+                  {log.duration_minutes ? `${log.duration_minutes} min` : '-'}
                 </div>
                 {log.breast_side && (
                   <div>
-                    <span className="font-medium">Seio:</span>{" "}
-                    {log.breast_side === "left" ? "Esq" : log.breast_side === "right" ? "Dir" : "Ambos"}
+                    <span className="font-medium">Seio:</span>{' '}
+                    {log.breast_side === 'left'
+                      ? 'Esq'
+                      : log.breast_side === 'right'
+                        ? 'Dir'
+                        : 'Ambos'}
                   </div>
                 )}
                 {log.volume_ml && (
@@ -196,7 +213,7 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
                 </TableCell>
               </TableRow>
             ) : (
-              filteredLogs.map((log) => (
+              filteredLogs.map(log => (
                 <TableRow key={log.id}>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -206,38 +223,45 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
-                      {format(new Date(log.start_time), "dd/MM/yyyy", { locale: ptBR })}
+                      {format(new Date(log.start_time), 'dd/MM/yyyy', { locale: ptBR })}
                       <br />
                       <span className="text-muted-foreground">
-                        {format(new Date(log.start_time), "HH:mm", { locale: ptBR })}
+                        {format(new Date(log.start_time), 'HH:mm', { locale: ptBR })}
                       </span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    {log.duration_minutes ? `${log.duration_minutes} min` : "-"}
+                    {log.duration_minutes ? `${log.duration_minutes} min` : '-'}
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">
                       {log.breast_side && (
-                        <div>Seio: {log.breast_side === "left" ? "Esquerdo" : log.breast_side === "right" ? "Direito" : "Ambos"}</div>
+                        <div>
+                          Seio:{' '}
+                          {log.breast_side === 'left'
+                            ? 'Esquerdo'
+                            : log.breast_side === 'right'
+                              ? 'Direito'
+                              : 'Ambos'}
+                        </div>
                       )}
                       {log.volume_ml && <div>{log.volume_ml} ml</div>}
                       {log.milk_type && (
                         <div className="text-muted-foreground">
-                          {log.milk_type === "breast_milk" ? "Leite materno" : log.milk_type === "formula" ? "Fórmula" : "Misto"}
+                          {log.milk_type === 'breast_milk'
+                            ? 'Leite materno'
+                            : log.milk_type === 'formula'
+                              ? 'Fórmula'
+                              : 'Misto'}
                         </div>
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-muted-foreground">{log.notes || "-"}</span>
+                    <span className="text-sm text-muted-foreground">{log.notes || '-'}</span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => onDelete(log.id)}
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => onDelete(log.id)}>
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>

@@ -1,28 +1,23 @@
-import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle 
-} from "@/components/ui/dialog";
-import { 
-  Heart, 
-  Calendar, 
-  Weight, 
-  Ruler, 
-  Trash2, 
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Heart,
+  Calendar,
+  Weight,
+  Ruler,
+  Trash2,
   ZoomIn,
   ChevronLeft,
   ChevronRight,
-  Columns
-} from "lucide-react";
-import { UltrasoundImage, useUltrasounds } from "@/hooks/useUltrasounds";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+  Columns,
+} from 'lucide-react';
+import { UltrasoundImage, useUltrasounds } from '@/hooks/useUltrasounds';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,26 +27,28 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
 interface UltrasoundTimelineProps {
   ultrasounds: UltrasoundImage[];
 }
 
 const ULTRASOUND_TYPE_LABELS: Record<string, string> = {
-  routine: "Rotina",
-  morphological: "Morfológico",
-  transvaginal: "Transvaginal",
-  "3d_4d": "3D/4D",
-  doppler: "Doppler",
-  other: "Outro",
+  routine: 'Rotina',
+  morphological: 'Morfológico',
+  transvaginal: 'Transvaginal',
+  '3d_4d': '3D/4D',
+  doppler: 'Doppler',
+  other: 'Outro',
 };
 
 export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => {
   const { toggleFavorite, deleteUltrasound } = useUltrasounds();
   const [selectedImage, setSelectedImage] = useState<UltrasoundImage | null>(null);
   const [compareMode, setCompareMode] = useState(false);
-  const [compareImages, setCompareImages] = useState<[UltrasoundImage | null, UltrasoundImage | null]>([null, null]);
+  const [compareImages, setCompareImages] = useState<
+    [UltrasoundImage | null, UltrasoundImage | null]
+  >([null, null]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const handleSelectForCompare = (image: UltrasoundImage) => {
@@ -65,10 +62,10 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
     }
   };
 
-  const navigateImage = (direction: "prev" | "next") => {
+  const navigateImage = (direction: 'prev' | 'next') => {
     if (!selectedImage) return;
     const currentIndex = ultrasounds.findIndex(u => u.id === selectedImage.id);
-    const newIndex = direction === "prev" ? currentIndex - 1 : currentIndex + 1;
+    const newIndex = direction === 'prev' ? currentIndex - 1 : currentIndex + 1;
     if (newIndex >= 0 && newIndex < ultrasounds.length) {
       setSelectedImage(ultrasounds[newIndex]);
     }
@@ -103,7 +100,7 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
           {ultrasounds.length} ultrassom(s) registrado(s)
         </p>
         <Button
-          variant={compareMode ? "default" : "outline"}
+          variant={compareMode ? 'default' : 'outline'}
           size="sm"
           onClick={() => {
             setCompareMode(!compareMode);
@@ -121,17 +118,16 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
         <Card className="mb-4 bg-primary/5 border-primary/20">
           <CardContent className="py-3">
             <p className="text-sm">
-              {compareImages[0] && compareImages[1] 
+              {compareImages[0] && compareImages[1]
                 ? `Comparando: Semana ${compareImages[0].gestational_week} vs Semana ${compareImages[1].gestational_week}`
                 : compareImages[0]
                   ? `Selecionado: Semana ${compareImages[0].gestational_week}. Selecione outro para comparar.`
-                  : "Selecione duas imagens para comparar lado a lado"
-              }
+                  : 'Selecione duas imagens para comparar lado a lado'}
             </p>
             {(compareImages[0] || compareImages[1]) && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setCompareImages([null, null])}
                 className="mt-2"
               >
@@ -147,28 +143,31 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
         <Card className="mb-6">
           <CardContent className="p-4">
             <div className="grid grid-cols-2 gap-4">
-              {compareImages.map((img, idx) => img && (
-                <div key={img.id} className="space-y-2">
-                  <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                    <img
-                      src={img.image_url}
-                      alt={`Ultrassom semana ${img.gestational_week}`}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="text-center">
-                    <Badge variant="outline" className="text-lg">
-                      Semana {img.gestational_week}
-                    </Badge>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {format(new Date(img.ultrasound_date), "dd/MM/yyyy", { locale: ptBR })}
-                    </p>
-                    {img.baby_weight_grams && (
-                      <p className="text-sm">{img.baby_weight_grams}g</p>
-                    )}
-                  </div>
-                </div>
-              ))}
+              {compareImages.map(
+                (img, idx) =>
+                  img && (
+                    <div key={img.id} className="space-y-2">
+                      <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
+                        <img
+                          src={img.image_url}
+                          alt={`Ultrassom semana ${img.gestational_week}`}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <div className="text-center">
+                        <Badge variant="outline" className="text-lg">
+                          Semana {img.gestational_week}
+                        </Badge>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {format(new Date(img.ultrasound_date), 'dd/MM/yyyy', { locale: ptBR })}
+                        </p>
+                        {img.baby_weight_grams && (
+                          <p className="text-sm">{img.baby_weight_grams}g</p>
+                        )}
+                      </div>
+                    </div>
+                  )
+              )}
             </div>
           </CardContent>
         </Card>
@@ -178,19 +177,19 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
       <ScrollArea className="w-full">
         <div className="flex gap-4 pb-4">
           {ultrasounds.map((ultrasound, index) => {
-            const isSelected = compareMode && 
+            const isSelected =
+              compareMode &&
               (compareImages[0]?.id === ultrasound.id || compareImages[1]?.id === ultrasound.id);
-            
+
             return (
-              <Card 
-                key={ultrasound.id} 
+              <Card
+                key={ultrasound.id}
                 className={`
                   flex-shrink-0 w-64 cursor-pointer transition-all hover:shadow-md
                   ${isSelected ? 'ring-2 ring-primary' : ''}
                 `}
-                onClick={() => compareMode 
-                  ? handleSelectForCompare(ultrasound) 
-                  : setSelectedImage(ultrasound)
+                onClick={() =>
+                  compareMode ? handleSelectForCompare(ultrasound) : setSelectedImage(ultrasound)
                 }
               >
                 <div className="relative aspect-square">
@@ -215,10 +214,11 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
                 <CardContent className="p-3 space-y-1">
                   <div className="flex items-center gap-1 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    {format(new Date(ultrasound.ultrasound_date), "dd/MM/yyyy", { locale: ptBR })}
+                    {format(new Date(ultrasound.ultrasound_date), 'dd/MM/yyyy', { locale: ptBR })}
                   </div>
                   <Badge variant="secondary" className="text-xs">
-                    {ULTRASOUND_TYPE_LABELS[ultrasound.ultrasound_type] || ultrasound.ultrasound_type}
+                    {ULTRASOUND_TYPE_LABELS[ultrasound.ultrasound_type] ||
+                      ultrasound.ultrasound_type}
                   </Badge>
                   {(ultrasound.baby_weight_grams || ultrasound.baby_length_cm) && (
                     <div className="flex gap-2 text-xs text-muted-foreground">
@@ -256,16 +256,22 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={(e) => { e.stopPropagation(); toggleFavorite(selectedImage.id); }}
+                      onClick={e => {
+                        e.stopPropagation();
+                        toggleFavorite(selectedImage.id);
+                      }}
                     >
-                      <Heart 
-                        className={`h-5 w-5 ${selectedImage.is_favorite ? 'fill-red-500 text-red-500' : ''}`} 
+                      <Heart
+                        className={`h-5 w-5 ${selectedImage.is_favorite ? 'fill-red-500 text-red-500' : ''}`}
                       />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={(e) => { e.stopPropagation(); setDeleteId(selectedImage.id); }}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setDeleteId(selectedImage.id);
+                      }}
                     >
                       <Trash2 className="h-5 w-5 text-destructive" />
                     </Button>
@@ -279,14 +285,14 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
                   alt={`Ultrassom semana ${selectedImage.gestational_week}`}
                   className="w-full rounded-lg"
                 />
-                
+
                 {/* Navigation */}
                 <div className="absolute inset-y-0 left-0 flex items-center">
                   <Button
                     variant="ghost"
                     size="icon"
                     className="bg-black/50 text-white hover:bg-black/70 ml-2"
-                    onClick={() => navigateImage("prev")}
+                    onClick={() => navigateImage('prev')}
                     disabled={ultrasounds.findIndex(u => u.id === selectedImage.id) === 0}
                   >
                     <ChevronLeft className="h-6 w-6" />
@@ -297,8 +303,11 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
                     variant="ghost"
                     size="icon"
                     className="bg-black/50 text-white hover:bg-black/70 mr-2"
-                    onClick={() => navigateImage("next")}
-                    disabled={ultrasounds.findIndex(u => u.id === selectedImage.id) === ultrasounds.length - 1}
+                    onClick={() => navigateImage('next')}
+                    disabled={
+                      ultrasounds.findIndex(u => u.id === selectedImage.id) ===
+                      ultrasounds.length - 1
+                    }
                   >
                     <ChevronRight className="h-6 w-6" />
                   </Button>
@@ -309,13 +318,16 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
                 <div>
                   <p className="text-sm text-muted-foreground">Data</p>
                   <p className="font-medium">
-                    {format(new Date(selectedImage.ultrasound_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                    {format(new Date(selectedImage.ultrasound_date), "dd 'de' MMMM 'de' yyyy", {
+                      locale: ptBR,
+                    })}
                   </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Tipo</p>
                   <p className="font-medium">
-                    {ULTRASOUND_TYPE_LABELS[selectedImage.ultrasound_type] || selectedImage.ultrasound_type}
+                    {ULTRASOUND_TYPE_LABELS[selectedImage.ultrasound_type] ||
+                      selectedImage.ultrasound_type}
                   </p>
                 </div>
                 {selectedImage.baby_weight_grams && (
@@ -354,7 +366,10 @@ export const UltrasoundTimeline = ({ ultrasounds }: UltrasoundTimelineProps) => 
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground"
+            >
               Excluir
             </AlertDialogAction>
           </AlertDialogFooter>

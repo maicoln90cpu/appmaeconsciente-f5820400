@@ -3,32 +3,32 @@
  * @module test/hooks/useProfile.test
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 
 // Mock do AuthContext
 const mockUser = {
-  id: "test-user-id",
-  email: "test@example.com",
+  id: 'test-user-id',
+  email: 'test@example.com',
 };
 
-vi.mock("@/contexts/AuthContext", () => ({
+vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({ user: mockUser }),
 }));
 
 // Mock do Supabase client
 const mockProfile = {
-  id: "test-user-id",
-  email: "test@example.com",
-  full_name: "Test User",
+  id: 'test-user-id',
+  email: 'test@example.com',
+  full_name: 'Test User',
   perfil_completo: true,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString(),
 };
 
-vi.mock("@/integrations/supabase/client", () => ({
+vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
     from: vi.fn().mockReturnValue({
       select: vi.fn().mockReturnThis(),
@@ -40,7 +40,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 }));
 
 // Mock do logger
-vi.mock("@/lib/logger", () => ({
+vi.mock('@/lib/logger', () => ({
   logger: {
     error: vi.fn(),
     warn: vi.fn(),
@@ -60,13 +60,13 @@ const createWrapper = () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 };
 
-describe("useProfile", () => {
+describe('useProfile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should return loading state initially", async () => {
-    const { useProfile } = await import("@/hooks/useProfile");
+  it('should return loading state initially', async () => {
+    const { useProfile } = await import('@/hooks/useProfile');
     const { result } = renderHook(() => useProfile(), {
       wrapper: createWrapper(),
     });
@@ -75,8 +75,8 @@ describe("useProfile", () => {
     expect(result.current.loading).toBe(true);
   });
 
-  it("should return profile data when loaded", async () => {
-    const { useProfile } = await import("@/hooks/useProfile");
+  it('should return profile data when loaded', async () => {
+    const { useProfile } = await import('@/hooks/useProfile');
     const { result } = renderHook(() => useProfile(), {
       wrapper: createWrapper(),
     });
@@ -86,12 +86,12 @@ describe("useProfile", () => {
     });
 
     expect(result.current.profile).toBeDefined();
-    expect(result.current.profile?.email).toBe("test@example.com");
-    expect(result.current.profile?.full_name).toBe("Test User");
+    expect(result.current.profile?.email).toBe('test@example.com');
+    expect(result.current.profile?.full_name).toBe('Test User');
   });
 
-  it("should provide updateProfile function", async () => {
-    const { useProfile } = await import("@/hooks/useProfile");
+  it('should provide updateProfile function', async () => {
+    const { useProfile } = await import('@/hooks/useProfile');
     const { result } = renderHook(() => useProfile(), {
       wrapper: createWrapper(),
     });
@@ -100,11 +100,11 @@ describe("useProfile", () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(typeof result.current.updateProfile).toBe("function");
+    expect(typeof result.current.updateProfile).toBe('function');
   });
 
-  it("should provide reloadProfile function", async () => {
-    const { useProfile } = await import("@/hooks/useProfile");
+  it('should provide reloadProfile function', async () => {
+    const { useProfile } = await import('@/hooks/useProfile');
     const { result } = renderHook(() => useProfile(), {
       wrapper: createWrapper(),
     });
@@ -113,16 +113,16 @@ describe("useProfile", () => {
       expect(result.current.loading).toBe(false);
     });
 
-    expect(typeof result.current.reloadProfile).toBe("function");
+    expect(typeof result.current.reloadProfile).toBe('function');
   });
 
-  it("should return null profile when user is not authenticated", async () => {
+  it('should return null profile when user is not authenticated', async () => {
     // Override mock to return no user
-    vi.doMock("@/contexts/AuthContext", () => ({
+    vi.doMock('@/contexts/AuthContext', () => ({
       useAuth: () => ({ user: null }),
     }));
 
-    const { useProfile } = await import("@/hooks/useProfile");
+    const { useProfile } = await import('@/hooks/useProfile');
     const { result } = renderHook(() => useProfile(), {
       wrapper: createWrapper(),
     });
@@ -136,16 +136,16 @@ describe("useProfile", () => {
   });
 });
 
-describe("Profile Interface", () => {
-  it("should have correct type definitions", () => {
+describe('Profile Interface', () => {
+  it('should have correct type definitions', () => {
     const profileExample = {
-      id: "test",
-      email: "test@test.com",
-      full_name: "Test",
+      id: 'test',
+      email: 'test@test.com',
+      full_name: 'Test',
     };
 
     expect(profileExample).toBeDefined();
-    expect(profileExample.id).toBe("test");
-    expect(profileExample.email).toBe("test@test.com");
+    expect(profileExample.id).toBe('test');
+    expect(profileExample.email).toBe('test@test.com');
   });
 });

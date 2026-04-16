@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Check, Star, Sparkles, TrendingUp } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Check, Star, Sparkles, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { toast } from 'sonner';
 
 const ClubePremium = () => {
   const [loading, setLoading] = useState(true);
@@ -21,8 +21,10 @@ const ClubePremium = () => {
 
   const checkClubAccess = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
         setLoading(false);
         return;
@@ -30,33 +32,37 @@ const ClubePremium = () => {
 
       // Buscar produto do clube
       const { data: product } = await supabase
-        .from("products")
-        .select("id, title, slug, description, short_description, price, is_active, is_free, thumbnail_url, destination_url, payment_url, trial_enabled, trial_days")
-        .eq("slug", "clube-premium")
+        .from('products')
+        .select(
+          'id, title, slug, description, short_description, price, is_active, is_free, thumbnail_url, destination_url, payment_url, trial_enabled, trial_days'
+        )
+        .eq('slug', 'clube-premium')
         .single();
 
       setClubProduct(product);
 
       // Buscar TODOS os materiais ativos (exceto clube-premium)
       const { data: materials } = await supabase
-        .from("products")
-        .select("id, title, slug, description, short_description, price, is_active, is_free, thumbnail_url, destination_url, payment_url")
-        .eq("is_active", true)
-        .neq("slug", "clube-premium")
-        .order("display_order");
+        .from('products')
+        .select(
+          'id, title, slug, description, short_description, price, is_active, is_free, thumbnail_url, destination_url, payment_url'
+        )
+        .eq('is_active', true)
+        .neq('slug', 'clube-premium')
+        .order('display_order');
 
       setAllMaterials(materials || []);
 
       // Verificar se já tem acesso ao clube
       const { data: clubAccess } = await supabase
-        .from("user_club_access")
-        .select("has_active_access")
-        .eq("user_id", user.id)
+        .from('user_club_access')
+        .select('has_active_access')
+        .eq('user_id', user.id)
         .maybeSingle();
 
       setHasClubAccess(clubAccess?.has_active_access || false);
     } catch (error) {
-      console.error("Error checking club access:", error);
+      console.error('Error checking club access:', error);
     } finally {
       setLoading(false);
     }
@@ -65,17 +71,19 @@ const ClubePremium = () => {
   const handleSubscribe = () => {
     if (clubProduct?.payment_url) {
       window.open(clubProduct.payment_url, '_blank');
-      toast("Redirecionando para pagamento", { description: "Complete sua assinatura para ter acesso total!" });
+      toast('Redirecionando para pagamento', {
+        description: 'Complete sua assinatura para ter acesso total!',
+      });
     }
   };
 
   const benefits = [
-    "Dashboard Unificado com visão 360° da rotina",
-    "Suporte prioritário via chat",
-    "Novos materiais incluídos automaticamente",
-    "Alertas inteligentes personalizados",
-    "Relatórios em PDF ilimitados",
-    "Acesso a comunidade exclusiva Premium"
+    'Dashboard Unificado com visão 360° da rotina',
+    'Suporte prioritário via chat',
+    'Novos materiais incluídos automaticamente',
+    'Alertas inteligentes personalizados',
+    'Relatórios em PDF ilimitados',
+    'Acesso a comunidade exclusiva Premium',
   ];
 
   // Calcular custo total dos materiais
@@ -84,9 +92,10 @@ const ClubePremium = () => {
   }, 0);
 
   // Calcular economia percentual
-  const savingsPercentage = clubProduct?.price && totalMaterialsCost > 0
-    ? Math.round(((totalMaterialsCost - clubProduct.price) / totalMaterialsCost) * 100)
-    : 65;
+  const savingsPercentage =
+    clubProduct?.price && totalMaterialsCost > 0
+      ? Math.round(((totalMaterialsCost - clubProduct.price) / totalMaterialsCost) * 100)
+      : 65;
 
   if (loading) {
     return (
@@ -107,11 +116,10 @@ const ClubePremium = () => {
         <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
           Clube Mãe Consciente Premium
         </h1>
-        <p className="text-xl text-muted-foreground mb-2">
-          Acesso ilimitado a TODOS os materiais
-        </p>
+        <p className="text-xl text-muted-foreground mb-2">Acesso ilimitado a TODOS os materiais</p>
         <p className="text-3xl font-bold text-primary">
-          R$ {clubProduct?.price?.toFixed(2) || "59,90"}<span className="text-lg text-muted-foreground">/mês</span>
+          R$ {clubProduct?.price?.toFixed(2) || '59,90'}
+          <span className="text-lg text-muted-foreground">/mês</span>
         </p>
       </div>
 
@@ -156,7 +164,8 @@ const ClubePremium = () => {
             <div className="text-center py-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary">
               <p className="text-sm text-muted-foreground">Apenas</p>
               <p className="text-3xl font-bold text-primary">
-                R$ {clubProduct?.price?.toFixed(2) || "59,90"}<span className="text-lg">/mês</span>
+                R$ {clubProduct?.price?.toFixed(2) || '59,90'}
+                <span className="text-lg">/mês</span>
               </p>
             </div>
             <div className="flex items-center justify-center gap-2 text-green-600 font-semibold">
@@ -177,7 +186,7 @@ const ClubePremium = () => {
         </CardHeader>
         <CardContent>
           <div className="grid md:grid-cols-2 gap-3">
-            {allMaterials.map((material) => (
+            {allMaterials.map(material => (
               <div key={material.id} className="flex items-center gap-2 p-3 bg-muted rounded-lg">
                 <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
                 <span className="text-sm">{material.title}</span>
@@ -198,7 +207,10 @@ const ClubePremium = () => {
         <CardContent>
           <div className="grid md:grid-cols-2 gap-3">
             {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center gap-2 p-3 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/20">
+              <div
+                key={index}
+                className="flex items-center gap-2 p-3 bg-gradient-to-r from-primary/5 to-transparent rounded-lg border border-primary/20"
+              >
                 <Star className="h-4 w-4 text-yellow-500 flex-shrink-0" />
                 <span className="text-sm">{benefit}</span>
               </div>
@@ -215,8 +227,8 @@ const ClubePremium = () => {
             Cancele quando quiser, sem burocracia. Sua jornada começa agora!
           </p>
           {!hasClubAccess ? (
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               variant="secondary"
               onClick={handleSubscribe}
               className="text-lg px-8"
@@ -225,10 +237,10 @@ const ClubePremium = () => {
               Assinar Clube Premium
             </Button>
           ) : (
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               variant="secondary"
-              onClick={() => navigate("/materiais")}
+              onClick={() => navigate('/materiais')}
               className="text-lg px-8"
             >
               Acessar Meus Materiais

@@ -1,24 +1,24 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Loader2, Send } from "lucide-react";
-import { useTickets, TicketFormData } from "@/hooks/useTickets";
-import { useProfile } from "@/hooks/useProfile";
-import { backgroundSync } from "@/lib/background-sync";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Loader2, Send } from 'lucide-react';
+import { useTickets, TicketFormData } from '@/hooks/useTickets';
+import { useProfile } from '@/hooks/useProfile';
+import { backgroundSync } from '@/lib/background-sync';
+import { toast } from 'sonner';
 
 export const TicketForm = () => {
   const { createTicket } = useTickets();
   const { profile } = useProfile();
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState<TicketFormData>({
-    name: "",
-    email: profile?.email || "",
-    subject: "",
-    message: "",
+    name: '',
+    email: profile?.email || '',
+    subject: '',
+    message: '',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,29 +28,31 @@ export const TicketForm = () => {
     try {
       if (!navigator.onLine) {
         // Queue for background sync when offline
-        await backgroundSync.addTask("ticket", formData);
-        toast("Ticket salvo", { description: "Seu ticket será enviado quando a conexão retornar." });
+        await backgroundSync.addTask('ticket', formData);
+        toast('Ticket salvo', {
+          description: 'Seu ticket será enviado quando a conexão retornar.',
+        });
         setFormData({
-          name: "",
-          email: profile?.email || "",
-          subject: "",
-          message: "",
+          name: '',
+          email: profile?.email || '',
+          subject: '',
+          message: '',
         });
       } else {
         const result = await createTicket(formData);
-        
+
         if (result.success) {
           setFormData({
-            name: "",
-            email: profile?.email || "",
-            subject: "",
-            message: "",
+            name: '',
+            email: profile?.email || '',
+            subject: '',
+            message: '',
           });
         }
       }
     } catch (error) {
-      console.error("Error submitting ticket:", error);
-      toast.error("Erro", { description: "Não foi possível enviar o ticket. Tente novamente." });
+      console.error('Error submitting ticket:', error);
+      toast.error('Erro', { description: 'Não foi possível enviar o ticket. Tente novamente.' });
     } finally {
       setSubmitting(false);
     }
@@ -72,7 +74,7 @@ export const TicketForm = () => {
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
                 required
                 maxLength={100}
               />
@@ -84,7 +86,7 @@ export const TicketForm = () => {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
                 required
                 maxLength={255}
               />
@@ -96,7 +98,7 @@ export const TicketForm = () => {
             <Input
               id="subject"
               value={formData.subject}
-              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+              onChange={e => setFormData({ ...formData, subject: e.target.value })}
               required
               maxLength={200}
             />
@@ -107,7 +109,7 @@ export const TicketForm = () => {
             <Textarea
               id="message"
               value={formData.message}
-              onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+              onChange={e => setFormData({ ...formData, message: e.target.value })}
               required
               rows={6}
               maxLength={2000}

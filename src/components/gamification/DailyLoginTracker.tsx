@@ -2,10 +2,10 @@
  * @fileoverview Componente para mostrar streak de login diário
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDailyLogin } from "@/hooks/useDailyLogin";
-import { Flame, Trophy, Calendar, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDailyLogin } from '@/hooks/useDailyLogin';
+import { Flame, Trophy, Calendar, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const DailyLoginTracker = () => {
   const { currentStreak, longestStreak, isLoading } = useDailyLogin();
@@ -22,19 +22,19 @@ export const DailyLoginTracker = () => {
 
   // Determine flame intensity based on streak
   const getFlameColor = () => {
-    if (currentStreak >= 30) return "text-orange-500";
-    if (currentStreak >= 14) return "text-amber-500";
-    if (currentStreak >= 7) return "text-yellow-500";
-    return "text-muted-foreground";
+    if (currentStreak >= 30) return 'text-orange-500';
+    if (currentStreak >= 14) return 'text-amber-500';
+    if (currentStreak >= 7) return 'text-yellow-500';
+    return 'text-muted-foreground';
   };
 
   const getStreakMessage = () => {
-    if (currentStreak >= 30) return "Você está em chamas! 🔥";
-    if (currentStreak >= 14) return "Incrível consistência!";
-    if (currentStreak >= 7) return "Uma semana inteira!";
-    if (currentStreak >= 3) return "Ótimo começo!";
-    if (currentStreak === 1) return "Primeiro dia!";
-    return "Comece sua sequência!";
+    if (currentStreak >= 30) return 'Você está em chamas! 🔥';
+    if (currentStreak >= 14) return 'Incrível consistência!';
+    if (currentStreak >= 7) return 'Uma semana inteira!';
+    if (currentStreak >= 3) return 'Ótimo começo!';
+    if (currentStreak === 1) return 'Primeiro dia!';
+    return 'Comece sua sequência!';
   };
 
   return (
@@ -51,11 +51,11 @@ export const DailyLoginTracker = () => {
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div
               className={cn(
-                "flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-muted shrink-0",
-                currentStreak >= 7 && "animate-pulse"
+                'flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-muted shrink-0',
+                currentStreak >= 7 && 'animate-pulse'
               )}
             >
-              <Flame className={cn("h-5 w-5 sm:h-6 sm:w-6", getFlameColor())} />
+              <Flame className={cn('h-5 w-5 sm:h-6 sm:w-6', getFlameColor())} />
             </div>
             <div className="min-w-0">
               <p className="text-xl sm:text-2xl font-bold">{currentStreak}</p>
@@ -76,20 +76,20 @@ export const DailyLoginTracker = () => {
         {/* Streak milestones */}
         {currentStreak > 0 && (
           <div className="mt-3 sm:mt-4 flex gap-1.5 sm:gap-2">
-            {[7, 14, 30].map((milestone) => (
+            {[7, 14, 30].map(milestone => (
               <div
                 key={milestone}
                 className={cn(
-                  "flex-1 rounded-lg p-1.5 sm:p-2 text-center transition-colors min-w-0",
+                  'flex-1 rounded-lg p-1.5 sm:p-2 text-center transition-colors min-w-0',
                   currentStreak >= milestone
-                    ? "bg-primary/10 text-primary"
-                    : "bg-muted text-muted-foreground"
+                    ? 'bg-primary/10 text-primary'
+                    : 'bg-muted text-muted-foreground'
                 )}
               >
                 <p className="text-[10px] sm:text-xs font-medium">{milestone} dias</p>
                 <p className="text-[8px] sm:text-[10px] truncate">
                   {currentStreak >= milestone
-                    ? "✓ Alcançado"
+                    ? '✓ Alcançado'
                     : `${milestone - currentStreak} restantes`}
                 </p>
               </div>

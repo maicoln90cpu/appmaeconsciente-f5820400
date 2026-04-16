@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, StickyNote } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Plus, StickyNote } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ChecklistItem {
   id: string;
@@ -28,7 +28,7 @@ interface ChecklistBagProps {
 }
 
 export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: ChecklistBagProps) => {
-  const [newItemName, setNewItemName] = useState("");
+  const [newItemName, setNewItemName] = useState('');
   const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
 
   const categories = Array.from(new Set(items.map(item => item.category)));
@@ -41,9 +41,7 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
   };
 
   const handleAddNote = (id: string, note: string) => {
-    const updated = items.map(item =>
-      item.id === id ? { ...item, note } : item
-    );
+    const updated = items.map(item => (item.id === id ? { ...item, note } : item));
     onUpdate(updated);
   };
 
@@ -53,12 +51,12 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
     const newItem: ChecklistItem = {
       id: `custom-${Date.now()}`,
       name: newItemName,
-      category: "Personalizado",
+      category: 'Personalizado',
       checked: false,
     };
 
     onUpdate([...items, newItem]);
-    setNewItemName("");
+    setNewItemName('');
   };
 
   const toggleNoteExpansion = (id: string) => {
@@ -72,8 +70,8 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
   };
 
   const filterItemsByDeliveryType = (item: ChecklistItem) => {
-    if (deliveryType === "cesarea" && item.normalOnly) return false;
-    if (deliveryType === "normal" && item.cesareanOnly) return false;
+    if (deliveryType === 'cesarea' && item.normalOnly) return false;
+    if (deliveryType === 'normal' && item.cesareanOnly) return false;
     return true;
   };
 
@@ -86,9 +84,7 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
           <span className="text-2xl">{icon}</span>
           {title}
         </CardTitle>
-        <CardDescription>
-          Marque os itens conforme for adicionando à mala
-        </CardDescription>
+        <CardDescription>Marque os itens conforme for adicionando à mala</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {categories.map(category => {
@@ -117,7 +113,7 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
                         <label
                           htmlFor={item.id}
                           className={`cursor-pointer font-medium ${
-                            item.checked ? "line-through text-muted-foreground" : ""
+                            item.checked ? 'line-through text-muted-foreground' : ''
                           }`}
                         >
                           {item.name}
@@ -152,8 +148,8 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
                         <div className="ml-9 mr-3">
                           <Textarea
                             placeholder="Adicione uma nota pessoal..."
-                            value={item.note || ""}
-                            onChange={(e) => handleAddNote(item.id, e.target.value)}
+                            value={item.note || ''}
+                            onChange={e => handleAddNote(item.id, e.target.value)}
                             className="text-sm"
                             rows={2}
                           />
@@ -173,8 +169,8 @@ export const ChecklistBag = ({ title, items, onUpdate, deliveryType, icon }: Che
             <Input
               placeholder="Nome do item..."
               value={newItemName}
-              onChange={(e) => setNewItemName(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleAddItem()}
+              onChange={e => setNewItemName(e.target.value)}
+              onKeyPress={e => e.key === 'Enter' && handleAddItem()}
             />
             <Button onClick={handleAddItem} size="icon" aria-label="Adicionar item">
               <Plus className="h-4 w-4" />

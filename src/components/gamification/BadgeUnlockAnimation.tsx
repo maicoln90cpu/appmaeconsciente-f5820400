@@ -1,8 +1,8 @@
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Badge } from "@/hooks/useGamification";
-import { Trophy, Star, Award, Users, Flame, Compass, Heart, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Badge } from '@/hooks/useGamification';
+import { Trophy, Star, Award, Users, Flame, Compass, Heart, Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   trophy: Trophy,
@@ -52,8 +52,8 @@ export const BadgeUnlockAnimation = ({ badge, onClose }: BadgeUnlockAnimationPro
                   animationDuration: `${0.5 + Math.random() * 0.5}s`,
                 }}
               >
-                <Sparkles 
-                  className="h-4 w-4 text-yellow-400" 
+                <Sparkles
+                  className="h-4 w-4 text-yellow-400"
                   style={{ opacity: 0.5 + Math.random() * 0.5 }}
                 />
               </div>
@@ -71,15 +71,9 @@ export const BadgeUnlockAnimation = ({ badge, onClose }: BadgeUnlockAnimationPro
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-foreground">
-              🎉 Badge Desbloqueado!
-            </h2>
-            <h3 className="text-xl font-semibold text-primary">
-              {badge.name}
-            </h3>
-            <p className="text-muted-foreground">
-              {badge.description}
-            </p>
+            <h2 className="text-2xl font-bold text-foreground">🎉 Badge Desbloqueado!</h2>
+            <h3 className="text-xl font-semibold text-primary">{badge.name}</h3>
+            <p className="text-muted-foreground">{badge.description}</p>
             {badge.xp_reward > 0 && (
               <p className="text-sm font-medium text-green-600 dark:text-green-400">
                 +{badge.xp_reward} XP

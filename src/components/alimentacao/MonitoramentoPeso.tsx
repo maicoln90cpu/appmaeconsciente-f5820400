@@ -1,17 +1,31 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { Profile } from "@/hooks/useProfile";
-import { Plus, Scale, TrendingUp, Calendar } from "lucide-react";
-import { toast } from "sonner";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { Profile } from '@/hooks/useProfile';
+import { Plus, Scale, TrendingUp, Calendar } from 'lucide-react';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 
 interface WeightEntry {
   id: string;
@@ -32,10 +46,10 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
   const [open, setOpen] = useState(false);
 
   const [formData, setFormData] = useState({
-    weight: "",
-    belly_measurement: "",
-    date: format(new Date(), "yyyy-MM-dd"),
-    notes: ""
+    weight: '',
+    belly_measurement: '',
+    date: format(new Date(), 'yyyy-MM-dd'),
+    notes: '',
   });
 
   useEffect(() => {
@@ -44,7 +58,9 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
 
   const loadEntries = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -66,23 +82,25 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const weekOfPregnancy = profile.meses_gestacao 
+      const weekOfPregnancy = profile.meses_gestacao
         ? Math.floor(profile.meses_gestacao * 4.33)
         : null;
 
-      const { error } = await supabase
-        .from('weight_tracking')
-        .insert({
-          user_id: user.id,
-          weight: parseFloat(formData.weight),
-          belly_measurement: formData.belly_measurement ? parseFloat(formData.belly_measurement) : null,
-          week_of_pregnancy: weekOfPregnancy,
-          date: formData.date,
-          notes: formData.notes || null
-        });
+      const { error } = await supabase.from('weight_tracking').insert({
+        user_id: user.id,
+        weight: parseFloat(formData.weight),
+        belly_measurement: formData.belly_measurement
+          ? parseFloat(formData.belly_measurement)
+          : null,
+        week_of_pregnancy: weekOfPregnancy,
+        date: formData.date,
+        notes: formData.notes || null,
+      });
 
       if (error) throw error;
 
@@ -90,10 +108,10 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
       setOpen(false);
       loadEntries();
       setFormData({
-        weight: "",
-        belly_measurement: "",
-        date: format(new Date(), "yyyy-MM-dd"),
-        notes: ""
+        weight: '',
+        belly_measurement: '',
+        date: format(new Date(), 'yyyy-MM-dd'),
+        notes: '',
       });
     } catch (error) {
       console.error('Erro ao adicionar registro:', error);
@@ -102,16 +120,15 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
   };
 
   const chartData = entries.map(entry => ({
-    date: format(new Date(entry.date), "dd/MM", { locale: ptBR }),
+    date: format(new Date(entry.date), 'dd/MM', { locale: ptBR }),
     peso: entry.weight,
-    barriga: entry.belly_measurement || 0
+    barriga: entry.belly_measurement || 0,
   }));
 
   const latestEntry = entries[entries.length - 1];
   const firstEntry = entries[0];
-  const weightGain = latestEntry && firstEntry 
-    ? (latestEntry.weight - firstEntry.weight).toFixed(1)
-    : 0;
+  const weightGain =
+    latestEntry && firstEntry ? (latestEntry.weight - firstEntry.weight).toFixed(1) : 0;
 
   if (loading) {
     return <div className="flex justify-center py-8">Carregando dados...</div>;
@@ -143,7 +160,7 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
                   type="number"
                   step="0.1"
                   value={formData.weight}
-                  onChange={(e) => setFormData({...formData, weight: e.target.value})}
+                  onChange={e => setFormData({ ...formData, weight: e.target.value })}
                   placeholder="Ex: 65.5"
                   required
                 />
@@ -156,7 +173,7 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
                   type="number"
                   step="0.1"
                   value={formData.belly_measurement}
-                  onChange={(e) => setFormData({...formData, belly_measurement: e.target.value})}
+                  onChange={e => setFormData({ ...formData, belly_measurement: e.target.value })}
                   placeholder="Ex: 95.0"
                 />
               </div>
@@ -167,7 +184,7 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
                   id="date"
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  onChange={e => setFormData({ ...formData, date: e.target.value })}
                   required
                 />
               </div>
@@ -177,12 +194,14 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
                 <Textarea
                   id="notes"
                   value={formData.notes}
-                  onChange={(e) => setFormData({...formData, notes: e.target.value})}
+                  onChange={e => setFormData({ ...formData, notes: e.target.value })}
                   placeholder="Ex: Exame de rotina"
                 />
               </div>
 
-              <Button type="submit" className="w-full">Adicionar Registro</Button>
+              <Button type="submit" className="w-full">
+                Adicionar Registro
+              </Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -193,7 +212,7 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
           <CardHeader className="pb-3">
             <CardDescription>Peso Atual</CardDescription>
             <CardTitle className="text-3xl">
-              {latestEntry ? `${latestEntry.weight} kg` : "-"}
+              {latestEntry ? `${latestEntry.weight} kg` : '-'}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -203,7 +222,7 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
             <CardDescription>Ganho de Peso</CardDescription>
             <CardTitle className="text-3xl flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-green-500" />
-              {weightGain ? `+${weightGain} kg` : "-"}
+              {weightGain ? `+${weightGain} kg` : '-'}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -212,7 +231,7 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
           <CardHeader className="pb-3">
             <CardDescription>Medida da Barriga</CardDescription>
             <CardTitle className="text-3xl">
-              {latestEntry?.belly_measurement ? `${latestEntry.belly_measurement} cm` : "-"}
+              {latestEntry?.belly_measurement ? `${latestEntry.belly_measurement} cm` : '-'}
             </CardTitle>
           </CardHeader>
         </Card>
@@ -232,18 +251,18 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="peso" 
-                    stroke="hsl(var(--primary))" 
+                  <Line
+                    type="monotone"
+                    dataKey="peso"
+                    stroke="hsl(var(--primary))"
                     strokeWidth={2}
                     name="Peso (kg)"
                   />
                   {chartData.some(d => d.barriga > 0) && (
-                    <Line 
-                      type="monotone" 
-                      dataKey="barriga" 
-                      stroke="hsl(var(--secondary))" 
+                    <Line
+                      type="monotone"
+                      dataKey="barriga"
+                      stroke="hsl(var(--secondary))"
                       strokeWidth={2}
                       name="Barriga (cm)"
                     />
@@ -259,34 +278,40 @@ export function MonitoramentoPeso({ profile }: MonitoramentoPesoProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {entries.slice().reverse().map((entry) => (
-                  <div key={entry.id} className="flex items-start justify-between border-b pb-4 last:border-0">
-                    <div className="flex items-start gap-3">
-                      <Scale className="h-5 w-5 mt-1 text-muted-foreground" />
-                      <div>
-                        <p className="font-semibold">{entry.weight} kg</p>
-                        {entry.belly_measurement && (
-                          <p className="text-sm text-muted-foreground">
-                            Barriga: {entry.belly_measurement} cm
+                {entries
+                  .slice()
+                  .reverse()
+                  .map(entry => (
+                    <div
+                      key={entry.id}
+                      className="flex items-start justify-between border-b pb-4 last:border-0"
+                    >
+                      <div className="flex items-start gap-3">
+                        <Scale className="h-5 w-5 mt-1 text-muted-foreground" />
+                        <div>
+                          <p className="font-semibold">{entry.weight} kg</p>
+                          {entry.belly_measurement && (
+                            <p className="text-sm text-muted-foreground">
+                              Barriga: {entry.belly_measurement} cm
+                            </p>
+                          )}
+                          {entry.notes && (
+                            <p className="text-sm text-muted-foreground mt-1">{entry.notes}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium">
+                          {format(new Date(entry.date), 'dd/MM/yyyy', { locale: ptBR })}
+                        </p>
+                        {entry.week_of_pregnancy && (
+                          <p className="text-xs text-muted-foreground">
+                            {entry.week_of_pregnancy}ª semana
                           </p>
-                        )}
-                        {entry.notes && (
-                          <p className="text-sm text-muted-foreground mt-1">{entry.notes}</p>
                         )}
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">
-                        {format(new Date(entry.date), "dd/MM/yyyy", { locale: ptBR })}
-                      </p>
-                      {entry.week_of_pregnancy && (
-                        <p className="text-xs text-muted-foreground">
-                          {entry.week_of_pregnancy}ª semana
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>

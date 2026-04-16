@@ -1,9 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import { logger } from "@/lib/logger";
-import { useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+import { logger } from '@/lib/logger';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 
 export interface PregnancyExam {
   id: string;
@@ -23,51 +23,55 @@ export interface PregnancyExam {
 // Exames padrão do Ministério da Saúde + comuns do particular
 const DEFAULT_EXAMS = [
   // 1º Trimestre
-  { exam_name: "Hemograma completo", trimester: 1, category: "ambos" },
-  { exam_name: "Tipagem sanguínea (ABO/Rh)", trimester: 1, category: "ambos" },
-  { exam_name: "Glicemia de jejum", trimester: 1, category: "ambos" },
-  { exam_name: "Urina tipo I (EAS)", trimester: 1, category: "ambos" },
-  { exam_name: "Urocultura", trimester: 1, category: "ambos" },
-  { exam_name: "Sorologia HIV", trimester: 1, category: "ambos" },
-  { exam_name: "Sorologia Sífilis (VDRL)", trimester: 1, category: "ambos" },
-  { exam_name: "Sorologia Hepatite B (HBsAg)", trimester: 1, category: "ambos" },
-  { exam_name: "Sorologia Toxoplasmose", trimester: 1, category: "ambos" },
-  { exam_name: "Sorologia Rubéola", trimester: 1, category: "ambos" },
-  { exam_name: "Ultrassom Transvaginal (1º tri)", trimester: 1, category: "ambos" },
-  { exam_name: "NIPT (Teste Genético Não-Invasivo)", trimester: 1, category: "particular" },
-  { exam_name: "Translucência Nucal", trimester: 1, category: "ambos" },
+  { exam_name: 'Hemograma completo', trimester: 1, category: 'ambos' },
+  { exam_name: 'Tipagem sanguínea (ABO/Rh)', trimester: 1, category: 'ambos' },
+  { exam_name: 'Glicemia de jejum', trimester: 1, category: 'ambos' },
+  { exam_name: 'Urina tipo I (EAS)', trimester: 1, category: 'ambos' },
+  { exam_name: 'Urocultura', trimester: 1, category: 'ambos' },
+  { exam_name: 'Sorologia HIV', trimester: 1, category: 'ambos' },
+  { exam_name: 'Sorologia Sífilis (VDRL)', trimester: 1, category: 'ambos' },
+  { exam_name: 'Sorologia Hepatite B (HBsAg)', trimester: 1, category: 'ambos' },
+  { exam_name: 'Sorologia Toxoplasmose', trimester: 1, category: 'ambos' },
+  { exam_name: 'Sorologia Rubéola', trimester: 1, category: 'ambos' },
+  { exam_name: 'Ultrassom Transvaginal (1º tri)', trimester: 1, category: 'ambos' },
+  { exam_name: 'NIPT (Teste Genético Não-Invasivo)', trimester: 1, category: 'particular' },
+  { exam_name: 'Translucência Nucal', trimester: 1, category: 'ambos' },
   // 2º Trimestre
-  { exam_name: "Ultrassom Morfológico (20-24 sem)", trimester: 2, category: "ambos" },
-  { exam_name: "TOTG 75g (Curva Glicêmica)", trimester: 2, category: "ambos" },
-  { exam_name: "Hemograma (repetição)", trimester: 2, category: "ambos" },
-  { exam_name: "Coombs Indireto (se Rh-)", trimester: 2, category: "ambos" },
-  { exam_name: "Ecocardiografia Fetal", trimester: 2, category: "particular" },
-  { exam_name: "Urina tipo I (repetição)", trimester: 2, category: "ambos" },
+  { exam_name: 'Ultrassom Morfológico (20-24 sem)', trimester: 2, category: 'ambos' },
+  { exam_name: 'TOTG 75g (Curva Glicêmica)', trimester: 2, category: 'ambos' },
+  { exam_name: 'Hemograma (repetição)', trimester: 2, category: 'ambos' },
+  { exam_name: 'Coombs Indireto (se Rh-)', trimester: 2, category: 'ambos' },
+  { exam_name: 'Ecocardiografia Fetal', trimester: 2, category: 'particular' },
+  { exam_name: 'Urina tipo I (repetição)', trimester: 2, category: 'ambos' },
   // 3º Trimestre
-  { exam_name: "Hemograma (3º tri)", trimester: 3, category: "ambos" },
-  { exam_name: "Sorologia HIV (repetição)", trimester: 3, category: "ambos" },
-  { exam_name: "Sorologia Sífilis (repetição)", trimester: 3, category: "ambos" },
-  { exam_name: "Sorologia Hepatite B (repetição)", trimester: 3, category: "ambos" },
-  { exam_name: "Cultura Streptococcus B (35-37 sem)", trimester: 3, category: "ambos" },
-  { exam_name: "Ultrassom Obstétrico (3º tri)", trimester: 3, category: "ambos" },
-  { exam_name: "Cardiotocografia (CTG)", trimester: 3, category: "ambos" },
-  { exam_name: "Perfil Biofísico Fetal", trimester: 3, category: "particular" },
+  { exam_name: 'Hemograma (3º tri)', trimester: 3, category: 'ambos' },
+  { exam_name: 'Sorologia HIV (repetição)', trimester: 3, category: 'ambos' },
+  { exam_name: 'Sorologia Sífilis (repetição)', trimester: 3, category: 'ambos' },
+  { exam_name: 'Sorologia Hepatite B (repetição)', trimester: 3, category: 'ambos' },
+  { exam_name: 'Cultura Streptococcus B (35-37 sem)', trimester: 3, category: 'ambos' },
+  { exam_name: 'Ultrassom Obstétrico (3º tri)', trimester: 3, category: 'ambos' },
+  { exam_name: 'Cardiotocografia (CTG)', trimester: 3, category: 'ambos' },
+  { exam_name: 'Perfil Biofísico Fetal', trimester: 3, category: 'particular' },
 ];
 
 export function usePregnancyExams() {
   const queryClient = useQueryClient();
   const seededRef = useRef(false);
 
-  const { data: exams = [], isLoading, refetch } = useQuery({
-    queryKey: ["pregnancy-exams"],
+  const {
+    data: exams = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ['pregnancy-exams'],
     queryFn: async () => {
       const userId = await getAuthenticatedUser();
       const { data, error } = await supabase
-        .from("pregnancy_exams")
-        .select("*")
-        .eq("user_id", userId)
-        .order("trimester", { ascending: true })
-        .order("exam_name", { ascending: true });
+        .from('pregnancy_exams')
+        .select('*')
+        .eq('user_id', userId)
+        .order('trimester', { ascending: true })
+        .order('exam_name', { ascending: true });
       if (error) throw error;
       return data as PregnancyExam[];
     },
@@ -84,41 +88,46 @@ export function usePregnancyExams() {
   const seedDefaultExams = async () => {
     try {
       const userId = await getAuthenticatedUser();
-      const rows = DEFAULT_EXAMS.map((e) => ({ ...e, user_id: userId }));
-      const { error } = await supabase
-        .from("pregnancy_exams")
-        .insert(rows);
+      const rows = DEFAULT_EXAMS.map(e => ({ ...e, user_id: userId }));
+      const { error } = await supabase.from('pregnancy_exams').insert(rows);
       if (error) throw error;
-      queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
+      queryClient.invalidateQueries({ queryKey: ['pregnancy-exams'] });
     } catch (e) {
-      logger.error("Seed exams error", e);
+      logger.error('Seed exams error', e);
     }
   };
 
   const toggleCompleted = useMutation({
     mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
       const { error } = await supabase
-        .from("pregnancy_exams")
-        .update({ completed, completed_date: completed ? new Date().toISOString().split("T")[0] : null })
-        .eq("id", id);
+        .from('pregnancy_exams')
+        .update({
+          completed,
+          completed_date: completed ? new Date().toISOString().split('T')[0] : null,
+        })
+        .eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
+      queryClient.invalidateQueries({ queryKey: ['pregnancy-exams'] });
     },
   });
 
   const updateExam = useMutation({
-    mutationFn: async ({ id, ...updates }: { id: string; scheduled_date?: string; result_notes?: string }) => {
-      const { error } = await supabase
-        .from("pregnancy_exams")
-        .update(updates)
-        .eq("id", id);
+    mutationFn: async ({
+      id,
+      ...updates
+    }: {
+      id: string;
+      scheduled_date?: string;
+      result_notes?: string;
+    }) => {
+      const { error } = await supabase.from('pregnancy_exams').update(updates).eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
-      toast("Exame atualizado ✅");
+      queryClient.invalidateQueries({ queryKey: ['pregnancy-exams'] });
+      toast('Exame atualizado ✅');
     },
   });
 
@@ -126,31 +135,28 @@ export function usePregnancyExams() {
     mutationFn: async (exam: { exam_name: string; trimester: number; category: string }) => {
       const userId = await getAuthenticatedUser();
       const { error } = await supabase
-        .from("pregnancy_exams")
+        .from('pregnancy_exams')
         .insert({ ...exam, user_id: userId, is_custom: true });
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
-      toast("Exame adicionado ✅");
+      queryClient.invalidateQueries({ queryKey: ['pregnancy-exams'] });
+      toast('Exame adicionado ✅');
     },
   });
 
   const deleteExam = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from("pregnancy_exams")
-        .delete()
-        .eq("id", id);
+      const { error } = await supabase.from('pregnancy_exams').delete().eq('id', id);
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pregnancy-exams"] });
-      toast("Exame removido");
+      queryClient.invalidateQueries({ queryKey: ['pregnancy-exams'] });
+      toast('Exame removido');
     },
   });
 
-  const completedCount = exams.filter((e) => e.completed).length;
+  const completedCount = exams.filter(e => e.completed).length;
   const totalCount = exams.length;
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 

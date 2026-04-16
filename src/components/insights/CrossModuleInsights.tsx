@@ -1,17 +1,17 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Minus, 
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  TrendingUp,
+  TrendingDown,
+  Minus,
   ArrowRightLeft,
   Clock,
   Moon,
-  Utensils
-} from "lucide-react";
-import { useCrossModuleAnalytics, type CrossModuleStats } from "@/hooks/useCrossModuleAnalytics";
+  Utensils,
+} from 'lucide-react';
+import { useCrossModuleAnalytics, type CrossModuleStats } from '@/hooks/useCrossModuleAnalytics';
 import {
   BarChart,
   Bar,
@@ -22,10 +22,10 @@ import {
   ResponsiveContainer,
   Legend,
   LineChart,
-  Line
-} from "recharts";
-import { format, parseISO } from "date-fns";
-import { ptBR } from "date-fns/locale";
+  Line,
+} from 'recharts';
+import { format, parseISO } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export const CrossModuleInsights = () => {
   const { loading, stats, dailyPatterns, correlations } = useCrossModuleAnalytics();
@@ -44,32 +44,32 @@ export const CrossModuleInsights = () => {
     );
   }
 
-  const getTrendIcon = (trend: CrossModuleStats["sleepTrendLastWeek"]) => {
+  const getTrendIcon = (trend: CrossModuleStats['sleepTrendLastWeek']) => {
     switch (trend) {
-      case "improving":
+      case 'improving':
         return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case "declining":
+      case 'declining':
         return <TrendingDown className="h-4 w-4 text-red-500" />;
       default:
         return <Minus className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
-  const getTrendText = (trend: CrossModuleStats["sleepTrendLastWeek"]) => {
+  const getTrendText = (trend: CrossModuleStats['sleepTrendLastWeek']) => {
     switch (trend) {
-      case "improving":
-        return "Melhorando";
-      case "declining":
-        return "Diminuindo";
+      case 'improving':
+        return 'Melhorando';
+      case 'declining':
+        return 'Diminuindo';
       default:
-        return "Estável";
+        return 'Estável';
     }
   };
 
-  const chartData = dailyPatterns.map((p) => ({
+  const chartData = dailyPatterns.map(p => ({
     ...p,
-    date: format(parseISO(p.date), "EEE", { locale: ptBR }),
-    sleepHours: Math.round((p.totalSleepMinutes / 60) * 10) / 10
+    date: format(parseISO(p.date), 'EEE', { locale: ptBR }),
+    sleepHours: Math.round((p.totalSleepMinutes / 60) * 10) / 10,
   }));
 
   const hasEnoughData = correlations.length >= 3;
@@ -91,9 +91,9 @@ export const CrossModuleInsights = () => {
               <span>Tempo Médio</span>
             </div>
             <p className="text-2xl font-bold">
-              {stats.avgTimeBetweenFeedingAndSleep > 0 
-                ? `${stats.avgTimeBetweenFeedingAndSleep}min` 
-                : "—"}
+              {stats.avgTimeBetweenFeedingAndSleep > 0
+                ? `${stats.avgTimeBetweenFeedingAndSleep}min`
+                : '—'}
             </p>
             <p className="text-xs text-muted-foreground">Entre mamada e sono</p>
           </div>
@@ -120,7 +120,8 @@ export const CrossModuleInsights = () => {
               <div>
                 <p className="font-medium text-sm">Padrão Descoberto</p>
                 <p className="text-sm text-muted-foreground">
-                  Seu bebê tende a dormir melhor quando alimentado <strong>{stats.bestFeedingTimeForSleep}</strong> antes da soneca.
+                  Seu bebê tende a dormir melhor quando alimentado{' '}
+                  <strong>{stats.bestFeedingTimeForSleep}</strong> antes da soneca.
                 </p>
               </div>
             </div>
@@ -135,11 +136,11 @@ export const CrossModuleInsights = () => {
           </div>
           <Progress value={stats.correlationStrength} className="h-2" />
           <p className="text-xs text-muted-foreground">
-            {stats.correlationStrength < 30 
-              ? "Continue registrando para insights mais precisos"
-              : stats.correlationStrength < 70 
-              ? "Dados suficientes para padrões básicos"
-              : "Excelente! Padrões claros identificados"}
+            {stats.correlationStrength < 30
+              ? 'Continue registrando para insights mais precisos'
+              : stats.correlationStrength < 70
+                ? 'Dados suficientes para padrões básicos'
+                : 'Excelente! Padrões claros identificados'}
           </p>
         </div>
 
@@ -151,42 +152,34 @@ export const CrossModuleInsights = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis 
-                    dataKey="date" 
-                    tick={{ fontSize: 12 }} 
-                    className="text-muted-foreground"
-                  />
-                  <YAxis 
-                    yAxisId="left"
-                    tick={{ fontSize: 12 }}
-                    className="text-muted-foreground"
-                  />
-                  <YAxis 
+                  <XAxis dataKey="date" tick={{ fontSize: 12 }} className="text-muted-foreground" />
+                  <YAxis yAxisId="left" tick={{ fontSize: 12 }} className="text-muted-foreground" />
+                  <YAxis
                     yAxisId="right"
                     orientation="right"
                     tick={{ fontSize: 12 }}
                     className="text-muted-foreground"
                   />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--popover))",
-                      borderColor: "hsl(var(--border))",
-                      borderRadius: "8px"
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--popover))',
+                      borderColor: 'hsl(var(--border))',
+                      borderRadius: '8px',
                     }}
                   />
                   <Legend />
-                  <Bar 
+                  <Bar
                     yAxisId="left"
-                    dataKey="totalFeedings" 
-                    name="Mamadas" 
-                    fill="hsl(var(--primary))" 
+                    dataKey="totalFeedings"
+                    name="Mamadas"
+                    fill="hsl(var(--primary))"
                     radius={[4, 4, 0, 0]}
                   />
-                  <Bar 
+                  <Bar
                     yAxisId="right"
-                    dataKey="sleepHours" 
-                    name="Sono (h)" 
-                    fill="hsl(var(--secondary))" 
+                    dataKey="sleepHours"
+                    name="Sono (h)"
+                    fill="hsl(var(--secondary))"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>
@@ -201,8 +194,8 @@ export const CrossModuleInsights = () => {
             <Utensils className="h-4 w-4 text-muted-foreground" />
             <span className="text-sm">Padrão de alimentação</span>
           </div>
-          <Badge variant={stats.feedingPattern === "regular" ? "default" : "secondary"}>
-            {stats.feedingPattern === "regular" ? "Regular" : "Variado"}
+          <Badge variant={stats.feedingPattern === 'regular' ? 'default' : 'secondary'}>
+            {stats.feedingPattern === 'regular' ? 'Regular' : 'Variado'}
           </Badge>
         </div>
       </CardContent>

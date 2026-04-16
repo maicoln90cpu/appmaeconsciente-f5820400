@@ -2,10 +2,10 @@
  * Hook for managing offline sync status and operations
  */
 
-import { useState, useEffect, useCallback } from "react";
-import { offlineSync, SyncTask } from "@/lib/offline-sync";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { useState, useEffect, useCallback } from 'react';
+import { offlineSync, SyncTask } from '@/lib/offline-sync';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface OfflineSyncState {
   isOnline: boolean;
@@ -18,303 +18,276 @@ export interface OfflineSyncState {
 // Register sync handlers for different data types
 const registerDefaultHandlers = () => {
   // Baby Feeding Logs
-  offlineSync.registerHandler("baby_feeding", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('baby_feeding', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("baby_feeding_logs")
-        .insert(insertData as never);
+      const { error } = await supabase.from('baby_feeding_logs').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("baby_feeding_logs")
+        .from('baby_feeding_logs')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("baby_feeding_logs")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('baby_feeding_logs').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Baby Sleep Logs
-  offlineSync.registerHandler("baby_sleep", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('baby_sleep', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("baby_sleep_logs")
-        .insert(insertData as never);
+      const { error } = await supabase.from('baby_sleep_logs').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("baby_sleep_logs")
+        .from('baby_sleep_logs')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("baby_sleep_logs")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('baby_sleep_logs').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Enxoval Items
-  offlineSync.registerHandler("enxoval", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('enxoval', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("itens_enxoval")
-        .insert(insertData as never);
+      const { error } = await supabase.from('itens_enxoval').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("itens_enxoval")
+        .from('itens_enxoval')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("itens_enxoval")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('itens_enxoval').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Posts
-  offlineSync.registerHandler("posts", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('posts', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("posts")
-        .insert(insertData as never);
+      const { error } = await supabase.from('posts').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("posts")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('posts').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Comments - Using post_comments table
-  offlineSync.registerHandler("comments", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('comments', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("post_comments")
-        .insert(insertData as never);
+      const { error } = await supabase.from('post_comments').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("post_comments")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('post_comments').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Vaccinations
-  offlineSync.registerHandler("vaccinations", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('vaccinations', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("baby_vaccinations")
-        .insert(insertData as never);
+      const { error } = await supabase.from('baby_vaccinations').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("baby_vaccinations")
+        .from('baby_vaccinations')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("baby_vaccinations")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('baby_vaccinations').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Postpartum Symptoms
-  offlineSync.registerHandler("postpartum_symptoms", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('postpartum_symptoms', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("postpartum_symptoms")
-        .insert(insertData as never);
+      const { error } = await supabase.from('postpartum_symptoms').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("postpartum_symptoms")
+        .from('postpartum_symptoms')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Milestone Records
-  offlineSync.registerHandler("milestones", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('milestones', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("baby_milestone_records")
-        .insert(insertData as never);
+      const { error } = await supabase.from('baby_milestone_records').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("baby_milestone_records")
+        .from('baby_milestone_records')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Contractions
-  offlineSync.registerHandler("contractions", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('contractions', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("contraction_logs")
-        .insert(insertData as never);
+      const { error } = await supabase.from('contraction_logs').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("contraction_logs")
+        .from('contraction_logs')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("contraction_logs")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('contraction_logs').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Emotional Logs
-  offlineSync.registerHandler("emotional_logs", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('emotional_logs', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("emotional_logs")
-        .insert(insertData as never);
+      const { error } = await supabase.from('emotional_logs').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("emotional_logs")
+        .from('emotional_logs')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Support Tickets
-  offlineSync.registerHandler("tickets", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('tickets', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("support_tickets")
-        .insert(insertData as never);
+      const { error } = await supabase.from('support_tickets').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("support_tickets")
+        .from('support_tickets')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Baby Appointments
-  offlineSync.registerHandler("baby_appointments", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('baby_appointments', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("baby_appointments")
-        .insert(insertData as never);
+      const { error } = await supabase.from('baby_appointments').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("baby_appointments")
+        .from('baby_appointments')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("baby_appointments")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('baby_appointments').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
 
   // Maternity Bag Items
-  offlineSync.registerHandler("maternity_bag", async (task) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Not authenticated");
+  offlineSync.registerHandler('maternity_bag', async task => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
 
-    if (task.operation === "insert") {
+    if (task.operation === 'insert') {
       const insertData = { ...task.data, user_id: user.id };
-      const { error } = await supabase
-        .from("maternity_bag_items")
-        .insert(insertData as never);
+      const { error } = await supabase.from('maternity_bag_items').insert(insertData as never);
       if (error) throw error;
-    } else if (task.operation === "update") {
+    } else if (task.operation === 'update') {
       const { error } = await supabase
-        .from("maternity_bag_items")
+        .from('maternity_bag_items')
         .update(task.data as never)
-        .eq("id", task.data.id);
+        .eq('id', task.data.id);
       if (error) throw error;
-    } else if (task.operation === "delete") {
-      const { error } = await supabase
-        .from("maternity_bag_items")
-        .delete()
-        .eq("id", task.data.id);
+    } else if (task.operation === 'delete') {
+      const { error } = await supabase.from('maternity_bag_items').delete().eq('id', task.data.id);
       if (error) throw error;
     }
   });
@@ -343,34 +316,36 @@ export function useOfflineSync() {
   // Listen for online/offline changes
   useEffect(() => {
     const handleOnline = () => {
-      setState((prev) => ({ ...prev, isOnline: true }));
-      toast("Conexão restaurada", { description: "Sincronizando dados pendentes..." });
+      setState(prev => ({ ...prev, isOnline: true }));
+      toast('Conexão restaurada', { description: 'Sincronizando dados pendentes...' });
     };
 
     const handleOffline = () => {
-      setState((prev) => ({ ...prev, isOnline: false }));
-      toast.error("Modo offline", { description: "Suas alterações serão sincronizadas quando a conexão for restaurada." });
+      setState(prev => ({ ...prev, isOnline: false }));
+      toast.error('Modo offline', {
+        description: 'Suas alterações serão sincronizadas quando a conexão for restaurada.',
+      });
     };
 
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
   }, [toast]);
 
   // Listen for sync status changes
   useEffect(() => {
-    const unsubscribe = offlineSync.onStatusChange((tasks) => {
+    const unsubscribe = offlineSync.onStatusChange(tasks => {
       const pendingCount = tasks.filter(
-        (t) => t.status === "pending" || t.status === "syncing"
+        t => t.status === 'pending' || t.status === 'syncing'
       ).length;
-      const failedCount = tasks.filter((t) => t.status === "failed").length;
-      const isSyncing = tasks.some((t) => t.status === "syncing");
+      const failedCount = tasks.filter(t => t.status === 'failed').length;
+      const isSyncing = tasks.some(t => t.status === 'syncing');
 
-      setState((prev) => ({
+      setState(prev => ({
         ...prev,
         tasks,
         pendingCount,
@@ -380,13 +355,13 @@ export function useOfflineSync() {
     });
 
     // Initial load
-    offlineSync.getAllTasks().then((tasks) => {
+    offlineSync.getAllTasks().then(tasks => {
       const pendingCount = tasks.filter(
-        (t) => t.status === "pending" || t.status === "syncing"
+        t => t.status === 'pending' || t.status === 'syncing'
       ).length;
-      const failedCount = tasks.filter((t) => t.status === "failed").length;
+      const failedCount = tasks.filter(t => t.status === 'failed').length;
 
-      setState((prev) => ({
+      setState(prev => ({
         ...prev,
         tasks,
         pendingCount,
@@ -401,7 +376,7 @@ export function useOfflineSync() {
     async (
       type: string,
       table: string,
-      operation: "insert" | "update" | "delete",
+      operation: 'insert' | 'update' | 'delete',
       data: Record<string, unknown>
     ) => {
       return offlineSync.queueTask(type, table, operation, data);
@@ -411,7 +386,7 @@ export function useOfflineSync() {
 
   const retryFailed = useCallback(async () => {
     await offlineSync.retryAllFailed();
-    toast("Tentando novamente", { description: "Sincronizando dados pendentes..." });
+    toast('Tentando novamente', { description: 'Sincronizando dados pendentes...' });
   }, [toast]);
 
   const retryTask = useCallback(async (taskId: string) => {
@@ -421,14 +396,14 @@ export function useOfflineSync() {
   const discardTask = useCallback(
     async (taskId: string) => {
       await offlineSync.discardTask(taskId);
-      toast("Tarefa descartada", { description: "A operação foi removida da fila." });
+      toast('Tarefa descartada', { description: 'A operação foi removida da fila.' });
     },
     [toast]
   );
 
   const clearQueue = useCallback(async () => {
     await offlineSync.clearQueue();
-    toast("Fila limpa", { description: "Todas as operações pendentes foram removidas." });
+    toast('Fila limpa', { description: 'Todas as operações pendentes foram removidas.' });
   }, [toast]);
 
   const forceSync = useCallback(async () => {

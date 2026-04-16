@@ -60,15 +60,15 @@ class IndexedDBManager {
         resolve();
       };
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
 
-        STORES.forEach((storeConfig) => {
+        STORES.forEach(storeConfig => {
           if (!db.objectStoreNames.contains(storeConfig.name)) {
             const store = db.createObjectStore(storeConfig.name, {
               keyPath: storeConfig.keyPath,
             });
-            storeConfig.indexes.forEach((idx) => {
+            storeConfig.indexes.forEach(idx => {
               store.createIndex(idx.name, idx.keyPath, { unique: idx.unique });
             });
           }
@@ -79,10 +79,7 @@ class IndexedDBManager {
     return this.initPromise;
   }
 
-  private async getStore(
-    storeName: string,
-    mode: IDBTransactionMode
-  ): Promise<IDBObjectStore> {
+  private async getStore(storeName: string, mode: IDBTransactionMode): Promise<IDBObjectStore> {
     await this.init();
     const transaction = this.db!.transaction([storeName], mode);
     return transaction.objectStore(storeName);
@@ -153,7 +150,7 @@ class IndexedDBManager {
 
     return new Promise((resolve, reject) => {
       const request = store.openCursor();
-      request.onsuccess = (event) => {
+      request.onsuccess = event => {
         const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
         if (cursor) {
           const entry = cursor.value as CacheEntry;
@@ -176,7 +173,7 @@ class IndexedDBManager {
 
     return new Promise((resolve, reject) => {
       const request = store.openCursor();
-      request.onsuccess = (event) => {
+      request.onsuccess = event => {
         const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
         if (cursor) {
           const entry = cursor.value as CacheEntry;
@@ -195,16 +192,12 @@ class IndexedDBManager {
 
   // ============= Draft Operations =============
 
-  async saveDraft(
-    type: string,
-    data: Record<string, unknown>,
-    id?: string
-  ): Promise<string> {
+  async saveDraft(type: string, data: Record<string, unknown>, id?: string): Promise<string> {
     const store = await this.getStore('drafts', 'readwrite');
     const draftId = id || `draft_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
+
     const existingDraft = id ? await this.getDraft(id) : null;
-    
+
     const draft = {
       id: draftId,
       type,
@@ -277,8 +270,8 @@ class IndexedDBManager {
 
   async clearAllData(): Promise<void> {
     await this.init();
-    
-    const promises = STORES.map((storeConfig) => {
+
+    const promises = STORES.map(storeConfig => {
       return new Promise<void>((resolve, reject) => {
         const transaction = this.db!.transaction([storeConfig.name], 'readwrite');
         const store = transaction.objectStore(storeConfig.name);

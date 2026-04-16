@@ -1,8 +1,8 @@
-import React, { Component, ErrorInfo, ReactNode } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertTriangle, RefreshCw } from "lucide-react";
-import { captureError, addBreadcrumb } from "@/lib/sentry";
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { captureError, addBreadcrumb } from '@/lib/sentry';
 
 interface Props {
   children: ReactNode;
@@ -31,7 +31,7 @@ export class FeatureErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    addBreadcrumb("Feature error boundary triggered", "error", {
+    addBreadcrumb('Feature error boundary triggered', 'error', {
       feature: this.props.featureName,
       componentStack: errorInfo.componentStack?.slice(0, 500),
     });
@@ -64,12 +64,10 @@ export class FeatureErrorBoundary extends Component<Props, State> {
                   <AlertTriangle className="h-8 w-8 text-destructive" />
                 </div>
               </div>
-              <CardTitle className="text-lg">
-                Erro em {this.props.featureName}
-              </CardTitle>
+              <CardTitle className="text-lg">Erro em {this.props.featureName}</CardTitle>
               <CardDescription>
                 {this.props.fallbackMessage ??
-                  "Ocorreu um problema nesta seção. O restante do app continua funcionando normalmente."}
+                  'Ocorreu um problema nesta seção. O restante do app continua funcionando normalmente.'}
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center gap-2">

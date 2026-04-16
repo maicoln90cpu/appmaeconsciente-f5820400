@@ -3,12 +3,13 @@
  * Migrado para usar createSupabaseCRUD factory
  */
 
-import { useMemo } from "react";
-import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
-import type { Database } from "@/integrations/supabase/types";
+import { useMemo } from 'react';
+import { createSupabaseCRUD } from '@/hooks/factories/createSupabaseCRUD';
+import type { Database } from '@/integrations/supabase/types';
 
 type PostpartumAppointmentRow = Database['public']['Tables']['postpartum_appointments']['Row'];
-type PostpartumAppointmentInsert = Database['public']['Tables']['postpartum_appointments']['Insert'];
+type PostpartumAppointmentInsert =
+  Database['public']['Tables']['postpartum_appointments']['Insert'];
 
 export type PostpartumAppointment = PostpartumAppointmentRow;
 
@@ -33,13 +34,7 @@ const useAppointmentsBase = createSupabaseCRUD<PostpartumAppointment, Postpartum
  * Mantém a mesma API do hook original para compatibilidade
  */
 export const usePostpartumAppointments = () => {
-  const {
-    data: appointments,
-    isLoading,
-    add,
-    update,
-    remove,
-  } = useAppointmentsBase();
+  const { data: appointments, isLoading, add, update, remove } = useAppointmentsBase();
 
   // Consultas futuras
   const upcomingAppointments = useMemo(() => {

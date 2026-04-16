@@ -3,12 +3,12 @@
  * @module lib/realtime-utils
  */
 
-import { supabase } from "@/integrations/supabase/client";
-import { logger } from "@/lib/logger";
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
 
-const log = logger.scoped("realtime");
+const log = logger.scoped('realtime');
 
-type RealtimeEvent = "INSERT" | "UPDATE" | "DELETE" | "*";
+type RealtimeEvent = 'INSERT' | 'UPDATE' | 'DELETE' | '*';
 
 interface RealtimeSubscriptionConfig {
   channelName: string;
@@ -33,9 +33,9 @@ interface MultiTableConfig {
 export function createRealtimeSubscription({
   channelName,
   table,
-  event = "*",
+  event = '*',
   filter,
-  schema = "public",
+  schema = 'public',
   onPayload,
   onError,
 }: RealtimeSubscriptionConfig) {
@@ -50,7 +50,7 @@ export function createRealtimeSubscription({
 
   const channel = supabase
     .channel(channelName)
-    .on("postgres_changes" as const, channelConfig as any, (payload: unknown) => {
+    .on('postgres_changes' as const, channelConfig as any, (payload: unknown) => {
       try {
         onPayload(payload);
       } catch (error) {
@@ -58,10 +58,10 @@ export function createRealtimeSubscription({
         onError?.(error as Error);
       }
     })
-    .subscribe((status) => {
-      if (status === "SUBSCRIBED") {
+    .subscribe(status => {
+      if (status === 'SUBSCRIBED') {
         log.debug(`Subscribed to channel`, { channelName });
-      } else if (status === "CHANNEL_ERROR") {
+      } else if (status === 'CHANNEL_ERROR') {
         log.error(`Channel error`, new Error(`Channel ${channelName} error`));
       }
     });
@@ -81,9 +81,12 @@ export function createRealtimeSubscription({
 export function createMultiTableSubscription(
   channelName: string,
   configs: MultiTableConfig[],
-  schema = "public"
+  schema = 'public'
 ) {
-  log.debug(`Creating multi-table subscription`, { channelName, tables: configs.map(c => c.table) });
+  log.debug(`Creating multi-table subscription`, {
+    channelName,
+    tables: configs.map(c => c.table),
+  });
 
   let channel = supabase.channel(channelName);
 
@@ -95,7 +98,7 @@ export function createMultiTableSubscription(
       ...(filter ? { filter } : {}),
     };
 
-    channel = channel.on("postgres_changes" as const, config as any, (payload: unknown) => {
+    channel = channel.on('postgres_changes' as const, config as any, (payload: unknown) => {
       try {
         onPayload(payload);
       } catch (error) {
@@ -104,8 +107,8 @@ export function createMultiTableSubscription(
     });
   });
 
-  channel.subscribe((status) => {
-    if (status === "SUBSCRIBED") {
+  channel.subscribe(status => {
+    if (status === 'SUBSCRIBED') {
       log.debug(`Subscribed to multi-table channel`, { channelName });
     }
   });

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,13 +6,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
-import { useModeration } from "@/hooks/useModeration";
-import { Flag, Loader2 } from "lucide-react";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import { useModeration } from '@/hooks/useModeration';
+import { Flag, Loader2 } from 'lucide-react';
 
 interface ReportPostDialogProps {
   postId: string;
@@ -22,19 +22,19 @@ interface ReportPostDialogProps {
 
 export const ReportPostDialog = ({ postId, open, onOpenChange }: ReportPostDialogProps) => {
   const { reportPost, isReporting, REPORT_REASONS } = useModeration();
-  const [reason, setReason] = useState("");
-  const [description, setDescription] = useState("");
+  const [reason, setReason] = useState('');
+  const [description, setDescription] = useState('');
 
   const handleSubmit = () => {
     if (!reason) return;
-    
+
     reportPost(
       { postId, reason, description: description || undefined },
       {
         onSuccess: () => {
           onOpenChange(false);
-          setReason("");
-          setDescription("");
+          setReason('');
+          setDescription('');
         },
       }
     );
@@ -57,7 +57,7 @@ export const ReportPostDialog = ({ postId, open, onOpenChange }: ReportPostDialo
           <div className="space-y-3">
             <Label>Motivo da denúncia</Label>
             <RadioGroup value={reason} onValueChange={setReason}>
-              {REPORT_REASONS.map((r) => (
+              {REPORT_REASONS.map(r => (
                 <div key={r.value} className="flex items-center space-x-2">
                   <RadioGroupItem value={r.value} id={r.value} />
                   <Label htmlFor={r.value} className="font-normal cursor-pointer">
@@ -74,7 +74,7 @@ export const ReportPostDialog = ({ postId, open, onOpenChange }: ReportPostDialo
               id="description"
               placeholder="Forneça mais detalhes sobre o problema..."
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               rows={3}
             />
           </div>
@@ -84,11 +84,7 @@ export const ReportPostDialog = ({ postId, open, onOpenChange }: ReportPostDialo
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={!reason || isReporting}
-            variant="destructive"
-          >
+          <Button onClick={handleSubmit} disabled={!reason || isReporting} variant="destructive">
             {isReporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Enviar Denúncia
           </Button>

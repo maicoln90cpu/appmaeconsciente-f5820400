@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
-import { supabase } from "@/integrations/supabase/client";
-import { Profile } from "@/hooks/useProfile";
-import { Calendar, Clock, Flame, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { supabase } from '@/integrations/supabase/client';
+import { Profile } from '@/hooks/useProfile';
+import { Calendar, Clock, Flame, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface MealPlan {
   id: string;
@@ -32,11 +32,11 @@ interface PlanoSemanalProps {
   profile: Profile;
 }
 
-const DAYS_OF_WEEK = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+const DAYS_OF_WEEK = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
 const MEAL_TYPES = {
-  breakfast: "Café da Manhã",
-  lunch: "Almoço",
-  dinner: "Jantar"
+  breakfast: 'Café da Manhã',
+  lunch: 'Almoço',
+  dinner: 'Jantar',
 };
 
 export function PlanoSemanal({ profile }: PlanoSemanalProps) {
@@ -44,9 +44,7 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState(new Date().getDay());
 
-  const trimester = profile.meses_gestacao 
-    ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3)
-    : 1;
+  const trimester = profile.meses_gestacao ? Math.min(Math.ceil(profile.meses_gestacao / 3), 3) : 1;
 
   useEffect(() => {
     loadMealPlans();
@@ -120,7 +118,8 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
       <Alert>
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
-          Ainda não temos planos alimentares cadastrados para o seu trimestre. Em breve teremos conteúdo personalizado para você!
+          Ainda não temos planos alimentares cadastrados para o seu trimestre. Em breve teremos
+          conteúdo personalizado para você!
         </AlertDescription>
       </Alert>
     );
@@ -153,8 +152,8 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
                 onClick={() => setSelectedDay(index)}
                 className={`px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                   selectedDay === index
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "bg-muted hover:bg-muted/80"
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-muted hover:bg-muted/80'
                 }`}
               >
                 <span className="sm:hidden">{day.substring(0, 3)}</span>
@@ -164,7 +163,7 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
           </div>
 
           <div className="space-y-6">
-            {mealPlans.map((meal) => (
+            {mealPlans.map(meal => (
               <Card key={meal.id} className="border-l-4 border-l-primary">
                 <CardHeader>
                   <div className="flex items-start justify-between">
@@ -176,15 +175,11 @@ export function PlanoSemanal({ profile }: PlanoSemanalProps) {
                         {meal.title}
                       </CardDescription>
                     </div>
-                    <Badge variant="secondary">
-                      {meal.calories} kcal
-                    </Badge>
+                    <Badge variant="secondary">{meal.calories} kcal</Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {meal.description && (
-                    <p className="text-muted-foreground">{meal.description}</p>
-                  )}
+                  {meal.description && <p className="text-muted-foreground">{meal.description}</p>}
 
                   {meal.ingredients && meal.ingredients.length > 0 && (
                     <div>

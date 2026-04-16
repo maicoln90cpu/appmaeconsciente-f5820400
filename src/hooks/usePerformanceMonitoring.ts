@@ -14,7 +14,7 @@ export function usePerformanceMonitoring() {
     // Track page load time when route changes
     const loadTime = Math.round(performance.now() - navigationStartRef.current);
     trackPageLoad(location.pathname, loadTime);
-    
+
     // Reset for next navigation
     navigationStartRef.current = performance.now();
   }, [location.pathname]);

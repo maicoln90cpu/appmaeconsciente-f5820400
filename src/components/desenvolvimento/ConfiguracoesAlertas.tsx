@@ -1,13 +1,19 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Bell, Mail, Smartphone, Info } from "lucide-react";
-import { DevelopmentAlertSettings } from "@/types/development";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Bell, Mail, Smartphone, Info } from 'lucide-react';
+import { DevelopmentAlertSettings } from '@/types/development';
+import { toast } from 'sonner';
 
 interface ConfiguracoesAlertasProps {
   settings: DevelopmentAlertSettings | null;
@@ -15,7 +21,11 @@ interface ConfiguracoesAlertasProps {
   onSave: (settings: Partial<DevelopmentAlertSettings>) => void;
 }
 
-export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: ConfiguracoesAlertasProps) => {
+export const ConfiguracoesAlertas = ({
+  settings,
+  babyProfileId,
+  onSave,
+}: ConfiguracoesAlertasProps) => {
   const [localSettings, setLocalSettings] = useState<Partial<DevelopmentAlertSettings>>({
     alerts_enabled: settings?.alerts_enabled ?? true,
     alert_when_passed_max_age: settings?.alert_when_passed_max_age ?? true,
@@ -26,7 +36,7 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
 
   const handleSave = () => {
     onSave(localSettings);
-    toast.success("Configurações de alertas salvas! 🔔");
+    toast.success('Configurações de alertas salvas! 🔔');
   };
 
   return (
@@ -34,8 +44,8 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Os alertas são sempre suaves e informativos. Nunca usamos termos alarmantes. 
-          O objetivo é te ajudar a acompanhar com tranquilidade.
+          Os alertas são sempre suaves e informativos. Nunca usamos termos alarmantes. O objetivo é
+          te ajudar a acompanhar com tranquilidade.
         </AlertDescription>
       </Alert>
 
@@ -61,7 +71,7 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
             <Switch
               id="alerts-enabled"
               checked={localSettings.alerts_enabled}
-              onCheckedChange={(checked) =>
+              onCheckedChange={checked =>
                 setLocalSettings({ ...localSettings, alerts_enabled: checked })
               }
             />
@@ -80,7 +90,7 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
                 <Switch
                   id="attention-alerts"
                   checked={localSettings.alert_when_passed_max_age}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={checked =>
                     setLocalSettings({ ...localSettings, alert_when_passed_max_age: checked })
                   }
                 />
@@ -91,7 +101,7 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
                 <Label htmlFor="frequency">Frequência de lembretes</Label>
                 <Select
                   value={String(localSettings.reminder_frequency_days)}
-                  onValueChange={(value) =>
+                  onValueChange={value =>
                     setLocalSettings({ ...localSettings, reminder_frequency_days: Number(value) })
                   }
                 >
@@ -121,15 +131,13 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
                       <Label htmlFor="push-enabled" className="font-normal">
                         Notificações push
                       </Label>
-                      <p className="text-xs text-muted-foreground">
-                        No aplicativo
-                      </p>
+                      <p className="text-xs text-muted-foreground">No aplicativo</p>
                     </div>
                   </div>
                   <Switch
                     id="push-enabled"
                     checked={localSettings.push_enabled}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={checked =>
                       setLocalSettings({ ...localSettings, push_enabled: checked })
                     }
                   />
@@ -142,15 +150,13 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
                       <Label htmlFor="email-enabled" className="font-normal">
                         E-mail
                       </Label>
-                      <p className="text-xs text-muted-foreground">
-                        Resumo semanal por e-mail
-                      </p>
+                      <p className="text-xs text-muted-foreground">Resumo semanal por e-mail</p>
                     </div>
                   </div>
                   <Switch
                     id="email-enabled"
                     checked={localSettings.email_enabled}
-                    onCheckedChange={(checked) =>
+                    onCheckedChange={checked =>
                       setLocalSettings({ ...localSettings, email_enabled: checked })
                     }
                   />
@@ -171,13 +177,15 @@ export const ConfiguracoesAlertas = ({ settings, babyProfileId, onSave }: Config
         </CardHeader>
         <CardContent className="space-y-2 text-sm text-muted-foreground">
           <p>
-            <strong>Tom gentil:</strong> Nunca usamos palavras como "atraso", "problema" ou "anormal".
+            <strong>Tom gentil:</strong> Nunca usamos palavras como "atraso", "problema" ou
+            "anormal".
           </p>
           <p>
             <strong>Contexto:</strong> Sempre lembramos que cada bebê tem seu próprio ritmo.
           </p>
           <p>
-            <strong>Orientação:</strong> Sugerimos conversar com o pediatra quando apropriado, mas sem alarmismo.
+            <strong>Orientação:</strong> Sugerimos conversar com o pediatra quando apropriado, mas
+            sem alarmismo.
           </p>
           <p>
             <strong>Privacidade:</strong> Suas informações são privadas e seguras.

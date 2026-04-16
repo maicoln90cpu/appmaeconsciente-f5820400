@@ -1,13 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
-import { Send, Bot, User, Plus, MessageSquare, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-import ReactMarkdown from "react-markdown";
-import { useAbortController, isAbortError } from "@/hooks/useAbortController";
+import { useState, useEffect, useRef } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { supabase } from '@/integrations/supabase/client';
+import { Send, Bot, User, Plus, MessageSquare, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import ReactMarkdown from 'react-markdown';
+import { useAbortController, isAbortError } from '@/hooks/useAbortController';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +17,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
 interface Message {
   id: string;
@@ -36,7 +36,7 @@ export function IANutricional() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [conversationToDelete, setConversationToDelete] = useState<string | null>(null);
@@ -65,7 +65,9 @@ export function IANutricional() {
 
   const loadConversations = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -76,7 +78,7 @@ export function IANutricional() {
 
       if (error) throw error;
       setConversations(data || []);
-      
+
       if (data && data.length > 0 && !currentConversationId) {
         setCurrentConversationId(data[0].id);
       }
@@ -104,7 +106,9 @@ export function IANutricional() {
 
   const createNewConversation = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -114,7 +118,7 @@ export function IANutricional() {
         .single();
 
       if (error) throw error;
-      
+
       setConversations([data, ...conversations]);
       setCurrentConversationId(data.id);
       setMessages([]);
@@ -138,18 +142,18 @@ export function IANutricional() {
       .eq('id', conversationToDelete);
 
     if (error) {
-      toast.error("Erro ao deletar conversa");
+      toast.error('Erro ao deletar conversa');
       return;
     }
 
     setConversations(conversations.filter(c => c.id !== conversationToDelete));
-    
+
     if (currentConversationId === conversationToDelete) {
       setCurrentConversationId(null);
       setMessages([]);
     }
 
-    toast.success("Conversa deletada");
+    toast.success('Conversa deletada');
     setDeleteDialogOpen(false);
     setConversationToDelete(null);
   };
@@ -158,11 +162,13 @@ export function IANutricional() {
     if (!input.trim() || !currentConversationId) return;
 
     const userMessage = input;
-    setInput("");
+    setInput('');
     setLoading(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) throw new Error('Não autenticado');
 
       const signal = getSignal();
@@ -172,12 +178,12 @@ export function IANutricional() {
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             message: userMessage,
-            conversationId: currentConversationId
+            conversationId: currentConversationId,
           }),
           signal,
         }
@@ -185,15 +191,17 @@ export function IANutricional() {
 
       if (!response.ok) {
         const data = await response.json();
-        
+
         // Tratamento específico para rate limiting
         if (response.status === 429) {
-          toast.error("Limite de mensagens atingido", {
-            description: data.message || "Você atingiu o limite de mensagens por hora. Tente novamente mais tarde.",
+          toast.error('Limite de mensagens atingido', {
+            description:
+              data.message ||
+              'Você atingiu o limite de mensagens por hora. Tente novamente mais tarde.',
           });
           return;
         }
-        
+
         throw new Error(data.error || 'Erro ao enviar mensagem');
       }
 
@@ -202,7 +210,7 @@ export function IANutricional() {
     } catch (error: any) {
       if (isAbortError(error)) return; // Request cancelled, safe to ignore
       console.error('Erro ao enviar mensagem:', error);
-      
+
       if (error.message?.includes('Não autenticado')) {
         toast.error('Sessão expirada', {
           description: 'Faça login novamente para continuar.',
@@ -239,21 +247,21 @@ export function IANutricional() {
         <CardContent className="p-0">
           <ScrollArea className="h-[calc(100vh-20rem)]">
             <div className="space-y-2 p-4">
-              {conversations.map((conv) => (
+              {conversations.map(conv => (
                 <div key={conv.id} className="flex items-center gap-1">
                   <button
                     onClick={() => setCurrentConversationId(conv.id)}
                     className={`flex-1 text-left p-3 rounded-lg transition-colors ${
                       currentConversationId === conv.id
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-muted"
+                        ? 'bg-primary text-primary-foreground'
+                        : 'hover:bg-muted'
                     }`}
                   >
                     <div className="flex items-start gap-2">
                       <MessageSquare className="h-4 w-4 mt-1 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium truncate">
-                          {conv.title || "Nova conversa"}
+                          {conv.title || 'Nova conversa'}
                         </p>
                         <p className="text-xs opacity-70">
                           {new Date(conv.created_at).toLocaleDateString('pt-BR')}
@@ -264,7 +272,7 @@ export function IANutricional() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       confirmDeleteConversation(conv.id);
                     }}
@@ -301,9 +309,7 @@ export function IANutricional() {
             {messages.length === 0 && !currentConversationId && (
               <div className="flex flex-col items-center justify-center h-full text-center p-8">
                 <Bot className="h-16 w-16 mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">
-                  Bem-vinda à IA Nutricional!
-                </h3>
+                <h3 className="text-lg font-semibold mb-2">Bem-vinda à IA Nutricional!</h3>
                 <p className="text-muted-foreground mb-4">
                   Comece uma nova conversa para tirar suas dúvidas sobre nutrição na gestação
                 </p>
@@ -319,13 +325,14 @@ export function IANutricional() {
                 <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Olá! Sou sua nutricionista virtual. Como posso te ajudar hoje?</p>
                 <p className="text-sm mt-2">
-                  Você pode me perguntar sobre alimentos, receitas, suplementos ou qualquer dúvida sobre nutrição na gestação.
+                  Você pode me perguntar sobre alimentos, receitas, suplementos ou qualquer dúvida
+                  sobre nutrição na gestação.
                 </p>
               </div>
             )}
 
             <div className="space-y-4">
-              {messages.map((message) => (
+              {messages.map(message => (
                 <div
                   key={message.id}
                   className={`flex gap-3 ${
@@ -339,9 +346,7 @@ export function IANutricional() {
                   )}
                   <div
                     className={`max-w-[80%] rounded-lg p-4 break-words ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
+                      message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
                     }`}
                   >
                     {message.role === 'assistant' ? (
@@ -381,7 +386,7 @@ export function IANutricional() {
               <div className="flex gap-2">
                 <Input
                   value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  onChange={e => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Digite sua pergunta sobre nutrição..."
                   disabled={loading}
@@ -401,14 +406,18 @@ export function IANutricional() {
           <AlertDialogHeader>
             <AlertDialogTitle>Deletar conversa?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. A conversa e todas as mensagens serão permanentemente removidas.
+              Esta ação não pode ser desfeita. A conversa e todas as mensagens serão permanentemente
+              removidas.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setConversationToDelete(null)}>
               Cancelar
             </AlertDialogCancel>
-            <AlertDialogAction onClick={deleteConversation} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={deleteConversation}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Deletar
             </AlertDialogAction>
           </AlertDialogFooter>

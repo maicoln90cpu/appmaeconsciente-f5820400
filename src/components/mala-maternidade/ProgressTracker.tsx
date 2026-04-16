@@ -1,5 +1,5 @@
-import { Progress } from "@/components/ui/progress";
-import { CheckCircle2, Circle } from "lucide-react";
+import { Progress } from '@/components/ui/progress';
+import { CheckCircle2, Circle } from 'lucide-react';
 
 interface ChecklistItem {
   id: string;
@@ -58,9 +58,7 @@ export const ProgressTracker = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">👩 Mãe</span>
-            <span className="text-xs text-muted-foreground">
-              {Math.round(motherProgress)}%
-            </span>
+            <span className="text-xs text-muted-foreground">{Math.round(motherProgress)}%</span>
           </div>
           <Progress value={motherProgress} className="h-2" />
         </div>
@@ -68,9 +66,7 @@ export const ProgressTracker = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">👶 Bebê</span>
-            <span className="text-xs text-muted-foreground">
-              {Math.round(babyProgress)}%
-            </span>
+            <span className="text-xs text-muted-foreground">{Math.round(babyProgress)}%</span>
           </div>
           <Progress value={babyProgress} className="h-2" />
         </div>
@@ -78,9 +74,7 @@ export const ProgressTracker = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">👤 Acompanhante</span>
-            <span className="text-xs text-muted-foreground">
-              {Math.round(companionProgress)}%
-            </span>
+            <span className="text-xs text-muted-foreground">{Math.round(companionProgress)}%</span>
           </div>
           <Progress value={companionProgress} className="h-2" />
         </div>

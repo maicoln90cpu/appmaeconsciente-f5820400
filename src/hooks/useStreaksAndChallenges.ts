@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { format, differenceInDays, parseISO } from "date-fns";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { format, differenceInDays, parseISO } from 'date-fns';
 
 export interface UserStreak {
   id: string;
@@ -60,10 +60,12 @@ export const useStreaksAndChallenges = () => {
     queryKey: ['user-streaks', user?.id],
     queryFn: async ({ signal }) => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from('user_streaks')
-        .select('id, user_id, streak_type, current_streak, longest_streak, last_activity_date, created_at, updated_at')
+        .select(
+          'id, user_id, streak_type, current_streak, longest_streak, last_activity_date, created_at, updated_at'
+        )
         .eq('user_id', user.id)
         .abortSignal(signal);
 
@@ -79,7 +81,9 @@ export const useStreaksAndChallenges = () => {
     queryFn: async ({ signal }) => {
       const { data, error } = await supabase
         .from('challenges')
-        .select('id, title, description, challenge_type, target_count, reward_points, icon, duration_days, is_active, created_at')
+        .select(
+          'id, title, description, challenge_type, target_count, reward_points, icon, duration_days, is_active, created_at'
+        )
         .eq('is_active', true)
         .abortSignal(signal);
 
@@ -93,13 +97,15 @@ export const useStreaksAndChallenges = () => {
     queryKey: ['user-challenges', user?.id],
     queryFn: async ({ signal }) => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from('user_challenges')
-        .select(`
+        .select(
+          `
           id, user_id, challenge_id, progress, completed, completed_at, started_at, expires_at,
           challenge:challenges(id, title, description, challenge_type, target_count, reward_points, icon, duration_days, is_active, created_at)
-        `)
+        `
+        )
         .eq('user_id', user.id)
         .order('started_at', { ascending: false })
         .abortSignal(signal);
@@ -116,7 +122,7 @@ export const useStreaksAndChallenges = () => {
       if (!user) throw new Error('Not authenticated');
 
       const today = format(new Date(), 'yyyy-MM-dd');
-      
+
       // Get current streak
       const { data: existing } = await supabase
         .from('user_streaks')
@@ -130,15 +136,13 @@ export const useStreaksAndChallenges = () => {
 
       if (existing) {
         const lastDate = existing.last_activity_date;
-        
+
         if (lastDate === today) {
           // Already logged today
           return existing;
         }
-        
-        const daysDiff = lastDate 
-          ? differenceInDays(new Date(today), parseISO(lastDate))
-          : 999;
+
+        const daysDiff = lastDate ? differenceInDays(new Date(today), parseISO(lastDate)) : 999;
 
         if (daysDiff === 1) {
           // Consecutive day
@@ -147,35 +151,44 @@ export const useStreaksAndChallenges = () => {
           // Streak broken
           newStreak = 1;
         }
-        
+
         longestStreak = Math.max(newStreak, existing.longest_streak);
       }
 
       const { data, error } = await supabase
         .from('user_streaks')
-        .upsert({
-          user_id: user.id,
-          streak_type: streakType,
-          current_streak: newStreak,
-          longest_streak: longestStreak,
-          last_activity_date: today,
-        }, {
-          onConflict: 'user_id,streak_type'
-        })
+        .upsert(
+          {
+            user_id: user.id,
+            streak_type: streakType,
+            current_streak: newStreak,
+            longest_streak: longestStreak,
+            last_activity_date: today,
+          },
+          {
+            onConflict: 'user_id,streak_type',
+          }
+        )
         .select()
         .single();
 
       if (error) throw error;
-      
+
       // Check for streak milestones
       if (newStreak === 7) {
-        toast.success(`🔥 ${STREAK_TYPES[streakType as keyof typeof STREAK_TYPES]?.label || streakType}: 7 dias consecutivos!`);
+        toast.success(
+          `🔥 ${STREAK_TYPES[streakType as keyof typeof STREAK_TYPES]?.label || streakType}: 7 dias consecutivos!`
+        );
       } else if (newStreak === 14) {
-        toast.success(`🔥🔥 ${STREAK_TYPES[streakType as keyof typeof STREAK_TYPES]?.label || streakType}: 14 dias consecutivos!`);
+        toast.success(
+          `🔥🔥 ${STREAK_TYPES[streakType as keyof typeof STREAK_TYPES]?.label || streakType}: 14 dias consecutivos!`
+        );
       } else if (newStreak === 30) {
-        toast.success(`🔥🔥🔥 ${STREAK_TYPES[streakType as keyof typeof STREAK_TYPES]?.label || streakType}: 30 dias consecutivos! Incrível!`);
+        toast.success(
+          `🔥🔥🔥 ${STREAK_TYPES[streakType as keyof typeof STREAK_TYPES]?.label || streakType}: 30 dias consecutivos! Incrível!`
+        );
       }
-      
+
       return data;
     },
     onSuccess: () => {
@@ -189,7 +202,7 @@ export const useStreaksAndChallenges = () => {
       if (!user) throw new Error('Not authenticated');
 
       const challenge = challenges.find(c => c.id === challengeId);
-      const expiresAt = challenge?.duration_days 
+      const expiresAt = challenge?.duration_days
         ? new Date(Date.now() + challenge.duration_days * 24 * 60 * 60 * 1000).toISOString()
         : null;
 
@@ -209,7 +222,7 @@ export const useStreaksAndChallenges = () => {
         }
         throw error;
       }
-      
+
       return data;
     },
     onSuccess: () => {
@@ -223,20 +236,21 @@ export const useStreaksAndChallenges = () => {
 
   // Update challenge progress
   const updateChallengeProgress = useMutation({
-    mutationFn: async ({ 
-      challengeType, 
-      increment = 1 
-    }: { 
-      challengeType: string; 
+    mutationFn: async ({
+      challengeType,
+      increment = 1,
+    }: {
+      challengeType: string;
       increment?: number;
     }) => {
       if (!user) return;
 
       // Find matching user challenges
-      const matchingChallenges = userChallenges.filter(uc => 
-        uc.challenge?.challenge_type === challengeType && 
-        !uc.completed &&
-        (!uc.expires_at || new Date(uc.expires_at) > new Date())
+      const matchingChallenges = userChallenges.filter(
+        uc =>
+          uc.challenge?.challenge_type === challengeType &&
+          !uc.completed &&
+          (!uc.expires_at || new Date(uc.expires_at) > new Date())
       );
 
       for (const uc of matchingChallenges) {
@@ -253,7 +267,9 @@ export const useStreaksAndChallenges = () => {
           .eq('id', uc.id);
 
         if (completed) {
-          toast.success(`🎉 Desafio completado: ${uc.challenge?.title}! +${uc.challenge?.reward_points} pontos`);
+          toast.success(
+            `🎉 Desafio completado: ${uc.challenge?.title}! +${uc.challenge?.reward_points} pontos`
+          );
         }
       }
     },
@@ -273,17 +289,16 @@ export const useStreaksAndChallenges = () => {
     .reduce((acc, uc) => acc + (uc.challenge?.reward_points || 0), 0);
 
   // Get active challenges
-  const activeChallenges = userChallenges.filter(uc => 
-    !uc.completed && 
-    (!uc.expires_at || new Date(uc.expires_at) > new Date())
+  const activeChallenges = userChallenges.filter(
+    uc => !uc.completed && (!uc.expires_at || new Date(uc.expires_at) > new Date())
   );
 
   // Get completed challenges
   const completedChallenges = userChallenges.filter(uc => uc.completed);
 
   // Get available challenges (not started yet)
-  const availableChallenges = challenges.filter(c => 
-    !userChallenges.some(uc => uc.challenge_id === c.id)
+  const availableChallenges = challenges.filter(
+    c => !userChallenges.some(uc => uc.challenge_id === c.id)
   );
 
   return {

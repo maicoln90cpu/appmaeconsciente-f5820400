@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Loader2, ChefHat } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Progress } from "@/components/ui/progress";
-import { useAbortController, isAbortError } from "@/hooks/useAbortController";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Loader2, ChefHat } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { Progress } from '@/components/ui/progress';
+import { useAbortController, isAbortError } from '@/hooks/useAbortController';
 
 interface GenerateRecipesButtonProps {
   onSuccess: () => void;
@@ -12,7 +12,11 @@ interface GenerateRecipesButtonProps {
   needsProfile?: boolean;
 }
 
-export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile }: GenerateRecipesButtonProps) {
+export function GenerateRecipesButton({
+  onSuccess,
+  onNeedsProfile,
+  needsProfile,
+}: GenerateRecipesButtonProps) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const getSignal = useAbortController();
@@ -22,17 +26,19 @@ export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile 
       onNeedsProfile();
       return;
     }
-    
+
     setLoading(true);
     setProgress(0);
 
     try {
       const progressInterval = setInterval(() => {
-        setProgress((prev) => Math.min(prev + 10, 90));
+        setProgress(prev => Math.min(prev + 10, 90));
       }, 300);
 
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error("Não autenticado");
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
 
       const signal = getSignal();
 
@@ -41,7 +47,7 @@ export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile 
         {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${session.access_token}`,
             'Content-Type': 'application/json',
           },
           signal,
@@ -56,23 +62,29 @@ export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile 
         throw new Error(errorData.error || `Erro ${response.status}`);
       }
 
-      toast.success("Receitas geradas com sucesso!");
+      toast.success('Receitas geradas com sucesso!');
       onSuccess();
     } catch (error: any) {
       if (isAbortError(error)) return;
       console.error('Erro ao gerar receitas:', error);
-      
-      if (error.message?.includes('Limite de gerações atingido') || error.message?.includes('429')) {
-        toast.error("Limite semanal atingido", {
-          description: "Você já gerou receitas esta semana. Tente novamente na próxima semana.",
+
+      if (
+        error.message?.includes('Limite de gerações atingido') ||
+        error.message?.includes('429')
+      ) {
+        toast.error('Limite semanal atingido', {
+          description: 'Você já gerou receitas esta semana. Tente novamente na próxima semana.',
         });
-      } else if (error.message?.includes('Unauthorized') || error.message?.includes('Não autenticado')) {
-        toast.error("Sessão expirada", {
-          description: "Faça login novamente para continuar.",
+      } else if (
+        error.message?.includes('Unauthorized') ||
+        error.message?.includes('Não autenticado')
+      ) {
+        toast.error('Sessão expirada', {
+          description: 'Faça login novamente para continuar.',
         });
       } else {
-        toast.error("Erro ao gerar receitas", {
-          description: error.message || "Tente novamente em alguns instantes.",
+        toast.error('Erro ao gerar receitas', {
+          description: error.message || 'Tente novamente em alguns instantes.',
         });
       }
     } finally {
@@ -83,12 +95,7 @@ export function GenerateRecipesButton({ onSuccess, onNeedsProfile, needsProfile 
 
   return (
     <div className="space-y-2">
-      <Button 
-        onClick={handleGenerate} 
-        disabled={loading}
-        variant="outline"
-        className="w-full"
-      >
+      <Button onClick={handleGenerate} disabled={loading} variant="outline" className="w-full">
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

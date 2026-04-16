@@ -1,18 +1,18 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { Download, FileSpreadsheet, FileText, Baby } from "lucide-react";
-import { useVaccination } from "@/hooks/useVaccination";
-import { useGrowthMeasurements } from "@/hooks/useGrowthMeasurements";
-import { useBabyAppointments } from "@/hooks/useBabyAppointments";
-import { useBabyMedications } from "@/hooks/useBabyMedications";
-import { useBabyColic } from "@/hooks/useBabyColic";
-import { useFoodIntroduction } from "@/hooks/useFoodIntroduction";
-import { useBabyRoutines } from "@/hooks/useBabyRoutines";
-import { format } from "date-fns";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Download, FileSpreadsheet, FileText, Baby } from 'lucide-react';
+import { useVaccination } from '@/hooks/useVaccination';
+import { useGrowthMeasurements } from '@/hooks/useGrowthMeasurements';
+import { useBabyAppointments } from '@/hooks/useBabyAppointments';
+import { useBabyMedications } from '@/hooks/useBabyMedications';
+import { useBabyColic } from '@/hooks/useBabyColic';
+import { useFoodIntroduction } from '@/hooks/useFoodIntroduction';
+import { useBabyRoutines } from '@/hooks/useBabyRoutines';
+import { format } from 'date-fns';
 
 interface DataExporterProps {
   babyProfileId?: string;
@@ -47,17 +47,19 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
     setIsExporting(true);
 
     try {
-      const XLSX = await import("xlsx");
+      const XLSX = await import('xlsx');
       const workbook = XLSX.utils.book_new();
 
       // Profile Sheet
       if (sections.profile) {
-        const profileData = [{
-          'Nome': babyProfile.baby_name,
-          'Data de Nascimento': format(new Date(babyProfile.birth_date), 'dd/MM/yyyy'),
-          'Tipo de Parto': babyProfile.birth_type || '-',
-          'Cidade de Nascimento': babyProfile.birth_city || '-',
-        }];
+        const profileData = [
+          {
+            Nome: babyProfile.baby_name,
+            'Data de Nascimento': format(new Date(babyProfile.birth_date), 'dd/MM/yyyy'),
+            'Tipo de Parto': babyProfile.birth_type || '-',
+            'Cidade de Nascimento': babyProfile.birth_city || '-',
+          },
+        ];
         const profileSheet = XLSX.utils.json_to_sheet(profileData);
         XLSX.utils.book_append_sheet(workbook, profileSheet, 'Perfil');
       }
@@ -65,11 +67,11 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
       // Growth Sheet
       if (sections.growth && measurements && measurements.length > 0) {
         const growthData = measurements.map(m => ({
-          'Data': format(new Date(m.measurement_date), 'dd/MM/yyyy'),
+          Data: format(new Date(m.measurement_date), 'dd/MM/yyyy'),
           'Peso (kg)': m.weight_kg || '-',
           'Altura (cm)': m.height_cm || '-',
           'Perímetro Cefálico (cm)': m.head_circumference_cm || '-',
-          'Observações': m.notes || '-',
+          Observações: m.notes || '-',
         }));
         const growthSheet = XLSX.utils.json_to_sheet(growthData);
         XLSX.utils.book_append_sheet(workbook, growthSheet, 'Crescimento');
@@ -78,14 +80,14 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
       // Appointments Sheet
       if (sections.appointments && appointments && appointments.length > 0) {
         const aptData = appointments.map(a => ({
-          'Título': a.title,
-          'Tipo': a.appointment_type,
-          'Data': format(new Date(a.scheduled_date), 'dd/MM/yyyy'),
-          'Horário': a.scheduled_time || '-',
-          'Médico': a.doctor_name || '-',
-          'Local': a.location || '-',
-          'Concluída': a.completed ? 'Sim' : 'Não',
-          'Observações': a.notes || '-',
+          Título: a.title,
+          Tipo: a.appointment_type,
+          Data: format(new Date(a.scheduled_date), 'dd/MM/yyyy'),
+          Horário: a.scheduled_time || '-',
+          Médico: a.doctor_name || '-',
+          Local: a.location || '-',
+          Concluída: a.completed ? 'Sim' : 'Não',
+          Observações: a.notes || '-',
         }));
         const aptSheet = XLSX.utils.json_to_sheet(aptData);
         XLSX.utils.book_append_sheet(workbook, aptSheet, 'Consultas');
@@ -94,14 +96,14 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
       // Medications Sheet
       if (sections.medications && medications && medications.length > 0) {
         const medData = medications.map(m => ({
-          'Medicamento': m.medication_name,
-          'Dosagem': m.dosage,
-          'Frequência': m.frequency,
-          'Horários': m.time_of_day?.join(', ') || '-',
+          Medicamento: m.medication_name,
+          Dosagem: m.dosage,
+          Frequência: m.frequency,
+          Horários: m.time_of_day?.join(', ') || '-',
           'Data Início': format(new Date(m.start_date), 'dd/MM/yyyy'),
           'Data Fim': m.end_date ? format(new Date(m.end_date), 'dd/MM/yyyy') : '-',
-          'Ativo': m.is_active ? 'Sim' : 'Não',
-          'Observações': m.notes || '-',
+          Ativo: m.is_active ? 'Sim' : 'Não',
+          Observações: m.notes || '-',
         }));
         const medSheet = XLSX.utils.json_to_sheet(medData);
         XLSX.utils.book_append_sheet(workbook, medSheet, 'Medicamentos');
@@ -112,10 +114,10 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
         const colicData = colicLogs.map(c => ({
           'Data/Hora': format(new Date(c.start_time), 'dd/MM/yyyy HH:mm'),
           'Duração (min)': c.duration_minutes || '-',
-          'Intensidade': c.intensity ? `${c.intensity}/5` : '-',
-          'Gatilhos': c.triggers?.join(', ') || '-',
+          Intensidade: c.intensity ? `${c.intensity}/5` : '-',
+          Gatilhos: c.triggers?.join(', ') || '-',
           'Métodos de Alívio': c.relief_methods?.join(', ') || '-',
-          'Observações': c.notes || '-',
+          Observações: c.notes || '-',
         }));
         const colicSheet = XLSX.utils.json_to_sheet(colicData);
         XLSX.utils.book_append_sheet(workbook, colicSheet, 'Cólicas');
@@ -124,14 +126,14 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
       // Food Introduction Sheet
       if (sections.food && foodLogs && foodLogs.length > 0) {
         const foodData = foodLogs.map(f => ({
-          'Alimento': f.food_name,
-          'Categoria': f.food_category,
+          Alimento: f.food_name,
+          Categoria: f.food_category,
           'Data Introdução': format(new Date(f.introduction_date), 'dd/MM/yyyy'),
-          'Aceito': f.accepted ? 'Sim' : 'Não',
+          Aceito: f.accepted ? 'Sim' : 'Não',
           'Tipo de Reação': f.reaction_type || '-',
-          'Sintomas': f.reaction_symptoms?.join(', ') || '-',
+          Sintomas: f.reaction_symptoms?.join(', ') || '-',
           'É Alergênico': f.is_allergenic ? 'Sim' : 'Não',
-          'Observações': f.notes || '-',
+          Observações: f.notes || '-',
         }));
         const foodSheet = XLSX.utils.json_to_sheet(foodData);
         XLSX.utils.book_append_sheet(workbook, foodSheet, 'Introdução Alimentar');
@@ -140,13 +142,16 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
       // Routines Sheet
       if (sections.routines && routines && routines.length > 0) {
         const routineData = routines.map(r => ({
-          'Título': r.title,
-          'Tipo': r.routine_type,
-          'Horário': r.scheduled_time,
+          Título: r.title,
+          Tipo: r.routine_type,
+          Horário: r.scheduled_time,
           'Duração (min)': r.duration_minutes || '-',
-          'Dias da Semana': r.days_of_week?.map(d => ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][d]).join(', ') || '-',
-          'Ativo': r.is_active ? 'Sim' : 'Não',
-          'Observações': r.notes || '-',
+          'Dias da Semana':
+            r.days_of_week
+              ?.map(d => ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][d])
+              .join(', ') || '-',
+          Ativo: r.is_active ? 'Sim' : 'Não',
+          Observações: r.notes || '-',
         }));
         const routineSheet = XLSX.utils.json_to_sheet(routineData);
         XLSX.utils.book_append_sheet(workbook, routineSheet, 'Rotinas');
@@ -155,7 +160,6 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
       // Save file
       const fileName = `dados-${babyProfile.baby_name.replace(/\s+/g, '-').toLowerCase()}-${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
       XLSX.writeFile(workbook, fileName);
-
     } catch (error) {
       console.error('Error exporting:', error);
     } finally {
@@ -189,7 +193,6 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
       a.download = `backup-${babyProfile.baby_name.replace(/\s+/g, '-').toLowerCase()}-${format(new Date(), 'yyyy-MM-dd')}.json`;
       a.click();
       URL.revokeObjectURL(url);
-
     } catch (error) {
       console.error('Error exporting:', error);
     } finally {
@@ -237,9 +240,7 @@ export const DataExporter = ({ babyProfileId }: DataExporterProps) => {
           <Download className="h-5 w-5 text-primary" />
           Exportação de Dados
         </CardTitle>
-        <CardDescription>
-          Faça backup dos dados do bebê em Excel ou JSON
-        </CardDescription>
+        <CardDescription>Faça backup dos dados do bebê em Excel ou JSON</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Format Selection */}

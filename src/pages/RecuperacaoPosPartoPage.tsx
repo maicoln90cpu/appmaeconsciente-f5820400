@@ -1,14 +1,24 @@
 // NOTA: MainLayout é aplicado globalmente no App.tsx - NÃO adicionar aqui
-import { DashboardRecuperacao } from "@/components/recuperacao/DashboardRecuperacao";
-import { RastreadorSintomas } from "@/components/recuperacao/RastreadorSintomas";
-import { ControleMedicamentos } from "@/components/recuperacao/ControleMedicamentos";
-import { DiarioAutoestima } from "@/components/recuperacao/DiarioAutoestima";
-import { AcessoParceiro } from "@/components/recuperacao/AcessoParceiro";
-import { ConquistasRecuperacao } from "@/components/recuperacao/ConquistasRecuperacao";
-import { EdinburghScale } from "@/components/recuperacao/EdinburghScale";
-import { DeliveryTypeContent } from "@/components/recuperacao/DeliveryTypeContent";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, Pill, Calendar, Heart, FileText, Camera, Users, Trophy, Baby } from "lucide-react";
+import { DashboardRecuperacao } from '@/components/recuperacao/DashboardRecuperacao';
+import { RastreadorSintomas } from '@/components/recuperacao/RastreadorSintomas';
+import { ControleMedicamentos } from '@/components/recuperacao/ControleMedicamentos';
+import { DiarioAutoestima } from '@/components/recuperacao/DiarioAutoestima';
+import { AcessoParceiro } from '@/components/recuperacao/AcessoParceiro';
+import { ConquistasRecuperacao } from '@/components/recuperacao/ConquistasRecuperacao';
+import { EdinburghScale } from '@/components/recuperacao/EdinburghScale';
+import { DeliveryTypeContent } from '@/components/recuperacao/DeliveryTypeContent';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Activity,
+  Pill,
+  Calendar,
+  Heart,
+  FileText,
+  Camera,
+  Users,
+  Trophy,
+  Baby,
+} from 'lucide-react';
 
 const RecuperacaoPosPartoPage = () => {
   return (

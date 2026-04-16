@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface PostReport {
   id: string;
@@ -41,7 +41,7 @@ export const useModeration = () => {
     queryKey: ['blocked-users', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from('blocked_users')
         .select('id, blocker_id, blocked_id, reason, created_at')
@@ -58,7 +58,7 @@ export const useModeration = () => {
     queryKey: ['my-reports', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from('post_reports')
         .select('id, post_id, reporter_id, reason, description, status, created_at')
@@ -73,25 +73,23 @@ export const useModeration = () => {
 
   // Report a post
   const reportPost = useMutation({
-    mutationFn: async ({ 
-      postId, 
-      reason, 
-      description 
-    }: { 
-      postId: string; 
-      reason: string; 
+    mutationFn: async ({
+      postId,
+      reason,
+      description,
+    }: {
+      postId: string;
+      reason: string;
       description?: string;
     }) => {
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from('post_reports')
-        .insert({
-          post_id: postId,
-          reporter_id: user.id,
-          reason,
-          description,
-        });
+      const { error } = await supabase.from('post_reports').insert({
+        post_id: postId,
+        reporter_id: user.id,
+        reason,
+        description,
+      });
 
       if (error) {
         if (error.code === '23505') {
@@ -111,22 +109,14 @@ export const useModeration = () => {
 
   // Block a user
   const blockUser = useMutation({
-    mutationFn: async ({ 
-      blockedId, 
-      reason 
-    }: { 
-      blockedId: string; 
-      reason?: string;
-    }) => {
+    mutationFn: async ({ blockedId, reason }: { blockedId: string; reason?: string }) => {
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase
-        .from('blocked_users')
-        .insert({
-          blocker_id: user.id,
-          blocked_id: blockedId,
-          reason,
-        });
+      const { error } = await supabase.from('blocked_users').insert({
+        blocker_id: user.id,
+        blocked_id: blockedId,
+        reason,
+      });
 
       if (error) {
         if (error.code === '23505') {

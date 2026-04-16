@@ -1,7 +1,7 @@
-import React, { memo, useMemo, useCallback, useState } from "react";
-import { useDebouncedCallback, useDeepMemo } from "@/hooks/useMemoizedCallback";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import React, { memo, useMemo, useCallback, useState } from 'react';
+import { useDebouncedCallback, useDeepMemo } from '@/hooks/useMemoizedCallback';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib/utils';
 
 interface OptimizedSelectProps<T> {
   options: T[];
@@ -24,21 +24,22 @@ export const OptimizedSelect = memo(function OptimizedSelect<T>({
   onChange,
   getOptionLabel,
   getOptionValue,
-  placeholder = "Selecione...",
+  placeholder = 'Selecione...',
   className,
   disabled = false,
   searchable = false,
 }: OptimizedSelectProps<T>) {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [isOpen, setIsOpen] = useState(false);
 
   // Memoize option values
   const memoizedOptions = useDeepMemo(
-    () => options.map((opt) => ({
-      label: getOptionLabel(opt),
-      value: getOptionValue(opt),
-      original: opt,
-    })),
+    () =>
+      options.map(opt => ({
+        label: getOptionLabel(opt),
+        value: getOptionValue(opt),
+        original: opt,
+      })),
     [options]
   );
 
@@ -51,40 +52,41 @@ export const OptimizedSelect = memo(function OptimizedSelect<T>({
   const filteredOptions = useMemo(() => {
     if (!search) return memoizedOptions;
     const lowerSearch = search.toLowerCase();
-    return memoizedOptions.filter((opt) =>
-      opt.label.toLowerCase().includes(lowerSearch)
-    );
+    return memoizedOptions.filter(opt => opt.label.toLowerCase().includes(lowerSearch));
   }, [memoizedOptions, search]);
 
-  const handleSelect = useCallback((option: typeof memoizedOptions[0]) => {
-    onChange(option.original);
-    setIsOpen(false);
-    setSearch("");
-  }, [onChange]);
+  const handleSelect = useCallback(
+    (option: (typeof memoizedOptions)[0]) => {
+      onChange(option.original);
+      setIsOpen(false);
+      setSearch('');
+    },
+    [onChange]
+  );
 
   const selectedLabel = useMemo(() => {
-    if (!value) return "";
+    if (!value) return '';
     return getOptionLabel(value);
   }, [value, getOptionLabel]);
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn('relative', className)}>
       <button
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
         className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background",
-          "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
-          disabled && "opacity-50 cursor-not-allowed",
-          !disabled && "hover:bg-accent/50"
+          'flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background',
+          'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+          disabled && 'opacity-50 cursor-not-allowed',
+          !disabled && 'hover:bg-accent/50'
         )}
       >
-        <span className={cn(!selectedLabel && "text-muted-foreground")}>
+        <span className={cn(!selectedLabel && 'text-muted-foreground')}>
           {selectedLabel || placeholder}
         </span>
         <svg
-          className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")}
+          className={cn('h-4 w-4 transition-transform', isOpen && 'rotate-180')}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -99,7 +101,7 @@ export const OptimizedSelect = memo(function OptimizedSelect<T>({
             <div className="p-2 border-b">
               <Input
                 placeholder="Buscar..."
-                onChange={(e) => handleSearch(e.target.value)}
+                onChange={e => handleSearch(e.target.value)}
                 className="h-8"
                 autoFocus
               />
@@ -111,16 +113,16 @@ export const OptimizedSelect = memo(function OptimizedSelect<T>({
                 Nenhuma opção encontrada
               </div>
             ) : (
-              filteredOptions.map((option) => (
+              filteredOptions.map(option => (
                 <button
                   key={option.value}
                   type="button"
                   onClick={() => handleSelect(option)}
                   className={cn(
-                    "w-full px-3 py-2 text-sm text-left rounded-sm",
-                    "hover:bg-accent hover:text-accent-foreground",
-                    "focus:bg-accent focus:text-accent-foreground focus:outline-none",
-                    value && getOptionValue(value) === option.value && "bg-accent"
+                    'w-full px-3 py-2 text-sm text-left rounded-sm',
+                    'hover:bg-accent hover:text-accent-foreground',
+                    'focus:bg-accent focus:text-accent-foreground focus:outline-none',
+                    value && getOptionValue(value) === option.value && 'bg-accent'
                   )}
                 >
                   {option.label}
@@ -151,9 +153,9 @@ export const MemoizedListItem = memo(function MemoizedListItem({
 }: MemoizedListItemProps) {
   return (
     <div
-      className={cn("p-4 border-b border-border last:border-b-0", className)}
+      className={cn('p-4 border-b border-border last:border-b-0', className)}
       onClick={onClick}
-      role={onClick ? "button" : undefined}
+      role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
       {children}
@@ -181,11 +183,14 @@ export const OptimizedGrid = memo(function OptimizedGrid<T>({
   keyExtractor,
   className,
 }: OptimizedGridProps<T>) {
-  const gridStyle = useMemo(() => ({
-    display: "grid",
-    gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-    gap: `${gap}px`,
-  }), [columns, gap]);
+  const gridStyle = useMemo(
+    () => ({
+      display: 'grid',
+      gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+      gap: `${gap}px`,
+    }),
+    [columns, gap]
+  );
 
   return (
     <div className={className} style={gridStyle}>

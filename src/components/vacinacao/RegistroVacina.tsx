@@ -1,10 +1,16 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import type { VaccinationCalendar, BabyVaccination } from "@/types/vaccination";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import type { VaccinationCalendar, BabyVaccination } from '@/types/vaccination';
 
 interface RegistroVacinaProps {
   vaccine?: VaccinationCalendar;
@@ -26,7 +32,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const vaccinationData: Partial<BabyVaccination> = {
       ...formData,
       vaccine_name: vaccine?.vaccine_name || '',
@@ -67,7 +73,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
                 id="application_date"
                 type="date"
                 value={formData.application_date}
-                onChange={(e) => setFormData({ ...formData, application_date: e.target.value })}
+                onChange={e => setFormData({ ...formData, application_date: e.target.value })}
                 required
               />
             </div>
@@ -77,7 +83,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
               <Input
                 id="batch_number"
                 value={formData.batch_number}
-                onChange={(e) => setFormData({ ...formData, batch_number: e.target.value })}
+                onChange={e => setFormData({ ...formData, batch_number: e.target.value })}
                 placeholder="Ex: L123456"
               />
             </div>
@@ -87,7 +93,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
               <Input
                 id="manufacturer"
                 value={formData.manufacturer}
-                onChange={(e) => setFormData({ ...formData, manufacturer: e.target.value })}
+                onChange={e => setFormData({ ...formData, manufacturer: e.target.value })}
                 placeholder="Ex: Instituto Butantan"
               />
             </div>
@@ -97,7 +103,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
               <Input
                 id="application_site"
                 value={formData.application_site}
-                onChange={(e) => setFormData({ ...formData, application_site: e.target.value })}
+                onChange={e => setFormData({ ...formData, application_site: e.target.value })}
                 placeholder="Ex: Braço direito, Coxa esquerda"
               />
             </div>
@@ -107,7 +113,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
               <Input
                 id="health_professional"
                 value={formData.health_professional}
-                onChange={(e) => setFormData({ ...formData, health_professional: e.target.value })}
+                onChange={e => setFormData({ ...formData, health_professional: e.target.value })}
                 placeholder="Ex: Enf. Maria Silva"
               />
             </div>
@@ -117,7 +123,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
               <Textarea
                 id="reactions"
                 value={formData.reactions}
-                onChange={(e) => setFormData({ ...formData, reactions: e.target.value })}
+                onChange={e => setFormData({ ...formData, reactions: e.target.value })}
                 placeholder="Ex: Febre baixa, irritabilidade leve"
                 rows={2}
               />
@@ -128,7 +134,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
               <Textarea
                 id="notes"
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={e => setFormData({ ...formData, notes: e.target.value })}
                 placeholder="Qualquer informação adicional relevante"
                 rows={3}
               />
@@ -139,9 +145,7 @@ export const RegistroVacina = ({ vaccine, open, onOpenChange, onSave }: Registro
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
-            <Button type="submit">
-              Salvar Registro
-            </Button>
+            <Button type="submit">Salvar Registro</Button>
           </div>
         </form>
       </DialogContent>

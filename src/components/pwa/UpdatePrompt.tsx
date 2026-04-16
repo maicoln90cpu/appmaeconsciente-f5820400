@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { RefreshCw, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
+import { RefreshCw, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 export const UpdatePrompt = () => {
   const [showPrompt, setShowPrompt] = useState(false);
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
-  
+
   useEffect(() => {
     // Check for SW updates
     const checkForUpdates = async () => {
@@ -16,7 +16,7 @@ export const UpdatePrompt = () => {
         const reg = await navigator.serviceWorker.getRegistration();
         if (reg) {
           setRegistration(reg);
-          
+
           // Listen for updates
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
@@ -42,11 +42,14 @@ export const UpdatePrompt = () => {
     checkForUpdates();
 
     // Periodic check for updates
-    const interval = setInterval(() => {
-      if (registration) {
-        registration.update();
-      }
-    }, 15 * 60 * 1000); // 15 minutes
+    const interval = setInterval(
+      () => {
+        if (registration) {
+          registration.update();
+        }
+      },
+      15 * 60 * 1000
+    ); // 15 minutes
 
     return () => clearInterval(interval);
   }, [registration]);
@@ -55,7 +58,7 @@ export const UpdatePrompt = () => {
     if (registration?.waiting) {
       // Tell the waiting SW to take control
       registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-      
+
       // Reload page when new SW takes control
       const onControllerChange = () => {
         navigator.serviceWorker.removeEventListener('controllerchange', onControllerChange);
@@ -83,14 +86,12 @@ export const UpdatePrompt = () => {
               </div>
               <div>
                 <p className="font-medium text-sm">Atualização disponível</p>
-                <p className="text-xs text-muted-foreground">
-                  Nova versão pronta para uso
-                </p>
+                <p className="text-xs text-muted-foreground">Nova versão pronta para uso</p>
               </div>
             </div>
-            <Button 
-              size="icon" 
-              variant="ghost" 
+            <Button
+              size="icon"
+              variant="ghost"
               className="shrink-0 h-6 w-6"
               onClick={handleDismiss}
               aria-label="Fechar"
@@ -99,18 +100,10 @@ export const UpdatePrompt = () => {
             </Button>
           </div>
           <div className="flex gap-2 mt-3">
-            <Button 
-              size="sm" 
-              className="flex-1"
-              onClick={handleUpdate}
-            >
+            <Button size="sm" className="flex-1" onClick={handleUpdate}>
               Atualizar agora
             </Button>
-            <Button 
-              size="sm" 
-              variant="outline"
-              onClick={handleDismiss}
-            >
+            <Button size="sm" variant="outline" onClick={handleDismiss}>
               Depois
             </Button>
           </div>

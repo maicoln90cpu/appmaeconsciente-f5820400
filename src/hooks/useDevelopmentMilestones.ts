@@ -1,7 +1,7 @@
 /**
  * @fileoverview Hook para gerenciamento de marcos de desenvolvimento
  * @module hooks/useDevelopmentMilestones
- * 
+ *
  * Provê dados de marcos com React Query e cache otimizado
  */
 
@@ -10,11 +10,11 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  DevelopmentMilestoneType, 
-  BabyMilestoneRecord, 
+import {
+  DevelopmentMilestoneType,
+  BabyMilestoneRecord,
   MilestoneStatus,
-  DevelopmentSummary 
+  DevelopmentSummary,
 } from '@/types/development';
 import { differenceInMonths } from 'date-fns';
 import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
@@ -27,15 +27,18 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     return differenceInMonths(new Date(), new Date(birthDate));
   };
 
-  const calculateStatus = useCallback((
-    milestone: DevelopmentMilestoneType,
-    babyAgeMonths: number,
-    record: BabyMilestoneRecord | null
-  ): MilestoneStatus => {
-    if (record?.achieved_date) return 'achieved';
-    if (babyAgeMonths > milestone.age_max_months + 1) return 'attention';
-    return 'pending';
-  }, []);
+  const calculateStatus = useCallback(
+    (
+      milestone: DevelopmentMilestoneType,
+      babyAgeMonths: number,
+      record: BabyMilestoneRecord | null
+    ): MilestoneStatus => {
+      if (record?.achieved_date) return 'achieved';
+      if (babyAgeMonths > milestone.age_max_months + 1) return 'attention';
+      return 'pending';
+    },
+    []
+  );
 
   // Query para tipos de marcos (dados estáticos)
   const { data: milestoneTypes = [], isLoading: typesLoading } = useQuery({
@@ -43,7 +46,9 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('development_milestone_types')
-        .select('id, milestone_code, area, title, description, age_min_months, age_max_months, is_active, pediatrician_alert, stimulation_tips, video_demo_url, created_at')
+        .select(
+          'id, milestone_code, area, title, description, age_min_months, age_max_months, is_active, pediatrician_alert, stimulation_tips, video_demo_url, created_at'
+        )
         .eq('is_active', true)
         .order('age_min_months', { ascending: true });
 
@@ -54,10 +59,10 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
   });
 
   // Query para registros do bebê
-  const { 
-    data: queryData, 
+  const {
+    data: queryData,
     isLoading: recordsLoading,
-    refetch: refetchRecords
+    refetch: refetchRecords,
   } = useQuery({
     queryKey: babyProfileId ? QueryKeys.milestoneRecords(babyProfileId) : ['milestone-records'],
     queryFn: async () => {
@@ -77,7 +82,9 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
       // Carregar registros existentes
       const { data: existingRecords, error } = await supabase
         .from('baby_milestone_records')
-        .select('id, user_id, baby_profile_id, milestone_type_id, status, achieved_date, mother_notes, photo_url, video_url, marked_as_achieved_at, created_at, updated_at')
+        .select(
+          'id, user_id, baby_profile_id, milestone_type_id, status, achieved_date, mother_notes, photo_url, video_url, marked_as_achieved_at, created_at, updated_at'
+        )
         .eq('baby_profile_id', babyProfileId);
 
       if (error) throw error;
@@ -107,7 +114,7 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
           marked_as_achieved_at: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          milestone
+          milestone,
         };
       });
 
@@ -127,12 +134,12 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
         social_emocional_total: 0,
         social_emocional_achieved: 0,
         attention_count: 0,
-        last_milestone_date: null
+        last_milestone_date: null,
       };
 
       enrichedRecords.forEach(record => {
         if (!record.milestone) return;
-        
+
         const area = record.milestone.area;
         const isExpected = record.milestone.age_max_months <= babyAgeMonths;
 
@@ -145,8 +152,10 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
             (summaryData as any)[achievedKey] = ((summaryData as any)[achievedKey] || 0) + 1;
 
             if (record.achieved_date) {
-              if (!summaryData.last_milestone_date || 
-                  record.achieved_date > summaryData.last_milestone_date) {
+              if (
+                !summaryData.last_milestone_date ||
+                record.achieved_date > summaryData.last_milestone_date
+              ) {
                 summaryData.last_milestone_date = record.achieved_date;
               }
             }
@@ -169,30 +178,33 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
 
   // Mutation para marcar como alcançado
   const markMutation = useMutation({
-    mutationFn: async ({ 
-      milestoneTypeId, 
-      achievedDate, 
-      notes 
-    }: { 
-      milestoneTypeId: string; 
-      achievedDate: Date; 
+    mutationFn: async ({
+      milestoneTypeId,
+      achievedDate,
+      notes,
+    }: {
+      milestoneTypeId: string;
+      achievedDate: Date;
       notes?: string;
     }) => {
       if (!babyProfileId || !user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('baby_milestone_records')
-        .upsert({
-          user_id: user.id,
-          baby_profile_id: babyProfileId,
-          milestone_type_id: milestoneTypeId,
-          status: 'achieved',
-          achieved_date: achievedDate.toISOString().split('T')[0],
-          mother_notes: notes || null,
-          marked_as_achieved_at: new Date().toISOString()
-        }, {
-          onConflict: 'baby_profile_id,milestone_type_id'
-        })
+        .upsert(
+          {
+            user_id: user.id,
+            baby_profile_id: babyProfileId,
+            milestone_type_id: milestoneTypeId,
+            status: 'achieved',
+            achieved_date: achievedDate.toISOString().split('T')[0],
+            mother_notes: notes || null,
+            marked_as_achieved_at: new Date().toISOString(),
+          },
+          {
+            onConflict: 'baby_profile_id,milestone_type_id',
+          }
+        )
         .select()
         .single();
 
@@ -200,20 +212,26 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
       return data;
     },
     onSuccess: () => {
-      toast("Marco registrado!", { description: "A conquista foi salva com sucesso." });
+      toast('Marco registrado!', { description: 'A conquista foi salva com sucesso.' });
       if (babyProfileId) {
         queryClient.invalidateQueries({ queryKey: QueryKeys.milestoneRecords(babyProfileId) });
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error marking milestone:', error);
-      toast.error("Erro ao salvar", { description: "Não foi possível registrar o marco." });
-    }
+      toast.error('Erro ao salvar', { description: 'Não foi possível registrar o marco.' });
+    },
   });
 
   // Mutation para atualizar registro
   const updateMutation = useMutation({
-    mutationFn: async ({ recordId, updates }: { recordId: string; updates: Partial<BabyMilestoneRecord> }) => {
+    mutationFn: async ({
+      recordId,
+      updates,
+    }: {
+      recordId: string;
+      updates: Partial<BabyMilestoneRecord>;
+    }) => {
       const { error } = await supabase
         .from('baby_milestone_records')
         .update(updates)
@@ -222,18 +240,22 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast("Atualizado!", { description: "O marco foi atualizado com sucesso." });
+      toast('Atualizado!', { description: 'O marco foi atualizado com sucesso.' });
       if (babyProfileId) {
         queryClient.invalidateQueries({ queryKey: QueryKeys.milestoneRecords(babyProfileId) });
       }
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error updating record:', error);
-      toast.error("Erro ao atualizar", { description: "Não foi possível atualizar o marco." });
-    }
+      toast.error('Erro ao atualizar', { description: 'Não foi possível atualizar o marco.' });
+    },
   });
 
-  const markAsAchieved = async (milestoneTypeId: string, achievedDate: Date, notes?: string): Promise<void> => {
+  const markAsAchieved = async (
+    milestoneTypeId: string,
+    achievedDate: Date,
+    notes?: string
+  ): Promise<void> => {
     await markMutation.mutateAsync({ milestoneTypeId, achievedDate, notes });
   };
 
@@ -241,16 +263,23 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     return updateMutation.mutateAsync({ recordId, updates });
   };
 
-  const getMilestonesByArea = useCallback((area: string) => {
-    return milestoneTypes.filter(m => m.area === area);
-  }, [milestoneTypes]);
+  const getMilestonesByArea = useCallback(
+    (area: string) => {
+      return milestoneTypes.filter(m => m.area === area);
+    },
+    [milestoneTypes]
+  );
 
-  const getMilestonesByAge = useCallback((ageMonths: number, marginMonths: number = 1) => {
-    return milestoneTypes.filter(
-      m => ageMonths >= m.age_min_months - marginMonths && 
-           ageMonths <= m.age_max_months + marginMonths
-    );
-  }, [milestoneTypes]);
+  const getMilestonesByAge = useCallback(
+    (ageMonths: number, marginMonths: number = 1) => {
+      return milestoneTypes.filter(
+        m =>
+          ageMonths >= m.age_min_months - marginMonths &&
+          ageMonths <= m.age_max_months + marginMonths
+      );
+    },
+    [milestoneTypes]
+  );
 
   const getAttentionMilestones = useCallback(() => {
     return records.filter(r => r.status === 'attention');
@@ -268,6 +297,6 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     updateRecord,
     getMilestonesByArea,
     getMilestonesByAge,
-    getAttentionMilestones
+    getAttentionMilestones,
   };
 };

@@ -1,7 +1,7 @@
 /**
  * @fileoverview Contexto de autenticação do aplicativo
  * @module contexts/AuthContext
- * 
+ *
  * Provê estado de autenticação global e funções de controle de sessão.
  * Deve envolver toda a aplicação para disponibilizar o hook useAuth.
  */
@@ -34,10 +34,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
  * Provider de autenticação que gerencia o estado global de auth
- * 
+ *
  * Configura listener para mudanças de estado de autenticação
  * e mantém user/session sincronizados com o Supabase Auth.
- * 
+ *
  * @param children - Componentes filhos que terão acesso ao contexto
  */
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -51,7 +51,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    */
   const refreshSession = useCallback(async () => {
     try {
-      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      const {
+        data: { session: currentSession },
+      } = await supabase.auth.getSession();
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       logger.debug('Session refreshed', { context: 'AuthContext' });
@@ -69,14 +71,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // 1. Limpar cache do React Query ANTES do signOut
       // para evitar que dados do usuário anterior persistam
       queryClient.clear();
-      
+
       // 2. Realizar signOut no Supabase
       await supabase.auth.signOut();
-      
+
       // 3. Limpar estados locais
       setSession(null);
       setUser(null);
-      
+
       logger.info('User signed out — QueryClient cleared', { context: 'AuthContext' });
     } catch (error) {
       logger.error('Failed to sign out', error, { context: 'AuthContext' });
@@ -85,22 +87,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Configura listener de mudanças de auth PRIMEIRO
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
-        setLoading(false);
-        
-        // Limpar cache quando o usuário faz logout via outro mecanismo
-        // (ex: token expirado, logout em outra aba)
-        if (event === 'SIGNED_OUT') {
-          queryClient.clear();
-          logger.debug('Auth SIGNED_OUT — QueryClient cleared', { context: 'AuthContext' });
-        }
-        
-        logger.debug(`Auth state changed: ${event}`, { context: 'AuthContext' });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
+      setSession(newSession);
+      setUser(newSession?.user ?? null);
+      setLoading(false);
+
+      // Limpar cache quando o usuário faz logout via outro mecanismo
+      // (ex: token expirado, logout em outra aba)
+      if (event === 'SIGNED_OUT') {
+        queryClient.clear();
+        logger.debug('Auth SIGNED_OUT — QueryClient cleared', { context: 'AuthContext' });
       }
-    );
+
+      logger.debug(`Auth state changed: ${event}`, { context: 'AuthContext' });
+    });
 
     // DEPOIS verifica sessão existente
     supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
@@ -113,19 +115,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, [queryClient]);
 
-  const contextValue = useMemo<AuthContextType>(() => ({
-    user,
-    session,
-    loading,
-    signOut,
-    refreshSession,
-  }), [user, session, loading, signOut, refreshSession]);
-
-  return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+  const contextValue = useMemo<AuthContextType>(
+    () => ({
+      user,
+      session,
+      loading,
+      signOut,
+      refreshSession,
+    }),
+    [user, session, loading, signOut, refreshSession]
   );
+
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 /**
@@ -142,16 +143,16 @@ export const useAuth = (): AuthContextType => {
 
 /**
  * Hook simplificado para obter apenas o user_id
- * 
+ *
  * Útil para hooks e componentes que só precisam do ID
  * para fazer queries no banco de dados.
- * 
+ *
  * @returns ID do usuário ou null se não autenticado
- * 
+ *
  * @example
  * ```tsx
  * const userId = useUserId();
- * 
+ *
  * useEffect(() => {
  *   if (userId) {
  *     fetchUserData(userId);

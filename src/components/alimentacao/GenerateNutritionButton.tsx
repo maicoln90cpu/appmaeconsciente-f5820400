@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Sparkles, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Sparkles, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,15 +11,18 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { toast } from "sonner";
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 interface GenerateNutritionButtonProps {
   onSuccess?: () => void;
   hasExistingContent?: boolean;
 }
 
-export function GenerateNutritionButton({ onSuccess, hasExistingContent }: GenerateNutritionButtonProps) {
+export function GenerateNutritionButton({
+  onSuccess,
+  hasExistingContent,
+}: GenerateNutritionButtonProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
@@ -30,12 +33,16 @@ export function GenerateNutritionButton({ onSuccess, hasExistingContent }: Gener
 
       if (error) throw error;
 
-      toast("✨ Plano gerado com sucesso!", { description: `${data.data.meal_plans_count} refeições, ${data.data.recipes_count} receitas e ${data.data.exercises_count} exercícios criados.` });
+      toast('✨ Plano gerado com sucesso!', {
+        description: `${data.data.meal_plans_count} refeições, ${data.data.recipes_count} receitas e ${data.data.exercises_count} exercícios criados.`,
+      });
 
       onSuccess?.();
     } catch (error: any) {
       console.error('Error generating nutrition plan:', error);
-      toast.error("Erro ao gerar plano", { description: error.message || "Tente novamente mais tarde." });
+      toast.error('Erro ao gerar plano', {
+        description: error.message || 'Tente novamente mais tarde.',
+      });
     } finally {
       setIsGenerating(false);
       setShowConfirmDialog(false);
@@ -52,12 +59,7 @@ export function GenerateNutritionButton({ onSuccess, hasExistingContent }: Gener
 
   return (
     <>
-      <Button
-        onClick={handleClick}
-        disabled={isGenerating}
-        size="lg"
-        className="gap-2"
-      >
+      <Button onClick={handleClick} disabled={isGenerating} size="lg" className="gap-2">
         {isGenerating ? (
           <>
             <Loader2 className="h-5 w-5 animate-spin" />
@@ -86,9 +88,7 @@ export function GenerateNutritionButton({ onSuccess, hasExistingContent }: Gener
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleGenerate}>
-              Regenerar com IA
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleGenerate}>Regenerar com IA</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { WifiOff, RefreshCw, Clock, CheckCircle2 } from "lucide-react";
+import { WifiOff, RefreshCw, Clock, CheckCircle2 } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 
 interface CachedDataInfo {
   name: string;
@@ -22,21 +22,21 @@ const Offline = () => {
   useEffect(() => {
     const checkCachedData = async () => {
       const dataTypes: CachedDataInfo[] = [
-        { name: "Perfil", available: !!localStorage.getItem("user-profile") },
-        { name: "Configurações", available: !!localStorage.getItem("app-settings") },
-        { name: "Dados do bebê", available: !!localStorage.getItem("baby-data") },
+        { name: 'Perfil', available: !!localStorage.getItem('user-profile') },
+        { name: 'Configurações', available: !!localStorage.getItem('app-settings') },
+        { name: 'Dados do bebê', available: !!localStorage.getItem('baby-data') },
       ];
-      
+
       // Verificar cache do Service Worker
       if ('caches' in window) {
         try {
           const cache = await caches.open('supabase-api-cache');
           const keys = await cache.keys();
           if (keys.length > 0) {
-            dataTypes.push({ 
-              name: "Dados sincronizados", 
+            dataTypes.push({
+              name: 'Dados sincronizados',
               available: true,
-              lastSync: new Date().toLocaleTimeString('pt-BR')
+              lastSync: new Date().toLocaleTimeString('pt-BR'),
             });
           }
         } catch {
@@ -70,7 +70,7 @@ const Offline = () => {
         window.location.href = '/dashboard';
       }, 2000);
     };
-    
+
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener('online', handleOnline);
@@ -84,14 +84,14 @@ const Offline = () => {
 
   const handleRetry = async () => {
     setIsRetrying(true);
-    
+
     // Tentar fazer uma requisição simples para verificar conexão
     try {
-      const response = await fetch('/favicon.ico', { 
+      const response = await fetch('/favicon.ico', {
         method: 'HEAD',
-        cache: 'no-store' 
+        cache: 'no-store',
       });
-      
+
       if (response.ok) {
         window.location.href = '/dashboard';
         return;
@@ -99,7 +99,7 @@ const Offline = () => {
     } catch {
       // Ainda offline
     }
-    
+
     setIsRetrying(false);
   };
 
@@ -114,12 +114,8 @@ const Offline = () => {
                 <CheckCircle2 className="h-12 w-12 text-primary" />
               </div>
             </div>
-            <CardTitle className="text-primary">
-              Conexão Restaurada!
-            </CardTitle>
-            <CardDescription>
-              Redirecionando para o dashboard...
-            </CardDescription>
+            <CardTitle className="text-primary">Conexão Restaurada!</CardTitle>
+            <CardDescription>Redirecionando para o dashboard...</CardDescription>
           </CardHeader>
           <CardContent>
             <Progress value={100} className="h-2" />
@@ -139,11 +135,9 @@ const Offline = () => {
             </div>
           </div>
           <CardTitle>Você está offline</CardTitle>
-          <CardDescription>
-            Algumas funcionalidades podem estar limitadas
-          </CardDescription>
+          <CardDescription>Algumas funcionalidades podem estar limitadas</CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* Dados disponíveis offline */}
           {cachedData.length > 0 && (
@@ -176,7 +170,9 @@ const Offline = () => {
                 Aguardando sincronização:
               </h3>
               <p className="text-sm text-secondary-foreground/80">
-                {pendingSync} {pendingSync === 1 ? 'item será sincronizado' : 'itens serão sincronizados'} quando a conexão retornar
+                {pendingSync}{' '}
+                {pendingSync === 1 ? 'item será sincronizado' : 'itens serão sincronizados'} quando
+                a conexão retornar
               </p>
             </div>
           )}
@@ -192,12 +188,7 @@ const Offline = () => {
           </div>
 
           {/* Botão de retry */}
-          <Button 
-            onClick={handleRetry} 
-            className="w-full" 
-            disabled={isRetrying}
-            size="lg"
-          >
+          <Button onClick={handleRetry} className="w-full" disabled={isRetrying} size="lg">
             {isRetrying ? (
               <>
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -212,8 +203,8 @@ const Offline = () => {
           </Button>
 
           {/* Link para voltar (se tiver histórico) */}
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="w-full text-muted-foreground"
             onClick={() => window.history.back()}
           >

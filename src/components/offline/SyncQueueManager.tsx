@@ -72,9 +72,8 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
   const totalPending = pendingCount + failedCount;
 
   // Calcular progresso de sync
-  const syncProgress = tasks.length > 0
-    ? ((tasks.filter(t => t.status === 'synced').length / tasks.length) * 100)
-    : 100;
+  const syncProgress =
+    tasks.length > 0 ? (tasks.filter(t => t.status === 'synced').length / tasks.length) * 100 : 100;
 
   const formatTime = (timestamp: number) => {
     const date = new Date(timestamp);
@@ -85,16 +84,16 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
     const date = new Date(timestamp);
     const today = new Date();
     const isToday = date.toDateString() === today.toDateString();
-    
+
     if (isToday) {
       return `Hoje às ${formatTime(timestamp)}`;
     }
-    
-    return date.toLocaleDateString('pt-BR', { 
-      day: '2-digit', 
+
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
       month: 'short',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -120,7 +119,11 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
       case 'syncing':
         return <Badge variant="default">Sincronizando</Badge>;
       case 'synced':
-        return <Badge variant="outline" className="border-primary text-primary">Sincronizado</Badge>;
+        return (
+          <Badge variant="outline" className="border-primary text-primary">
+            Sincronizado
+          </Badge>
+        );
       case 'failed':
         return <Badge variant="destructive">Falhou</Badge>;
       default:
@@ -155,13 +158,13 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
           ) : (
             <CloudOff className="h-4 w-4" />
           )}
-          
+
           {totalPending > 0 && (
             <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
               {totalPending}
             </span>
           )}
-          
+
           <span className="hidden sm:inline">
             {isOnline ? (isSyncing ? 'Sincronizando...' : 'Sync') : 'Offline'}
           </span>
@@ -198,7 +201,9 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
               <div className="text-xs text-muted-foreground">Pendentes</div>
             </Card>
             <Card className="p-3">
-              <div className="text-2xl font-bold">{tasks.filter(t => t.status === 'syncing').length}</div>
+              <div className="text-2xl font-bold">
+                {tasks.filter(t => t.status === 'syncing').length}
+              </div>
               <div className="text-xs text-muted-foreground">Sincronizando</div>
             </Card>
             <Card className={cn('p-3', failedCount > 0 && 'border-destructive')}>
@@ -232,7 +237,7 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
               <RefreshCw className={cn('h-4 w-4 mr-2', isSyncing && 'animate-spin')} />
               Sincronizar Agora
             </Button>
-            
+
             {failedCount > 0 && (
               <Button
                 variant="outline"
@@ -254,7 +259,7 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
                   <p>Nenhuma operação pendente</p>
                 </div>
               ) : (
-                tasks.map((task) => (
+                tasks.map(task => (
                   <Card key={task.id} className="p-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-start gap-2 min-w-0">
@@ -268,16 +273,14 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
                             {formatDate(task.timestamp)}
                           </div>
                           {task.errorMessage && (
-                            <div className="text-xs text-destructive mt-1">
-                              {task.errorMessage}
-                            </div>
+                            <div className="text-xs text-destructive mt-1">{task.errorMessage}</div>
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-1 shrink-0">
                         {getStatusBadge(task.status)}
-                        
+
                         {task.status === 'failed' && (
                           <>
                             <Button
@@ -301,7 +304,7 @@ export function SyncQueueManager({ className }: SyncQueueManagerProps) {
                         )}
                       </div>
                     </div>
-                    
+
                     {task.retries > 0 && task.status !== 'synced' && (
                       <div className="text-xs text-muted-foreground mt-2">
                         Tentativas: {task.retries}/5

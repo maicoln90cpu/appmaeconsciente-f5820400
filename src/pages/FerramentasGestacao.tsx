@@ -2,18 +2,32 @@
  * @fileoverview Página de Ferramentas de Gestação
  */
 
-import { lazy, Suspense } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Timer, Calculator, Image, Baby, ClipboardCheck, FileText } from "lucide-react";
+import { lazy, Suspense } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Timer, Calculator, Image, Baby, ClipboardCheck, FileText } from 'lucide-react';
 
-const ContractionDiary = lazy(() => import("@/components/gestacao/ContractionDiary").then(m => ({ default: m.ContractionDiary })));
-const DueDateCalculator = lazy(() => import("@/components/gestacao/DueDateCalculator").then(m => ({ default: m.DueDateCalculator })));
-const UltrasoundAlbum = lazy(() => import("@/components/gestacao/UltrasoundAlbum").then(m => ({ default: m.UltrasoundAlbum })));
-const KickCounter = lazy(() => import("@/components/gestacao/KickCounter").then(m => ({ default: m.KickCounter })));
-const ExamChecklist = lazy(() => import("@/components/gestacao/ExamChecklist").then(m => ({ default: m.ExamChecklist })));
-const BirthPlanBuilder = lazy(() => import("@/components/gestacao/BirthPlanBuilder").then(m => ({ default: m.BirthPlanBuilder })));
+const ContractionDiary = lazy(() =>
+  import('@/components/gestacao/ContractionDiary').then(m => ({ default: m.ContractionDiary }))
+);
+const DueDateCalculator = lazy(() =>
+  import('@/components/gestacao/DueDateCalculator').then(m => ({ default: m.DueDateCalculator }))
+);
+const UltrasoundAlbum = lazy(() =>
+  import('@/components/gestacao/UltrasoundAlbum').then(m => ({ default: m.UltrasoundAlbum }))
+);
+const KickCounter = lazy(() =>
+  import('@/components/gestacao/KickCounter').then(m => ({ default: m.KickCounter }))
+);
+const ExamChecklist = lazy(() =>
+  import('@/components/gestacao/ExamChecklist').then(m => ({ default: m.ExamChecklist }))
+);
+const BirthPlanBuilder = lazy(() =>
+  import('@/components/gestacao/BirthPlanBuilder').then(m => ({ default: m.BirthPlanBuilder }))
+);
 
-const TabFallback = () => <div className="text-center py-8 text-muted-foreground">Carregando...</div>;
+const TabFallback = () => (
+  <div className="text-center py-8 text-muted-foreground">Carregando...</div>
+);
 
 const FerramentasGestacao = () => {
   return (
@@ -60,22 +74,34 @@ const FerramentasGestacao = () => {
         </TabsList>
 
         <TabsContent value="ultrassons">
-          <Suspense fallback={<TabFallback />}><UltrasoundAlbum /></Suspense>
+          <Suspense fallback={<TabFallback />}>
+            <UltrasoundAlbum />
+          </Suspense>
         </TabsContent>
         <TabsContent value="dpp">
-          <Suspense fallback={<TabFallback />}><DueDateCalculator /></Suspense>
+          <Suspense fallback={<TabFallback />}>
+            <DueDateCalculator />
+          </Suspense>
         </TabsContent>
         <TabsContent value="contracoes">
-          <Suspense fallback={<TabFallback />}><ContractionDiary /></Suspense>
+          <Suspense fallback={<TabFallback />}>
+            <ContractionDiary />
+          </Suspense>
         </TabsContent>
         <TabsContent value="movimentos">
-          <Suspense fallback={<TabFallback />}><KickCounter /></Suspense>
+          <Suspense fallback={<TabFallback />}>
+            <KickCounter />
+          </Suspense>
         </TabsContent>
         <TabsContent value="exames">
-          <Suspense fallback={<TabFallback />}><ExamChecklist /></Suspense>
+          <Suspense fallback={<TabFallback />}>
+            <ExamChecklist />
+          </Suspense>
         </TabsContent>
         <TabsContent value="plano-parto">
-          <Suspense fallback={<TabFallback />}><BirthPlanBuilder /></Suspense>
+          <Suspense fallback={<TabFallback />}>
+            <BirthPlanBuilder />
+          </Suspense>
         </TabsContent>
       </Tabs>
     </div>

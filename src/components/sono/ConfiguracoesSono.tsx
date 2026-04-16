@@ -1,21 +1,23 @@
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Save, Baby } from "lucide-react";
-import { BabySleepSettings } from "@/types/babySleep";
-import { differenceInMonths } from "date-fns";
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
+import { Save, Baby } from 'lucide-react';
+import { BabySleepSettings } from '@/types/babySleep';
+import { differenceInMonths } from 'date-fns';
 
 interface ConfiguracoesSonoProps {
   settings: BabySleepSettings | null;
-  onSave: (settings: Omit<BabySleepSettings, "id" | "user_id" | "created_at" | "updated_at">) => Promise<any>;
+  onSave: (
+    settings: Omit<BabySleepSettings, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+  ) => Promise<any>;
 }
 
 export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) => {
-  const [babyName, setBabyName] = useState("");
-  const [babyBirthdate, setBabyBirthdate] = useState("");
+  const [babyName, setBabyName] = useState('');
+  const [babyBirthdate, setBabyBirthdate] = useState('');
   const [reminderEnabled, setReminderEnabled] = useState(true);
   const [reminderInterval, setReminderInterval] = useState(90);
 
@@ -36,7 +38,7 @@ export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     await onSave({
       baby_name: babyName,
       baby_birthdate: babyBirthdate,
@@ -66,7 +68,7 @@ export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) 
               <Input
                 id="baby-name"
                 value={babyName}
-                onChange={(e) => setBabyName(e.target.value)}
+                onChange={e => setBabyName(e.target.value)}
                 placeholder="Digite o nome do bebê"
                 required
               />
@@ -78,7 +80,7 @@ export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) 
                 id="baby-birthdate"
                 type="date"
                 value={babyBirthdate}
-                onChange={(e) => setBabyBirthdate(e.target.value)}
+                onChange={e => setBabyBirthdate(e.target.value)}
                 required
               />
               {age !== null && (
@@ -91,13 +93,11 @@ export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) 
 
           <div className="border-t pt-6 space-y-4">
             <h3 className="text-lg font-semibold">Lembretes</h3>
-            
+
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="reminder-enabled">Ativar Lembretes</Label>
-                <p className="text-sm text-muted-foreground">
-                  Receba notificações para sonecas
-                </p>
+                <p className="text-sm text-muted-foreground">Receba notificações para sonecas</p>
               </div>
               <Switch
                 id="reminder-enabled"
@@ -108,9 +108,7 @@ export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) 
 
             {reminderEnabled && (
               <div className="space-y-2">
-                <Label htmlFor="reminder-interval">
-                  Janela de Sono (minutos)
-                </Label>
+                <Label htmlFor="reminder-interval">Janela de Sono (minutos)</Label>
                 <Input
                   id="reminder-interval"
                   type="number"
@@ -118,10 +116,11 @@ export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) 
                   max="240"
                   step="15"
                   value={reminderInterval}
-                  onChange={(e) => setReminderInterval(parseInt(e.target.value))}
+                  onChange={e => setReminderInterval(parseInt(e.target.value))}
                 />
                 <p className="text-sm text-muted-foreground">
-                  Você será notificado(a) quando o bebê estiver acordado por mais de {reminderInterval} minutos
+                  Você será notificado(a) quando o bebê estiver acordado por mais de{' '}
+                  {reminderInterval} minutos
                 </p>
               </div>
             )}
@@ -134,7 +133,8 @@ export const ConfiguracoesSono = ({ settings, onSave }: ConfiguracoesSonoProps) 
 
           <div className="mt-6 p-4 bg-accent/10 rounded-lg">
             <p className="text-sm text-muted-foreground italic text-center">
-              ☀️ Dormir bem começa com paz mental. Respire fundo e lembre-se: você está indo muito bem! 💜
+              ☀️ Dormir bem começa com paz mental. Respire fundo e lembre-se: você está indo muito
+              bem! 💜
             </p>
           </div>
         </form>

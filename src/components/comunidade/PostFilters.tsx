@@ -1,8 +1,8 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Search, X } from "lucide-react";
-import { useState } from "react";
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Search, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface PostFiltersProps {
   onSearch: (query: string) => void;
@@ -11,22 +11,22 @@ interface PostFiltersProps {
 }
 
 const CATEGORIES = [
-  { value: "dicas", label: "Dicas", icon: "💡" },
-  { value: "desabafo", label: "Desabafo", icon: "💭" },
-  { value: "venda", label: "Vendas", icon: "🛍️" },
-  { value: "duvida", label: "Dúvida", icon: "❓" },
-  { value: "conquista", label: "Conquista", icon: "🎉" },
+  { value: 'dicas', label: 'Dicas', icon: '💡' },
+  { value: 'desabafo', label: 'Desabafo', icon: '💭' },
+  { value: 'venda', label: 'Vendas', icon: '🛍️' },
+  { value: 'duvida', label: 'Dúvida', icon: '❓' },
+  { value: 'conquista', label: 'Conquista', icon: '🎉' },
 ];
 
 export const PostFilters = ({ onSearch, onCategoryFilter, selectedCategory }: PostFiltersProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = () => {
     onSearch(searchQuery);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSearch();
     }
   };
@@ -39,7 +39,7 @@ export const PostFilters = ({ onSearch, onCategoryFilter, selectedCategory }: Po
           <Input
             placeholder="Pesquisar posts..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
             className="pl-10"
           />
@@ -50,8 +50,8 @@ export const PostFilters = ({ onSearch, onCategoryFilter, selectedCategory }: Po
             variant="ghost"
             size="icon"
             onClick={() => {
-              setSearchQuery("");
-              onSearch("");
+              setSearchQuery('');
+              onSearch('');
             }}
             aria-label="Limpar busca"
           >
@@ -62,16 +62,16 @@ export const PostFilters = ({ onSearch, onCategoryFilter, selectedCategory }: Po
 
       <div className="flex flex-wrap gap-2">
         <Badge
-          variant={selectedCategory === null ? "default" : "outline"}
+          variant={selectedCategory === null ? 'default' : 'outline'}
           className="cursor-pointer"
           onClick={() => onCategoryFilter(null)}
         >
           Todos
         </Badge>
-        {CATEGORIES.map((cat) => (
+        {CATEGORIES.map(cat => (
           <Badge
             key={cat.value}
-            variant={selectedCategory === cat.value ? "default" : "outline"}
+            variant={selectedCategory === cat.value ? 'default' : 'outline'}
             className="cursor-pointer"
             onClick={() => onCategoryFilter(cat.value)}
           >

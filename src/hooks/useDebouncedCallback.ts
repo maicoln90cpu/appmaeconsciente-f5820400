@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from "react";
+import { useCallback, useRef, useEffect } from 'react';
 
 /**
  * Returns a debounced version of the callback.

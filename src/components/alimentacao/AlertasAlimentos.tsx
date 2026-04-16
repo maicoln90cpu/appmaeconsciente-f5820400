@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { supabase } from "@/integrations/supabase/client";
-import { AlertTriangle, Info, ChefHat } from "lucide-react";
-import { useProfile } from "@/hooks/useProfile";
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { supabase } from '@/integrations/supabase/client';
+import { AlertTriangle, Info, ChefHat } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 interface FoodAlert {
   id: string;
@@ -17,23 +17,23 @@ interface FoodAlert {
 
 const ALERT_TYPES = {
   evitar_totalmente: {
-    label: "Evitar Totalmente",
+    label: 'Evitar Totalmente',
     icon: AlertTriangle,
-    variant: "destructive" as const,
-    color: "text-red-500"
+    variant: 'destructive' as const,
+    color: 'text-red-500',
   },
   consumir_moderacao: {
-    label: "Consumir com Moderação",
+    label: 'Consumir com Moderação',
     icon: Info,
-    variant: "default" as const,
-    color: "text-yellow-500"
+    variant: 'default' as const,
+    color: 'text-yellow-500',
   },
   cuidado_preparo: {
-    label: "Cuidado no Preparo",
+    label: 'Cuidado no Preparo',
     icon: ChefHat,
-    variant: "secondary" as const,
-    color: "text-blue-500"
-  }
+    variant: 'secondary' as const,
+    color: 'text-blue-500',
+  },
 };
 
 export function AlertasAlimentos() {
@@ -41,9 +41,7 @@ export function AlertasAlimentos() {
   const [loading, setLoading] = useState(true);
   const { profile } = useProfile();
 
-  const trimester = profile?.meses_gestacao 
-    ? Math.ceil(profile.meses_gestacao / 3) 
-    : 1;
+  const trimester = profile?.meses_gestacao ? Math.ceil(profile.meses_gestacao / 3) : 1;
 
   useEffect(() => {
     loadAlerts();
@@ -74,15 +72,18 @@ export function AlertasAlimentos() {
     return alert.trimester_specific.includes(trimester);
   };
 
-  const groupedAlerts = alerts.reduce((acc, alert) => {
-    if (!isRelevantForTrimester(alert)) return acc;
-    
-    if (!acc[alert.alert_type]) {
-      acc[alert.alert_type] = [];
-    }
-    acc[alert.alert_type].push(alert);
-    return acc;
-  }, {} as Record<string, FoodAlert[]>);
+  const groupedAlerts = alerts.reduce(
+    (acc, alert) => {
+      if (!isRelevantForTrimester(alert)) return acc;
+
+      if (!acc[alert.alert_type]) {
+        acc[alert.alert_type] = [];
+      }
+      acc[alert.alert_type].push(alert);
+      return acc;
+    },
+    {} as Record<string, FoodAlert[]>
+  );
 
   if (loading) {
     return <div className="flex justify-center py-8">Carregando alertas...</div>;
@@ -119,14 +120,19 @@ export function AlertasAlimentos() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  {alertsList.map((alert) => (
-                    <Card key={alert.id} className="border-l-4" style={{
-                      borderLeftColor: alertType === 'evitar_totalmente' 
-                        ? 'hsl(var(--destructive))' 
-                        : alertType === 'consumir_moderacao'
-                        ? 'hsl(var(--warning))'
-                        : 'hsl(var(--primary))'
-                    }}>
+                  {alertsList.map(alert => (
+                    <Card
+                      key={alert.id}
+                      className="border-l-4"
+                      style={{
+                        borderLeftColor:
+                          alertType === 'evitar_totalmente'
+                            ? 'hsl(var(--destructive))'
+                            : alertType === 'consumir_moderacao'
+                              ? 'hsl(var(--warning))'
+                              : 'hsl(var(--primary))',
+                      }}
+                    >
                       <CardHeader>
                         <CardTitle className="text-lg flex items-center justify-between">
                           {alert.food_name}
@@ -170,7 +176,8 @@ export function AlertasAlimentos() {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          <strong>Importante:</strong> Estas são orientações gerais. Sempre consulte seu médico ou nutricionista para recomendações personalizadas baseadas em suas necessidades específicas.
+          <strong>Importante:</strong> Estas são orientações gerais. Sempre consulte seu médico ou
+          nutricionista para recomendações personalizadas baseadas em suas necessidades específicas.
         </AlertDescription>
       </Alert>
     </div>

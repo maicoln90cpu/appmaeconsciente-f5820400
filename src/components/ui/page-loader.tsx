@@ -1,15 +1,15 @@
 /**
  * @fileoverview Componente de loading skeleton para Suspense
  * @module components/ui/page-loader
- * 
+ *
  * Usado como fallback do Suspense para lazy loaded pages.
  * Mostra um skeleton que representa a estrutura da página.
  */
 
-import { useState, useEffect } from "react";
-import { RefreshCw, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState, useEffect } from 'react';
+import { RefreshCw, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 /**
  * Loader minimalista para páginas - com retry após timeout
@@ -75,7 +75,7 @@ export const DashboardSkeleton = () => (
       <Skeleton className="h-8 w-48" />
       <Skeleton className="h-10 w-32" />
     </div>
-    
+
     {/* Stats cards skeleton */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {[...Array(4)].map((_, i) => (
@@ -85,7 +85,7 @@ export const DashboardSkeleton = () => (
         </div>
       ))}
     </div>
-    
+
     {/* Content area skeleton */}
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-4">
@@ -113,7 +113,7 @@ export const TableSkeleton = () => (
         <Skeleton className="h-10 w-32" />
       </div>
     </div>
-    
+
     {/* Table skeleton */}
     <div className="rounded-xl border bg-card">
       {/* Header */}
@@ -140,12 +140,12 @@ export const TableSkeleton = () => (
 export const FeedSkeleton = () => (
   <div className="container py-6 max-w-2xl space-y-6">
     <Skeleton className="h-8 w-48" />
-    
+
     {/* Post composer skeleton */}
     <div className="p-4 rounded-xl border bg-card">
       <Skeleton className="h-20 w-full" />
     </div>
-    
+
     {/* Posts skeleton */}
     {[...Array(3)].map((_, i) => (
       <div key={i} className="p-4 rounded-xl border bg-card space-y-4">

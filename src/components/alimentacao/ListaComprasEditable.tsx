@@ -1,10 +1,22 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus } from "lucide-react";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ShoppingItem {
   item: string;
@@ -18,18 +30,18 @@ interface AddItemDialogProps {
 
 export function AddItemDialog({ onAdd }: AddItemDialogProps) {
   const [open, setOpen] = useState(false);
-  const [item, setItem] = useState("");
-  const [category, setCategory] = useState("Outros");
+  const [item, setItem] = useState('');
+  const [category, setCategory] = useState('Outros');
 
   const handleAdd = () => {
     if (!item.trim()) {
-      toast.error("Digite o nome do item");
+      toast.error('Digite o nome do item');
       return;
     }
     onAdd({ item: item.trim(), category, checked: false });
-    setItem("");
+    setItem('');
     setOpen(false);
-    toast.success("Item adicionado!");
+    toast.success('Item adicionado!');
   };
 
   return (
@@ -45,11 +57,7 @@ export function AddItemDialog({ onAdd }: AddItemDialogProps) {
           <DialogTitle>Adicionar Item à Lista</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
-          <Input
-            placeholder="Nome do item"
-            value={item}
-            onChange={(e) => setItem(e.target.value)}
-          />
+          <Input placeholder="Nome do item" value={item} onChange={e => setItem(e.target.value)} />
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger>
               <SelectValue />
@@ -62,7 +70,9 @@ export function AddItemDialog({ onAdd }: AddItemDialogProps) {
               <SelectItem value="Outros">Outros</SelectItem>
             </SelectContent>
           </Select>
-          <Button onClick={handleAdd} className="w-full">Adicionar</Button>
+          <Button onClick={handleAdd} className="w-full">
+            Adicionar
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

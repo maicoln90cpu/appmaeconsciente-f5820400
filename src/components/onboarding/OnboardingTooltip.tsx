@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from "react";
-import { X, ArrowRight, ArrowLeft } from "lucide-react";
+import { useState, useEffect, useRef } from 'react';
+import { X, ArrowRight, ArrowLeft } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 export interface TourStep {
   target: string; // CSS selector
   title: string;
   content: string;
-  position?: "top" | "bottom" | "left" | "right";
+  position?: 'top' | 'bottom' | 'left' | 'right';
 }
 
 interface OnboardingTooltipProps {
@@ -46,8 +46,8 @@ export const OnboardingTooltip = ({
     }
 
     // Highlight target element
-    targetElement.classList.add("onboarding-highlight");
-    
+    targetElement.classList.add('onboarding-highlight');
+
     // Calculate position
     const rect = targetElement.getBoundingClientRect();
     const tooltipWidth = 300;
@@ -57,20 +57,20 @@ export const OnboardingTooltip = ({
     let top = 0;
     let left = 0;
 
-    switch (step.position || "bottom") {
-      case "top":
+    switch (step.position || 'bottom') {
+      case 'top':
         top = rect.top - tooltipHeight - padding + window.scrollY;
         left = rect.left + rect.width / 2 - tooltipWidth / 2;
         break;
-      case "bottom":
+      case 'bottom':
         top = rect.bottom + padding + window.scrollY;
         left = rect.left + rect.width / 2 - tooltipWidth / 2;
         break;
-      case "left":
+      case 'left':
         top = rect.top + rect.height / 2 - tooltipHeight / 2 + window.scrollY;
         left = rect.left - tooltipWidth - padding;
         break;
-      case "right":
+      case 'right':
         top = rect.top + rect.height / 2 - tooltipHeight / 2 + window.scrollY;
         left = rect.right + padding;
         break;
@@ -84,10 +84,10 @@ export const OnboardingTooltip = ({
     setIsVisible(true);
 
     // Scroll target into view
-    targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     return () => {
-      targetElement.classList.remove("onboarding-highlight");
+      targetElement.classList.remove('onboarding-highlight');
     };
   }, [currentStep, isActive, step]);
 
@@ -116,8 +116,8 @@ export const OnboardingTooltip = ({
       <div
         ref={tooltipRef}
         className={cn(
-          "fixed z-[9999] w-[300px] bg-popover border rounded-lg shadow-lg p-4",
-          "animate-in fade-in-0 zoom-in-95 duration-200"
+          'fixed z-[9999] w-[300px] bg-popover border rounded-lg shadow-lg p-4',
+          'animate-in fade-in-0 zoom-in-95 duration-200'
         )}
         style={{ top: position.top, left: position.left }}
       >
@@ -151,7 +151,7 @@ export const OnboardingTooltip = ({
               </Button>
             )}
             <Button size="sm" onClick={handleNext}>
-              {isLastStep ? "Concluir" : "Próximo"}
+              {isLastStep ? 'Concluir' : 'Próximo'}
               {!isLastStep && <ArrowRight className="h-3 w-3 ml-1" />}
             </Button>
           </div>

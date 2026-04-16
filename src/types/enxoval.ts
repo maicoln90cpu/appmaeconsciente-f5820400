@@ -1,26 +1,20 @@
-export type Category = 
-  | "Roupas" 
-  | "Higiene" 
-  | "Quarto" 
-  | "Alimentação" 
-  | "Mãe" 
-  | "Extras";
+export type Category = 'Roupas' | 'Higiene' | 'Quarto' | 'Alimentação' | 'Mãe' | 'Extras';
 
-export type Necessity = "Necessário" | "Depois" | "Não";
+export type Necessity = 'Necessário' | 'Depois' | 'Não';
 
-export type Priority = "Alta" | "Média" | "Baixa";
+export type Priority = 'Alta' | 'Média' | 'Baixa';
 
-export type Status = "A comprar" | "Comprado";
+export type Status = 'A comprar' | 'Comprado';
 
-export type Size = "RN" | "P" | "M" | "G" | "Opcional";
+export type Size = 'RN' | 'P' | 'M' | 'G' | 'Opcional';
 
-export type Origin = "Novo" | "Usado" | "Brechó";
+export type Origin = 'Novo' | 'Usado' | 'Brechó';
 
-export type EtapaMaes = "Mapear" | "Avaliar" | "Enxugar" | "Sustentar";
+export type EtapaMaes = 'Mapear' | 'Avaliar' | 'Enxugar' | 'Sustentar';
 
-export type Classificacao = "Essencial" | "Pode Esperar" | "Supérfluo";
+export type Classificacao = 'Essencial' | 'Pode Esperar' | 'Supérfluo';
 
-export type Emocao = "😌 útil" | "💸 impulso" | "🧡 amor";
+export type Emocao = '😌 útil' | '💸 impulso' | '🧡 amor';
 
 export interface EnxovalItem {
   id: string;

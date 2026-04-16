@@ -1,41 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ConfiguracoesAlertas } from "@/components/desenvolvimento/ConfiguracoesAlertas";
-import { DashboardDesenvolvimento } from "@/components/desenvolvimento/DashboardDesenvolvimento";
-import { LinhaTempoMarcos } from "@/components/desenvolvimento/LinhaTempoMarcos";
-import { MarcosAtencao } from "@/components/desenvolvimento/MarcosAtencao";
-import { MilestoneDetailDialog } from "@/components/desenvolvimento/MilestoneDetailDialog";
-import { OnboardingMonitor } from "@/components/desenvolvimento/OnboardingMonitor";
-import { RegistroRapidoMarcos } from "@/components/desenvolvimento/RegistroRapidoMarcos";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ConfiguracoesAlertas } from '@/components/desenvolvimento/ConfiguracoesAlertas';
+import { DashboardDesenvolvimento } from '@/components/desenvolvimento/DashboardDesenvolvimento';
+import { LinhaTempoMarcos } from '@/components/desenvolvimento/LinhaTempoMarcos';
+import { MarcosAtencao } from '@/components/desenvolvimento/MarcosAtencao';
+import { MilestoneDetailDialog } from '@/components/desenvolvimento/MilestoneDetailDialog';
+import { OnboardingMonitor } from '@/components/desenvolvimento/OnboardingMonitor';
+import { RegistroRapidoMarcos } from '@/components/desenvolvimento/RegistroRapidoMarcos';
 
-import { useDevelopmentMilestones } from "@/hooks/useDevelopmentMilestones";
-import { useVaccination } from "@/hooks/useVaccination";
+import { useDevelopmentMilestones } from '@/hooks/useDevelopmentMilestones';
+import { useVaccination } from '@/hooks/useVaccination';
 
-import { logger } from "@/lib/logger";
+import { logger } from '@/lib/logger';
 
-import { Plus, Baby, AlertCircle, HelpCircle } from "lucide-react";
+import { Plus, Baby, AlertCircle, HelpCircle } from 'lucide-react';
 
-import type { BabyMilestoneRecord, DevelopmentAlertSettings } from "@/types/development";
+import type { BabyMilestoneRecord, DevelopmentAlertSettings } from '@/types/development';
 
 const MonitorDesenvolvimento = () => {
   const { profiles, currentProfile } = useVaccination();
-  const { 
-    records, 
-    summary, 
-    loading, 
+  const {
+    records,
+    summary,
+    loading,
     markAsAchieved,
     updateRecord,
     milestoneTypes,
-    getAttentionMilestones
+    getAttentionMilestones,
   } = useDevelopmentMilestones(currentProfile?.id || null);
 
   const [selectedMilestone, setSelectedMilestone] = useState<BabyMilestoneRecord | null>(null);
@@ -98,7 +93,8 @@ const MonitorDesenvolvimento = () => {
         <Alert>
           <Baby className="h-4 w-4" />
           <AlertDescription>
-            Você precisa cadastrar um perfil de bebê primeiro. Acesse o Cartão de Vacinação para criar um perfil.
+            Você precisa cadastrar um perfil de bebê primeiro. Acesse o Cartão de Vacinação para
+            criar um perfil.
           </AlertDescription>
         </Alert>
       </div>
@@ -119,7 +115,9 @@ const MonitorDesenvolvimento = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div className="flex items-start sm:items-center gap-2 sm:gap-3 min-w-0">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">Monitor de Desenvolvimento</h1>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold truncate">
+                Monitor de Desenvolvimento
+              </h1>
               <p className="text-muted-foreground text-xs sm:text-sm mt-0.5 sm:mt-1 line-clamp-2">
                 Acompanhe as conquistas do seu bebê com carinho
               </p>
@@ -143,7 +141,10 @@ const MonitorDesenvolvimento = () => {
           </div>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={() => setShowQuickRegister(true)} className="w-full sm:w-auto text-sm">
+              <Button
+                onClick={() => setShowQuickRegister(true)}
+                className="w-full sm:w-auto text-sm"
+              >
                 <Plus className="h-4 w-4 mr-1.5 sm:mr-2 shrink-0" />
                 <span className="truncate">Registrar Conquistas</span>
               </Button>
@@ -157,7 +158,9 @@ const MonitorDesenvolvimento = () => {
         {/* Mensagem contextual motivacional */}
         <Alert className="bg-gradient-to-r from-pink-50 to-purple-50 border-pink-200 dark:from-pink-950/30 dark:to-purple-950/30 dark:border-pink-800">
           <AlertCircle className="h-4 w-4 text-pink-600 dark:text-pink-400 shrink-0" />
-          <AlertTitle className="text-pink-800 dark:text-pink-300 text-sm">💕 Cada bebê tem seu ritmo</AlertTitle>
+          <AlertTitle className="text-pink-800 dark:text-pink-300 text-sm">
+            💕 Cada bebê tem seu ritmo
+          </AlertTitle>
           <AlertDescription className="text-pink-700 dark:text-pink-400 text-xs sm:text-sm">
             Este monitor é para acompanhamento com amor, não comparação.
           </AlertDescription>
@@ -168,7 +171,10 @@ const MonitorDesenvolvimento = () => {
             <TabsList className="w-full grid grid-cols-4 h-auto p-1">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="dashboard" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2">
+                  <TabsTrigger
+                    value="dashboard"
+                    className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2"
+                  >
                     <span className="hidden xs:inline">Dashboard</span>
                     <span className="xs:hidden">Dash</span>
                   </TabsTrigger>
@@ -177,10 +183,13 @@ const MonitorDesenvolvimento = () => {
                   <p>Visão geral do desenvolvimento por área</p>
                 </TooltipContent>
               </Tooltip>
-              
+
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="timeline" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2">
+                  <TabsTrigger
+                    value="timeline"
+                    className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2"
+                  >
                     <span className="hidden xs:inline">Linha do Tempo</span>
                     <span className="xs:hidden">Tempo</span>
                   </TabsTrigger>
@@ -189,10 +198,13 @@ const MonitorDesenvolvimento = () => {
                   <p>Veja todos os marcos organizados por faixa etária</p>
                 </TooltipContent>
               </Tooltip>
-              
+
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="attention" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2 relative">
+                  <TabsTrigger
+                    value="attention"
+                    className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2 relative"
+                  >
                     <span className="hidden xs:inline">Atenção</span>
                     <span className="xs:hidden">Alerta</span>
                     {attentionMilestones.length > 0 && (
@@ -206,10 +218,13 @@ const MonitorDesenvolvimento = () => {
                   <p>Marcos que podem precisar de atenção especial</p>
                 </TooltipContent>
               </Tooltip>
-              
+
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <TabsTrigger value="settings" className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2">
+                  <TabsTrigger
+                    value="settings"
+                    className="text-[10px] xs:text-xs sm:text-sm px-1.5 py-1.5 sm:px-3 sm:py-2"
+                  >
                     <span className="hidden xs:inline">Alertas</span>
                     <span className="xs:hidden">Config</span>
                   </TabsTrigger>
@@ -236,7 +251,7 @@ const MonitorDesenvolvimento = () => {
               <MarcosAtencao
                 attentionRecords={attentionMilestones}
                 babyAgeMonths={summary.age_months}
-                onMarkAsAchieved={(milestoneTypeId) => markAsAchieved(milestoneTypeId, new Date())}
+                onMarkAsAchieved={milestoneTypeId => markAsAchieved(milestoneTypeId, new Date())}
                 onMarkAsDoubt={handleMarkAsDoubt}
                 onGenerateReport={() => {
                   logger.debug('Generate report requested');
@@ -269,10 +284,7 @@ const MonitorDesenvolvimento = () => {
           onSave={handleQuickRegister}
         />
 
-        <OnboardingMonitor
-          open={showOnboarding}
-          onComplete={handleOnboardingComplete}
-        />
+        <OnboardingMonitor open={showOnboarding} onComplete={handleOnboardingComplete} />
       </div>
     </TooltipProvider>
   );

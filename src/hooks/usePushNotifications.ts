@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback } from "react";
-import { 
-  isPushSupported, 
-  getNotificationPermission, 
+import { useState, useEffect, useCallback } from 'react';
+import {
+  isPushSupported,
+  getNotificationPermission,
   requestNotificationPermission,
   subscribeToPush,
-  unsubscribeFromPush 
-} from "@/lib/push-notifications";
-import { useAuth } from "@/contexts/AuthContext";
-import { logger } from "@/lib/logger";
+  unsubscribeFromPush,
+} from '@/lib/push-notifications';
+import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
 
 interface UsePushNotificationsReturn {
   isSupported: boolean;

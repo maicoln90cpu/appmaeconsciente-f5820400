@@ -23,18 +23,18 @@ class Analytics {
 
   private checkPlausible() {
     // Check if Plausible script is loaded
-    if (typeof window !== "undefined" && window.plausible) {
+    if (typeof window !== 'undefined' && window.plausible) {
       this.plausibleEnabled = true;
       // Using console.info for analytics initialization message (allowed by ESLint config)
-      console.info("[Analytics] Plausible detected");
+      console.info('[Analytics] Plausible detected');
     }
   }
 
   private getOrCreateSessionId(): string {
-    let sessionId = sessionStorage.getItem("analytics_session_id");
+    let sessionId = sessionStorage.getItem('analytics_session_id');
     if (!sessionId) {
       sessionId = `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      sessionStorage.setItem("analytics_session_id", sessionId);
+      sessionStorage.setItem('analytics_session_id', sessionId);
     }
     return sessionId;
   }
@@ -43,7 +43,7 @@ class Analytics {
     if (!this.enabled) return;
 
     // Using console.info for analytics tracking (allowed by ESLint config)
-    console.info("[Analytics]", event.name, event.properties);
+    console.info('[Analytics]', event.name, event.properties);
 
     // Send to Plausible if available
     if (this.plausibleEnabled && window.plausible) {
@@ -52,13 +52,13 @@ class Analytics {
           props: event.properties,
         });
       } catch (error) {
-        console.error("Plausible tracking error:", error);
+        console.error('Plausible tracking error:', error);
       }
     }
 
     // Store event in localStorage for backup tracking
     try {
-      const events = JSON.parse(localStorage.getItem("analytics_events") || "[]");
+      const events = JSON.parse(localStorage.getItem('analytics_events') || '[]');
       events.push({
         ...event,
         timestamp: new Date().toISOString(),
@@ -72,79 +72,79 @@ class Analytics {
         events.shift();
       }
 
-      localStorage.setItem("analytics_events", JSON.stringify(events));
+      localStorage.setItem('analytics_events', JSON.stringify(events));
     } catch (error) {
-      console.error("Analytics storage error:", error);
+      console.error('Analytics storage error:', error);
     }
   }
 
   pageView(path: string) {
     this.track({
-      name: "page_view",
+      name: 'page_view',
       properties: { path },
     });
   }
 
   productAccess(productSlug: string) {
     this.track({
-      name: "product_access",
+      name: 'product_access',
       properties: { productSlug },
     });
   }
 
   postCreated() {
-    this.track({ name: "post_created" });
+    this.track({ name: 'post_created' });
   }
 
   postLiked(postId: string) {
     this.track({
-      name: "post_liked",
+      name: 'post_liked',
       properties: { postId },
     });
   }
 
   ticketCreated(ticketId: string) {
     this.track({
-      name: "ticket_created",
+      name: 'ticket_created',
       properties: { ticketId },
     });
   }
 
   itemAdded(category: string) {
     this.track({
-      name: "item_added",
+      name: 'item_added',
       properties: { category },
     });
   }
 
   itemPurchased(category: string, price: number) {
     this.track({
-      name: "item_purchased",
+      name: 'item_purchased',
       properties: { category, price },
     });
   }
 
   budgetExceeded(currentBudget: number, totalSpent: number) {
     this.track({
-      name: "budget_exceeded",
+      name: 'budget_exceeded',
       properties: { currentBudget, totalSpent, overspent: totalSpent - currentBudget },
     });
   }
 
   enxovalShared() {
-    this.track({ name: "enxoval_shared" });
+    this.track({ name: 'enxoval_shared' });
   }
 
-  enxovalExported(format: "pdf" | "excel") {
+  enxovalExported(format: 'pdf' | 'excel') {
     this.track({
-      name: "enxoval_exported",
+      name: 'enxoval_exported',
       properties: { format },
     });
   }
 
   getEvents() {
     try {
-      return JSON.parse(localStorage.getItem("analytics_events") || "[]");
+      return JSON.parse(localStorage.getItem('analytics_events') || '[]');
     } catch {
       return [];
     }
@@ -153,17 +153,17 @@ class Analytics {
   getEventsSummary() {
     const events = this.getEvents();
     const summary: Record<string, number> = {};
-    
+
     events.forEach((event: any) => {
       summary[event.name] = (summary[event.name] || 0) + 1;
     });
-    
+
     return summary;
   }
 
   clearEvents() {
-    localStorage.removeItem("analytics_events");
-    sessionStorage.removeItem("analytics_session_id");
+    localStorage.removeItem('analytics_events');
+    sessionStorage.removeItem('analytics_session_id');
     this.sessionId = this.getOrCreateSessionId();
   }
 }

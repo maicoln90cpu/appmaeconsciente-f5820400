@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,7 +8,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
 interface EnxovalDeleteDialogProps {
   open: boolean;
@@ -16,30 +16,28 @@ interface EnxovalDeleteDialogProps {
   onConfirm: () => void;
 }
 
-export const EnxovalDeleteDialog = memo(({ 
-  open, 
-  onOpenChange, 
-  onConfirm 
-}: EnxovalDeleteDialogProps) => (
-  <AlertDialog open={open} onOpenChange={onOpenChange}>
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-        <AlertDialogDescription>
-          Tem certeza que deseja deletar este item? Esta ação não pode ser desfeita.
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-        <AlertDialogAction 
-          onClick={onConfirm} 
-          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-        >
-          Deletar
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-));
+export const EnxovalDeleteDialog = memo(
+  ({ open, onOpenChange, onConfirm }: EnxovalDeleteDialogProps) => (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+          <AlertDialogDescription>
+            Tem certeza que deseja deletar este item? Esta ação não pode ser desfeita.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onConfirm}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            Deletar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+);
 
-EnxovalDeleteDialog.displayName = "EnxovalDeleteDialog";
+EnxovalDeleteDialog.displayName = 'EnxovalDeleteDialog';

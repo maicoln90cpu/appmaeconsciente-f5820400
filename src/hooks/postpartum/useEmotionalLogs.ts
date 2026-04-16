@@ -1,8 +1,8 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { getAuthenticatedUser } from "@/hooks/useAuthenticatedAction";
-import type { Database } from "@/integrations/supabase/types";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { getAuthenticatedUser } from '@/hooks/useAuthenticatedAction';
+import type { Database } from '@/integrations/supabase/types';
+import { toast } from 'sonner';
 
 type EmotionalLogRow = Database['public']['Tables']['emotional_logs']['Row'];
 type EmotionalLogInsert = Database['public']['Tables']['emotional_logs']['Insert'];
@@ -41,13 +41,13 @@ export const useEmotionalLogs = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
       checkEdinburghScore(data);
-      toast("Sucesso", { description: "Registro emocional salvo" });
+      toast('Sucesso', { description: 'Registro emocional salvo' });
     },
     onError: () => {
-      toast.error("Erro", { description: "Erro ao salvar registro" });
+      toast.error('Erro', { description: 'Erro ao salvar registro' });
     },
   });
 
@@ -63,10 +63,10 @@ export const useEmotionalLogs = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
       checkEdinburghScore(data);
-      toast("Sucesso", { description: "Registro atualizado" });
+      toast('Sucesso', { description: 'Registro atualizado' });
     },
   });
 
@@ -83,10 +83,18 @@ function checkEdinburghScore(log: EmotionalLog) {
   if (!log.edinburgh_score) return;
 
   if (log.edinburgh_score >= 13) {
-    toast.error("💙 Atenção importante", { description: "Seu resultado sugere risco de depressão pós-parto. Por favor, converse com um profissional de saúde mental. Você não está sozinha." });
+    toast.error('💙 Atenção importante', {
+      description:
+        'Seu resultado sugere risco de depressão pós-parto. Por favor, converse com um profissional de saúde mental. Você não está sozinha.',
+    });
   } else if (log.edinburgh_score >= 10) {
-    toast("💙 Cuide-se", { description: "Alguns sinais de ansiedade ou tristeza foram detectados. Considere conversar com alguém de confiança ou um profissional." });
+    toast('💙 Cuide-se', {
+      description:
+        'Alguns sinais de ansiedade ou tristeza foram detectados. Considere conversar com alguém de confiança ou um profissional.',
+    });
   } else {
-    toast("💕 Tudo bem!", { description: "Seu bem-estar emocional está dentro do esperado. Continue cuidando de você!" });
+    toast('💕 Tudo bem!', {
+      description: 'Seu bem-estar emocional está dentro do esperado. Continue cuidando de você!',
+    });
   }
 }

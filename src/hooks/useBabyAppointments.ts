@@ -3,9 +3,9 @@
  * Migrado para usar createSupabaseCRUD
  */
 
-import { useMemo } from "react";
-import { createSupabaseCRUD } from "@/hooks/factories/createSupabaseCRUD";
-import type { Database } from "@/integrations/supabase/types";
+import { useMemo } from 'react';
+import { createSupabaseCRUD } from '@/hooks/factories/createSupabaseCRUD';
+import type { Database } from '@/integrations/supabase/types';
 
 type BabyAppointmentRow = Database['public']['Tables']['baby_appointments']['Row'];
 type BabyAppointmentInsert = Database['public']['Tables']['baby_appointments']['Insert'];
@@ -47,19 +47,19 @@ export const useBabyAppointments = (babyProfileId?: string) => {
 
   // Categorize appointments
   const today = new Date().toISOString().split('T')[0];
-  
-  const upcomingAppointments = useMemo(() => 
-    appointments?.filter(a => !a.completed && a.scheduled_date >= today) || [],
+
+  const upcomingAppointments = useMemo(
+    () => appointments?.filter(a => !a.completed && a.scheduled_date >= today) || [],
     [appointments, today]
   );
-  
-  const pastAppointments = useMemo(() =>
-    appointments?.filter(a => a.completed || a.scheduled_date < today) || [],
+
+  const pastAppointments = useMemo(
+    () => appointments?.filter(a => a.completed || a.scheduled_date < today) || [],
     [appointments, today]
   );
-  
-  const todayAppointments = useMemo(() =>
-    appointments?.filter(a => a.scheduled_date === today && !a.completed) || [],
+
+  const todayAppointments = useMemo(
+    () => appointments?.filter(a => a.scheduled_date === today && !a.completed) || [],
     [appointments, today]
   );
 

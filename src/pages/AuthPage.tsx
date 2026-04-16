@@ -1,10 +1,10 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 
-import { Auth } from "@/components/Auth";
+import { Auth } from '@/components/Auth';
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -13,14 +13,16 @@ const AuthPage = () => {
     // Check if already authenticated
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/materiais", { replace: true });
+        navigate('/materiais', { replace: true });
       }
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session && (event === 'SIGNED_IN' || event === 'USER_UPDATED')) {
-        navigate("/materiais", { replace: true });
+        navigate('/materiais', { replace: true });
       }
     });
 
@@ -34,9 +36,7 @@ const AuthPage = () => {
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2">
             Mãe Consciente
           </h1>
-          <p className="text-muted-foreground">
-            Entre ou crie sua conta para começar
-          </p>
+          <p className="text-muted-foreground">Entre ou crie sua conta para começar</p>
         </div>
         <Auth />
       </div>

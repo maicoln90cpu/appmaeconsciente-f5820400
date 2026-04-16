@@ -3,16 +3,16 @@
  * @module hooks/useBabyLogs
  */
 
-import { useState, useCallback, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAchievements } from "@/hooks/useAchievements";
-import { logger } from "@/lib/logger";
-import type { Database } from "@/integrations/supabase/types";
-import { toast } from "sonner";
+import { useState, useCallback, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAchievements } from '@/hooks/useAchievements';
+import { logger } from '@/lib/logger';
+import type { Database } from '@/integrations/supabase/types';
+import { toast } from 'sonner';
 
-type BabyLogTable = 
-  | 'baby_feeding_logs' 
-  | 'baby_sleep_logs' 
+type BabyLogTable =
+  | 'baby_feeding_logs'
+  | 'baby_sleep_logs'
   | 'baby_colic_logs'
   | 'baby_medication_logs'
   | 'baby_routine_logs';
@@ -36,7 +36,7 @@ interface UseBabyLogsReturn<T> {
 
 export function useBabyLogs<T extends { id: string }>({
   tableName,
-  orderBy = { column: "created_at", ascending: false },
+  orderBy = { column: 'created_at', ascending: false },
   additionalFilters = {},
   entityName,
   checkAchievementsOnAdd = true,
@@ -50,17 +50,14 @@ export function useBabyLogs<T extends { id: string }>({
       setLoading(true);
       const { data: userData } = await supabase.auth.getUser();
       const user = userData?.user;
-      
+
       if (!user) {
         setData([]);
         return;
       }
 
       // Using any to bypass type complexity
-      const query = supabase
-        .from(tableName)
-        .select("*")
-        .eq("user_id", user.id) as any;
+      const query = supabase.from(tableName).select('*').eq('user_id', user.id) as any;
 
       // Aplicar filtros adicionais
       let finalQuery = query;
@@ -79,83 +76,96 @@ export function useBabyLogs<T extends { id: string }>({
       const err = error as { code?: string; message?: string };
       if (err.code !== 'PGRST116') {
         logger.error(`Error loading ${entityName}`, error);
-        toast.error("Erro", { description: `Erro ao carregar ${entityName}` });
+        toast.error('Erro', { description: `Erro ao carregar ${entityName}` });
       }
     } finally {
       setLoading(false);
     }
-  }, [tableName, orderBy.column, orderBy.ascending, JSON.stringify(additionalFilters), entityName, toast]);
+  }, [
+    tableName,
+    orderBy.column,
+    orderBy.ascending,
+    JSON.stringify(additionalFilters),
+    entityName,
+    toast,
+  ]);
 
-  const add = useCallback(async (item: Record<string, unknown>): Promise<T> => {
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData?.user;
-    if (!user) throw new Error("Não autenticado");
+  const add = useCallback(
+    async (item: Record<string, unknown>): Promise<T> => {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData?.user;
+      if (!user) throw new Error('Não autenticado');
 
-    const { data: result, error } = await (supabase
-      .from(tableName)
-      .insert({
-        user_id: user.id,
-        ...item,
-      } as any)
-      .select()
-      .single() as any);
+      const { data: result, error } = await (supabase
+        .from(tableName)
+        .insert({
+          user_id: user.id,
+          ...item,
+        } as any)
+        .select()
+        .single() as any);
 
-    if (error) {
-      logger.error(`Error adding ${entityName}`, error);
-      toast.error("Erro", { description: `Erro ao adicionar ${entityName}` });
-      throw error;
-    }
+      if (error) {
+        logger.error(`Error adding ${entityName}`, error);
+        toast.error('Erro', { description: `Erro ao adicionar ${entityName}` });
+        throw error;
+      }
 
-    const newItem = result as T;
-    setData(prev => [newItem, ...prev]);
-    
-    toast("Sucesso", { description: `${entityName} registrado(a) com sucesso!` });
+      const newItem = result as T;
+      setData(prev => [newItem, ...prev]);
 
-    if (checkAchievementsOnAdd) {
-      setTimeout(() => checkAchievements(), 1000);
-    }
+      toast('Sucesso', { description: `${entityName} registrado(a) com sucesso!` });
 
-    return newItem;
-  }, [tableName, entityName, checkAchievementsOnAdd, checkAchievements, toast]);
+      if (checkAchievementsOnAdd) {
+        setTimeout(() => checkAchievements(), 1000);
+      }
 
-  const update = useCallback(async (id: string, updates: Record<string, unknown>): Promise<T> => {
-    const { data: result, error } = await (supabase
-      .from(tableName)
-      .update(updates as any)
-      .eq("id", id)
-      .select()
-      .single() as any);
+      return newItem;
+    },
+    [tableName, entityName, checkAchievementsOnAdd, checkAchievements, toast]
+  );
 
-    if (error) {
-      logger.error(`Error updating ${entityName}`, error);
-      toast.error("Erro", { description: `Erro ao atualizar ${entityName}` });
-      throw error;
-    }
+  const update = useCallback(
+    async (id: string, updates: Record<string, unknown>): Promise<T> => {
+      const { data: result, error } = await (supabase
+        .from(tableName)
+        .update(updates as any)
+        .eq('id', id)
+        .select()
+        .single() as any);
 
-    const updatedItem = result as T;
-    setData(prev => prev.map(item => item.id === id ? updatedItem : item));
-    
-    toast("Sucesso", { description: `${entityName} atualizado(a)!` });
+      if (error) {
+        logger.error(`Error updating ${entityName}`, error);
+        toast.error('Erro', { description: `Erro ao atualizar ${entityName}` });
+        throw error;
+      }
 
-    return updatedItem;
-  }, [tableName, entityName, toast]);
+      const updatedItem = result as T;
+      setData(prev => prev.map(item => (item.id === id ? updatedItem : item)));
 
-  const remove = useCallback(async (id: string): Promise<void> => {
-    const { error } = await (supabase
-      .from(tableName)
-      .delete()
-      .eq("id", id) as any);
+      toast('Sucesso', { description: `${entityName} atualizado(a)!` });
 
-    if (error) {
-      logger.error(`Error removing ${entityName}`, error);
-      toast.error("Erro", { description: `Erro ao excluir ${entityName}` });
-      throw error;
-    }
+      return updatedItem;
+    },
+    [tableName, entityName, toast]
+  );
 
-    setData(prev => prev.filter(item => item.id !== id));
-    
-    toast("Sucesso", { description: `${entityName} excluído(a)!` });
-  }, [tableName, entityName, toast]);
+  const remove = useCallback(
+    async (id: string): Promise<void> => {
+      const { error } = await (supabase.from(tableName).delete().eq('id', id) as any);
+
+      if (error) {
+        logger.error(`Error removing ${entityName}`, error);
+        toast.error('Erro', { description: `Erro ao excluir ${entityName}` });
+        throw error;
+      }
+
+      setData(prev => prev.filter(item => item.id !== id));
+
+      toast('Sucesso', { description: `${entityName} excluído(a)!` });
+    },
+    [tableName, entityName, toast]
+  );
 
   useEffect(() => {
     loadData();

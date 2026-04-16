@@ -1,14 +1,27 @@
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { BabySleepLog } from "@/types/babySleep";
-import { format, subDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Trash2, Filter } from "lucide-react";
-import { ExportSonoPDF } from "./ExportSonoPDF";
+import { useState, useMemo } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { BabySleepLog } from '@/types/babySleep';
+import { format, subDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Trash2, Filter } from 'lucide-react';
+import { ExportSonoPDF } from './ExportSonoPDF';
 
 interface HistoricoSonoProps {
   sleepLogs: BabySleepLog[];
@@ -17,8 +30,8 @@ interface HistoricoSonoProps {
 }
 
 export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoProps) => {
-  const [period, setPeriod] = useState("7");
-  const [typeFilter, setTypeFilter] = useState("todos");
+  const [period, setPeriod] = useState('7');
+  const [typeFilter, setTypeFilter] = useState('todos');
 
   const filteredLogs = useMemo(() => {
     let filtered = sleepLogs;
@@ -31,7 +44,7 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
     }
 
     // Filtrar por tipo
-    if (typeFilter !== "todos") {
+    if (typeFilter !== 'todos') {
       filtered = filtered.filter(log => log.sleep_type === typeFilter);
     }
 
@@ -40,23 +53,35 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
 
   const getLocationEmoji = (location?: string) => {
     switch (location) {
-      case "berco": return "🛏️";
-      case "colo": return "🤱";
-      case "carrinho": return "🚼";
-      case "cama_compartilhada": return "👨‍👩‍👦";
-      default: return "📍";
+      case 'berco':
+        return '🛏️';
+      case 'colo':
+        return '🤱';
+      case 'carrinho':
+        return '🚼';
+      case 'cama_compartilhada':
+        return '👨‍👩‍👦';
+      default:
+        return '📍';
     }
   };
 
   const getMoodEmoji = (mood?: string) => {
     switch (mood) {
-      case "calmo": return "😌";
-      case "chorando": return "😢";
-      case "agitado": return "😫";
-      case "descansada": return "😊";
-      case "cansada": return "😴";
-      case "exausta": return "😵";
-      default: return "😐";
+      case 'calmo':
+        return '😌';
+      case 'chorando':
+        return '😢';
+      case 'agitado':
+        return '😫';
+      case 'descansada':
+        return '😊';
+      case 'cansada':
+        return '😴';
+      case 'exausta':
+        return '😵';
+      default:
+        return '😐';
     }
   };
 
@@ -115,9 +140,12 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <p className="font-medium text-sm">
-                        {format(new Date(log.sleep_start), "dd/MM HH:mm", { locale: ptBR })}
+                        {format(new Date(log.sleep_start), 'dd/MM HH:mm', { locale: ptBR })}
                       </p>
-                      <Badge variant={log.sleep_type === 'noturno' ? 'default' : 'secondary'} className="mt-1">
+                      <Badge
+                        variant={log.sleep_type === 'noturno' ? 'default' : 'secondary'}
+                        className="mt-1"
+                      >
                         {log.sleep_type === 'noturno' ? '🌙 Noturno' : '🌞 Diurno'}
                       </Badge>
                     </div>
@@ -132,10 +160,10 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
                     <div>
-                      <span className="font-medium">Duração:</span>{" "}
-                      {log.duration_minutes 
+                      <span className="font-medium">Duração:</span>{' '}
+                      {log.duration_minutes
                         ? `${Math.floor(log.duration_minutes / 60)}h ${log.duration_minutes % 60}m`
-                        : "Em andamento"}
+                        : 'Em andamento'}
                     </div>
                     <div>
                       <span className="font-medium">Local:</span> {getLocationEmoji(log.location)}
@@ -182,7 +210,7 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
                   filteredLogs.map(log => (
                     <TableRow key={log.id}>
                       <TableCell className="font-medium">
-                        {format(new Date(log.sleep_start), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                        {format(new Date(log.sleep_start), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                       </TableCell>
                       <TableCell>
                         {log.duration_minutes ? (
@@ -227,8 +255,8 @@ export const HistoricoSono = ({ sleepLogs, onDelete, babyName }: HistoricoSonoPr
                 .map(log => (
                   <div key={log.id} className="text-sm p-2 bg-muted rounded">
                     <span className="text-muted-foreground">
-                      {format(new Date(log.sleep_start), "dd/MM HH:mm", { locale: ptBR })}:
-                    </span>{" "}
+                      {format(new Date(log.sleep_start), 'dd/MM HH:mm', { locale: ptBR })}:
+                    </span>{' '}
                     {log.notes}
                   </div>
                 ))}

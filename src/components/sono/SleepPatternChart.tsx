@@ -1,10 +1,26 @@
-import { useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, LineChart, Line, Legend, PieChart, Pie, Cell } from "recharts";
-import { BabySleepLog } from "@/types/babySleep";
-import { format, subDays, eachDayOfInterval, isSameDay, startOfDay } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useMemo } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
+import { BabySleepLog } from '@/types/babySleep';
+import { format, subDays, eachDayOfInterval, isSameDay, startOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface SleepPatternChartProps {
   sleepLogs: BabySleepLog[];
@@ -20,9 +36,7 @@ export const SleepPatternChart = ({ sleepLogs, period = 14 }: SleepPatternChartP
     });
 
     return days.map(day => {
-      const dayLogs = sleepLogs.filter(log => 
-        isSameDay(new Date(log.sleep_start), day)
-      );
+      const dayLogs = sleepLogs.filter(log => isSameDay(new Date(log.sleep_start), day));
 
       const nightLogs = dayLogs.filter(l => l.sleep_type === 'noturno');
       const dayNaps = dayLogs.filter(l => l.sleep_type === 'diurno');
@@ -103,11 +117,17 @@ export const SleepPatternChart = ({ sleepLogs, period = 14 }: SleepPatternChartP
     }));
   }, [sleepLogs]);
 
-  const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+  const COLORS = [
+    'hsl(var(--primary))',
+    'hsl(var(--chart-2))',
+    'hsl(var(--chart-3))',
+    'hsl(var(--chart-4))',
+    'hsl(var(--chart-5))',
+  ];
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (!active || !payload?.length) return null;
-    
+
     return (
       <div className="bg-background border rounded-lg shadow-lg p-3">
         <p className="font-medium mb-1">{label}</p>
@@ -182,24 +202,30 @@ export const SleepPatternChart = ({ sleepLogs, period = 14 }: SleepPatternChartP
             <CardContent>
               <div className="h-[250px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={bedtimeTrend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <LineChart
+                    data={bedtimeTrend}
+                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                  >
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="date" className="text-xs" />
-                    <YAxis 
-                      domain={[18, 26]} 
-                      tickFormatter={(value) => {
+                    <YAxis
+                      domain={[18, 26]}
+                      tickFormatter={value => {
                         const h = value >= 24 ? value - 24 : value;
                         return `${Math.floor(h)}:00`;
                       }}
                       className="text-xs"
                     />
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value, name) => {
                         const v = value as number;
                         const h = v >= 24 ? v - 24 : v;
                         const hours = Math.floor(h);
                         const mins = Math.round((h - hours) * 60);
-                        return [`${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`, 'Horário'];
+                        return [
+                          `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`,
+                          'Horário',
+                        ];
                       }}
                     />
                     <Line
@@ -258,7 +284,11 @@ export const SleepPatternChart = ({ sleepLogs, period = 14 }: SleepPatternChartP
         <CardContent>
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={moodDistribution} layout="vertical" margin={{ top: 10, right: 30, left: 100, bottom: 10 }}>
+              <BarChart
+                data={moodDistribution}
+                layout="vertical"
+                margin={{ top: 10, right: 30, left: 100, bottom: 10 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                 <XAxis type="number" />
                 <YAxis type="category" dataKey="name" className="text-xs" />

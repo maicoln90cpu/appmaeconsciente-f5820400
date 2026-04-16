@@ -32,7 +32,7 @@ describe('useAuthenticatedAction', () => {
       } as any);
 
       const { result } = renderHook(() => useAuthenticatedAction());
-      
+
       let userId: string | null = null;
       await act(async () => {
         userId = await result.current.getUserId();
@@ -48,7 +48,7 @@ describe('useAuthenticatedAction', () => {
       } as any);
 
       const { result } = renderHook(() => useAuthenticatedAction());
-      
+
       let userId: string | null = 'initial';
       await act(async () => {
         userId = await result.current.getUserId();
@@ -125,8 +125,8 @@ describe('useAuthenticatedAction', () => {
       const { result } = renderHook(() => useAuthenticatedAction());
 
       await act(async () => {
-        await result.current.executeAuthenticated(vi.fn(), { 
-          errorMessage: 'Custom error message' 
+        await result.current.executeAuthenticated(vi.fn(), {
+          errorMessage: 'Custom error message',
         });
       });
 

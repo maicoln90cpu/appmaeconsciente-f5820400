@@ -19,17 +19,16 @@ const FeatureFlagsContext = createContext<FeatureFlags>({
 export const FeatureFlagsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { settings, isLoading } = useSiteSettings();
 
-  const value = useMemo<FeatureFlags>(() => ({
-    aiInsightsEnabled: settings?.ai_insights_enabled ?? true,
-    badgesEnabled: settings?.badges_enabled ?? true,
-    loading: isLoading,
-  }), [settings?.ai_insights_enabled, settings?.badges_enabled, isLoading]);
-
-  return (
-    <FeatureFlagsContext.Provider value={value}>
-      {children}
-    </FeatureFlagsContext.Provider>
+  const value = useMemo<FeatureFlags>(
+    () => ({
+      aiInsightsEnabled: settings?.ai_insights_enabled ?? true,
+      badgesEnabled: settings?.badges_enabled ?? true,
+      loading: isLoading,
+    }),
+    [settings?.ai_insights_enabled, settings?.badges_enabled, isLoading]
   );
+
+  return <FeatureFlagsContext.Provider value={value}>{children}</FeatureFlagsContext.Provider>;
 };
 
 /**

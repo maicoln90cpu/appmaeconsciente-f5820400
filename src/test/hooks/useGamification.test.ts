@@ -3,18 +3,18 @@
  * @module test/hooks/useGamification.test
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React from 'react';
 
 // Mock do AuthContext
 const mockUser = {
-  id: "test-user-id",
-  email: "test@example.com",
+  id: 'test-user-id',
+  email: 'test@example.com',
 };
 
-vi.mock("@/contexts/AuthContext", () => ({
+vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({ user: mockUser }),
 }));
 
@@ -27,13 +27,13 @@ const mockProfileData = {
 
 const mockBadges = [
   {
-    id: "badge-1",
-    code: "first_post",
-    name: "Primeiro Post",
-    description: "Criou seu primeiro post",
-    icon: "🎉",
-    category: "contributor",
-    requirement_type: "posts",
+    id: 'badge-1',
+    code: 'first_post',
+    name: 'Primeiro Post',
+    description: 'Criou seu primeiro post',
+    icon: '🎉',
+    category: 'contributor',
+    requirement_type: 'posts',
     requirement_value: 1,
     xp_reward: 10,
     display_order: 1,
@@ -43,8 +43,8 @@ const mockBadges = [
 
 const mockUserBadges = [
   {
-    id: "ub-1",
-    badge_id: "badge-1",
+    id: 'ub-1',
+    badge_id: 'badge-1',
     unlocked_at: new Date().toISOString(),
     badge: mockBadges[0],
   },
@@ -52,7 +52,7 @@ const mockUserBadges = [
 
 const mockDailyActivity = [
   {
-    activity_date: "2026-01-09",
+    activity_date: '2026-01-09',
     posts_count: 2,
     comments_count: 5,
     likes_count: 10,
@@ -64,8 +64,8 @@ const mockDailyActivity = [
 
 const mockLeaderboard = [
   {
-    user_id: "test-user-id",
-    display_name: "T***",
+    user_id: 'test-user-id',
+    display_name: 'T***',
     xp_total: 150,
     level: 2,
     max_streak: 7,
@@ -75,9 +75,9 @@ const mockLeaderboard = [
   },
 ];
 
-vi.mock("@/integrations/supabase/client", () => ({
+vi.mock('@/integrations/supabase/client', () => ({
   supabase: {
-    from: vi.fn((table) => {
+    from: vi.fn(table => {
       const mockReturn = {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
@@ -90,16 +90,18 @@ vi.mock("@/integrations/supabase/client", () => ({
         upsert: vi.fn().mockReturnThis(),
       };
 
-      if (table === "profiles") {
+      if (table === 'profiles') {
         mockReturn.single = vi.fn().mockResolvedValue({ data: mockProfileData, error: null });
-      } else if (table === "badges") {
+      } else if (table === 'badges') {
         mockReturn.order = vi.fn().mockResolvedValue({ data: mockBadges, error: null });
-      } else if (table === "user_badges") {
+      } else if (table === 'user_badges') {
         mockReturn.eq = vi.fn().mockResolvedValue({ data: mockUserBadges, error: null });
-      } else if (table === "daily_activity") {
+      } else if (table === 'daily_activity') {
         mockReturn.order = vi.fn().mockResolvedValue({ data: mockDailyActivity, error: null });
-        mockReturn.maybeSingle = vi.fn().mockResolvedValue({ data: mockDailyActivity[0], error: null });
-      } else if (table === "leaderboard_cache") {
+        mockReturn.maybeSingle = vi
+          .fn()
+          .mockResolvedValue({ data: mockDailyActivity[0], error: null });
+      } else if (table === 'leaderboard_cache') {
         mockReturn.order = vi.fn().mockResolvedValue({ data: mockLeaderboard, error: null });
       }
 
@@ -113,7 +115,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 }));
 
 // Mock sonner toast
-vi.mock("sonner", () => ({
+vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
@@ -132,13 +134,13 @@ const createWrapper = () => {
     React.createElement(QueryClientProvider, { client: queryClient }, children);
 };
 
-describe("useGamification", () => {
+describe('useGamification', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should return initial loading state", async () => {
-    const { useGamification } = await import("@/hooks/useGamification");
+  it('should return initial loading state', async () => {
+    const { useGamification } = await import('@/hooks/useGamification');
     const { result } = renderHook(() => useGamification(), {
       wrapper: createWrapper(),
     });
@@ -146,8 +148,8 @@ describe("useGamification", () => {
     expect(result.current.isLoading).toBe(true);
   });
 
-  it("should provide XP_REWARDS constant", async () => {
-    const { useGamification, XP_REWARDS } = await import("@/hooks/useGamification");
+  it('should provide XP_REWARDS constant', async () => {
+    const { useGamification, XP_REWARDS } = await import('@/hooks/useGamification');
     const { result } = renderHook(() => useGamification(), {
       wrapper: createWrapper(),
     });
@@ -167,37 +169,37 @@ describe("useGamification", () => {
     expect(XP_REWARDS.onboarding_completed).toBe(50);
   });
 
-  it("should provide addXP function", async () => {
-    const { useGamification } = await import("@/hooks/useGamification");
+  it('should provide addXP function', async () => {
+    const { useGamification } = await import('@/hooks/useGamification');
     const { result } = renderHook(() => useGamification(), {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.addXP).toBe("function");
+    expect(typeof result.current.addXP).toBe('function');
   });
 
-  it("should provide badge-related functions", async () => {
-    const { useGamification } = await import("@/hooks/useGamification");
+  it('should provide badge-related functions', async () => {
+    const { useGamification } = await import('@/hooks/useGamification');
     const { result } = renderHook(() => useGamification(), {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.isBadgeUnlocked).toBe("function");
-    expect(typeof result.current.unlockBadge).toBe("function");
+    expect(typeof result.current.isBadgeUnlocked).toBe('function');
+    expect(typeof result.current.unlockBadge).toBe('function');
   });
 
-  it("should provide leaderboard functions", async () => {
-    const { useGamification } = await import("@/hooks/useGamification");
+  it('should provide leaderboard functions', async () => {
+    const { useGamification } = await import('@/hooks/useGamification');
     const { result } = renderHook(() => useGamification(), {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.toggleLeaderboardOptIn).toBe("function");
+    expect(typeof result.current.toggleLeaderboardOptIn).toBe('function');
     expect(Array.isArray(result.current.leaderboard)).toBe(true);
   });
 
-  it("should provide activity calendar data", async () => {
-    const { useGamification } = await import("@/hooks/useGamification");
+  it('should provide activity calendar data', async () => {
+    const { useGamification } = await import('@/hooks/useGamification');
     const { result } = renderHook(() => useGamification(), {
       wrapper: createWrapper(),
     });
@@ -207,8 +209,8 @@ describe("useGamification", () => {
     expect(result.current.activityCalendar.length).toBe(91);
   });
 
-  it("should categorize badges correctly", async () => {
-    const { useGamification } = await import("@/hooks/useGamification");
+  it('should categorize badges correctly', async () => {
+    const { useGamification } = await import('@/hooks/useGamification');
     const { result } = renderHook(() => useGamification(), {
       wrapper: createWrapper(),
     });
@@ -225,15 +227,15 @@ describe("useGamification", () => {
   });
 });
 
-describe("XP Level Calculation", () => {
-  it("should calculate level from XP correctly", () => {
+describe('XP Level Calculation', () => {
+  it('should calculate level from XP correctly', () => {
     // Level formula: 1 + floor(sqrt(xp / 50))
     // Level 1: 0-49 XP
     // Level 2: 50-199 XP
     // Level 3: 200-449 XP
-    
+
     const calculateLevel = (xp: number) => 1 + Math.floor(Math.sqrt(xp / 50));
-    
+
     expect(calculateLevel(0)).toBe(1);
     expect(calculateLevel(49)).toBe(1);
     expect(calculateLevel(50)).toBe(2);
@@ -241,10 +243,10 @@ describe("XP Level Calculation", () => {
     expect(calculateLevel(200)).toBe(3);
   });
 
-  it("should calculate XP for next level correctly", () => {
+  it('should calculate XP for next level correctly', () => {
     // XP needed: level^2 * 50
     const xpForLevel = (level: number) => level * level * 50;
-    
+
     expect(xpForLevel(1)).toBe(50);
     expect(xpForLevel(2)).toBe(200);
     expect(xpForLevel(3)).toBe(450);

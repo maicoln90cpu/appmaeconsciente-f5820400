@@ -1,9 +1,9 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { BabyMilestoneRecord } from "@/types/development";
-import { AREA_ICONS } from "@/types/development";
-import { CheckCircle2, Circle, AlertCircle } from "lucide-react";
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { BabyMilestoneRecord } from '@/types/development';
+import { AREA_ICONS } from '@/types/development';
+import { CheckCircle2, Circle, AlertCircle } from 'lucide-react';
 
 interface LinhaTempoMarcosProps {
   records: BabyMilestoneRecord[];
@@ -11,17 +11,17 @@ interface LinhaTempoMarcosProps {
   onMilestoneClick: (record: BabyMilestoneRecord) => void;
 }
 
-export const LinhaTempoMarcos = ({ 
-  records, 
+export const LinhaTempoMarcos = ({
+  records,
   babyAgeMonths,
-  onMilestoneClick 
+  onMilestoneClick,
 }: LinhaTempoMarcosProps) => {
   // Group milestones by age range (0-3, 4-6, 7-9, 10-12 months)
   const ageGroups = [
     { label: '0-3m', min: 0, max: 3 },
     { label: '4-6m', min: 4, max: 6 },
     { label: '7-9m', min: 7, max: 9 },
-    { label: '10-12m', min: 10, max: 12 }
+    { label: '10-12m', min: 10, max: 12 },
   ];
 
   const getStatusIcon = (status: string, isFuture: boolean) => {
@@ -64,11 +64,12 @@ export const LinhaTempoMarcos = ({
 
         <ScrollArea className="w-full">
           <div className="flex gap-6 pb-4">
-            {ageGroups.map((group) => {
+            {ageGroups.map(group => {
               const groupMilestones = records.filter(
-                r => r.milestone && 
-                     r.milestone.age_min_months >= group.min && 
-                     r.milestone.age_max_months <= group.max
+                r =>
+                  r.milestone &&
+                  r.milestone.age_min_months >= group.min &&
+                  r.milestone.age_max_months <= group.max
               );
 
               const isFuture = group.min > babyAgeMonths;
@@ -77,35 +78,29 @@ export const LinhaTempoMarcos = ({
               return (
                 <div key={group.label} className="flex-shrink-0 space-y-3 min-w-[200px]">
                   <div className="flex items-center gap-2">
-                    <Badge 
-                      variant={isCurrent ? "default" : "outline"}
-                      className={isCurrent ? "bg-primary" : ""}
+                    <Badge
+                      variant={isCurrent ? 'default' : 'outline'}
+                      className={isCurrent ? 'bg-primary' : ''}
                     >
                       {group.label}
                     </Badge>
                     {isCurrent && (
-                      <span className="text-xs text-muted-foreground">
-                        (idade atual)
-                      </span>
+                      <span className="text-xs text-muted-foreground">(idade atual)</span>
                     )}
                   </div>
 
                   <div className="space-y-2">
                     {groupMilestones.length === 0 ? (
-                      <p className="text-xs text-muted-foreground">
-                        Nenhum marco nesta faixa
-                      </p>
+                      <p className="text-xs text-muted-foreground">Nenhum marco nesta faixa</p>
                     ) : (
-                      groupMilestones.map((record) => (
+                      groupMilestones.map(record => (
                         <button
                           key={record.milestone_type_id}
                           onClick={() => onMilestoneClick(record)}
                           className={`w-full p-2 rounded-lg border text-left transition-colors hover:shadow-sm ${getStatusColor(record.status, isFuture)}`}
                         >
                           <div className="flex items-start gap-2">
-                            <div className="mt-0.5">
-                              {getStatusIcon(record.status, isFuture)}
-                            </div>
+                            <div className="mt-0.5">{getStatusIcon(record.status, isFuture)}</div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1 mb-1">
                                 <span className="text-xs">

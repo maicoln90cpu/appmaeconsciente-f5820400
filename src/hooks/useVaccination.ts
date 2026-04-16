@@ -1,16 +1,16 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { logger } from "@/lib/logger";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useMemo } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 import type {
   BabyVaccinationProfile,
   VaccinationCalendar,
   BabyVaccination,
   VaccinationReminderSettings,
-} from "@/types/vaccination";
-import { useAuth } from "@/contexts/AuthContext";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+} from '@/types/vaccination';
+import { useAuth } from '@/contexts/AuthContext';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
 
 export const useVaccination = () => {
   const queryClient = useQueryClient();
@@ -24,13 +24,15 @@ export const useVaccination = () => {
     queryKey: profilesQueryKey,
     queryFn: async () => {
       if (!user) return [];
-      
+
       const { data, error } = await supabase
         .from('baby_vaccination_profiles')
-        .select('id, user_id, baby_name, birth_date, calendar_type, gender, nickname, avatar_url, birth_city, birth_type, development_monitoring_enabled, created_at, updated_at')
+        .select(
+          'id, user_id, baby_name, birth_date, calendar_type, gender, nickname, avatar_url, birth_city, birth_type, development_monitoring_enabled, created_at, updated_at'
+        )
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-      
+
       if (error) {
         logger.error('Error loading profiles', error, { context: 'useVaccination' });
         throw error;
@@ -59,14 +61,16 @@ export const useVaccination = () => {
     queryKey: calendarQueryKey,
     queryFn: async () => {
       if (!currentProfile) return [];
-      
+
       const { data, error } = await supabase
         .from('vaccination_calendar')
-        .select('id, calendar_type, vaccine_name, dose_number, dose_label, age_months, description, purpose, side_effects, post_vaccine_tips, application_type, interval_days, created_at')
+        .select(
+          'id, calendar_type, vaccine_name, dose_number, dose_label, age_months, description, purpose, side_effects, post_vaccine_tips, application_type, interval_days, created_at'
+        )
         .eq('calendar_type', currentProfile.calendar_type)
         .order('age_months', { ascending: true })
         .order('dose_number', { ascending: true });
-      
+
       if (error) {
         logger.error('Error loading calendar', error, { context: 'useVaccination' });
         throw error;
@@ -83,13 +87,15 @@ export const useVaccination = () => {
     queryKey: vaccinationsQueryKey,
     queryFn: async () => {
       if (!currentProfile) return [];
-      
+
       const { data, error } = await supabase
         .from('baby_vaccinations')
-        .select('id, user_id, baby_profile_id, calendar_vaccine_id, vaccine_name, dose_label, application_date, batch_number, manufacturer, health_professional, application_site, reactions, notes, proof_url, created_at, updated_at')
+        .select(
+          'id, user_id, baby_profile_id, calendar_vaccine_id, vaccine_name, dose_label, application_date, batch_number, manufacturer, health_professional, application_site, reactions, notes, proof_url, created_at, updated_at'
+        )
         .eq('baby_profile_id', currentProfile.id)
         .order('application_date', { ascending: false });
-      
+
       if (error) {
         logger.error('Error loading vaccinations', error, { context: 'useVaccination' });
         throw error;
@@ -106,13 +112,15 @@ export const useVaccination = () => {
     queryKey: ['vaccination-settings', currentProfile?.id],
     queryFn: async () => {
       if (!currentProfile) return null;
-      
+
       const { data, error } = await supabase
         .from('vaccination_reminder_settings')
-        .select('id, user_id, baby_profile_id, reminder_days_before, reminder_enabled, push_enabled, email_enabled, created_at, updated_at')
+        .select(
+          'id, user_id, baby_profile_id, reminder_days_before, reminder_enabled, push_enabled, email_enabled, created_at, updated_at'
+        )
         .eq('baby_profile_id', currentProfile.id)
         .maybeSingle();
-      
+
       if (error && error.code !== 'PGRST116') {
         logger.error('Error loading settings', error, { context: 'useVaccination' });
         throw error;
@@ -145,12 +153,12 @@ export const useVaccination = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: profilesQueryKey });
-      toast.success("Perfil do bebê salvo com sucesso!");
+      toast.success('Perfil do bebê salvo com sucesso!');
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Error saving profile', error, { context: 'useVaccination' });
-      toast.error("Erro ao salvar perfil do bebê");
-    }
+      toast.error('Erro ao salvar perfil do bebê');
+    },
   });
 
   // Mutation para adicionar vacinação
@@ -176,52 +184,46 @@ export const useVaccination = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vaccinationsQueryKey });
-      toast.success("Vacina registrada com sucesso!");
+      toast.success('Vacina registrada com sucesso!');
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Error adding vaccination', error, { context: 'useVaccination' });
-      toast.error("Erro ao registrar vacina");
-    }
+      toast.error('Erro ao registrar vacina');
+    },
   });
 
   // Mutation para atualizar vacinação
   const updateVaccinationMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<BabyVaccination> }) => {
-      const { error } = await supabase
-        .from('baby_vaccinations')
-        .update(updates)
-        .eq('id', id);
+      const { error } = await supabase.from('baby_vaccinations').update(updates).eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vaccinationsQueryKey });
-      toast.success("Vacina atualizada com sucesso!");
+      toast.success('Vacina atualizada com sucesso!');
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Error updating vaccination', error, { context: 'useVaccination' });
-      toast.error("Erro ao atualizar vacina");
-    }
+      toast.error('Erro ao atualizar vacina');
+    },
   });
 
   // Mutation para deletar vacinação
   const deleteVaccinationMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('baby_vaccinations')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from('baby_vaccinations').delete().eq('id', id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: vaccinationsQueryKey });
-      toast.success("Vacina removida com sucesso!");
+      toast.success('Vacina removida com sucesso!');
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Error deleting vaccination', error, { context: 'useVaccination' });
-      toast.error("Erro ao remover vacina");
-    }
+      toast.error('Erro ao remover vacina');
+    },
   });
 
   // Mutation para salvar configurações
@@ -236,20 +238,18 @@ export const useVaccination = () => {
         baby_profile_id: currentProfile.id,
       };
 
-      const { error } = await supabase
-        .from('vaccination_reminder_settings')
-        .upsert(settingsData);
+      const { error } = await supabase.from('vaccination_reminder_settings').upsert(settingsData);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vaccination-settings', currentProfile?.id] });
-      toast.success("Configurações salvas com sucesso!");
+      toast.success('Configurações salvas com sucesso!');
     },
-    onError: (error) => {
+    onError: error => {
       logger.error('Error saving settings', error, { context: 'useVaccination' });
-      toast.error("Erro ao salvar configurações");
-    }
+      toast.error('Erro ao salvar configurações');
+    },
   });
 
   // Função para trocar perfil

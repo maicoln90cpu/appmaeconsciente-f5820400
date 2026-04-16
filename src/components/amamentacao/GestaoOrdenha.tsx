@@ -1,29 +1,47 @@
-import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Droplets, AlertCircle, CheckCircle2, Snowflake, Refrigerator } from "lucide-react";
-import { format, differenceInDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import type { BreastMilkStorage } from "@/types/babyFeeding";
+import { useState } from 'react';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Droplets, AlertCircle, CheckCircle2, Snowflake, Refrigerator } from 'lucide-react';
+import { format, differenceInDays } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import type { BreastMilkStorage } from '@/types/babyFeeding';
 
 interface GestaoOrdenhaProps {
   storage: BreastMilkStorage[];
-  onAddStorage: (item: Omit<BreastMilkStorage, "id" | "user_id" | "created_at" | "updated_at" | "is_used" | "used_at">) => Promise<unknown>;
+  onAddStorage: (
+    item: Omit<
+      BreastMilkStorage,
+      'id' | 'user_id' | 'created_at' | 'updated_at' | 'is_used' | 'used_at'
+    >
+  ) => Promise<unknown>;
   onMarkAsUsed: (id: string) => Promise<void>;
 }
 
 export const GestaoOrdenha = ({ storage, onAddStorage, onMarkAsUsed }: GestaoOrdenhaProps) => {
   const [formData, setFormData] = useState({
-    volume_ml: "",
-    pump_method: "electric" as const,
-    storage_location: "fridge" as const,
-    notes: "",
+    volume_ml: '',
+    pump_method: 'electric' as const,
+    storage_location: 'fridge' as const,
+    notes: '',
   });
   const [saving, setSaving] = useState(false);
 
@@ -34,9 +52,9 @@ export const GestaoOrdenha = ({ storage, onAddStorage, onMarkAsUsed }: GestaoOrd
     try {
       const pumpedAt = new Date();
       const expiresAt = new Date();
-      
+
       // Calcular validade baseado na localização
-      if (formData.storage_location === "fridge") {
+      if (formData.storage_location === 'fridge') {
         expiresAt.setDate(expiresAt.getDate() + 4); // 4 dias na geladeira
       } else {
         expiresAt.setMonth(expiresAt.getMonth() + 3); // 3 meses no freezer
@@ -52,10 +70,10 @@ export const GestaoOrdenha = ({ storage, onAddStorage, onMarkAsUsed }: GestaoOrd
       });
 
       setFormData({
-        volume_ml: "",
-        pump_method: "electric",
-        storage_location: "fridge",
-        notes: "",
+        volume_ml: '',
+        pump_method: 'electric',
+        storage_location: 'fridge',
+        notes: '',
       });
     } finally {
       setSaving(false);
@@ -64,20 +82,34 @@ export const GestaoOrdenha = ({ storage, onAddStorage, onMarkAsUsed }: GestaoOrd
 
   const getExpirationAlert = (expiresAt: string) => {
     const daysUntilExpiration = differenceInDays(new Date(expiresAt), new Date());
-    
+
     if (daysUntilExpiration < 0) {
-      return { type: "error", message: "Vencido", icon: AlertCircle };
+      return { type: 'error', message: 'Vencido', icon: AlertCircle };
     } else if (daysUntilExpiration <= 2) {
-      return { type: "warning", message: `Vence em ${daysUntilExpiration} dia(s)`, icon: AlertCircle };
+      return {
+        type: 'warning',
+        message: `Vence em ${daysUntilExpiration} dia(s)`,
+        icon: AlertCircle,
+      };
     } else {
-      return { type: "success", message: `Vence em ${daysUntilExpiration} dia(s)`, icon: CheckCircle2 };
+      return {
+        type: 'success',
+        message: `Vence em ${daysUntilExpiration} dia(s)`,
+        icon: CheckCircle2,
+      };
     }
   };
 
   const totalVolume = storage.reduce((sum, item) => sum + item.volume_ml, 0);
-  const fridgeVolume = storage.filter(item => item.storage_location === "fridge").reduce((sum, item) => sum + item.volume_ml, 0);
-  const freezerVolume = storage.filter(item => item.storage_location === "freezer").reduce((sum, item) => sum + item.volume_ml, 0);
-  const expiringCount = storage.filter(item => differenceInDays(new Date(item.expires_at), new Date()) <= 2).length;
+  const fridgeVolume = storage
+    .filter(item => item.storage_location === 'fridge')
+    .reduce((sum, item) => sum + item.volume_ml, 0);
+  const freezerVolume = storage
+    .filter(item => item.storage_location === 'freezer')
+    .reduce((sum, item) => sum + item.volume_ml, 0);
+  const expiringCount = storage.filter(
+    item => differenceInDays(new Date(item.expires_at), new Date()) <= 2
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -148,7 +180,7 @@ export const GestaoOrdenha = ({ storage, onAddStorage, onMarkAsUsed }: GestaoOrd
                 id="volume"
                 type="number"
                 value={formData.volume_ml}
-                onChange={(e) => setFormData({ ...formData, volume_ml: e.target.value })}
+                onChange={e => setFormData({ ...formData, volume_ml: e.target.value })}
                 placeholder="Ex: 120"
                 required
               />
@@ -192,14 +224,14 @@ export const GestaoOrdenha = ({ storage, onAddStorage, onMarkAsUsed }: GestaoOrd
             <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              onChange={e => setFormData({ ...formData, notes: e.target.value })}
               placeholder="Ex: Manhã, após mamada..."
               rows={2}
             />
           </div>
 
           <Button type="submit" className="w-full" disabled={saving}>
-            {saving ? "Salvando..." : "Registrar Ordenha"}
+            {saving ? 'Salvando...' : 'Registrar Ordenha'}
           </Button>
         </form>
       </Card>
@@ -226,48 +258,46 @@ export const GestaoOrdenha = ({ storage, onAddStorage, onMarkAsUsed }: GestaoOrd
                 </TableCell>
               </TableRow>
             ) : (
-              storage.map((item) => {
+              storage.map(item => {
                 const alert = getExpirationAlert(item.expires_at);
                 const AlertIcon = alert.icon;
-                
+
                 return (
                   <TableRow key={item.id}>
                     <TableCell>
-                      {format(new Date(item.pumped_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                      {format(new Date(item.pumped_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                     </TableCell>
                     <TableCell>{item.volume_ml} ml</TableCell>
-                    <TableCell>
-                      {item.pump_method === "manual" ? "Manual" : "Elétrica"}
-                    </TableCell>
+                    <TableCell>{item.pump_method === 'manual' ? 'Manual' : 'Elétrica'}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        {item.storage_location === "fridge" ? (
+                        {item.storage_location === 'fridge' ? (
                           <Refrigerator className="h-4 w-4 text-blue-500" />
                         ) : (
                           <Snowflake className="h-4 w-4 text-cyan-500" />
                         )}
-                        <span>{item.storage_location === "fridge" ? "Geladeira" : "Freezer"}</span>
+                        <span>{item.storage_location === 'fridge' ? 'Geladeira' : 'Freezer'}</span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <AlertIcon className={`h-4 w-4 ${
-                          alert.type === "error" ? "text-red-500" :
-                          alert.type === "warning" ? "text-orange-500" :
-                          "text-green-500"
-                        }`} />
+                        <AlertIcon
+                          className={`h-4 w-4 ${
+                            alert.type === 'error'
+                              ? 'text-red-500'
+                              : alert.type === 'warning'
+                                ? 'text-orange-500'
+                                : 'text-green-500'
+                          }`}
+                        />
                         <span className="text-sm">{alert.message}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-muted-foreground">{item.notes || "-"}</span>
+                      <span className="text-sm text-muted-foreground">{item.notes || '-'}</span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onMarkAsUsed(item.id)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => onMarkAsUsed(item.id)}>
                         Marcar como Usado
                       </Button>
                     </TableCell>

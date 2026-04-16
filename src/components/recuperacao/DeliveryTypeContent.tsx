@@ -1,10 +1,10 @@
-import { useProfile } from "@/hooks/useProfile";
-import { DeliveryTypeSelector } from "./DeliveryTypeSelector";
-import { CesareanRecoveryChecklist } from "./CesareanRecoveryChecklist";
-import { NormalRecoveryChecklist } from "./NormalRecoveryChecklist";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Baby, Info } from "lucide-react";
+import { useProfile } from '@/hooks/useProfile';
+import { DeliveryTypeSelector } from './DeliveryTypeSelector';
+import { CesareanRecoveryChecklist } from './CesareanRecoveryChecklist';
+import { NormalRecoveryChecklist } from './NormalRecoveryChecklist';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Baby, Info } from 'lucide-react';
 
 export const DeliveryTypeContent = () => {
   const { profile, loading } = useProfile();
@@ -63,7 +63,7 @@ export const DeliveryTypeContent = () => {
             </div>
           </CardContent>
         </Card>
-      ) : deliveryType === "cesarean" ? (
+      ) : deliveryType === 'cesarean' ? (
         <CesareanRecoveryChecklist />
       ) : (
         <NormalRecoveryChecklist />

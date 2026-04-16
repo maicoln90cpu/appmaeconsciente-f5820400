@@ -1,9 +1,9 @@
-import { memo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { useGamification } from "@/hooks/useGamification";
-import { Sparkles, Star, TrendingUp } from "lucide-react";
+import { memo } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
+import { useGamification } from '@/hooks/useGamification';
+import { Sparkles, Star, TrendingUp } from 'lucide-react';
 
 interface LevelProgressProps {
   compact?: boolean;
@@ -25,9 +25,7 @@ export const LevelProgress = memo(({ compact = false }: LevelProgressProps) => {
           <Star className="h-3 w-3 mr-1 fill-current" />
           Nível {level}
         </Badge>
-        <span className="text-xs text-muted-foreground">
-          {xp_total} XP
-        </span>
+        <span className="text-xs text-muted-foreground">{xp_total} XP</span>
       </div>
     );
   }
@@ -56,20 +54,17 @@ export const LevelProgress = memo(({ compact = false }: LevelProgressProps) => {
             <p className="font-medium text-xs sm:text-sm">{xp_for_next_level} XP</p>
           </div>
         </div>
-        
+
         <div className="space-y-1">
           <div className="flex justify-between text-[10px] sm:text-xs text-muted-foreground">
             <span>{Math.round(progress_percentage)}%</span>
             <span className="truncate ml-2">{xp_for_next_level - xp_total} XP restantes</span>
           </div>
-          <Progress 
-            value={progress_percentage} 
-            className="h-1.5 sm:h-2 bg-primary/20"
-          />
+          <Progress value={progress_percentage} className="h-1.5 sm:h-2 bg-primary/20" />
         </div>
       </CardContent>
     </Card>
   );
 });
 
-LevelProgress.displayName = "LevelProgress";
+LevelProgress.displayName = 'LevelProgress';

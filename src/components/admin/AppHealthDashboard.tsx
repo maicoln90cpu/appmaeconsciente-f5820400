@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Activity, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
   RefreshCw,
   Zap,
   AlertCircle,
@@ -16,13 +16,32 @@ import {
   Server,
   Gauge,
   Package,
-  Download
-} from "lucide-react";
-import { getMetricsSummary } from "@/lib/performance";
-import { getBundleAnalysis, analyzePageLoad, getMemoryInfo, formatBytes, exportBundleReport } from "@/lib/bundle-analyzer";
-import { supabase } from "@/integrations/supabase/client";
-import { logger } from "@/lib/logger";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, PieChart, Pie } from "recharts";
+  Download,
+} from 'lucide-react';
+import { getMetricsSummary } from '@/lib/performance';
+import {
+  getBundleAnalysis,
+  analyzePageLoad,
+  getMemoryInfo,
+  formatBytes,
+  exportBundleReport,
+} from '@/lib/bundle-analyzer';
+import { supabase } from '@/integrations/supabase/client';
+import { logger } from '@/lib/logger';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  Cell,
+  PieChart,
+  Pie,
+} from 'recharts';
 
 interface HealthMetrics {
   webVitals: Array<{
@@ -71,11 +90,11 @@ const WEB_VITAL_NAMES: Record<string, string> = {
 
 const getHealthStatus = (metrics: HealthMetrics | null): 'healthy' | 'degraded' | 'critical' => {
   if (!metrics) return 'healthy';
-  
+
   const poorWebVitals = metrics.webVitals.filter(v => v.poor > v.good).length;
   const highErrorRate = metrics.api.errorRate > 10;
   const slowApi = metrics.api.avgResponseTime > 2000;
-  
+
   if (poorWebVitals >= 2 || highErrorRate || metrics.errors.length > 10) {
     return 'critical';
   }
@@ -91,9 +110,9 @@ const StatusBadge = ({ status }: { status: 'healthy' | 'degraded' | 'critical' }
     degraded: { label: 'Degradado', variant: 'secondary' as const, icon: AlertTriangle },
     critical: { label: 'Crítico', variant: 'destructive' as const, icon: AlertCircle },
   };
-  
+
   const { label, variant, icon: Icon } = config[status];
-  
+
   return (
     <Badge variant={variant} className="gap-1">
       <Icon className="h-3 w-3" />
@@ -113,14 +132,14 @@ export function AppHealthDashboard() {
       // Get client-side performance metrics
       const performanceMetrics = getMetricsSummary();
       setMetrics(performanceMetrics);
-      
+
       // Get database health metrics
       const { count: recentErrors } = await supabase
         .from('security_audit_logs')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString())
         .eq('severity', 'error');
-      
+
       setDbHealth({
         activeConnections: Math.floor(Math.random() * 10) + 5, // Mock - would need server-side check
         recentErrors: recentErrors || 0,
@@ -156,12 +175,13 @@ export function AppHealthDashboard() {
   }
 
   // Prepare chart data
-  const webVitalsChartData = metrics?.webVitals.map(v => ({
-    name: v.name,
-    good: Math.round((v.good / Math.max(v.total, 1)) * 100),
-    poor: Math.round((v.poor / Math.max(v.total, 1)) * 100),
-    avg: v.avg,
-  })) || [];
+  const webVitalsChartData =
+    metrics?.webVitals.map(v => ({
+      name: v.name,
+      good: Math.round((v.good / Math.max(v.total, 1)) * 100),
+      poor: Math.round((v.poor / Math.max(v.total, 1)) * 100),
+      avg: v.avg,
+    })) || [];
 
   return (
     <div className="space-y-6">
@@ -178,12 +198,7 @@ export function AppHealthDashboard() {
         </div>
         <div className="flex items-center gap-3">
           <StatusBadge status={healthStatus} />
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleRefresh}
-            disabled={refreshing}
-          >
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={refreshing}>
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Atualizar
           </Button>
@@ -198,9 +213,7 @@ export function AppHealthDashboard() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {metrics?.pageLoad.avgTime || 0}ms
-            </div>
+            <div className="text-2xl font-bold">{metrics?.pageLoad.avgTime || 0}ms</div>
             <p className="text-xs text-muted-foreground">
               {metrics?.pageLoad.totalLoads || 0} carregamentos/hora
             </p>
@@ -213,9 +226,7 @@ export function AppHealthDashboard() {
             <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {metrics?.api.avgResponseTime || 0}ms
-            </div>
+            <div className="text-2xl font-bold">{metrics?.api.avgResponseTime || 0}ms</div>
             <p className="text-xs text-muted-foreground">
               {metrics?.api.totalCalls || 0} chamadas/hora
             </p>
@@ -228,13 +239,8 @@ export function AppHealthDashboard() {
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {metrics?.api.errorRate || 0}%
-            </div>
-            <Progress 
-              value={100 - (metrics?.api.errorRate || 0)} 
-              className="mt-2"
-            />
+            <div className="text-2xl font-bold">{metrics?.api.errorRate || 0}%</div>
+            <Progress value={100 - (metrics?.api.errorRate || 0)} className="mt-2" />
           </CardContent>
         </Card>
 
@@ -244,12 +250,8 @@ export function AppHealthDashboard() {
             <AlertCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {metrics?.errors.length || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Últimas 24 horas
-            </p>
+            <div className="text-2xl font-bold">{metrics?.errors.length || 0}</div>
+            <p className="text-xs text-muted-foreground">Últimas 24 horas</p>
           </CardContent>
         </Card>
       </div>
@@ -296,7 +298,7 @@ export function AppHealthDashboard() {
                         <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                         <XAxis dataKey="name" className="text-xs" />
                         <YAxis className="text-xs" />
-                        <Tooltip 
+                        <Tooltip
                           content={({ active, payload, label }) => {
                             if (active && payload && payload.length) {
                               return (
@@ -311,13 +313,18 @@ export function AppHealthDashboard() {
                           }}
                         />
                         <Bar dataKey="good" stackId="a" fill="hsl(var(--primary))" name="Bom" />
-                        <Bar dataKey="poor" stackId="a" fill="hsl(var(--destructive))" name="Ruim" />
+                        <Bar
+                          dataKey="poor"
+                          stackId="a"
+                          fill="hsl(var(--destructive))"
+                          name="Ruim"
+                        />
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6">
-                    {metrics?.webVitals.map((vital) => (
+                    {metrics?.webVitals.map(vital => (
                       <div key={vital.name} className="p-4 border rounded-lg">
                         <div className="flex items-center justify-between mb-2">
                           <span className="font-medium">{vital.name}</span>
@@ -328,8 +335,8 @@ export function AppHealthDashboard() {
                         <p className="text-xs text-muted-foreground">
                           {WEB_VITAL_NAMES[vital.name]}
                         </p>
-                        <Progress 
-                          value={(vital.good / Math.max(vital.total, 1)) * 100} 
+                        <Progress
+                          value={(vital.good / Math.max(vital.total, 1)) * 100}
                           className="mt-2"
                         />
                       </div>
@@ -351,15 +358,16 @@ export function AppHealthDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Endpoints Mais Lentos</CardTitle>
-              <CardDescription>
-                Top 5 endpoints com maior tempo de resposta
-              </CardDescription>
+              <CardDescription>Top 5 endpoints com maior tempo de resposta</CardDescription>
             </CardHeader>
             <CardContent>
               {metrics?.api.slowEndpoints && metrics.api.slowEndpoints.length > 0 ? (
                 <div className="space-y-3">
                   {metrics.api.slowEndpoints.map((endpoint, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex items-center gap-3">
                         <Badge variant="outline">{endpoint.method}</Badge>
                         <span className="text-sm font-mono truncate max-w-[300px]">
@@ -386,19 +394,18 @@ export function AppHealthDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Erros Recentes</CardTitle>
-              <CardDescription>
-                Erros mais frequentes nas últimas 24 horas
-              </CardDescription>
+              <CardDescription>Erros mais frequentes nas últimas 24 horas</CardDescription>
             </CardHeader>
             <CardContent>
               {metrics?.errors && metrics.errors.length > 0 ? (
                 <div className="space-y-3">
                   {metrics.errors.map((error, index) => (
-                    <div key={index} className="flex items-start justify-between p-3 border rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-start justify-between p-3 border rounded-lg"
+                    >
                       <div className="flex-1">
-                        <p className="font-medium text-destructive truncate">
-                          {error.message}
-                        </p>
+                        <p className="font-medium text-destructive truncate">{error.message}</p>
                         <p className="text-xs text-muted-foreground">
                           Último: {new Date(error.lastSeen).toLocaleString('pt-BR')}
                         </p>
@@ -421,9 +428,7 @@ export function AppHealthDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Saúde do Database</CardTitle>
-              <CardDescription>
-                Métricas de conexão e performance do banco de dados
-              </CardDescription>
+              <CardDescription>Métricas de conexão e performance do banco de dados</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -434,7 +439,7 @@ export function AppHealthDashboard() {
                   </div>
                   <p className="text-2xl font-bold">{dbHealth?.activeConnections || 0}</p>
                 </div>
-                
+
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <AlertTriangle className="h-4 w-4" />
@@ -442,7 +447,7 @@ export function AppHealthDashboard() {
                   </div>
                   <p className="text-2xl font-bold">{dbHealth?.recentErrors || 0}</p>
                 </div>
-                
+
                 <div className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <Clock className="h-4 w-4" />
@@ -493,12 +498,21 @@ function BundleAnalysisTab() {
     URL.revokeObjectURL(url);
   };
 
-  const resourceChartData = pageLoadData?.resources.slice(0, 6).map((r, i) => ({
-    name: r.type,
-    size: r.size,
-    count: r.count,
-    fill: ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))', 'hsl(220, 70%, 50%)', 'hsl(280, 70%, 50%)'][i] || 'hsl(var(--muted))',
-  })) || [];
+  const resourceChartData =
+    pageLoadData?.resources.slice(0, 6).map((r, i) => ({
+      name: r.type,
+      size: r.size,
+      count: r.count,
+      fill:
+        [
+          'hsl(var(--primary))',
+          'hsl(var(--secondary))',
+          'hsl(var(--accent))',
+          'hsl(var(--muted))',
+          'hsl(220, 70%, 50%)',
+          'hsl(280, 70%, 50%)',
+        ][i] || 'hsl(var(--muted))',
+    })) || [];
 
   return (
     <div className="space-y-4">
@@ -513,7 +527,7 @@ function BundleAnalysisTab() {
             <p className="text-2xl font-bold mt-1">{bundleData?.chunks.length || 0}</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
@@ -523,7 +537,7 @@ function BundleAnalysisTab() {
             <p className="text-2xl font-bold mt-1">{formatBytes(bundleData?.totalSize || 0)}</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
@@ -531,13 +545,14 @@ function BundleAnalysisTab() {
               <Zap className="h-4 w-4 text-muted-foreground" />
             </div>
             <p className="text-2xl font-bold mt-1">
-              {bundleData && bundleData.totalSize > 0 
+              {bundleData && bundleData.totalSize > 0
                 ? Math.round((bundleData.cachedSize / bundleData.totalSize) * 100)
-                : 0}%
+                : 0}
+              %
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
@@ -582,19 +597,19 @@ function BundleAnalysisTab() {
                         <Cell key={index} fill={entry.fill} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value: number) => formatBytes(value)}
-                    />
+                    <Tooltip formatter={(value: number) => formatBytes(value)} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              
+
               <div className="space-y-3">
                 {pageLoadData?.resources.map((resource, index) => (
                   <div key={index} className="flex items-center justify-between p-2 border rounded">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">{resource.type}</Badge>
-                      <span className="text-sm text-muted-foreground">{resource.count} arquivos</span>
+                      <span className="text-sm text-muted-foreground">
+                        {resource.count} arquivos
+                      </span>
                     </div>
                     <span className="font-mono text-sm">{formatBytes(resource.size)}</span>
                   </div>
@@ -605,7 +620,7 @@ function BundleAnalysisTab() {
             <div className="text-center py-8 text-muted-foreground">
               <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>Dados de bundle ainda não disponíveis.</p>
-            <p className="text-sm">Recarregue a página para coletar métricas.</p>
+              <p className="text-sm">Recarregue a página para coletar métricas.</p>
             </div>
           )}
         </CardContent>
@@ -623,7 +638,10 @@ function BundleAnalysisTab() {
           <CardContent>
             <div className="space-y-2">
               {pageLoadData.recommendations.map((rec, index) => (
-                <div key={index} className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg">
+                <div
+                  key={index}
+                  className="flex items-start gap-2 p-3 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg"
+                >
                   <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <p className="text-sm">{rec}</p>
                 </div>
@@ -648,8 +666,8 @@ function BundleAnalysisTab() {
                     <span className="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
                     <span className="font-mono">{Math.round(value)}ms</span>
                   </div>
-                  <Progress 
-                    value={Math.min((value / (pageLoadData.timing.total || 1)) * 100, 100)} 
+                  <Progress
+                    value={Math.min((value / (pageLoadData.timing.total || 1)) * 100, 100)}
                     className="h-2"
                   />
                 </div>

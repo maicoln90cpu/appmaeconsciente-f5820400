@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   BarChart,
   Bar,
@@ -13,9 +13,15 @@ import {
   Legend,
   ResponsiveContainer,
   Cell,
-} from "recharts";
+} from 'recharts';
 
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))', 'hsl(var(--destructive))'];
+const COLORS = [
+  'hsl(var(--primary))',
+  'hsl(var(--secondary))',
+  'hsl(var(--accent))',
+  'hsl(var(--muted))',
+  'hsl(var(--destructive))',
+];
 
 interface AdminChartsProps {
   categoryData: Array<{ name: string; value: number }>;
@@ -39,7 +45,7 @@ export function AdminCharts({ categoryData, weeklyGrowth }: AdminChartsProps) {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={(entry) => entry.name}
+                  label={entry => entry.name}
                   outerRadius={80}
                   fill="hsl(var(--primary))"
                   dataKey="value"
@@ -68,7 +74,12 @@ export function AdminCharts({ categoryData, weeklyGrowth }: AdminChartsProps) {
                 <Tooltip />
                 <Legend />
                 <Line type="monotone" dataKey="items" stroke="hsl(var(--primary))" name="Itens" />
-                <Line type="monotone" dataKey="users" stroke="hsl(var(--secondary))" name="Usuários" />
+                <Line
+                  type="monotone"
+                  dataKey="users"
+                  stroke="hsl(var(--secondary))"
+                  name="Usuários"
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

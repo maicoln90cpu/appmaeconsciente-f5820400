@@ -3,12 +3,12 @@
  * @module hooks/gamification/useDailyActivity
  */
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { format, subDays, eachDayOfInterval } from "date-fns";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { format, subDays, eachDayOfInterval } from 'date-fns';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
 
 export interface DailyActivity {
   activity_date: string;
@@ -47,12 +47,14 @@ export const useDailyActivity = () => {
     queryKey,
     queryFn: async () => {
       if (!user) return [];
-      
+
       const startDate = format(subDays(new Date(), 90), 'yyyy-MM-dd');
-      
+
       const { data, error } = await supabase
         .from('daily_activity')
-        .select('activity_date, posts_count, comments_count, likes_count, sleep_logs_count, feeding_logs_count, total_xp_earned')
+        .select(
+          'activity_date, posts_count, comments_count, likes_count, sleep_logs_count, feeding_logs_count, total_xp_earned'
+        )
         .eq('user_id', user.id)
         .gte('activity_date', startDate)
         .order('activity_date', { ascending: false });
@@ -70,15 +72,13 @@ export const useDailyActivity = () => {
     const end = new Date();
     const start = subDays(end, 90);
     const days = eachDayOfInterval({ start, end });
-    
-    const activityMap = new Map(
-      dailyActivity.map(a => [a.activity_date, a])
-    );
+
+    const activityMap = new Map(dailyActivity.map(a => [a.activity_date, a]));
 
     return days.map(day => {
       const dateStr = format(day, 'yyyy-MM-dd');
       const activity = activityMap.get(dateStr);
-      
+
       return {
         date: dateStr,
         totalXP: activity?.total_xp_earned || 0,
@@ -104,7 +104,9 @@ export const useDailyActivity = () => {
       // Tentar inserir ou atualizar usando upsert
       const { data: existing } = await supabase
         .from('daily_activity')
-        .select('id, posts_count, comments_count, likes_count, sleep_logs_count, feeding_logs_count, total_xp_earned')
+        .select(
+          'id, posts_count, comments_count, likes_count, sleep_logs_count, feeding_logs_count, total_xp_earned'
+        )
         .eq('user_id', user.id)
         .eq('activity_date', today)
         .maybeSingle();
@@ -126,15 +128,16 @@ export const useDailyActivity = () => {
 
       const newTotalXP = (existing?.total_xp_earned || 0) + xpEarned;
 
-      await supabase
-        .from('daily_activity')
-        .upsert({
+      await supabase.from('daily_activity').upsert(
+        {
           user_id: user.id,
           activity_date: today,
           ...counts,
           total_xp_earned: newTotalXP,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id,activity_date' });
+        },
+        { onConflict: 'user_id,activity_date' }
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });

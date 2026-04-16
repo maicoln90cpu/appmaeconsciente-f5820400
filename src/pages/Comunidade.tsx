@@ -1,32 +1,28 @@
-import { useState, useMemo } from "react";
-import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
-import { usePosts } from "@/hooks/usePosts";
-import { CreatePostDialog } from "@/components/comunidade/CreatePostDialog";
-import { PostCard } from "@/components/comunidade/PostCard";
-import { PostFilters } from "@/components/comunidade/PostFilters";
-import { ChallengesPanel } from "@/components/comunidade/ChallengesPanel";
-import { Leaderboard } from "@/components/gamification";
-import { InstallPrompt } from "@/components/install/InstallPrompt";
-import { LoadingCards } from "@/components/ui/loading-card";
-import { EmptyState } from "@/components/ui/empty-state";
-import { MessageSquare, Trophy, Target } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useMemo } from 'react';
+import { useFeatureFlags } from '@/contexts/FeatureFlagsContext';
+import { usePosts } from '@/hooks/usePosts';
+import { CreatePostDialog } from '@/components/comunidade/CreatePostDialog';
+import { PostCard } from '@/components/comunidade/PostCard';
+import { PostFilters } from '@/components/comunidade/PostFilters';
+import { ChallengesPanel } from '@/components/comunidade/ChallengesPanel';
+import { Leaderboard } from '@/components/gamification';
+import { InstallPrompt } from '@/components/install/InstallPrompt';
+import { LoadingCards } from '@/components/ui/loading-card';
+import { EmptyState } from '@/components/ui/empty-state';
+import { MessageSquare, Trophy, Target } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Comunidade = () => {
   const { badgesEnabled } = useFeatureFlags();
   const { posts, loading, createPost, deletePost, toggleLike } = usePosts();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   const filteredPosts = useMemo(() => {
     const searchLower = searchQuery.toLowerCase();
-    return posts.filter((post) => {
-      const matchesSearch = searchQuery
-        ? post.content.toLowerCase().includes(searchLower)
-        : true;
-      const matchesCategory = selectedCategory
-        ? post.categoria === selectedCategory
-        : true;
+    return posts.filter(post => {
+      const matchesSearch = searchQuery ? post.content.toLowerCase().includes(searchLower) : true;
+      const matchesCategory = selectedCategory ? post.categoria === selectedCategory : true;
       return matchesSearch && matchesCategory;
     });
   }, [posts, searchQuery, selectedCategory]);
@@ -58,19 +54,14 @@ const Comunidade = () => {
                 title="Nenhum post encontrado"
                 description={
                   searchQuery || selectedCategory
-                    ? "Tente ajustar os filtros de busca"
-                    : "Seja a primeira a compartilhar algo com a comunidade!"
+                    ? 'Tente ajustar os filtros de busca'
+                    : 'Seja a primeira a compartilhar algo com a comunidade!'
                 }
               />
             ) : (
               <div className="space-y-6">
-                {filteredPosts.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    onLike={toggleLike}
-                    onDelete={deletePost}
-                  />
+                {filteredPosts.map(post => (
+                  <PostCard key={post.id} post={post} onLike={toggleLike} onDelete={deletePost} />
                 ))}
               </div>
             )}

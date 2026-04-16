@@ -1,14 +1,14 @@
-import { useCallback } from "react";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { getLastAutoTableY } from "@/types/jspdf";
+import { useCallback } from 'react';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { getLastAutoTableY } from '@/types/jspdf';
 
-import type { jsPDF } from "jspdf";
-import { toast } from "sonner";
+import type { jsPDF } from 'jspdf';
+import { toast } from 'sonner';
 
 export interface PDFSection {
   title: string;
-  type: "text" | "table" | "stats";
+  type: 'text' | 'table' | 'stats';
   content?: string[];
   tableHead?: string[];
   tableBody?: string[][];
@@ -25,31 +25,30 @@ export interface PDFConfig {
 
 interface PDFExportReturn {
   generatePDF: (config: PDFConfig) => Promise<void>;
-  loadJsPDF: () => Promise<typeof import("jspdf").default>;
-  loadAutoTable: () => Promise<typeof import("jspdf-autotable").default>;
+  loadJsPDF: () => Promise<typeof import('jspdf').default>;
+  loadAutoTable: () => Promise<typeof import('jspdf-autotable').default>;
   formatDate: (date: Date | string) => string;
   formatDateTime: (date: Date | string) => string;
 }
 
 export const usePDFExport = (): PDFExportReturn => {
-
   const loadJsPDF = useCallback(async () => {
-    const { default: jsPDF } = await import("jspdf");
+    const { default: jsPDF } = await import('jspdf');
     return jsPDF;
   }, []);
 
   const loadAutoTable = useCallback(async () => {
-    const { default: autoTable } = await import("jspdf-autotable");
+    const { default: autoTable } = await import('jspdf-autotable');
     return autoTable;
   }, []);
 
   const formatDate = useCallback((date: Date | string): string => {
-    const d = typeof date === "string" ? new Date(date) : date;
-    return format(d, "dd/MM/yyyy", { locale: ptBR });
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return format(d, 'dd/MM/yyyy', { locale: ptBR });
   }, []);
 
   const formatDateTime = useCallback((date: Date | string): string => {
-    const d = typeof date === "string" ? new Date(date) : date;
+    const d = typeof date === 'string' ? new Date(date) : date;
     return format(d, "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
   }, []);
 
@@ -58,7 +57,7 @@ export const usePDFExport = (): PDFExportReturn => {
       doc: jsPDF,
       section: PDFSection,
       yPos: number,
-      autoTable: typeof import("jspdf-autotable").default
+      autoTable: typeof import('jspdf-autotable').default
     ): number => {
       const pageWidth = doc.internal.pageSize.getWidth();
       let y = yPos;
@@ -71,14 +70,14 @@ export const usePDFExport = (): PDFExportReturn => {
 
       // Section title
       doc.setFontSize(14);
-      doc.setFont("helvetica", "bold");
+      doc.setFont('helvetica', 'bold');
       doc.text(section.title, 14, y);
       y += 8;
 
-      if (section.type === "text" && section.content) {
+      if (section.type === 'text' && section.content) {
         doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        section.content.forEach((line) => {
+        doc.setFont('helvetica', 'normal');
+        section.content.forEach(line => {
           if (y > 280) {
             doc.addPage();
             y = 20;
@@ -89,12 +88,12 @@ export const usePDFExport = (): PDFExportReturn => {
         y += 5;
       }
 
-      if (section.type === "table" && section.tableHead && section.tableBody) {
+      if (section.type === 'table' && section.tableHead && section.tableBody) {
         autoTable(doc, {
           startY: y,
           head: [section.tableHead],
           body: section.tableBody,
-          theme: "striped",
+          theme: 'striped',
           headStyles: {
             fillColor: section.tableColor || [147, 51, 234],
           },
@@ -103,10 +102,10 @@ export const usePDFExport = (): PDFExportReturn => {
         y = getLastAutoTableY(doc, y) + 10;
       }
 
-      if (section.type === "stats" && section.content) {
+      if (section.type === 'stats' && section.content) {
         doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        section.content.forEach((line) => {
+        doc.setFont('helvetica', 'normal');
+        section.content.forEach(line => {
           if (y > 280) {
             doc.addPage();
             y = 20;
@@ -133,22 +132,22 @@ export const usePDFExport = (): PDFExportReturn => {
 
         // Header / Title
         doc.setFontSize(20);
-        doc.setFont("helvetica", "bold");
-        doc.text(config.title, pageWidth / 2, yPos, { align: "center" });
+        doc.setFont('helvetica', 'bold');
+        doc.text(config.title, pageWidth / 2, yPos, { align: 'center' });
         yPos += 10;
 
         // Subtitle
         if (config.subtitle) {
           doc.setFontSize(12);
-          doc.setFont("helvetica", "normal");
-          doc.text(config.subtitle, pageWidth / 2, yPos, { align: "center" });
+          doc.setFont('helvetica', 'normal');
+          doc.text(config.subtitle, pageWidth / 2, yPos, { align: 'center' });
           yPos += 8;
         }
 
         // Generated date
         doc.setFontSize(10);
         doc.text(`Gerado em: ${formatDateTime(new Date())}`, pageWidth / 2, yPos, {
-          align: "center",
+          align: 'center',
         });
         yPos += 15;
 
@@ -162,22 +161,22 @@ export const usePDFExport = (): PDFExportReturn => {
         for (let i = 1; i <= pageCount; i++) {
           doc.setPage(i);
           doc.setFontSize(8);
-          doc.setFont("helvetica", "italic");
+          doc.setFont('helvetica', 'italic');
           doc.text(
             config.footer || `Página ${i} de ${pageCount}`,
             pageWidth / 2,
             doc.internal.pageSize.getHeight() - 10,
-            { align: "center" }
+            { align: 'center' }
           );
         }
 
         // Save
-        doc.save(`${config.filename}-${format(new Date(), "yyyy-MM-dd")}.pdf`);
+        doc.save(`${config.filename}-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
 
-        toast("PDF gerado com sucesso!", { description: "Seu relatório foi baixado." });
+        toast('PDF gerado com sucesso!', { description: 'Seu relatório foi baixado.' });
       } catch (error) {
-        console.error("Error generating PDF:", error);
-        toast.error("Erro ao gerar PDF", { description: "Tente novamente." });
+        console.error('Error generating PDF:', error);
+        toast.error('Erro ao gerar PDF', { description: 'Tente novamente.' });
       }
     },
     [loadJsPDF, loadAutoTable, formatDateTime, addSection, toast]
@@ -195,7 +194,7 @@ export const usePDFExport = (): PDFExportReturn => {
 // Utility functions for sharing
 export const shareViaWhatsApp = (text: string): void => {
   const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-  window.open(url, "_blank");
+  window.open(url, '_blank');
 };
 
 export const shareViaEmail = (subject: string, body: string): void => {
@@ -204,9 +203,9 @@ export const shareViaEmail = (subject: string, body: string): void => {
 };
 
 export const downloadAsText = (content: string, filename: string): void => {
-  const blob = new Blob([content], { type: "text/plain" });
+  const blob = new Blob([content], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);

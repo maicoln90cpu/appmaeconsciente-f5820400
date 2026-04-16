@@ -1,14 +1,14 @@
-import { useState, useRef, useCallback, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Play, Pause, Square, Baby, Clock, AlertCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
-import { formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Play, Pause, Square, Baby, Clock, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface RecentFeeding {
   id: string;
@@ -23,7 +23,7 @@ const TimerMamada = () => {
   const { user } = useAuth();
   const [isRunning, setIsRunning] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [side, setSide] = useState<"left" | "right" | "bottle">("left");
+  const [side, setSide] = useState<'left' | 'right' | 'bottle'>('left');
   const [saved, setSaved] = useState(false);
   const [recentFeedings, setRecentFeedings] = useState<RecentFeeding[]>([]);
   const [alertIntervalHours, setAlertIntervalHours] = useState(3);
@@ -33,32 +33,36 @@ const TimerMamada = () => {
 
   // Carregar configuração de intervalo salva
   useEffect(() => {
-    const saved = localStorage.getItem("feeding_alert_interval");
+    const saved = localStorage.getItem('feeding_alert_interval');
     if (saved) setAlertIntervalHours(Number(saved));
   }, []);
 
   useEffect(() => {
-    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
   }, []);
 
   // Carregar últimas 5 mamadas
   const loadRecentFeedings = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
-      .from("baby_feeding_logs")
-      .select("id, feeding_type, breast_side, start_time, duration_minutes")
-      .eq("user_id", user.id)
-      .order("start_time", { ascending: false })
+      .from('baby_feeding_logs')
+      .select('id, feeding_type, breast_side, start_time, duration_minutes')
+      .eq('user_id', user.id)
+      .order('start_time', { ascending: false })
       .limit(5);
     if (data) setRecentFeedings(data);
   }, [user]);
 
-  useEffect(() => { loadRecentFeedings(); }, [loadRecentFeedings]);
+  useEffect(() => {
+    loadRecentFeedings();
+  }, [loadRecentFeedings]);
 
   const start = useCallback(() => {
     if (!startTimeRef.current) startTimeRef.current = new Date();
     setIsRunning(true);
-    intervalRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
+    intervalRef.current = setInterval(() => setElapsed(e => e + 1), 1000);
   }, []);
 
   const pause = useCallback(() => {
@@ -72,9 +76,9 @@ const TimerMamada = () => {
 
     const minutes = Math.round(elapsed / 60);
     try {
-      const feedingType = side === "bottle" ? "bottle" : "breast";
-      const breastSide = side === "bottle" ? null : side;
-      await supabase.from("baby_feeding_logs").insert({
+      const feedingType = side === 'bottle' ? 'bottle' : 'breast';
+      const breastSide = side === 'bottle' ? null : side;
+      await supabase.from('baby_feeding_logs').insert({
         user_id: user.id,
         feeding_type: feedingType,
         breast_side: breastSide,
@@ -86,7 +90,7 @@ const TimerMamada = () => {
       toast.success(`Mamada de ${minutes || 1} min registrada!`);
       loadRecentFeedings();
     } catch {
-      toast.error("Erro ao salvar");
+      toast.error('Erro ao salvar');
     }
   }, [elapsed, side, user, pause, loadRecentFeedings]);
 
@@ -106,14 +110,14 @@ const TimerMamada = () => {
     : null;
 
   const getSideLabel = (feeding: RecentFeeding) => {
-    if (feeding.feeding_type === "bottle") return "Mamadeira";
-    return feeding.breast_side === "left" ? "Esquerdo" : "Direito";
+    if (feeding.feeding_type === 'bottle') return 'Mamadeira';
+    return feeding.breast_side === 'left' ? 'Esquerdo' : 'Direito';
   };
 
   return (
     <div className="container max-w-md mx-auto p-4 space-y-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => navigate("/materiais")}>
+        <Button variant="ghost" size="icon" onClick={() => navigate('/materiais')}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
@@ -124,7 +128,12 @@ const TimerMamada = () => {
 
       {/* Configuração de intervalo */}
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => setShowSettings(!showSettings)} className="text-xs gap-1.5 text-muted-foreground">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setShowSettings(!showSettings)}
+          className="text-xs gap-1.5 text-muted-foreground"
+        >
           <Clock className="h-3.5 w-3.5" />
           Alerta: {alertIntervalHours}h
         </Button>
@@ -134,15 +143,15 @@ const TimerMamada = () => {
           <CardContent className="py-3 space-y-2">
             <p className="text-xs font-medium">Intervalo de alerta entre mamadas</p>
             <div className="flex items-center gap-2">
-              {[1.5, 2, 2.5, 3, 4].map((h) => (
+              {[1.5, 2, 2.5, 3, 4].map(h => (
                 <Button
                   key={h}
                   size="sm"
-                  variant={alertIntervalHours === h ? "default" : "outline"}
+                  variant={alertIntervalHours === h ? 'default' : 'outline'}
                   className="text-xs h-8 px-3"
                   onClick={() => {
                     setAlertIntervalHours(h);
-                    localStorage.setItem("feeding_alert_interval", String(h));
+                    localStorage.setItem('feeding_alert_interval', String(h));
                     toast.success(`Alerta ajustado para ${h}h`);
                     setShowSettings(false);
                   }}
@@ -151,14 +160,18 @@ const TimerMamada = () => {
                 </Button>
               ))}
             </div>
-            <p className="text-[10px] text-muted-foreground">Você será avisada quando passar desse tempo desde a última mamada</p>
+            <p className="text-[10px] text-muted-foreground">
+              Você será avisada quando passar desse tempo desde a última mamada
+            </p>
           </CardContent>
         </Card>
       )}
 
       {/* Alerta de intervalo */}
       {timeSinceLastFeeding !== null && !isRunning && !saved && (
-        <Card className={`border ${timeSinceLastFeeding >= alertIntervalHours ? "border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30" : "border-muted"}`}>
+        <Card
+          className={`border ${timeSinceLastFeeding >= alertIntervalHours ? 'border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30' : 'border-muted'}`}
+        >
           <CardContent className="py-3 flex items-center gap-3">
             {timeSinceLastFeeding >= alertIntervalHours ? (
               <AlertCircle className="h-5 w-5 text-amber-500 shrink-0" />
@@ -167,9 +180,12 @@ const TimerMamada = () => {
             )}
             <div className="flex-1">
               <p className="text-sm">
-                Última mamada{" "}
+                Última mamada{' '}
                 <span className="font-semibold">
-                  {formatDistanceToNow(new Date(lastFeeding.start_time), { addSuffix: true, locale: ptBR })}
+                  {formatDistanceToNow(new Date(lastFeeding.start_time), {
+                    addSuffix: true,
+                    locale: ptBR,
+                  })}
                 </span>
               </p>
               {timeSinceLastFeeding >= alertIntervalHours && (
@@ -184,8 +200,20 @@ const TimerMamada = () => {
 
       {/* Side selector */}
       <div className="flex gap-2 justify-center">
-        {([["left", "Esquerdo"], ["right", "Direito"], ["bottle", "Mamadeira"]] as const).map(([key, label]) => (
-          <Button key={key} variant={side === key ? "default" : "outline"} size="sm" onClick={() => setSide(key)} disabled={isRunning}>
+        {(
+          [
+            ['left', 'Esquerdo'],
+            ['right', 'Direito'],
+            ['bottle', 'Mamadeira'],
+          ] as const
+        ).map(([key, label]) => (
+          <Button
+            key={key}
+            variant={side === key ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setSide(key)}
+            disabled={isRunning}
+          >
             {label}
           </Button>
         ))}
@@ -195,13 +223,13 @@ const TimerMamada = () => {
       <Card className="border-primary/30">
         <CardContent className="pt-8 pb-8 text-center space-y-6">
           <p className="text-7xl font-mono font-bold tabular-nums text-primary">
-            {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
+            {String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
           </p>
 
           <div className="flex gap-3 justify-center">
             {!isRunning && !saved && (
               <Button size="lg" onClick={start} className="gap-2 px-8">
-                <Play className="h-5 w-5" /> {elapsed > 0 ? "Continuar" : "Iniciar"}
+                <Play className="h-5 w-5" /> {elapsed > 0 ? 'Continuar' : 'Iniciar'}
               </Button>
             )}
             {isRunning && (
@@ -226,13 +254,23 @@ const TimerMamada = () => {
       {saved && (
         <Card className="bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800">
           <CardContent className="pt-6 text-center space-y-3">
-            <p className="text-lg font-semibold text-green-700 dark:text-green-300">✅ Mamada registrada!</p>
+            <p className="text-lg font-semibold text-green-700 dark:text-green-300">
+              ✅ Mamada registrada!
+            </p>
             <p className="text-sm text-muted-foreground">
-              {mins} min • Lado {side === "left" ? "esquerdo" : side === "right" ? "direito" : "mamadeira"}
+              {mins} min • Lado{' '}
+              {side === 'left' ? 'esquerdo' : side === 'right' ? 'direito' : 'mamadeira'}
             </p>
             <div className="border-t pt-3 mt-3">
-              <p className="text-xs text-muted-foreground mb-2">Quer dashboard completo com gráficos e histórico?</p>
-              <Button variant="outline" size="sm" onClick={() => navigate("/materiais/rastreador-amamentacao")} className="gap-2">
+              <p className="text-xs text-muted-foreground mb-2">
+                Quer dashboard completo com gráficos e histórico?
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/materiais/rastreador-amamentacao')}
+                className="gap-2"
+              >
                 <Baby className="h-4 w-4" /> Conhecer Rastreador de Amamentação
               </Button>
             </div>
@@ -249,14 +287,17 @@ const TimerMamada = () => {
               Últimas mamadas
             </h3>
             <div className="space-y-2">
-              {recentFeedings.map((f) => (
-                <div key={f.id} className="flex items-center justify-between text-sm py-1.5 border-b last:border-0">
+              {recentFeedings.map(f => (
+                <div
+                  key={f.id}
+                  className="flex items-center justify-between text-sm py-1.5 border-b last:border-0"
+                >
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-[10px]">
                       {getSideLabel(f)}
                     </Badge>
                     <span className="text-muted-foreground">
-                      {f.duration_minutes ? `${f.duration_minutes} min` : "—"}
+                      {f.duration_minutes ? `${f.duration_minutes} min` : '—'}
                     </span>
                   </div>
                   <span className="text-xs text-muted-foreground">

@@ -2,16 +2,29 @@
  * @fileoverview Calculadora de Mamadeira
  */
 
-import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Baby, Calculator, Info, Milk } from "lucide-react";
-import { useGrowthMeasurements } from "@/hooks/useGrowthMeasurements";
+import { useState, useMemo } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Baby, Calculator, Info, Milk } from 'lucide-react';
+import { useGrowthMeasurements } from '@/hooks/useGrowthMeasurements';
 
 interface BottleCalculatorProps {
   babyProfileId?: string;
@@ -19,25 +32,25 @@ interface BottleCalculatorProps {
 
 // Reference table for bottle feeding by age
 const BOTTLE_REFERENCE = [
-  { ageWeeks: "0-1", mlPerFeeding: "30-60", feedingsPerDay: "8-12", totalMl: "400-600" },
-  { ageWeeks: "1-2", mlPerFeeding: "60-90", feedingsPerDay: "8-10", totalMl: "500-700" },
-  { ageWeeks: "2-4", mlPerFeeding: "90-120", feedingsPerDay: "7-9", totalMl: "700-900" },
-  { ageWeeks: "4-8", mlPerFeeding: "120-150", feedingsPerDay: "6-8", totalMl: "800-1000" },
-  { ageWeeks: "8-12", mlPerFeeding: "150-180", feedingsPerDay: "5-7", totalMl: "900-1100" },
-  { ageWeeks: "12-16", mlPerFeeding: "180-210", feedingsPerDay: "5-6", totalMl: "1000-1200" },
-  { ageWeeks: "16-24", mlPerFeeding: "180-240", feedingsPerDay: "4-6", totalMl: "1000-1200" },
-  { ageWeeks: "24+", mlPerFeeding: "180-240", feedingsPerDay: "3-5", totalMl: "800-1000" },
+  { ageWeeks: '0-1', mlPerFeeding: '30-60', feedingsPerDay: '8-12', totalMl: '400-600' },
+  { ageWeeks: '1-2', mlPerFeeding: '60-90', feedingsPerDay: '8-10', totalMl: '500-700' },
+  { ageWeeks: '2-4', mlPerFeeding: '90-120', feedingsPerDay: '7-9', totalMl: '700-900' },
+  { ageWeeks: '4-8', mlPerFeeding: '120-150', feedingsPerDay: '6-8', totalMl: '800-1000' },
+  { ageWeeks: '8-12', mlPerFeeding: '150-180', feedingsPerDay: '5-7', totalMl: '900-1100' },
+  { ageWeeks: '12-16', mlPerFeeding: '180-210', feedingsPerDay: '5-6', totalMl: '1000-1200' },
+  { ageWeeks: '16-24', mlPerFeeding: '180-240', feedingsPerDay: '4-6', totalMl: '1000-1200' },
+  { ageWeeks: '24+', mlPerFeeding: '180-240', feedingsPerDay: '3-5', totalMl: '800-1000' },
 ];
 
 export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
-  const [weight, setWeight] = useState<string>("");
-  const [ageWeeks, setAgeWeeks] = useState<string>("");
-  const [feedingFrequency, setFeedingFrequency] = useState<string>("6");
+  const [weight, setWeight] = useState<string>('');
+  const [ageWeeks, setAgeWeeks] = useState<string>('');
+  const [feedingFrequency, setFeedingFrequency] = useState<string>('6');
 
   const { latestMeasurement } = useGrowthMeasurements(babyProfileId);
 
   // Use latest weight if available
-  const effectiveWeight = weight || (latestMeasurement?.weight_kg?.toString() || "");
+  const effectiveWeight = weight || latestMeasurement?.weight_kg?.toString() || '';
 
   // Calculate recommended bottle size
   const calculation = useMemo(() => {
@@ -51,7 +64,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
     // General formula: 150-200ml per kg per day
     const minDailyMl = weightKg * 150;
     const maxDailyMl = weightKg * 200;
-    
+
     const minPerBottle = Math.round(minDailyMl / frequency);
     const maxPerBottle = Math.round(maxDailyMl / frequency);
     const avgPerBottle = Math.round((minPerBottle + maxPerBottle) / 2);
@@ -70,7 +83,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
   const ageReference = useMemo(() => {
     if (!ageWeeks) return null;
     const weeks = parseInt(ageWeeks);
-    
+
     if (weeks <= 1) return BOTTLE_REFERENCE[0];
     if (weeks <= 2) return BOTTLE_REFERENCE[1];
     if (weeks <= 4) return BOTTLE_REFERENCE[2];
@@ -89,9 +102,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
             <Calculator className="h-5 w-5 text-primary" />
             Calculadora de Mamadeira
           </CardTitle>
-          <CardDescription>
-            Calcule a quantidade ideal de leite por mamadeira
-          </CardDescription>
+          <CardDescription>Calcule a quantidade ideal de leite por mamadeira</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Input section */}
@@ -102,14 +113,12 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
                 id="weight"
                 type="number"
                 step="0.1"
-                placeholder={latestMeasurement?.weight_kg?.toString() || "Ex: 4.5"}
+                placeholder={latestMeasurement?.weight_kg?.toString() || 'Ex: 4.5'}
                 value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+                onChange={e => setWeight(e.target.value)}
               />
               {latestMeasurement?.weight_kg && !weight && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Usando último peso registrado
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">Usando último peso registrado</p>
               )}
             </div>
             <div>
@@ -119,7 +128,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
                 type="number"
                 placeholder="Ex: 8"
                 value={ageWeeks}
-                onChange={(e) => setAgeWeeks(e.target.value)}
+                onChange={e => setAgeWeeks(e.target.value)}
               />
             </div>
             <div>
@@ -129,7 +138,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {[4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => (
+                  {[4, 5, 6, 7, 8, 9, 10, 11, 12].map(n => (
                     <SelectItem key={n} value={n.toString()}>
                       {n} mamadeiras
                     </SelectItem>
@@ -145,9 +154,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
               <Card className="bg-primary/5 border-primary/20">
                 <CardContent className="pt-4 text-center">
                   <Milk className="h-8 w-8 mx-auto text-primary mb-2" />
-                  <p className="text-3xl font-bold text-primary">
-                    {calculation.avgPerBottle}ml
-                  </p>
+                  <p className="text-3xl font-bold text-primary">{calculation.avgPerBottle}ml</p>
                   <p className="text-sm text-muted-foreground">Por mamadeira</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     ({calculation.minPerBottle} - {calculation.maxPerBottle}ml)
@@ -214,9 +221,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Tabela de Referência por Idade</CardTitle>
-          <CardDescription>
-            Valores médios - cada bebê é único, consulte o pediatra
-          </CardDescription>
+          <CardDescription>Valores médios - cada bebê é único, consulte o pediatra</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
@@ -230,10 +235,7 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
             </TableHeader>
             <TableBody>
               {BOTTLE_REFERENCE.map((row, index) => (
-                <TableRow
-                  key={index}
-                  className={ageReference === row ? "bg-primary/5" : ""}
-                >
+                <TableRow key={index} className={ageReference === row ? 'bg-primary/5' : ''}>
                   <TableCell className="font-medium">
                     {row.ageWeeks}
                     {ageReference === row && (
@@ -273,21 +275,15 @@ export const BottleCalculator = ({ babyProfileId }: BottleCalculatorProps) => {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary">•</span>
-              <span>
-                Após os 6 meses, a introdução alimentar reduz a necessidade de leite.
-              </span>
+              <span>Após os 6 meses, a introdução alimentar reduz a necessidade de leite.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary">•</span>
-              <span>
-                Sinais de fome: mãos na boca, movimentos de sucção, agitação.
-              </span>
+              <span>Sinais de fome: mãos na boca, movimentos de sucção, agitação.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary">•</span>
-              <span>
-                Sinais de saciedade: vira a cabeça, relaxa, para de sugar.
-              </span>
+              <span>Sinais de saciedade: vira a cabeça, relaxa, para de sugar.</span>
             </li>
           </ul>
         </CardContent>

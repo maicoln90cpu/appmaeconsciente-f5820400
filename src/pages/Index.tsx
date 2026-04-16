@@ -1,35 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
-import { useNavigate } from "react-router-dom";
-import { Baby, Info, LogOut, Save, Shield, Star, Trophy, User } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { Baby, Info, LogOut, Save, Shield, Star, Trophy, User } from 'lucide-react';
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
-import { Auth } from "@/components/Auth";
-import { DashboardTab } from "@/components/DashboardTab";
-import { EnxovalTable } from "@/components/EnxovalTable";
-import { ExportEnxoval } from "@/components/ExportEnxoval";
-import { ItemDialog } from "@/components/ItemDialog";
-import { NotificationBell } from "@/components/NotificationBell";
-import { RNGuideTable } from "@/components/RNGuideTable";
-import { ShareEnxoval } from "@/components/ShareEnxoval";
-import { SizeCalculator } from "@/components/SizeCalculator";
+import { Auth } from '@/components/Auth';
+import { DashboardTab } from '@/components/DashboardTab';
+import { EnxovalTable } from '@/components/EnxovalTable';
+import { ExportEnxoval } from '@/components/ExportEnxoval';
+import { ItemDialog } from '@/components/ItemDialog';
+import { NotificationBell } from '@/components/NotificationBell';
+import { RNGuideTable } from '@/components/RNGuideTable';
+import { ShareEnxoval } from '@/components/ShareEnxoval';
+import { SizeCalculator } from '@/components/SizeCalculator';
 
-import { useConfig } from "@/hooks/useConfig";
-import { useEnxovalItems } from "@/hooks/useEnxovalItems";
-import { useProfile } from "@/hooks/useProfile";
-import { useUserRole } from "@/hooks/useUserRole";
+import { useConfig } from '@/hooks/useConfig';
+import { useEnxovalItems } from '@/hooks/useEnxovalItems';
+import { useProfile } from '@/hooks/useProfile';
+import { useUserRole } from '@/hooks/useUserRole';
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/integrations/supabase/client';
 
-import type { EnxovalItem } from "@/types/enxoval";
-import { toast } from "sonner";
+import type { EnxovalItem } from '@/types/enxoval';
+import { toast } from 'sonner';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const Index = () => {
   // State local para configurações
   const [tempOrcamento, setTempOrcamento] = useState<number>(5000);
   const [tempDiasAlerta, setTempDiasAlerta] = useState<number>(7);
-  const [tempMensagemMotivacao, setTempMensagemMotivacao] = useState<string>("");
+  const [tempMensagemMotivacao, setTempMensagemMotivacao] = useState<string>('');
   const { profile, loading: profileLoading } = useProfile();
   const { isAdmin } = useUserRole();
 
@@ -55,7 +55,7 @@ const Index = () => {
     if (config) {
       setTempOrcamento(config.orcamento_total);
       setTempDiasAlerta(config.dias_alerta_troca);
-      setTempMensagemMotivacao(config.mensagem_motivacao || "");
+      setTempMensagemMotivacao(config.mensagem_motivacao || '');
     }
   }, [config]);
 
@@ -77,14 +77,16 @@ const Index = () => {
   // Check breastfeeding and club access
   useEffect(() => {
     const checkBreastfeeding = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data } = await supabase
-        .from("baby_feeding_logs")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("feeding_type", "breastfeeding")
+        .from('baby_feeding_logs')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('feeding_type', 'breastfeeding')
         .limit(1)
         .maybeSingle();
 
@@ -92,9 +94,9 @@ const Index = () => {
 
       // Check club access
       const { data: clubData } = await supabase
-        .from("user_club_access")
-        .select("has_active_access")
-        .eq("user_id", user.id)
+        .from('user_club_access')
+        .select('has_active_access')
+        .eq('user_id', user.id)
         .maybeSingle();
 
       setHasClubAccess(clubData?.has_active_access || false);
@@ -106,16 +108,16 @@ const Index = () => {
   // Redirect to profile completion if needed
   useEffect(() => {
     if (session && profile && !profile.perfil_completo && !profileLoading) {
-      navigate("/complete-profile");
+      navigate('/complete-profile');
     }
   }, [session, profile, profileLoading, navigate]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    toast("Logout realizado", { description: "Você saiu da sua conta com sucesso." });
+    toast('Logout realizado', { description: 'Você saiu da sua conta com sucesso.' });
   };
 
-  const handleAddItem = async (item: Omit<EnxovalItem, "id">) => {
+  const handleAddItem = async (item: Omit<EnxovalItem, 'id'>) => {
     await addItem(item);
   };
 
@@ -172,7 +174,9 @@ const Index = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Controle de Enxoval</h1>
-                <p className="text-sm text-muted-foreground">Organize suas compras com economia e praticidade</p>
+                <p className="text-sm text-muted-foreground">
+                  Organize suas compras com economia e praticidade
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -182,22 +186,32 @@ const Index = () => {
                   Membro Premium
                 </Badge>
               )}
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => navigate("/conquistas")}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/conquistas')}
                 className="gap-2"
               >
                 <Trophy className="h-4 w-4 text-yellow-500" />
                 Conquistas
               </Button>
               <NotificationBell />
-              <Button variant="outline" size="sm" onClick={() => navigate("/profile")} className="gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate('/profile')}
+                className="gap-2"
+              >
                 <User className="h-4 w-4" />
                 Meu Cadastro
               </Button>
               {isAdmin && (
-                <Button variant="outline" size="sm" onClick={() => navigate("/admin")} className="gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/admin')}
+                  className="gap-2"
+                >
                   <Shield className="h-4 w-4" />
                   Admin
                 </Button>
@@ -241,14 +255,14 @@ const Index = () => {
                 <p className="text-lg font-medium text-primary">{config.mensagem_motivacao}</p>
               </div>
             )}
-            
+
             {profile?.meses_gestacao && profile.meses_gestacao >= 8 && (
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
-                  🎒 Sua gestação está em {profile.meses_gestacao} meses. Já conferiu o{" "}
+                  🎒 Sua gestação está em {profile.meses_gestacao} meses. Já conferiu o{' '}
                   <button
-                    onClick={() => navigate("/materiais/mala-maternidade")}
+                    onClick={() => navigate('/materiais/mala-maternidade')}
                     className="font-semibold underline hover:text-primary"
                   >
                     Checklist de Mala da Maternidade
@@ -262,17 +276,19 @@ const Index = () => {
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription className="flex items-center justify-between">
-                  <span>Você está amamentando! Não esqueça de adicionar absorventes de seio ao enxoval.</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <span>
+                    Você está amamentando! Não esqueça de adicionar absorventes de seio ao enxoval.
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       addItem({
-                        item: "Absorventes de seio",
-                        category: "Mãe",
-                        necessity: "Necessário",
-                        priority: "Alta",
-                        status: "A comprar",
+                        item: 'Absorventes de seio',
+                        category: 'Mãe',
+                        necessity: 'Necessário',
+                        priority: 'Alta',
+                        status: 'A comprar',
                         plannedQty: 3,
                         plannedPrice: 0,
                         boughtQty: 0,
@@ -296,7 +312,9 @@ const Index = () => {
             <DashboardTab items={items} budget={config?.orcamento_total || 5000} />
 
             {items.length > 0 &&
-              Math.round((items.filter((i) => i.status === "Comprado").length / items.length) * 100) === 100 && (
+              Math.round(
+                (items.filter(i => i.status === 'Comprado').length / items.length) * 100
+              ) === 100 && (
                 <div className="bg-success/10 border border-success/30 rounded-lg p-6 text-center space-y-2">
                   <p className="text-2xl">🎉</p>
                   <p className="text-lg font-semibold text-success">
@@ -311,7 +329,9 @@ const Index = () => {
 
           <TabsContent value="enxoval" className="space-y-6">
             <div className="bg-muted/30 border rounded-lg p-4 text-center space-y-1">
-              <p className="text-base text-muted-foreground">Aqui você registra suas decisões com consciência.</p>
+              <p className="text-base text-muted-foreground">
+                Aqui você registra suas decisões com consciência.
+              </p>
               <p className="text-sm text-muted-foreground">
                 Cada item marcado é um passo a menos na ansiedade — e um passo a mais na leveza.
               </p>
@@ -338,7 +358,12 @@ const Index = () => {
                     <p className="text-muted-foreground">Carregando itens...</p>
                   </div>
                 ) : (
-                  <EnxovalTable items={items} onEdit={handleEditClick} onDelete={handleDeleteItem} config={config} />
+                  <EnxovalTable
+                    items={items}
+                    onEdit={handleEditClick}
+                    onDelete={handleDeleteItem}
+                    config={config}
+                  />
                 )}
               </CardContent>
             </Card>
@@ -346,7 +371,7 @@ const Index = () => {
               onEdit={handleEditItem}
               editingItem={editingItem}
               open={editDialogOpen}
-              onOpenChange={(open) => {
+              onOpenChange={open => {
                 setEditDialogOpen(open);
                 if (!open) setEditingItem(null);
               }}
@@ -356,8 +381,8 @@ const Index = () => {
           <TabsContent value="config" className="space-y-6">
             <div className="bg-muted/30 border rounded-lg p-4 text-center">
               <p className="text-base text-muted-foreground">
-                Defina aqui o limite do seu enxoval. Este valor será seu farol — um lembrete gentil de que você está no
-                controle do seu orçamento e da sua tranquilidade.
+                Defina aqui o limite do seu enxoval. Este valor será seu farol — um lembrete gentil
+                de que você está no controle do seu orçamento e da sua tranquilidade.
               </p>
             </div>
 
@@ -375,7 +400,7 @@ const Index = () => {
                     min="0"
                     step="0.01"
                     value={tempOrcamento}
-                    onChange={(e) => setTempOrcamento(Number(e.target.value))}
+                    onChange={e => setTempOrcamento(Number(e.target.value))}
                     className="max-w-xs"
                   />
                   <p className="text-sm text-muted-foreground">
@@ -390,7 +415,7 @@ const Index = () => {
                     type="number"
                     min="1"
                     value={tempDiasAlerta}
-                    onChange={(e) => setTempDiasAlerta(Number(e.target.value))}
+                    onChange={e => setTempDiasAlerta(Number(e.target.value))}
                     className="max-w-xs"
                   />
                   <p className="text-sm text-muted-foreground">
@@ -406,10 +431,12 @@ const Index = () => {
                     maxLength={100}
                     placeholder="Ex: Quero viver esta fase com leveza e consciência."
                     value={tempMensagemMotivacao}
-                    onChange={(e) => setTempMensagemMotivacao(e.target.value)}
+                    onChange={e => setTempMensagemMotivacao(e.target.value)}
                     className="max-w-lg"
                   />
-                  <p className="text-sm text-muted-foreground">Esta mensagem aparecerá no topo do seu Dashboard</p>
+                  <p className="text-sm text-muted-foreground">
+                    Esta mensagem aparecerá no topo do seu Dashboard
+                  </p>
                 </div>
 
                 <Button onClick={handleSaveConfig} className="gap-2">
@@ -422,7 +449,9 @@ const Index = () => {
             <Card>
               <CardHeader>
                 <CardTitle>Guia de Quantidades RN — Comece com o Essencial</CardTitle>
-                <CardDescription>Lembre-se: menos é mais. Você pode ajustar conforme o bebê cresce.</CardDescription>
+                <CardDescription>
+                  Lembre-se: menos é mais. Você pode ajustar conforme o bebê cresce.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <RNGuideTable />
@@ -438,7 +467,9 @@ const Index = () => {
           <p className="text-sm font-medium text-foreground">
             Guia do Enxoval Consciente — Mãe Consciente
           </p>
-          <p className="text-xs text-muted-foreground">© {new Date().getFullYear()} Mãe Consciente. Todos os direitos reservados.</p>
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Mãe Consciente. Todos os direitos reservados.
+          </p>
         </div>
       </footer>
     </div>

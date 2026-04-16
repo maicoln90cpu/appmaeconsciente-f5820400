@@ -1,20 +1,54 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-import fernandaImg from "@/assets/testimonials/fernanda-lima.jpg";
-import marianaImg from "@/assets/testimonials/mariana-costa.jpg";
-import camilaImg from "@/assets/testimonials/camila-rodrigues.jpg";
-import patriciaImg from "@/assets/testimonials/patricia-alves.jpg";
-import beatrizImg from "@/assets/testimonials/beatriz-santos.jpg";
-import robertaImg from "@/assets/testimonials/roberta-mendes.jpg";
-import julianaImg from "@/assets/testimonials/juliana-freitas.jpg";
-import { ArrowRight, Users, BookOpen, HeadphonesIcon, Star, Smartphone, Share, PlusSquare, CheckCircle2, Quote, Sparkles, Heart, ShieldCheck, TrendingUp, Baby, Moon, Milk, Syringe, Stethoscope, Brain, Calculator, Apple, Activity, Package, Crown, Gift, Calendar, Timer, ClipboardList, Home, Utensils, Camera, CalendarClock } from "lucide-react";
-import { Link } from "react-router-dom";
-import { InstallPrompt } from "@/components/install/InstallPrompt";
-import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState, useRef, useMemo } from "react";
+import fernandaImg from '@/assets/testimonials/fernanda-lima.jpg';
+import marianaImg from '@/assets/testimonials/mariana-costa.jpg';
+import camilaImg from '@/assets/testimonials/camila-rodrigues.jpg';
+import patriciaImg from '@/assets/testimonials/patricia-alves.jpg';
+import beatrizImg from '@/assets/testimonials/beatriz-santos.jpg';
+import robertaImg from '@/assets/testimonials/roberta-mendes.jpg';
+import julianaImg from '@/assets/testimonials/juliana-freitas.jpg';
+import {
+  ArrowRight,
+  Users,
+  BookOpen,
+  HeadphonesIcon,
+  Star,
+  Smartphone,
+  Share,
+  PlusSquare,
+  CheckCircle2,
+  Quote,
+  Sparkles,
+  Heart,
+  ShieldCheck,
+  TrendingUp,
+  Baby,
+  Moon,
+  Milk,
+  Syringe,
+  Stethoscope,
+  Brain,
+  Calculator,
+  Apple,
+  Activity,
+  Package,
+  Crown,
+  Gift,
+  Calendar,
+  Timer,
+  ClipboardList,
+  Home,
+  Utensils,
+  Camera,
+  CalendarClock,
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { InstallPrompt } from '@/components/install/InstallPrompt';
+import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useState, useRef, useMemo } from 'react';
 
 interface Testimonial {
   name: string;
@@ -26,155 +60,222 @@ interface Testimonial {
 
 const testimonials: Testimonial[] = [
   {
-    name: "Fernanda Lima",
-    location: "1º filho - São Paulo/SP",
-    text: "O Controle de Enxoval me salvou! Consegui rastrear cada item, comparar preços e não esquecer nada. Economizei mais de R$ 3.500 comprando apenas o necessário.",
+    name: 'Fernanda Lima',
+    location: '1º filho - São Paulo/SP',
+    text: 'O Controle de Enxoval me salvou! Consegui rastrear cada item, comparar preços e não esquecer nada. Economizei mais de R$ 3.500 comprando apenas o necessário.',
     rating: 5,
-    avatar: fernandaImg
+    avatar: fernandaImg,
   },
   {
-    name: "Mariana Costa",
-    location: "Grávida de 8 meses - Belo Horizonte/MG",
-    text: "A Calculadora de Fraldas foi uma revelação! Descobri que fraldas de pano realmente compensam no longo prazo. O cálculo detalhado me deu segurança para investir.",
+    name: 'Mariana Costa',
+    location: 'Grávida de 8 meses - Belo Horizonte/MG',
+    text: 'A Calculadora de Fraldas foi uma revelação! Descobri que fraldas de pano realmente compensam no longo prazo. O cálculo detalhado me deu segurança para investir.',
     rating: 5,
-    avatar: marianaImg
+    avatar: marianaImg,
   },
   {
-    name: "Camila Rodrigues",
-    location: "Mãe de gêmeos - Rio de Janeiro/RJ",
-    text: "Com gêmeos, o Diário de Sono foi essencial. Consegui identificar padrões, ajustar rotinas e finalmente dormir melhor. Dashboard visual super intuitivo!",
+    name: 'Camila Rodrigues',
+    location: 'Mãe de gêmeos - Rio de Janeiro/RJ',
+    text: 'Com gêmeos, o Diário de Sono foi essencial. Consegui identificar padrões, ajustar rotinas e finalmente dormir melhor. Dashboard visual super intuitivo!',
     rating: 5,
-    avatar: camilaImg
+    avatar: camilaImg,
   },
   {
-    name: "Patrícia Alves",
-    location: "2º filho - Curitiba/PR",
-    text: "O Rastreador de Amamentação me ajudou a controlar mamadas, estoque de leite e até prever quando ordenhar. Como segunda mãe, isso foi um luxo de organização!",
+    name: 'Patrícia Alves',
+    location: '2º filho - Curitiba/PR',
+    text: 'O Rastreador de Amamentação me ajudou a controlar mamadas, estoque de leite e até prever quando ordenhar. Como segunda mãe, isso foi um luxo de organização!',
     rating: 5,
-    avatar: patriciaImg
+    avatar: patriciaImg,
   },
   {
-    name: "Beatriz Santos",
-    location: "Nutricionista e grávida - Salvador/BA",
-    text: "O Guia de Alimentação superou minhas expectativas! Planos semanais, receitas por trimestre e controle de suplementos. Tudo validado e seguro.",
+    name: 'Beatriz Santos',
+    location: 'Nutricionista e grávida - Salvador/BA',
+    text: 'O Guia de Alimentação superou minhas expectativas! Planos semanais, receitas por trimestre e controle de suplementos. Tudo validado e seguro.',
     rating: 5,
-    avatar: beatrizImg
+    avatar: beatrizImg,
   },
   {
-    name: "Roberta Mendes",
-    location: "Mãe solo - Porto Alegre/RS",
-    text: "A comunidade foi meu suporte emocional. Compartilhar dúvidas, ver fotos de outras mães e receber incentivo fez toda diferença na minha jornada solo.",
+    name: 'Roberta Mendes',
+    location: 'Mãe solo - Porto Alegre/RS',
+    text: 'A comunidade foi meu suporte emocional. Compartilhar dúvidas, ver fotos de outras mães e receber incentivo fez toda diferença na minha jornada solo.',
     rating: 5,
-    avatar: robertaImg
+    avatar: robertaImg,
   },
   {
-    name: "Juliana Freitas",
-    location: "Médica pediatra - Brasília/DF",
-    text: "Como pediatra, indico o Cartão de Vacinação Digital! Mães organizadas facilitam meu trabalho. Lembretes, registro de reações e relatórios em PDF são incríveis.",
+    name: 'Juliana Freitas',
+    location: 'Médica pediatra - Brasília/DF',
+    text: 'Como pediatra, indico o Cartão de Vacinação Digital! Mães organizadas facilitam meu trabalho. Lembretes, registro de reações e relatórios em PDF são incríveis.',
     rating: 5,
-    avatar: julianaImg
-  }
+    avatar: julianaImg,
+  },
 ];
 
 const freeTools = [
   {
     icon: Calculator,
-    title: "Calculadora de Fraldas",
-    description: "Simule custos, compare marcas populares e descubra se fraldas de pano compensam.",
-    slug: "calculadora-fraldas",
+    title: 'Calculadora de Fraldas',
+    description: 'Simule custos, compare marcas populares e descubra se fraldas de pano compensam.',
+    slug: 'calculadora-fraldas',
   },
   {
     icon: Syringe,
-    title: "Cartão de Vacinação Digital",
-    description: "Organize vacinas, receba lembretes automáticos e gere relatórios PDF para o pediatra.",
-    slug: "cartao-vacinacao",
+    title: 'Cartão de Vacinação Digital',
+    description:
+      'Organize vacinas, receba lembretes automáticos e gere relatórios PDF para o pediatra.',
+    slug: 'cartao-vacinacao',
   },
   {
     icon: Package,
-    title: "Checklist Mala Maternidade",
-    description: "Checklist completo das 3 malas por tipo de parto. Funciona offline e exporta em PDF.",
-    slug: "mala-maternidade",
+    title: 'Checklist Mala Maternidade',
+    description:
+      'Checklist completo das 3 malas por tipo de parto. Funciona offline e exporta em PDF.',
+    slug: 'mala-maternidade',
   },
   {
     icon: Calendar,
-    title: "Calculadora de Semanas",
-    description: "Descubra sua semana exata, trimestre, DPP e o tamanho do bebê comparado com frutas.",
-    slug: "calculadora-semanas",
+    title: 'Calculadora de Semanas',
+    description:
+      'Descubra sua semana exata, trimestre, DPP e o tamanho do bebê comparado com frutas.',
+    slug: 'calculadora-semanas',
   },
   {
     icon: ClipboardList,
-    title: "Checklist de Documentos",
-    description: "Passo-a-passo de todos os documentos do bebê: certidão, CPF, SUS, RG e mais.",
-    slug: "checklist-documentos",
+    title: 'Checklist de Documentos',
+    description: 'Passo-a-passo de todos os documentos do bebê: certidão, CPF, SUS, RG e mais.',
+    slug: 'checklist-documentos',
   },
   {
     icon: Home,
-    title: "Checklist do Quartinho",
-    description: "Monte o quarto do bebê com listas por categoria: berço, banho, segurança e decoração.",
-    slug: "checklist-quartinho",
+    title: 'Checklist do Quartinho',
+    description:
+      'Monte o quarto do bebê com listas por categoria: berço, banho, segurança e decoração.',
+    slug: 'checklist-quartinho',
   },
   {
     icon: Timer,
-    title: "Timer de Mamada Rápido",
-    description: "Cronômetro simples para registrar mamadas sem complicação. Escolha o lado e pronto.",
-    slug: "timer-mamada",
+    title: 'Timer de Mamada Rápido',
+    description:
+      'Cronômetro simples para registrar mamadas sem complicação. Escolha o lado e pronto.',
+    slug: 'timer-mamada',
   },
   {
     icon: BookOpen,
-    title: "E-book Guia Rápido",
-    description: "O que realmente levar para o hospital sem exageros e sem esquecer o essencial.",
-    slug: "checklist",
+    title: 'E-book Guia Rápido',
+    description: 'O que realmente levar para o hospital sem exageros e sem esquecer o essencial.',
+    slug: 'checklist',
   },
 ];
 
 // Slugs mapped to phases for dynamic pricing
 const phaseToolSlugs = {
   gestantes: [
-    { icon: Baby, title: "Ferramentas de Gestação", description: "Calculadora de DPP, contador de movimentos fetais, checklist de exames, plano de parto e galeria de ultrassons.", slug: "ferramentas-gestacao" },
-    { icon: Package, title: "Controle de Enxoval", description: "Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval.", slug: "controle-enxoval" },
-    { icon: Apple, title: "Guia de Alimentação", description: "Planos semanais com IA, receitas por trimestre, controle de suplementos e hidratação.", slug: "guia-alimentacao" },
+    {
+      icon: Baby,
+      title: 'Ferramentas de Gestação',
+      description:
+        'Calculadora de DPP, contador de movimentos fetais, checklist de exames, plano de parto e galeria de ultrassons.',
+      slug: 'ferramentas-gestacao',
+    },
+    {
+      icon: Package,
+      title: 'Controle de Enxoval',
+      description:
+        'Organize compras, compare preços entre lojas e economize até R$5.000 no enxoval.',
+      slug: 'controle-enxoval',
+    },
+    {
+      icon: Apple,
+      title: 'Guia de Alimentação',
+      description:
+        'Planos semanais com IA, receitas por trimestre, controle de suplementos e hidratação.',
+      slug: 'guia-alimentacao',
+    },
   ],
   posParto: [
-    { icon: Milk, title: "Rastreador de Amamentação", description: "Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.", slug: "rastreador-amamentacao" },
-    { icon: Moon, title: "Diário de Sono", description: "Registre padrões de sono, receba insights com IA e identifique a melhor rotina.", slug: "diario-sono" },
-    { icon: Activity, title: "Recuperação Pós-Parto", description: "Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.", slug: "recuperacao-pos-parto" },
-    { icon: TrendingUp, title: "Diário de Crescimento", description: "Peso, altura e perímetro cefálico com gráficos das curvas oficiais da OMS.", slug: "diario-crescimento" },
+    {
+      icon: Milk,
+      title: 'Rastreador de Amamentação',
+      description:
+        'Controle mamadas, ordenha, estoque de leite materno e histórico completo de alimentação.',
+      slug: 'rastreador-amamentacao',
+    },
+    {
+      icon: Moon,
+      title: 'Diário de Sono',
+      description:
+        'Registre padrões de sono, receba insights com IA e identifique a melhor rotina.',
+      slug: 'diario-sono',
+    },
+    {
+      icon: Activity,
+      title: 'Recuperação Pós-Parto',
+      description: 'Acompanhe sua recuperação, rastreie sintomas, medicamentos e saúde emocional.',
+      slug: 'recuperacao-pos-parto',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Diário de Crescimento',
+      description: 'Peso, altura e perímetro cefálico com gráficos das curvas oficiais da OMS.',
+      slug: 'diario-crescimento',
+    },
   ],
   bebes: [
-    { icon: Brain, title: "Monitor de Desenvolvimento", description: "Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.", slug: "monitor-desenvolvimento" },
-    { icon: CalendarClock, title: "Planejador de Rotina", description: "Monte a rotina diária do bebê com templates por idade e acompanhamento visual.", slug: "planejador-rotina" },
-    { icon: Utensils, title: "Introdução Alimentar", description: "Calendário BLW/Tradicional com registro de reações alérgicas e receitas por idade.", slug: "introducao-alimentar" },
-    { icon: Camera, title: "Álbum de Marcos", description: "Registre cada primeira vez do bebê com fotos, datas e timeline compartilhável.", slug: "album-marcos" },
+    {
+      icon: Brain,
+      title: 'Monitor de Desenvolvimento',
+      description:
+        'Marcos mês a mês com alertas, banco de estímulos, rastreador de dentes e relatório para o pediatra.',
+      slug: 'monitor-desenvolvimento',
+    },
+    {
+      icon: CalendarClock,
+      title: 'Planejador de Rotina',
+      description: 'Monte a rotina diária do bebê com templates por idade e acompanhamento visual.',
+      slug: 'planejador-rotina',
+    },
+    {
+      icon: Utensils,
+      title: 'Introdução Alimentar',
+      description:
+        'Calendário BLW/Tradicional com registro de reações alérgicas e receitas por idade.',
+      slug: 'introducao-alimentar',
+    },
+    {
+      icon: Camera,
+      title: 'Álbum de Marcos',
+      description: 'Registre cada primeira vez do bebê com fotos, datas e timeline compartilhável.',
+      slug: 'album-marcos',
+    },
   ],
 };
 
 // All features for comparison table
 const comparisonFeatures = [
   // Free tools
-  { name: "Calculadora de Fraldas", free: true, premium: true, clube: true },
-  { name: "Cartão de Vacinação", free: true, premium: true, clube: true },
-  { name: "Mala da Maternidade", free: true, premium: true, clube: true },
-  { name: "Calculadora de Semanas", free: true, premium: true, clube: true },
-  { name: "Checklist de Documentos", free: true, premium: true, clube: true },
-  { name: "Checklist do Quartinho", free: true, premium: true, clube: true },
-  { name: "Timer de Mamada", free: true, premium: true, clube: true },
-  { name: "E-book Guia Rápido", free: true, premium: true, clube: true },
+  { name: 'Calculadora de Fraldas', free: true, premium: true, clube: true },
+  { name: 'Cartão de Vacinação', free: true, premium: true, clube: true },
+  { name: 'Mala da Maternidade', free: true, premium: true, clube: true },
+  { name: 'Calculadora de Semanas', free: true, premium: true, clube: true },
+  { name: 'Checklist de Documentos', free: true, premium: true, clube: true },
+  { name: 'Checklist do Quartinho', free: true, premium: true, clube: true },
+  { name: 'Timer de Mamada', free: true, premium: true, clube: true },
+  { name: 'E-book Guia Rápido', free: true, premium: true, clube: true },
   // Premium tools
-  { name: "Ferramentas de Gestação", free: false, premium: true, clube: true },
-  { name: "Controle de Enxoval", free: false, premium: true, clube: true },
-  { name: "Guia de Alimentação e IA", free: false, premium: true, clube: true },
-  { name: "Rastreador de Amamentação", free: false, premium: true, clube: true },
-  { name: "Diário de Sono", free: false, premium: true, clube: true },
-  { name: "Recuperação Pós-Parto", free: false, premium: true, clube: true },
-  { name: "Diário de Crescimento (OMS)", free: false, premium: true, clube: true },
-  { name: "Monitor de Desenvolvimento", free: false, premium: true, clube: true },
-  { name: "Planejador de Rotina", free: false, premium: true, clube: true },
-  { name: "Introdução Alimentar", free: false, premium: true, clube: true },
-  { name: "Álbum de Marcos", free: false, premium: true, clube: true },
+  { name: 'Ferramentas de Gestação', free: false, premium: true, clube: true },
+  { name: 'Controle de Enxoval', free: false, premium: true, clube: true },
+  { name: 'Guia de Alimentação e IA', free: false, premium: true, clube: true },
+  { name: 'Rastreador de Amamentação', free: false, premium: true, clube: true },
+  { name: 'Diário de Sono', free: false, premium: true, clube: true },
+  { name: 'Recuperação Pós-Parto', free: false, premium: true, clube: true },
+  { name: 'Diário de Crescimento (OMS)', free: false, premium: true, clube: true },
+  { name: 'Monitor de Desenvolvimento', free: false, premium: true, clube: true },
+  { name: 'Planejador de Rotina', free: false, premium: true, clube: true },
+  { name: 'Introdução Alimentar', free: false, premium: true, clube: true },
+  { name: 'Álbum de Marcos', free: false, premium: true, clube: true },
   // Clube exclusives
-  { name: "Comunidade Exclusiva", free: false, premium: false, clube: true },
-  { name: "Suporte Prioritário", free: false, premium: false, clube: true },
-  { name: "Novidades em 1ª mão", free: false, premium: false, clube: true },
+  { name: 'Comunidade Exclusiva', free: false, premium: false, clube: true },
+  { name: 'Suporte Prioritário', free: false, premium: false, clube: true },
+  { name: 'Novidades em 1ª mão', free: false, premium: false, clube: true },
 ];
 
 // Custom hook for intersection observer
@@ -183,12 +284,15 @@ const useInView = (options = {}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsInView(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1, ...options });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, ...options }
+    );
 
     if (ref.current) {
       observer.observe(ref.current);
@@ -216,17 +320,19 @@ const Landing = () => {
     const loadPrices = async () => {
       try {
         const { data } = await supabase
-          .from("products")
-          .select("slug, price")
-          .eq("is_active", true);
+          .from('products')
+          .select('slug, price')
+          .eq('is_active', true);
         if (data) {
           const map: Record<string, number | null> = {};
-          data.forEach((p) => { map[p.slug] = p.price; });
+          data.forEach(p => {
+            map[p.slug] = p.price;
+          });
           setPrices(map);
-          if (map["clube-premium"]) setClubePrice(map["clube-premium"]!);
+          if (map['clube-premium']) setClubePrice(map['clube-premium']!);
         }
       } catch (e) {
-        console.error("Erro ao carregar preços:", e);
+        console.error('Erro ao carregar preços:', e);
       }
     };
     loadPrices();
@@ -236,22 +342,22 @@ const Landing = () => {
   const toolsByPhase = useMemo(() => {
     const getPrice = (slug: string) => {
       const p = prices[slug];
-      return p ? `R$ ${p.toFixed(2).replace('.', ',')}` : "—";
+      return p ? `R$ ${p.toFixed(2).replace('.', ',')}` : '—';
     };
     return [
       {
-        phase: "🤰 Para Gestantes",
-        subtitle: "Ferramentas para quem está esperando o bebê",
+        phase: '🤰 Para Gestantes',
+        subtitle: 'Ferramentas para quem está esperando o bebê',
         tools: phaseToolSlugs.gestantes.map(t => ({ ...t, price: getPrice(t.slug) })),
       },
       {
-        phase: "👶 Pós-Parto (0-3 meses)",
-        subtitle: "Para os primeiros meses com seu bebê",
+        phase: '👶 Pós-Parto (0-3 meses)',
+        subtitle: 'Para os primeiros meses com seu bebê',
         tools: phaseToolSlugs.posParto.map(t => ({ ...t, price: getPrice(t.slug) })),
       },
       {
-        phase: "🍼 Bebês (3-12 meses)",
-        subtitle: "Acompanhe o crescimento e desenvolvimento",
+        phase: '🍼 Bebês (3-12 meses)',
+        subtitle: 'Acompanhe o crescimento e desenvolvimento',
         tools: phaseToolSlugs.bebes.map(t => ({ ...t, price: getPrice(t.slug) })),
       },
     ];
@@ -259,16 +365,20 @@ const Landing = () => {
 
   // Sum of all individual premium prices
   const totalAvulso = useMemo(() => {
-    const premiumSlugs = [...phaseToolSlugs.gestantes, ...phaseToolSlugs.posParto, ...phaseToolSlugs.bebes].map(t => t.slug);
+    const premiumSlugs = [
+      ...phaseToolSlugs.gestantes,
+      ...phaseToolSlugs.posParto,
+      ...phaseToolSlugs.bebes,
+    ].map(t => t.slug);
     return premiumSlugs.reduce((sum, slug) => sum + (prices[slug] || 0), 0);
   }, [prices]);
 
   // Testimonials autoplay
   useEffect(() => {
     if (isPaused) return;
-    
+
     const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+      setCurrentTestimonial(prev => (prev + 1) % testimonials.length);
     }, 5000);
 
     return () => clearInterval(interval);
@@ -290,7 +400,10 @@ const Landing = () => {
             <Button variant="ghost" asChild className="hidden sm:inline-flex">
               <Link to="/auth">Entrar</Link>
             </Button>
-            <Button asChild className="gap-1 sm:gap-2 shadow-glow text-xs sm:text-sm px-2.5 sm:px-4 h-8 sm:h-10">
+            <Button
+              asChild
+              className="gap-1 sm:gap-2 shadow-glow text-xs sm:text-sm px-2.5 sm:px-4 h-8 sm:h-10"
+            >
               <Link to="/auth">
                 <span className="hidden xs:inline">Começar Agora</span>
                 <span className="xs:hidden">Começar</span>
@@ -306,49 +419,58 @@ const Landing = () => {
         {/* Subtle gradient background */}
         <div className="absolute inset-0 gradient-hero opacity-50" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.08),transparent_50%)]" />
-        
+
         <div className="container relative">
           <div className="mx-auto max-w-3xl text-center">
             {/* Animated Badge */}
-            <div 
+            <div
               className="inline-flex items-center gap-2 mb-6 animate-fade-in"
               style={{ animationDelay: '0ms' }}
             >
-              <Badge variant="secondary" className="px-4 py-1.5 text-sm font-medium border border-primary/20 bg-primary/5 text-primary animate-pulse-soft">
+              <Badge
+                variant="secondary"
+                className="px-4 py-1.5 text-sm font-medium border border-primary/20 bg-primary/5 text-primary animate-pulse-soft"
+              >
                 <Sparkles className="h-3.5 w-3.5 mr-1.5" />
                 Calculadora de Fraldas e Vacinação agora GRÁTIS!
               </Badge>
             </div>
-            
-            <h2 
+
+            <h2
               className="text-4xl font-display font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6 animate-fade-in"
               style={{ animationDelay: '100ms' }}
             >
-               Tudo para sua{" "}
+              Tudo para sua{' '}
               <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                 gestação e pós-parto
-              </span>{" "}em um só app
+              </span>{' '}
+              em um só app
             </h2>
-            
-            <p 
+
+            <p
               className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-fade-in"
               style={{ animationDelay: '200ms' }}
             >
-               Sono, amamentação, enxoval, gestação, desenvolvimento e muito mais — com IA integrada, comunidade ativa e suporte especializado.
-             </p>
+              Sono, amamentação, enxoval, gestação, desenvolvimento e muito mais — com IA integrada,
+              comunidade ativa e suporte especializado.
+            </p>
 
-             <p 
-               className="text-sm text-primary font-medium mb-8 animate-fade-in"
-               style={{ animationDelay: '250ms' }}
-             >
-               ✨ 7 dias grátis em todas as ferramentas premium
-             </p>
-            
-            <div 
+            <p
+              className="text-sm text-primary font-medium mb-8 animate-fade-in"
+              style={{ animationDelay: '250ms' }}
+            >
+              ✨ 7 dias grátis em todas as ferramentas premium
+            </p>
+
+            <div
               className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in"
               style={{ animationDelay: '300ms' }}
             >
-              <Button size="lg" asChild className="gap-2 shadow-glow hover:shadow-elevated transition-all duration-300 hover:scale-105">
+              <Button
+                size="lg"
+                asChild
+                className="gap-2 shadow-glow hover:shadow-elevated transition-all duration-300 hover:scale-105"
+              >
                 <Link to="/auth">
                   Começar Gratuitamente <ArrowRight className="h-5 w-5" />
                 </Link>
@@ -361,7 +483,7 @@ const Landing = () => {
             </div>
 
             {/* Social Proof Mini */}
-            <div 
+            <div
               className="mt-12 flex items-center justify-center gap-4 text-sm text-muted-foreground animate-fade-in"
               style={{ animationDelay: '400ms' }}
             >
@@ -382,10 +504,7 @@ const Landing = () => {
       </section>
 
       {/* Ferramentas Gratuitas */}
-      <section 
-        ref={featuresInView.ref}
-        className="py-20 bg-surface-1"
-      >
+      <section ref={featuresInView.ref} className="py-20 bg-surface-1">
         <div className="container">
           <div className="text-center mb-12">
             <Badge className="mb-4 bg-success/10 text-success border-success/20 px-4 py-1.5 text-sm">
@@ -399,10 +518,10 @@ const Landing = () => {
               Ferramentas completas e gratuitas para começar sua jornada
             </p>
           </div>
-          
+
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
             {freeTools.map((tool, index) => (
-              <Card 
+              <Card
                 key={tool.title}
                 className={`group border-success/20 hover:border-success/40 hover:shadow-elevated transition-all duration-300 hover:-translate-y-1 ${
                   featuresInView.isInView ? 'animate-fade-in' : 'opacity-0'
@@ -414,7 +533,9 @@ const Landing = () => {
                     <tool.icon className="h-6 w-6 text-success" />
                   </div>
                   <h4 className="font-display font-semibold mb-1.5 text-sm">{tool.title}</h4>
-                  <p className="text-muted-foreground text-xs leading-relaxed">{tool.description}</p>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    {tool.description}
+                  </p>
                 </CardContent>
               </Card>
             ))}
@@ -424,26 +545,35 @@ const Landing = () => {
 
       {/* Ferramentas Premium por Fase */}
       {toolsByPhase.map((phaseGroup, phaseIndex) => (
-        <section key={phaseGroup.phase} className={`py-16 ${phaseIndex % 2 === 0 ? '' : 'bg-surface-1'}`}>
+        <section
+          key={phaseGroup.phase}
+          className={`py-16 ${phaseIndex % 2 === 0 ? '' : 'bg-surface-1'}`}
+        >
           <div className="container">
             <div className="text-center mb-10">
               <h3 className="text-2xl md:text-3xl font-display font-bold mb-2">
                 {phaseGroup.phase}
               </h3>
-              <p className="text-muted-foreground">
-                {phaseGroup.subtitle}
-              </p>
+              <p className="text-muted-foreground">{phaseGroup.subtitle}</p>
             </div>
 
-            <div className={`grid gap-6 max-w-5xl mx-auto ${phaseGroup.tools.length === 1 ? 'max-w-md' : 'sm:grid-cols-2 lg:grid-cols-3'}`}>
-              {phaseGroup.tools.map((tool) => (
-                <Card key={tool.title} className="group border-border/50 hover:border-primary/30 hover:shadow-elevated transition-all duration-300 hover:-translate-y-1">
+            <div
+              className={`grid gap-6 max-w-5xl mx-auto ${phaseGroup.tools.length === 1 ? 'max-w-md' : 'sm:grid-cols-2 lg:grid-cols-3'}`}
+            >
+              {phaseGroup.tools.map(tool => (
+                <Card
+                  key={tool.title}
+                  className="group border-border/50 hover:border-primary/30 hover:shadow-elevated transition-all duration-300 hover:-translate-y-1"
+                >
                   <CardContent className="pt-6 pb-6 flex flex-col h-full">
                     <div className="flex items-start justify-between mb-4">
                       <div className="inline-flex p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
                         <tool.icon className="h-6 w-6 text-primary" />
                       </div>
-                      <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20">
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary border-primary/20"
+                      >
                         {tool.price}
                       </Badge>
                     </div>
@@ -453,10 +583,12 @@ const Landing = () => {
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4 flex-1">
                       {tool.description}
                     </p>
-                    <Button variant="outline" className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors" asChild>
-                      <Link to="/auth">
-                        Experimentar 7 dias grátis
-                      </Link>
+                    <Button
+                      variant="outline"
+                      className="w-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                      asChild
+                    >
+                      <Link to="/auth">Experimentar 7 dias grátis</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -467,7 +599,7 @@ const Landing = () => {
       ))}
 
       {/* Tabela Comparativa + Clube Premium */}
-      <section 
+      <section
         ref={comparisonInView.ref}
         className="py-20 bg-gradient-to-br from-primary/5 via-background to-primary/10"
       >
@@ -482,12 +614,16 @@ const Landing = () => {
           </div>
 
           {/* Comparison Table */}
-          <div className={`max-w-4xl mx-auto mb-12 ${comparisonInView.isInView ? 'animate-fade-in' : 'opacity-0'}`}>
+          <div
+            className={`max-w-4xl mx-auto mb-12 ${comparisonInView.isInView ? 'animate-fade-in' : 'opacity-0'}`}
+          >
             <div className="overflow-x-auto rounded-xl border border-border/50 shadow-elevated">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/50">
-                    <th className="text-left p-4 font-display font-semibold text-muted-foreground">Recurso</th>
+                    <th className="text-left p-4 font-display font-semibold text-muted-foreground">
+                      Recurso
+                    </th>
                     <th className="text-center p-4 font-display font-semibold w-24">
                       <div className="flex flex-col items-center gap-1">
                         <Gift className="h-5 w-5 text-success" />
@@ -499,21 +635,28 @@ const Landing = () => {
                       <div className="flex flex-col items-center gap-1">
                         <Star className="h-5 w-5 text-primary" />
                         <span>Avulso</span>
-                        <span className="text-xs text-muted-foreground font-normal">por ferramenta</span>
+                        <span className="text-xs text-muted-foreground font-normal">
+                          por ferramenta
+                        </span>
                       </div>
                     </th>
                     <th className="text-center p-4 font-display font-semibold w-28 bg-primary/5 rounded-t-xl">
                       <div className="flex flex-col items-center gap-1">
                         <Crown className="h-5 w-5 text-primary" />
                         <span className="text-primary">Clube</span>
-                        <span className="text-xs text-primary font-bold">R$ {clubePrice.toFixed(0)}/mês</span>
+                        <span className="text-xs text-primary font-bold">
+                          R$ {clubePrice.toFixed(0)}/mês
+                        </span>
                       </div>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonFeatures.map((feat, i) => (
-                    <tr key={feat.name} className={`border-b border-border/30 ${i % 2 === 0 ? 'bg-muted/20' : ''}`}>
+                    <tr
+                      key={feat.name}
+                      className={`border-b border-border/30 ${i % 2 === 0 ? 'bg-muted/20' : ''}`}
+                    >
                       <td className="p-3 pl-4 text-foreground">{feat.name}</td>
                       <td className="p-3 text-center">
                         {feat.free ? (
@@ -553,7 +696,8 @@ const Landing = () => {
               </table>
             </div>
             <p className="text-center text-xs text-muted-foreground mt-3">
-              * Premium avulso: cada ferramenta comprada individualmente. Clube: acesso total por preço único.
+              * Premium avulso: cada ferramenta comprada individualmente. Clube: acesso total por
+              preço único.
             </p>
           </div>
 
@@ -569,11 +713,17 @@ const Landing = () => {
             </div>
             <CardContent className="pt-6 pb-6 px-8 text-center">
               <div className="flex items-baseline justify-center gap-1 mb-2">
-                <span className="text-4xl font-display font-bold text-primary">R$ {clubePrice.toFixed(0)}</span>
+                <span className="text-4xl font-display font-bold text-primary">
+                  R$ {clubePrice.toFixed(0)}
+                </span>
                 <span className="text-muted-foreground">/mês</span>
               </div>
               <p className="text-sm text-muted-foreground mb-6">
-                Economize <strong className="text-primary">R$ {totalAvulso > 0 ? (totalAvulso - clubePrice).toFixed(0) : '50+'}</strong> comparado a comprar avulso • 30 dias grátis
+                Economize{' '}
+                <strong className="text-primary">
+                  R$ {totalAvulso > 0 ? (totalAvulso - clubePrice).toFixed(0) : '50+'}
+                </strong>{' '}
+                comparado a comprar avulso • 30 dias grátis
               </p>
               <Button size="lg" className="w-full shadow-glow text-lg" asChild>
                 <Link to="/auth">
@@ -586,29 +736,24 @@ const Landing = () => {
       </section>
 
       {/* Testimonials Carousel */}
-      <section 
-        ref={testimonialsInView.ref}
-        className="py-20 bg-surface-1 overflow-hidden"
-      >
+      <section ref={testimonialsInView.ref} className="py-20 bg-surface-1 overflow-hidden">
         <div className="container">
           <div className="text-center mb-16">
             <h3 className="text-3xl md:text-4xl font-display font-bold mb-4">
               O que dizem nossas usuárias
             </h3>
-            <p className="text-lg text-muted-foreground">
-              Histórias reais de mães como você
-            </p>
+            <p className="text-lg text-muted-foreground">Histórias reais de mães como você</p>
           </div>
 
           {/* Carousel Container */}
-          <div 
+          <div
             className="relative max-w-4xl mx-auto"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
             {/* Animated Quote Mark */}
             <Quote className="absolute -top-4 -left-4 md:-top-8 md:-left-8 h-16 w-16 md:h-24 md:w-24 text-primary/10 animate-pulse-soft" />
-            
+
             {/* Main Testimonial Card */}
             <Card className="relative border-none shadow-elevated bg-card">
               <CardContent className="pt-12 pb-8 px-8 md:px-12">
@@ -616,27 +761,31 @@ const Landing = () => {
                   {/* Avatar with gradient border */}
                   <div className="inline-flex p-1 rounded-full bg-gradient-to-br from-primary to-primary/50 mb-6">
                     <Avatar className="h-20 w-20 border-4 border-background">
-                      <AvatarImage src={testimonials[currentTestimonial].avatar} alt={testimonials[currentTestimonial].name} loading="lazy" />
+                      <AvatarImage
+                        src={testimonials[currentTestimonial].avatar}
+                        alt={testimonials[currentTestimonial].name}
+                        loading="lazy"
+                      />
                       <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-primary/20 to-primary/40 text-primary">
                         {testimonials[currentTestimonial].name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                   </div>
-                  
+
                   <div className="flex justify-center mb-4">
                     {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                      <Star 
-                        key={i} 
+                      <Star
+                        key={i}
                         className="h-5 w-5 fill-warning text-warning"
                         style={{ animationDelay: `${i * 50}ms` }}
                       />
                     ))}
                   </div>
-                  
+
                   <blockquote className="text-lg md:text-xl text-foreground/90 mb-6 leading-relaxed italic">
                     "{testimonials[currentTestimonial].text}"
                   </blockquote>
-                  
+
                   <div>
                     <p className="font-display font-semibold text-lg">
                       {testimonials[currentTestimonial].name}
@@ -656,8 +805,8 @@ const Landing = () => {
                   key={index}
                   onClick={() => setCurrentTestimonial(index)}
                   className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                    index === currentTestimonial 
-                      ? 'bg-primary w-8' 
+                    index === currentTestimonial
+                      ? 'bg-primary w-8'
                       : 'bg-primary/30 hover:bg-primary/50'
                   }`}
                   aria-label={`Ver depoimento ${index + 1}`}
@@ -669,8 +818,8 @@ const Landing = () => {
           {/* Mini testimonials grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-12 max-w-6xl mx-auto">
             {testimonials.slice(0, 3).map((testimonial, index) => (
-              <Card 
-                key={index} 
+              <Card
+                key={index}
                 className={`border-border/50 hover:border-primary/30 cursor-pointer transition-all duration-300 hover:shadow-medium ${
                   testimonialsInView.isInView ? 'animate-fade-in' : 'opacity-0'
                 }`}
@@ -681,7 +830,11 @@ const Landing = () => {
                   <div className="flex items-center gap-3">
                     <div className="p-0.5 rounded-full bg-gradient-to-br from-primary/50 to-primary/30">
                       <Avatar className="h-10 w-10 border-2 border-background">
-                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} loading="lazy" />
+                        <AvatarImage
+                          src={testimonial.avatar}
+                          alt={testimonial.name}
+                          loading="lazy"
+                        />
                         <AvatarFallback className="text-sm bg-primary/10 text-primary font-semibold">
                           {testimonial.name.charAt(0)}
                         </AvatarFallback>
@@ -689,7 +842,9 @@ const Landing = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm truncate">{testimonial.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{testimonial.location}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {testimonial.location}
+                      </p>
                     </div>
                     <div className="flex">
                       {[...Array(Math.min(3, testimonial.rating))].map((_, i) => (
@@ -711,9 +866,7 @@ const Landing = () => {
             <div className="inline-flex p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 mb-6">
               <Smartphone className="h-10 w-10 text-primary" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Baixe Nosso App
-            </h2>
+            <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">Baixe Nosso App</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Instale na tela inicial e tenha acesso rápido, offline e notificações personalizadas
             </p>
@@ -735,7 +888,7 @@ const Landing = () => {
                   'Abra o site no Safari',
                   'Toque no botão Compartilhar',
                   'Selecione "Adicionar à Tela de Início"',
-                  'Toque em "Adicionar" e pronto!'
+                  'Toque em "Adicionar" e pronto!',
                 ].map((step, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
@@ -762,7 +915,7 @@ const Landing = () => {
                   'Abra o site no Chrome',
                   'Toque no menu (3 pontos)',
                   'Selecione "Instalar app"',
-                  'Confirme e pronto!'
+                  'Confirme e pronto!',
                 ].map((step, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="flex items-center justify-center w-7 h-7 rounded-full bg-primary/10 text-primary font-bold text-sm shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
@@ -776,14 +929,19 @@ const Landing = () => {
           </div>
 
           <div className="text-center">
-            <h3 className="text-lg font-display font-semibold mb-4">Benefícios do App Instalado:</h3>
+            <h3 className="text-lg font-display font-semibold mb-4">
+              Benefícios do App Instalado:
+            </h3>
             <div className="grid sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
               {[
                 { icon: CheckCircle2, text: 'Acesso offline' },
                 { icon: CheckCircle2, text: 'Carregamento rápido' },
-                { icon: CheckCircle2, text: 'Ícone na tela inicial' }
+                { icon: CheckCircle2, text: 'Ícone na tela inicial' },
               ].map((benefit, i) => (
-                <div key={i} className="flex items-center gap-2 justify-center p-3 rounded-lg bg-success/5">
+                <div
+                  key={i}
+                  className="flex items-center gap-2 justify-center p-3 rounded-lg bg-success/5"
+                >
                   <benefit.icon className="h-5 w-5 text-success" />
                   <span className="text-sm font-medium">{benefit.text}</span>
                 </div>
@@ -794,21 +952,18 @@ const Landing = () => {
       </section>
 
       {/* CTA Final - Gradient Mesh Background */}
-      <section 
-        ref={ctaInView.ref}
-        className="relative py-24 overflow-hidden"
-      >
+      <section ref={ctaInView.ref} className="relative py-24 overflow-hidden">
         {/* Gradient mesh background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,hsl(var(--primary)/0.15),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,hsl(var(--primary)/0.1),transparent_50%)]" />
-        
+
         {/* Blur circles */}
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-48 h-48 bg-primary/15 rounded-full blur-3xl" />
-        
+
         <div className="container relative">
-          <div 
+          <div
             className={`mx-auto max-w-3xl text-center ${
               ctaInView.isInView ? 'animate-fade-in' : 'opacity-0'
             }`}
@@ -830,31 +985,32 @@ const Landing = () => {
                 <p className="text-xs text-muted-foreground">mães já utilizam</p>
               </div>
             </div>
-            
+
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold mb-6">
-              Pronta para começar sua{" "}
+              Pronta para começar sua{' '}
               <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                 jornada?
               </span>
             </h3>
-            
+
             <p className="text-xl text-muted-foreground mb-10 max-w-xl mx-auto">
-              Junte-se a milhares de mães que já estão planejando uma maternidade mais consciente e econômica.
+              Junte-se a milhares de mães que já estão planejando uma maternidade mais consciente e
+              econômica.
             </p>
-            
-            <Button 
-              size="lg" 
-              asChild 
+
+            <Button
+              size="lg"
+              asChild
               className="gap-2 px-8 py-6 text-lg shadow-glow animate-pulse-soft hover:animate-none hover:scale-105 transition-all duration-300"
             >
               <Link to="/auth">
                 Criar Conta Grátis <ArrowRight className="h-5 w-5" />
               </Link>
             </Button>
-            
-             <p className="mt-6 text-sm text-muted-foreground">
-               Sem cartão de crédito • 7 dias grátis • Cancele quando quiser
-             </p>
+
+            <p className="mt-6 text-sm text-muted-foreground">
+              Sem cartão de crédito • 7 dias grátis • Cancele quando quiser
+            </p>
           </div>
         </div>
       </section>
@@ -872,13 +1028,22 @@ const Landing = () => {
               </p>
             </div>
             <div className="flex gap-6">
-              <Link to="/suporte" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/suporte"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
                 Suporte
               </Link>
-              <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="#"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
                 Termos
               </a>
-              <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="#"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
                 Privacidade
               </a>
             </div>

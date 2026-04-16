@@ -1,18 +1,18 @@
 /**
  * @fileoverview Configuração global do ambiente de testes
  * @module test/setup
- * 
+ *
  * Este arquivo é executado antes de cada arquivo de teste
  * para configurar mocks globais e extensões do expect.
  */
 
-import "@testing-library/jest-dom";
-import { vi } from "vitest";
+import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
 // Mock do matchMedia para componentes que usam media queries
-Object.defineProperty(window, "matchMedia", {
+Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation((query) => ({
+  value: vi.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
@@ -37,7 +37,7 @@ globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
   unobserve: vi.fn(),
   disconnect: vi.fn(),
   root: null,
-  rootMargin: "",
+  rootMargin: '',
   thresholds: [],
 }));
 
@@ -51,7 +51,7 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-Object.defineProperty(window, "localStorage", { value: localStorageMock });
+Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 // Suprimir warnings do console durante testes (opcional)
 // Descomente se necessário

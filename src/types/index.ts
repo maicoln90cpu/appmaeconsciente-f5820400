@@ -1,7 +1,7 @@
 /**
  * Barrel exports para todos os tipos da aplicação
  * Centraliza imports e facilita manutenção
- * 
+ *
  * Uso: import { BabyFeedingLog, EnxovalItem, MilestoneStatus } from '@/types';
  */
 

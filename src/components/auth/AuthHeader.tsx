@@ -1,6 +1,6 @@
-import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Baby } from "lucide-react";
-import type { AuthMode } from "@/hooks/useAuthForm";
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Baby } from 'lucide-react';
+import type { AuthMode } from '@/hooks/useAuthForm';
 
 interface AuthHeaderProps {
   mode: AuthMode;
@@ -15,9 +15,9 @@ export const AuthHeader = ({ mode }: AuthHeaderProps) => (
       <div className="text-center">
         <CardTitle className="text-2xl">Mãe Consciente</CardTitle>
         <CardDescription className="mt-1">
-          {mode === "sign_in" && "Faça login para continuar"}
-          {mode === "sign_up" && "Crie sua conta para começar"}
-          {mode === "forgot_password" && "Recupere sua senha"}
+          {mode === 'sign_in' && 'Faça login para continuar'}
+          {mode === 'sign_up' && 'Crie sua conta para começar'}
+          {mode === 'forgot_password' && 'Recupere sua senha'}
         </CardDescription>
       </div>
     </div>

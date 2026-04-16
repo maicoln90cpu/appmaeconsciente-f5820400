@@ -1,14 +1,26 @@
-import { useMemo, useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BabySleepLog, BabySleepMilestone } from "@/types/babySleep";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby, AlertCircle, Info } from "lucide-react";
-import { format, subDays, startOfDay, differenceInMinutes, formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useMemo, useEffect, useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BabySleepLog, BabySleepMilestone } from '@/types/babySleep';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from 'recharts';
+import { TrendingUp, TrendingDown, Moon, Sun, Clock, Baby, AlertCircle, Info } from 'lucide-react';
+import { format, subDays, startOfDay, differenceInMinutes, formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DashboardSonoProps {
   sleepLogs: BabySleepLog[];
@@ -22,21 +34,28 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
 
   useEffect(() => {
     const loadLastFeeding = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data } = await supabase
-        .from("baby_feeding_logs")
-        .select("start_time, feeding_type")
-        .eq("user_id", user.id)
-        .order("start_time", { ascending: false })
+        .from('baby_feeding_logs')
+        .select('start_time, feeding_type')
+        .eq('user_id', user.id)
+        .order('start_time', { ascending: false })
         .limit(1)
         .single();
 
       if (data) {
         setLastFeeding({
           time: data.start_time,
-          type: data.feeding_type === 'breastfeeding' ? 'Amamentação' : data.feeding_type === 'bottle' ? 'Mamadeira' : 'Ordenha'
+          type:
+            data.feeding_type === 'breastfeeding'
+              ? 'Amamentação'
+              : data.feeding_type === 'bottle'
+                ? 'Mamadeira'
+                : 'Ordenha',
         });
       }
     };
@@ -60,9 +79,9 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
       const hours = Math.round((totalMinutes / 60) * 10) / 10;
 
       return {
-        date: format(date, "EEE", { locale: ptBR }),
+        date: format(date, 'EEE', { locale: ptBR }),
         hours,
-        fullDate: format(date, "dd/MM"),
+        fullDate: format(date, 'dd/MM'),
       };
     });
 
@@ -84,8 +103,8 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
       .reduce((sum, log) => sum + (log.duration_minutes || 0), 0);
 
     return [
-      { name: "Diurno", value: Math.round(diurno / 60 * 10) / 10, color: "#FFC658" },
-      { name: "Noturno", value: Math.round(noturno / 60 * 10) / 10, color: "#8884d8" },
+      { name: 'Diurno', value: Math.round((diurno / 60) * 10) / 10, color: '#FFC658' },
+      { name: 'Noturno', value: Math.round((noturno / 60) * 10) / 10, color: '#8884d8' },
     ];
   }, [sleepLogs]);
 
@@ -104,19 +123,24 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
 
     const avgNapsPerDay = last7Days.length / 7;
 
-    const nightSleeps = last7Days.filter(log => log.sleep_type === 'noturno' && log.duration_minutes);
-    const avgNightStart = nightSleeps.length > 0
-      ? format(new Date(nightSleeps[0].sleep_start), "HH:mm")
-      : "N/A";
+    const nightSleeps = last7Days.filter(
+      log => log.sleep_type === 'noturno' && log.duration_minutes
+    );
+    const avgNightStart =
+      nightSleeps.length > 0 ? format(new Date(nightSleeps[0].sleep_start), 'HH:mm') : 'N/A';
 
     // Calcular tendência
     const firstHalf = sleepLogs.slice(0, Math.floor(sleepLogs.length / 2));
     const secondHalf = sleepLogs.slice(Math.floor(sleepLogs.length / 2));
-    
-    const firstHalfAvg = firstHalf.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) / Math.max(firstHalf.length, 1);
-    const secondHalfAvg = secondHalf.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) / Math.max(secondHalf.length, 1);
-    
-    const trend = secondHalfAvg > firstHalfAvg ? "up" : "down";
+
+    const firstHalfAvg =
+      firstHalf.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) /
+      Math.max(firstHalf.length, 1);
+    const secondHalfAvg =
+      secondHalf.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) /
+      Math.max(secondHalf.length, 1);
+
+    const trend = secondHalfAvg > firstHalfAvg ? 'up' : 'down';
 
     return {
       totalHours24h: Math.round(totalHours * 10) / 10,
@@ -147,7 +171,7 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
   // Verificar se o sono está abaixo do ideal nos últimos 3 dias
   const sleepBelowIdeal = useMemo(() => {
     if (!currentMilestone) return false;
-    
+
     const last3Days = sleepLogs.filter(log => {
       const logDate = new Date(log.sleep_start);
       return logDate >= subDays(new Date(), 3) && log.duration_minutes;
@@ -155,16 +179,17 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
 
     if (last3Days.length === 0) return false;
 
-    const avgHoursLast3Days = last3Days.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) / 60 / 3;
+    const avgHoursLast3Days =
+      last3Days.reduce((sum, log) => sum + (log.duration_minutes || 0), 0) / 60 / 3;
     return avgHoursLast3Days < currentMilestone.recommended_total_hours_min;
   }, [sleepLogs, currentMilestone]);
 
   const getStatusColor = () => {
-    if (!currentMilestone) return "text-muted-foreground";
+    if (!currentMilestone) return 'text-muted-foreground';
     const totalHours = stats.totalHours24h;
-    if (totalHours >= currentMilestone.recommended_total_hours_min) return "text-green-600";
-    if (totalHours >= currentMilestone.recommended_total_hours_min - 2) return "text-yellow-600";
-    return "text-red-600";
+    if (totalHours >= currentMilestone.recommended_total_hours_min) return 'text-green-600';
+    if (totalHours >= currentMilestone.recommended_total_hours_min - 2) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
   return (
@@ -175,13 +200,13 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
           <AlertCircle className="h-4 w-4 text-yellow-600" />
           <AlertDescription className="flex items-center justify-between">
             <span className="text-yellow-800 dark:text-yellow-200">
-              💡 Sono abaixo do ideal nos últimos 3 dias. A alimentação pode influenciar o sono do bebê.{" "}
-              Confira dicas de nutrição no Guia de Bem-Estar.
+              💡 Sono abaixo do ideal nos últimos 3 dias. A alimentação pode influenciar o sono do
+              bebê. Confira dicas de nutrição no Guia de Bem-Estar.
             </span>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate("/materiais/guia-alimentacao")}
+              onClick={() => navigate('/materiais/guia-alimentacao')}
               className="ml-4 shrink-0"
             >
               Ver Dicas
@@ -195,9 +220,14 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
           <Info className="h-4 w-4" />
           <AlertDescription className="flex items-center justify-between">
             <span>
-              Última {lastFeeding.type} há {formatDistanceToNow(new Date(lastFeeding.time), { locale: ptBR })}
+              Última {lastFeeding.type} há{' '}
+              {formatDistanceToNow(new Date(lastFeeding.time), { locale: ptBR })}
             </span>
-            <Button variant="outline" size="sm" onClick={() => navigate('/materiais/rastreador-amamentacao')}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate('/materiais/rastreador-amamentacao')}
+            >
               Ver Rastreador
             </Button>
           </AlertDescription>
@@ -213,13 +243,13 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              {stats.trend === "up" ? (
+              {stats.trend === 'up' ? (
                 <TrendingUp className="h-4 w-4 text-green-600" />
               ) : (
                 <TrendingDown className="h-4 w-4 text-red-600" />
               )}
               <span className="text-xs text-muted-foreground">
-                {stats.trend === "up" ? "Dormindo mais" : "Dormindo menos"}
+                {stats.trend === 'up' ? 'Dormindo mais' : 'Dormindo menos'}
               </span>
             </div>
           </CardContent>
@@ -255,7 +285,7 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
           <CardHeader className="pb-2">
             <CardDescription>Acordado há</CardDescription>
             <CardTitle className="text-3xl">
-              {lastAwakeTime ? `${lastAwakeTime.hours}h${lastAwakeTime.minutes}m` : "N/A"}
+              {lastAwakeTime ? `${lastAwakeTime.hours}h${lastAwakeTime.minutes}m` : 'N/A'}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -282,7 +312,8 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
             <div className="flex items-center justify-between">
               <span className="text-sm">Horas recomendadas</span>
               <span className={`text-lg font-bold ${getStatusColor()}`}>
-                {currentMilestone.recommended_total_hours_min}-{currentMilestone.recommended_total_hours_max}h
+                {currentMilestone.recommended_total_hours_min}-
+                {currentMilestone.recommended_total_hours_max}h
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -292,11 +323,17 @@ export const DashboardSono = ({ sleepLogs, milestones, babyAgeMonths }: Dashboar
               </span>
             </div>
             {stats.totalHours24h >= currentMilestone.recommended_total_hours_min ? (
-              <p className="text-sm text-green-600">🟢 Excelente! O padrão de sono está adequado.</p>
+              <p className="text-sm text-green-600">
+                🟢 Excelente! O padrão de sono está adequado.
+              </p>
             ) : stats.totalHours24h >= currentMilestone.recommended_total_hours_min - 2 ? (
-              <p className="text-sm text-yellow-600">🟡 Atenção: Procure melhorar o sono do bebê.</p>
+              <p className="text-sm text-yellow-600">
+                🟡 Atenção: Procure melhorar o sono do bebê.
+              </p>
             ) : (
-              <p className="text-sm text-red-600">🔴 Abaixo do ideal. Considere ajustar a rotina.</p>
+              <p className="text-sm text-red-600">
+                🔴 Abaixo do ideal. Considere ajustar a rotina.
+              </p>
             )}
             {currentMilestone.tips && currentMilestone.tips.length > 0 && (
               <div className="mt-4 space-y-2">

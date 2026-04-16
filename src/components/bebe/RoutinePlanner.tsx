@@ -1,67 +1,205 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Progress } from "@/components/ui/progress";
-import { Plus, CalendarClock, CheckCircle2, Circle, Trash2, Sparkles } from "lucide-react";
-import { useBabyRoutines, ROUTINE_TYPES, DAYS_OF_WEEK } from "@/hooks/useBabyRoutines";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
+import { Plus, CalendarClock, CheckCircle2, Circle, Trash2, Sparkles } from 'lucide-react';
+import { useBabyRoutines, ROUTINE_TYPES, DAYS_OF_WEEK } from '@/hooks/useBabyRoutines';
+import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 const AGE_TEMPLATES = {
-  "0-3": {
-    label: "0–3 meses",
-    description: "Recém-nascido: foco em alimentação e sono frequentes",
+  '0-3': {
+    label: '0–3 meses',
+    description: 'Recém-nascido: foco em alimentação e sono frequentes',
     routines: [
-      { title: "Mamada da madrugada", routine_type: "feeding", scheduled_time: "03:00", duration_minutes: 30 },
-      { title: "Mamada da manhã", routine_type: "feeding", scheduled_time: "06:00", duration_minutes: 30 },
-      { title: "Soneca da manhã", routine_type: "sleep", scheduled_time: "08:00", duration_minutes: 90 },
-      { title: "Mamada", routine_type: "feeding", scheduled_time: "09:30", duration_minutes: 30 },
-      { title: "Banho", routine_type: "bath", scheduled_time: "10:00", duration_minutes: 15 },
-      { title: "Soneca da tarde", routine_type: "sleep", scheduled_time: "12:00", duration_minutes: 120 },
-      { title: "Mamada da tarde", routine_type: "feeding", scheduled_time: "14:00", duration_minutes: 30 },
-      { title: "Passeio leve", routine_type: "play", scheduled_time: "16:00", duration_minutes: 20 },
-      { title: "Mamada da noite", routine_type: "feeding", scheduled_time: "18:00", duration_minutes: 30 },
-      { title: "Rotina de sono", routine_type: "sleep", scheduled_time: "19:30", duration_minutes: 30 },
+      {
+        title: 'Mamada da madrugada',
+        routine_type: 'feeding',
+        scheduled_time: '03:00',
+        duration_minutes: 30,
+      },
+      {
+        title: 'Mamada da manhã',
+        routine_type: 'feeding',
+        scheduled_time: '06:00',
+        duration_minutes: 30,
+      },
+      {
+        title: 'Soneca da manhã',
+        routine_type: 'sleep',
+        scheduled_time: '08:00',
+        duration_minutes: 90,
+      },
+      { title: 'Mamada', routine_type: 'feeding', scheduled_time: '09:30', duration_minutes: 30 },
+      { title: 'Banho', routine_type: 'bath', scheduled_time: '10:00', duration_minutes: 15 },
+      {
+        title: 'Soneca da tarde',
+        routine_type: 'sleep',
+        scheduled_time: '12:00',
+        duration_minutes: 120,
+      },
+      {
+        title: 'Mamada da tarde',
+        routine_type: 'feeding',
+        scheduled_time: '14:00',
+        duration_minutes: 30,
+      },
+      {
+        title: 'Passeio leve',
+        routine_type: 'play',
+        scheduled_time: '16:00',
+        duration_minutes: 20,
+      },
+      {
+        title: 'Mamada da noite',
+        routine_type: 'feeding',
+        scheduled_time: '18:00',
+        duration_minutes: 30,
+      },
+      {
+        title: 'Rotina de sono',
+        routine_type: 'sleep',
+        scheduled_time: '19:30',
+        duration_minutes: 30,
+      },
     ],
   },
-  "3-6": {
-    label: "3–6 meses",
-    description: "Mais interação: brincadeiras e sonecas mais definidas",
+  '3-6': {
+    label: '3–6 meses',
+    description: 'Mais interação: brincadeiras e sonecas mais definidas',
     routines: [
-      { title: "Mamada da manhã", routine_type: "feeding", scheduled_time: "06:30", duration_minutes: 25 },
-      { title: "Brincadeira no tapete", routine_type: "play", scheduled_time: "07:30", duration_minutes: 30 },
-      { title: "Soneca da manhã", routine_type: "sleep", scheduled_time: "09:00", duration_minutes: 60 },
-      { title: "Mamada", routine_type: "feeding", scheduled_time: "10:00", duration_minutes: 25 },
-      { title: "Estímulo sensorial", routine_type: "play", scheduled_time: "11:00", duration_minutes: 20 },
-      { title: "Soneca da tarde", routine_type: "sleep", scheduled_time: "12:30", duration_minutes: 90 },
-      { title: "Mamada da tarde", routine_type: "feeding", scheduled_time: "14:00", duration_minutes: 25 },
-      { title: "Banho", routine_type: "bath", scheduled_time: "17:00", duration_minutes: 20 },
-      { title: "Mamada da noite", routine_type: "feeding", scheduled_time: "18:30", duration_minutes: 25 },
-      { title: "Hora de dormir", routine_type: "sleep", scheduled_time: "19:00", duration_minutes: 30 },
+      {
+        title: 'Mamada da manhã',
+        routine_type: 'feeding',
+        scheduled_time: '06:30',
+        duration_minutes: 25,
+      },
+      {
+        title: 'Brincadeira no tapete',
+        routine_type: 'play',
+        scheduled_time: '07:30',
+        duration_minutes: 30,
+      },
+      {
+        title: 'Soneca da manhã',
+        routine_type: 'sleep',
+        scheduled_time: '09:00',
+        duration_minutes: 60,
+      },
+      { title: 'Mamada', routine_type: 'feeding', scheduled_time: '10:00', duration_minutes: 25 },
+      {
+        title: 'Estímulo sensorial',
+        routine_type: 'play',
+        scheduled_time: '11:00',
+        duration_minutes: 20,
+      },
+      {
+        title: 'Soneca da tarde',
+        routine_type: 'sleep',
+        scheduled_time: '12:30',
+        duration_minutes: 90,
+      },
+      {
+        title: 'Mamada da tarde',
+        routine_type: 'feeding',
+        scheduled_time: '14:00',
+        duration_minutes: 25,
+      },
+      { title: 'Banho', routine_type: 'bath', scheduled_time: '17:00', duration_minutes: 20 },
+      {
+        title: 'Mamada da noite',
+        routine_type: 'feeding',
+        scheduled_time: '18:30',
+        duration_minutes: 25,
+      },
+      {
+        title: 'Hora de dormir',
+        routine_type: 'sleep',
+        scheduled_time: '19:00',
+        duration_minutes: 30,
+      },
     ],
   },
-  "6-12": {
-    label: "6–12 meses",
-    description: "Introdução alimentar, menos sonecas, mais brincadeiras",
+  '6-12': {
+    label: '6–12 meses',
+    description: 'Introdução alimentar, menos sonecas, mais brincadeiras',
     routines: [
-      { title: "Mamada + café da manhã", routine_type: "feeding", scheduled_time: "07:00", duration_minutes: 30 },
-      { title: "Brincadeira livre", routine_type: "play", scheduled_time: "08:00", duration_minutes: 40 },
-      { title: "Soneca da manhã", routine_type: "sleep", scheduled_time: "09:30", duration_minutes: 60 },
-      { title: "Lanche da manhã", routine_type: "feeding", scheduled_time: "10:30", duration_minutes: 20 },
-      { title: "Passeio / ar livre", routine_type: "play", scheduled_time: "11:00", duration_minutes: 30 },
-      { title: "Almoço", routine_type: "feeding", scheduled_time: "12:00", duration_minutes: 30 },
-      { title: "Soneca da tarde", routine_type: "sleep", scheduled_time: "13:00", duration_minutes: 90 },
-      { title: "Lanche da tarde", routine_type: "feeding", scheduled_time: "15:00", duration_minutes: 20 },
-      { title: "Brincadeira / estimulação", routine_type: "play", scheduled_time: "16:00", duration_minutes: 30 },
-      { title: "Jantar", routine_type: "feeding", scheduled_time: "17:30", duration_minutes: 30 },
-      { title: "Banho e rotina de sono", routine_type: "bath", scheduled_time: "18:30", duration_minutes: 30 },
+      {
+        title: 'Mamada + café da manhã',
+        routine_type: 'feeding',
+        scheduled_time: '07:00',
+        duration_minutes: 30,
+      },
+      {
+        title: 'Brincadeira livre',
+        routine_type: 'play',
+        scheduled_time: '08:00',
+        duration_minutes: 40,
+      },
+      {
+        title: 'Soneca da manhã',
+        routine_type: 'sleep',
+        scheduled_time: '09:30',
+        duration_minutes: 60,
+      },
+      {
+        title: 'Lanche da manhã',
+        routine_type: 'feeding',
+        scheduled_time: '10:30',
+        duration_minutes: 20,
+      },
+      {
+        title: 'Passeio / ar livre',
+        routine_type: 'play',
+        scheduled_time: '11:00',
+        duration_minutes: 30,
+      },
+      { title: 'Almoço', routine_type: 'feeding', scheduled_time: '12:00', duration_minutes: 30 },
+      {
+        title: 'Soneca da tarde',
+        routine_type: 'sleep',
+        scheduled_time: '13:00',
+        duration_minutes: 90,
+      },
+      {
+        title: 'Lanche da tarde',
+        routine_type: 'feeding',
+        scheduled_time: '15:00',
+        duration_minutes: 20,
+      },
+      {
+        title: 'Brincadeira / estimulação',
+        routine_type: 'play',
+        scheduled_time: '16:00',
+        duration_minutes: 30,
+      },
+      { title: 'Jantar', routine_type: 'feeding', scheduled_time: '17:30', duration_minutes: 30 },
+      {
+        title: 'Banho e rotina de sono',
+        routine_type: 'bath',
+        scheduled_time: '18:30',
+        duration_minutes: 30,
+      },
     ],
   },
 } as const;
@@ -87,11 +225,11 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
   const [showTemplates, setShowTemplates] = useState(false);
   const [selectedDays, setSelectedDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
   const [formData, setFormData] = useState({
-    title: "",
-    routine_type: "feeding",
-    scheduled_time: "08:00",
+    title: '',
+    routine_type: 'feeding',
+    scheduled_time: '08:00',
     duration_minutes: 30,
-    notes: "",
+    notes: '',
   });
 
   const applyTemplate = (ageKey: keyof typeof AGE_TEMPLATES) => {
@@ -123,11 +261,11 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
     });
 
     setFormData({
-      title: "",
-      routine_type: "feeding",
-      scheduled_time: "08:00",
+      title: '',
+      routine_type: 'feeding',
+      scheduled_time: '08:00',
       duration_minutes: 30,
-      notes: "",
+      notes: '',
     });
     setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
     setIsOpen(false);
@@ -184,9 +322,7 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
               <CalendarClock className="h-5 w-5 text-violet-500" />
               Planner de Rotina
             </CardTitle>
-            <CardDescription>
-              Organize a rotina diária do bebê
-            </CardDescription>
+            <CardDescription>Organize a rotina diária do bebê</CardDescription>
           </div>
 
           <div className="flex gap-2">
@@ -200,7 +336,9 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
               <DialogContent>
                 <DialogHeader>
                   <DialogTitle>Templates por Faixa Etária</DialogTitle>
-                  <DialogDescription>Escolha um modelo pronto para preencher a rotina automaticamente</DialogDescription>
+                  <DialogDescription>
+                    Escolha um modelo pronto para preencher a rotina automaticamente
+                  </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-3 py-2">
                   {(Object.keys(AGE_TEMPLATES) as Array<keyof typeof AGE_TEMPLATES>).map(key => {
@@ -230,101 +368,108 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
                   Nova Rotina
                 </Button>
               </DialogTrigger>
-            <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Nova Rotina</DialogTitle>
-              </DialogHeader>
+              <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Nova Rotina</DialogTitle>
+                </DialogHeader>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Título *</Label>
-                  <Input
-                    value={formData.title}
-                    onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Ex: Mamadeira da manhã"
-                  />
-                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Título *</Label>
+                    <Input
+                      value={formData.title}
+                      onChange={e => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Ex: Mamadeira da manhã"
+                    />
+                  </div>
 
-                <div className="space-y-2">
-                  <Label>Tipo</Label>
-                  <Select
-                    value={formData.routine_type}
-                    onValueChange={v => setFormData(prev => ({ ...prev, routine_type: v }))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ROUTINE_TYPES.map(type => (
-                        <SelectItem key={type.value} value={type.value}>
-                          <span className="flex items-center gap-2">
-                            {type.icon} {type.label}
-                          </span>
-                        </SelectItem>
+                  <div className="space-y-2">
+                    <Label>Tipo</Label>
+                    <Select
+                      value={formData.routine_type}
+                      onValueChange={v => setFormData(prev => ({ ...prev, routine_type: v }))}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ROUTINE_TYPES.map(type => (
+                          <SelectItem key={type.value} value={type.value}>
+                            <span className="flex items-center gap-2">
+                              {type.icon} {type.label}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Horário</Label>
+                      <Input
+                        type="time"
+                        value={formData.scheduled_time}
+                        onChange={e =>
+                          setFormData(prev => ({ ...prev, scheduled_time: e.target.value }))
+                        }
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Duração (min)</Label>
+                      <Input
+                        type="number"
+                        value={formData.duration_minutes}
+                        onChange={e =>
+                          setFormData(prev => ({
+                            ...prev,
+                            duration_minutes: parseInt(e.target.value) || 30,
+                          }))
+                        }
+                        min={5}
+                        max={180}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Dias da Semana</Label>
+                    <div className="flex gap-1">
+                      {DAYS_OF_WEEK.map(day => (
+                        <Button
+                          key={day.value}
+                          type="button"
+                          variant={selectedDays.includes(day.value) ? 'default' : 'outline'}
+                          size="sm"
+                          className="flex-1 px-1"
+                          onClick={() => toggleDay(day.value)}
+                        >
+                          {day.label}
+                        </Button>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                    </div>
+                  </div>
 
-                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Horário</Label>
-                    <Input
-                      type="time"
-                      value={formData.scheduled_time}
-                      onChange={e => setFormData(prev => ({ ...prev, scheduled_time: e.target.value }))}
+                    <Label>Observações</Label>
+                    <Textarea
+                      value={formData.notes}
+                      onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                      placeholder="Detalhes adicionais..."
+                      rows={2}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Duração (min)</Label>
-                    <Input
-                      type="number"
-                      value={formData.duration_minutes}
-                      onChange={e => setFormData(prev => ({ ...prev, duration_minutes: parseInt(e.target.value) || 30 }))}
-                      min={5}
-                      max={180}
-                    />
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label>Dias da Semana</Label>
-                  <div className="flex gap-1">
-                    {DAYS_OF_WEEK.map(day => (
-                      <Button
-                        key={day.value}
-                        type="button"
-                        variant={selectedDays.includes(day.value) ? "default" : "outline"}
-                        size="sm"
-                        className="flex-1 px-1"
-                        onClick={() => toggleDay(day.value)}
-                      >
-                        {day.label}
-                      </Button>
-                    ))}
-                  </div>
+                  <Button
+                    onClick={handleSubmit}
+                    className="w-full"
+                    disabled={!formData.title || selectedDays.length === 0 || isAdding}
+                  >
+                    Criar Rotina
+                  </Button>
                 </div>
-
-                <div className="space-y-2">
-                  <Label>Observações</Label>
-                  <Textarea
-                    value={formData.notes}
-                    onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                    placeholder="Detalhes adicionais..."
-                    rows={2}
-                  />
-                </div>
-
-                <Button
-                  onClick={handleSubmit}
-                  className="w-full"
-                  disabled={!formData.title || selectedDays.length === 0 || isAdding}
-                >
-                  Criar Rotina
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogContent>
+            </Dialog>
           </div>
         </CardHeader>
 
@@ -340,19 +485,19 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
                     <div
                       key={routine.id}
                       className={cn(
-                        "flex items-center gap-3 p-3 rounded-lg border transition-all",
+                        'flex items-center gap-3 p-3 rounded-lg border transition-all',
                         isCompleted
-                          ? "bg-emerald-50 border-emerald-200"
-                          : "bg-background hover:bg-muted/50"
+                          ? 'bg-emerald-50 border-emerald-200'
+                          : 'bg-background hover:bg-muted/50'
                       )}
                     >
                       <button
                         onClick={() => !isCompleted && handleCompleteRoutine(routine.id)}
                         className={cn(
-                          "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                          'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors',
                           isCompleted
-                            ? "bg-emerald-500 text-white"
-                            : "border-2 border-muted-foreground/30 hover:border-primary"
+                            ? 'bg-emerald-500 text-white'
+                            : 'border-2 border-muted-foreground/30 hover:border-primary'
                         )}
                         disabled={isCompleted}
                       >
@@ -363,19 +508,23 @@ export const RoutinePlanner = ({ babyProfileId }: RoutinePlannerProps) => {
                         )}
                       </button>
 
-                      <div className={cn(
-                        "flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-lg",
-                        typeInfo.color
-                      )}>
+                      <div
+                        className={cn(
+                          'flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-lg',
+                          typeInfo.color
+                        )}
+                      >
                         {typeInfo.icon}
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className={cn(
-                            "font-medium",
-                            isCompleted && "line-through text-muted-foreground"
-                          )}>
+                          <span
+                            className={cn(
+                              'font-medium',
+                              isCompleted && 'line-through text-muted-foreground'
+                            )}
+                          >
                             {routine.title}
                           </span>
                         </div>

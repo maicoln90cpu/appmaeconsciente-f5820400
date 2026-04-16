@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { FraldaCalculator } from "@/components/calculadora-fraldas/FraldaCalculator";
-import { BrandComparison } from "@/components/calculadora-fraldas/BrandComparison";
-import { ClothDiaperSimulator } from "@/components/calculadora-fraldas/ClothDiaperSimulator";
-import { ResultsSummary } from "@/components/calculadora-fraldas/ResultsSummary";
-import { Baby, DollarSign, Leaf } from "lucide-react";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { FraldaCalculator } from '@/components/calculadora-fraldas/FraldaCalculator';
+import { BrandComparison } from '@/components/calculadora-fraldas/BrandComparison';
+import { ClothDiaperSimulator } from '@/components/calculadora-fraldas/ClothDiaperSimulator';
+import { ResultsSummary } from '@/components/calculadora-fraldas/ResultsSummary';
+import { Baby, DollarSign, Leaf } from 'lucide-react';
 
 export interface DiaperEstimate {
   babyAge: string;
@@ -32,7 +32,8 @@ const CalculadoraFraldas = () => {
             Calculadora de Fraldas
           </h1>
           <p className="text-muted-foreground">
-            Estime quantas fraldas você vai precisar, compare marcas e descubra se fraldas de pano valem a pena
+            Estime quantas fraldas você vai precisar, compare marcas e descubra se fraldas de pano
+            valem a pena
           </p>
         </div>
 
@@ -97,9 +98,7 @@ const CalculadoraFraldas = () => {
           </Tabs>
 
           {/* Resumo Final */}
-          {estimate && (
-            <ResultsSummary estimate={estimate} />
-          )}
+          {estimate && <ResultsSummary estimate={estimate} />}
         </div>
       </div>
     </div>

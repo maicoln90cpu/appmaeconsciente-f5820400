@@ -1,13 +1,19 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
-import { Mail, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "sonner";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { supabase } from '@/integrations/supabase/client';
+import { Mail, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { toast } from 'sonner';
 
 interface Product {
   id: string;
@@ -17,16 +23,20 @@ interface Product {
 export const ManualPurchaseResend = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
-  const [buyerEmail, setBuyerEmail] = useState("");
-  const [buyerName, setBuyerName] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState("");
-  const [transactionId, setTransactionId] = useState("");
+  const [buyerEmail, setBuyerEmail] = useState('');
+  const [buyerName, setBuyerName] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [transactionId, setTransactionId] = useState('');
   const [forceNewPassword, setForceNewPassword] = useState(false);
 
   // Carregar produtos
   useState(() => {
     const loadProducts = async () => {
-      const { data } = await supabase.from("products").select("id, title").eq("is_active", true).order("title");
+      const { data } = await supabase
+        .from('products')
+        .select('id, title')
+        .eq('is_active', true)
+        .order('title');
 
       if (data) setProducts(data);
     };
@@ -35,21 +45,21 @@ export const ManualPurchaseResend = () => {
 
   const handleResend = async () => {
     if (!buyerEmail || !buyerName || !selectedProduct) {
-      toast.error("Campos obrigatórios", { description: "Preencha email, nome e produto" });
+      toast.error('Campos obrigatórios', { description: 'Preencha email, nome e produto' });
       return;
     }
 
     // Validar email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(buyerEmail)) {
-      toast.error("Email inválido", { description: "Verifique o formato do email" });
+      toast.error('Email inválido', { description: 'Verifique o formato do email' });
       return;
     }
 
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke("resend-purchase-credentials", {
+      const { data, error } = await supabase.functions.invoke('resend-purchase-credentials', {
         body: {
           buyer_email: buyerEmail.toLowerCase().trim(),
           buyer_name: buyerName.trim(),
@@ -60,13 +70,13 @@ export const ManualPurchaseResend = () => {
       });
 
       if (error) {
-        console.error("Erro ao reenviar:", error);
-        toast.error("Erro ao reenviar", { description: error.message || "Erro desconhecido" });
+        console.error('Erro ao reenviar:', error);
+        toast.error('Erro ao reenviar', { description: error.message || 'Erro desconhecido' });
         return;
       }
 
-      const title = data.success ? "✅ Sucesso!" : "⚠️ Parcialmente concluído";
-      const desc = data.message || "Operação realizada";
+      const title = data.success ? '✅ Sucesso!' : '⚠️ Parcialmente concluído';
+      const desc = data.message || 'Operação realizada';
       if (data.success) {
         toast(title, { description: desc });
       } else {
@@ -74,14 +84,14 @@ export const ManualPurchaseResend = () => {
       }
 
       // Limpar formulário
-      setBuyerEmail("");
-      setBuyerName("");
-      setSelectedProduct("");
-      setTransactionId("");
+      setBuyerEmail('');
+      setBuyerName('');
+      setSelectedProduct('');
+      setTransactionId('');
       setForceNewPassword(false);
     } catch (err: any) {
-      console.error("Exceção ao reenviar:", err);
-      toast.error("Erro", { description: err.message || "Erro ao processar requisição" });
+      console.error('Exceção ao reenviar:', err);
+      toast.error('Erro', { description: err.message || 'Erro ao processar requisição' });
     } finally {
       setLoading(false);
     }
@@ -95,8 +105,8 @@ export const ManualPurchaseResend = () => {
           Reenviar Credenciais de Compra Manualmente
         </CardTitle>
         <CardDescription>
-          Use esta ferramenta para reprocessar compras com erro ou reenviar credenciais manualmente. O sistema irá
-          criar/atualizar o usuário, conceder acesso ao produto e enviar o email.
+          Use esta ferramenta para reprocessar compras com erro ou reenviar credenciais manualmente.
+          O sistema irá criar/atualizar o usuário, conceder acesso ao produto e enviar o email.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -107,7 +117,7 @@ export const ManualPurchaseResend = () => {
             type="email"
             placeholder="e-mail do comprador"
             value={buyerEmail}
-            onChange={(e) => setBuyerEmail(e.target.value)}
+            onChange={e => setBuyerEmail(e.target.value)}
             disabled={loading}
           />
         </div>
@@ -118,7 +128,7 @@ export const ManualPurchaseResend = () => {
             id="buyer-name"
             placeholder="Nome Completo"
             value={buyerName}
-            onChange={(e) => setBuyerName(e.target.value)}
+            onChange={e => setBuyerName(e.target.value)}
             disabled={loading}
           />
         </div>
@@ -130,7 +140,7 @@ export const ManualPurchaseResend = () => {
               <SelectValue placeholder="Selecione o produto" />
             </SelectTrigger>
             <SelectContent>
-              {products.map((product) => (
+              {products.map(product => (
                 <SelectItem key={product.id} value={product.id}>
                   {product.title}
                 </SelectItem>
@@ -145,17 +155,19 @@ export const ManualPurchaseResend = () => {
             id="transaction-id"
             placeholder="HP0991860675"
             value={transactionId}
-            onChange={(e) => setTransactionId(e.target.value)}
+            onChange={e => setTransactionId(e.target.value)}
             disabled={loading}
           />
-          <p className="text-xs text-muted-foreground">ID da transação Hotmart para registro no histórico</p>
+          <p className="text-xs text-muted-foreground">
+            ID da transação Hotmart para registro no histórico
+          </p>
         </div>
 
         <div className="flex items-center space-x-2">
           <Checkbox
             id="force-password"
             checked={forceNewPassword}
-            onCheckedChange={(checked) => setForceNewPassword(checked === true)}
+            onCheckedChange={checked => setForceNewPassword(checked === true)}
             disabled={loading}
           />
           <label

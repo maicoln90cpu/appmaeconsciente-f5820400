@@ -3,10 +3,10 @@
  * @module hooks/useUserRole
  */
 
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
 
 /**
  * Tipos de role disponíveis no sistema
@@ -58,9 +58,9 @@ export const useUserRole = () => {
     gcTime: QueryCacheConfig.user.gcTime,
   });
 
-  return { 
-    role: data?.role ?? null, 
-    isAdmin: data?.isAdmin ?? false, 
-    loading 
+  return {
+    role: data?.role ?? null,
+    isAdmin: data?.isAdmin ?? false,
+    loading,
   };
 };

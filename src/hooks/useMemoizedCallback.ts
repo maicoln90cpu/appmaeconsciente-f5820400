@@ -7,7 +7,7 @@ import { useCallback, useRef, useMemo, DependencyList, useEffect } from 'react';
  * A callback that only changes if the callback body changes,
  * not when dependencies change. Useful for callbacks passed to
  * child components that don't need to trigger re-renders.
- * 
+ *
  * @example
  * ```tsx
  * const handleClick = useStableCallback((id: string) => {
@@ -16,28 +16,23 @@ import { useCallback, useRef, useMemo, DependencyList, useEffect } from 'react';
  * });
  * ```
  */
-export function useStableCallback<T extends (...args: unknown[]) => unknown>(
-  callback: T
-): T {
+export function useStableCallback<T extends (...args: unknown[]) => unknown>(callback: T): T {
   const callbackRef = useRef<T>(callback);
-  
+
   // Update the ref on each render
   useEffect(() => {
     callbackRef.current = callback;
   });
-  
+
   // Return a stable callback that calls the latest ref
-  return useCallback(
-    ((...args: unknown[]) => callbackRef.current(...args)) as T,
-    []
-  );
+  return useCallback(((...args: unknown[]) => callbackRef.current(...args)) as T, []);
 }
 
 /**
  * Debounced callback hook
  * Delays invoking the callback until after `delay` ms have elapsed
  * since the last time the debounced function was invoked.
- * 
+ *
  * @example
  * ```tsx
  * const debouncedSearch = useDebouncedCallback((query: string) => {
@@ -52,12 +47,12 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
 ): T {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);
-  
+
   // Update callback ref
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -66,13 +61,13 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
       }
     };
   }, []);
-  
+
   return useCallback(
     ((...args: unknown[]) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
-      
+
       timeoutRef.current = setTimeout(() => {
         callbackRef.current(...args);
       }, delay);
@@ -85,7 +80,7 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
 /**
  * Throttled callback hook
  * Limits how often a callback can be called.
- * 
+ *
  * @example
  * ```tsx
  * const throttledScroll = useThrottledCallback((e: Event) => {
@@ -101,11 +96,11 @@ export function useThrottledCallback<T extends (...args: unknown[]) => unknown>(
   const lastRunRef = useRef<number>(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);
-  
+
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -114,12 +109,12 @@ export function useThrottledCallback<T extends (...args: unknown[]) => unknown>(
       }
     };
   }, []);
-  
+
   return useCallback(
     ((...args: unknown[]) => {
       const now = Date.now();
       const timeSinceLastRun = now - lastRunRef.current;
-      
+
       if (timeSinceLastRun >= limit) {
         lastRunRef.current = now;
         callbackRef.current(...args);
@@ -142,7 +137,7 @@ export function useThrottledCallback<T extends (...args: unknown[]) => unknown>(
 /**
  * Deep comparison memoization
  * Only recomputes when the value deeply changes, not on reference change.
- * 
+ *
  * @example
  * ```tsx
  * const filters = useDeepMemo(() => ({
@@ -153,18 +148,18 @@ export function useThrottledCallback<T extends (...args: unknown[]) => unknown>(
  */
 export function useDeepMemo<T>(factory: () => T, deps: DependencyList): T {
   const ref = useRef<{ value: T; deps: DependencyList } | undefined>(undefined);
-  
+
   if (ref.current === undefined || !deepEqual(deps, ref.current.deps)) {
     ref.current = { value: factory(), deps };
   }
-  
+
   return ref.current.value;
 }
 
 /**
  * Previous value hook
  * Returns the previous value of a variable.
- * 
+ *
  * @example
  * ```tsx
  * const prevCount = usePrevious(count);
@@ -173,18 +168,18 @@ export function useDeepMemo<T>(factory: () => T, deps: DependencyList): T {
  */
 export function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
-  
+
   useEffect(() => {
     ref.current = value;
   }, [value]);
-  
+
   return ref.current;
 }
 
 /**
  * Lazy initialization hook
  * Only computes the initial value once, even across re-renders.
- * 
+ *
  * @example
  * ```tsx
  * const expensiveValue = useLazyInit(() => computeExpensiveValue());
@@ -192,17 +187,17 @@ export function usePrevious<T>(value: T): T | undefined {
  */
 export function useLazyInit<T>(factory: () => T): T {
   const ref = useRef<{ value: T } | undefined>(undefined);
-  
+
   if (ref.current === undefined) {
     ref.current = { value: factory() };
   }
-  
+
   return ref.current.value;
 }
 
 /**
  * Conditional effect - only runs when condition is true
- * 
+ *
  * @example
  * ```tsx
  * useConditionalEffect(
@@ -228,7 +223,7 @@ export function useConditionalEffect(
 /**
  * Memoized selector hook
  * Efficiently select and memoize derived state.
- * 
+ *
  * @example
  * ```tsx
  * const totalPrice = useMemoizedSelector(
@@ -244,43 +239,43 @@ export function useMemoizedSelector<T, R>(
 ): R {
   const prevDataRef = useRef<T>(data);
   const resultRef = useRef<R | undefined>(undefined);
-  
+
   if (resultRef.current === undefined || !isEqual(data, prevDataRef.current)) {
     prevDataRef.current = data;
     resultRef.current = selector(data);
   }
-  
+
   return resultRef.current;
 }
 
 // Utility: Deep equality check
 function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
-  
+
   if (typeof a !== typeof b) return false;
-  
+
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
     return a.every((item, index) => deepEqual(item, b[index]));
   }
-  
+
   if (typeof a === 'object' && a !== null && b !== null) {
     const aObj = a as Record<string, unknown>;
     const bObj = b as Record<string, unknown>;
     const aKeys = Object.keys(aObj);
     const bKeys = Object.keys(bObj);
-    
+
     if (aKeys.length !== bKeys.length) return false;
-    return aKeys.every((key) => deepEqual(aObj[key], bObj[key]));
+    return aKeys.every(key => deepEqual(aObj[key], bObj[key]));
   }
-  
+
   return false;
 }
 
 /**
  * Request Idle Callback hook
  * Runs callback during browser idle time
- * 
+ *
  * @example
  * ```tsx
  * useIdleCallback(() => {
@@ -289,22 +284,19 @@ function deepEqual(a: unknown, b: unknown): boolean {
  * }, { timeout: 2000 });
  * ```
  */
-export function useIdleCallback(
-  callback: IdleRequestCallback,
-  options?: IdleRequestOptions
-): void {
+export function useIdleCallback(callback: IdleRequestCallback, options?: IdleRequestOptions): void {
   const callbackRef = useRef(callback);
-  
+
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
-  
+
   useEffect(() => {
     if ('requestIdleCallback' in window) {
-      const id = requestIdleCallback((deadline) => {
+      const id = requestIdleCallback(deadline => {
         callbackRef.current(deadline);
       }, options);
-      
+
       return () => cancelIdleCallback(id);
     } else {
       // Fallback for Safari
@@ -314,7 +306,7 @@ export function useIdleCallback(
           timeRemaining: () => 50,
         });
       }, options?.timeout ?? 1);
-      
+
       return () => clearTimeout(id);
     }
   }, [options?.timeout]);

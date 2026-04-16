@@ -4,7 +4,10 @@
 import { useState, useRef, useEffect, memo, ImgHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-interface OptimizedImageProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, 'onLoad' | 'onError'> {
+interface OptimizedImageProps extends Omit<
+  ImgHTMLAttributes<HTMLImageElement>,
+  'onLoad' | 'onError'
+> {
   /** Fallback image URL if the main image fails to load */
   fallbackSrc?: string;
   /** Enable lazy loading with IntersectionObserver */
@@ -21,14 +24,14 @@ const DEFAULT_FALLBACK = '/placeholder.svg';
 
 /**
  * Performance-optimized image component
- * 
+ *
  * Features:
  * - Lazy loading with IntersectionObserver
  * - Blur-up placeholder effect
  * - Fallback image on error
  * - Native loading="lazy" support
  * - Responsive sizing hints
- * 
+ *
  * @example
  * ```tsx
  * <OptimizedImage
@@ -65,8 +68,8 @@ export const OptimizedImage = memo(function OptimizedImage({
     }
 
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             setImageSrc(src);
             observer.disconnect();
@@ -117,11 +120,7 @@ export const OptimizedImage = memo(function OptimizedImage({
   return (
     <div
       ref={containerRef}
-      className={cn(
-        'relative overflow-hidden',
-        aspectRatio && 'w-full',
-        className
-      )}
+      className={cn('relative overflow-hidden', aspectRatio && 'w-full', className)}
       style={containerStyles}
     >
       {/* Placeholder skeleton */}
@@ -188,7 +187,5 @@ export function getResponsiveSrcSet(
 ): string {
   // This is a placeholder - in production, you'd integrate with your image CDN
   // Example for Cloudinary: `${baseSrc}?w=${width}`
-  return widths
-    .map((width) => `${baseSrc}?w=${width} ${width}w`)
-    .join(', ');
+  return widths.map(width => `${baseSrc}?w=${width} ${width}w`).join(', ');
 }

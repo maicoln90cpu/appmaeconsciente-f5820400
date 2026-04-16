@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   AreaChart,
   Area,
@@ -18,53 +18,53 @@ import {
   PieChart,
   Pie,
   Cell,
-} from "recharts";
-import { TrendingUp, Users, DollarSign, ShoppingCart, HelpCircle } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+} from 'recharts';
+import { TrendingUp, Users, DollarSign, ShoppingCart, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const COLORS = [
-  "hsl(var(--primary))",
-  "hsl(var(--secondary))",
-  "hsl(var(--accent))",
-  "hsl(var(--muted))",
+  'hsl(var(--primary))',
+  'hsl(var(--secondary))',
+  'hsl(var(--accent))',
+  'hsl(var(--muted))',
 ];
 
 export const AnalyticsDashboard = () => {
   // Analytics summary
   const { data: summary } = useQuery({
-    queryKey: ["analytics-summary"],
+    queryKey: ['analytics-summary'],
     queryFn: async () => {
       // Get total users
       const { count: totalUsers } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true })
-        .neq("is_virtual", true);
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .neq('is_virtual', true);
 
       // Get users this month
       const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
       const { count: newUsersThisMonth } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true })
-        .neq("is_virtual", true)
-        .gte("created_at", firstDayOfMonth.toISOString());
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .neq('is_virtual', true)
+        .gte('created_at', firstDayOfMonth.toISOString());
 
       // Get active products
       const { count: activeProducts } = await supabase
-        .from("user_product_access")
-        .select("*", { count: "exact", head: true })
-        .gt("expires_at", new Date().toISOString());
+        .from('user_product_access')
+        .select('*', { count: 'exact', head: true })
+        .gt('expires_at', new Date().toISOString());
 
       // Get posts this month
       const { count: postsThisMonth } = await supabase
-        .from("posts")
-        .select("*", { count: "exact", head: true })
-        .gte("created_at", firstDayOfMonth.toISOString());
+        .from('posts')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', firstDayOfMonth.toISOString());
 
       // Calculate total revenue from Hotmart transactions
       const { data: transactions } = await supabase
-        .from("hotmart_transactions")
-        .select("amount, product_id, status")
-        .in("status", ["approved", "complete", "processed"]);
+        .from('hotmart_transactions')
+        .select('amount, product_id, status')
+        .in('status', ['approved', 'complete', 'processed']);
 
       let totalRevenue = 0;
       if (transactions && transactions.length > 0) {
@@ -96,22 +96,22 @@ export const AnalyticsDashboard = () => {
 
   // User growth over time
   const { data: userGrowth } = useQuery({
-    queryKey: ["user-growth"],
+    queryKey: ['user-growth'],
     queryFn: async () => {
       const { data } = await supabase
-        .from("profiles")
-        .select("created_at")
-        .neq("is_virtual", true)
-        .order("created_at");
+        .from('profiles')
+        .select('created_at')
+        .neq('is_virtual', true)
+        .order('created_at');
 
       if (!data) return [];
 
       // Group by month
       const months: Record<string, number> = {};
-      data.forEach((profile) => {
-        const month = new Date(profile.created_at).toLocaleDateString("pt-BR", {
-          month: "short",
-          year: "numeric",
+      data.forEach(profile => {
+        const month = new Date(profile.created_at).toLocaleDateString('pt-BR', {
+          month: 'short',
+          year: 'numeric',
         });
         months[month] = (months[month] || 0) + 1;
       });
@@ -122,20 +122,20 @@ export const AnalyticsDashboard = () => {
 
   // Top 5 materiais mais acessados (excluindo admin)
   const { data: topMaterials } = useQuery({
-    queryKey: ["top-materials"],
+    queryKey: ['top-materials'],
     queryFn: async () => {
       // Get admin email
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const { data: adminProfile } = await supabase
-        .from("profiles")
-        .select("email")
-        .eq("id", user?.id || "")
+        .from('profiles')
+        .select('email')
+        .eq('id', user?.id || '')
         .single();
 
       // Get all accesses with product info and user email
-      const { data: accesses } = await supabase
-        .from("user_product_access")
-        .select(`
+      const { data: accesses } = await supabase.from('user_product_access').select(`
           product_id,
           products!inner(title, slug),
           profiles!inner(email)
@@ -145,13 +145,13 @@ export const AnalyticsDashboard = () => {
 
       // Filter out admin accesses and count by product
       const productCounts: Record<string, { title: string; count: number }> = {};
-      
+
       accesses.forEach((access: any) => {
         if (access.profiles?.email !== adminProfile?.email) {
           const productId = access.product_id;
           if (!productCounts[productId]) {
             productCounts[productId] = {
-              title: access.products?.title || "Desconhecido",
+              title: access.products?.title || 'Desconhecido',
               count: 0,
             };
           }
@@ -167,30 +167,30 @@ export const AnalyticsDashboard = () => {
 
   // Conversion funnel
   const { data: conversionData } = useQuery({
-    queryKey: ["conversion-funnel"],
+    queryKey: ['conversion-funnel'],
     queryFn: async () => {
       const { count: totalProfiles } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true })
-        .neq("is_virtual", true);
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .neq('is_virtual', true);
 
       const { count: completedProfiles } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true })
-        .neq("is_virtual", true)
-        .eq("perfil_completo", true);
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .neq('is_virtual', true)
+        .eq('perfil_completo', true);
 
-      const { count: hasItems } = await supabase.rpc("count_users_with_items" as any).single();
+      const { count: hasItems } = await supabase.rpc('count_users_with_items' as any).single();
 
       const { count: hasAccess } = await supabase
-        .from("user_product_access")
-        .select("user_id", { count: "exact", head: true });
+        .from('user_product_access')
+        .select('user_id', { count: 'exact', head: true });
 
       return [
-        { stage: "Cadastros", value: totalProfiles || 0 },
-        { stage: "Perfil Completo", value: completedProfiles || 0 },
-        { stage: "Com Itens", value: hasItems || Math.floor((completedProfiles || 0) * 0.7) },
-        { stage: "Com Acesso", value: hasAccess || Math.floor((completedProfiles || 0) * 0.3) },
+        { stage: 'Cadastros', value: totalProfiles || 0 },
+        { stage: 'Perfil Completo', value: completedProfiles || 0 },
+        { stage: 'Com Itens', value: hasItems || Math.floor((completedProfiles || 0) * 0.7) },
+        { stage: 'Com Acesso', value: hasAccess || Math.floor((completedProfiles || 0) * 0.3) },
       ];
     },
   });
@@ -208,7 +208,10 @@ export const AnalyticsDashboard = () => {
                     <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Número total de contas cadastradas no sistema, incluindo usuários ativos e inativos.</p>
+                    <p className="max-w-xs">
+                      Número total de contas cadastradas no sistema, incluindo usuários ativos e
+                      inativos.
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -233,7 +236,9 @@ export const AnalyticsDashboard = () => {
                     <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Usuários com acesso válido a pelo menos um material premium (não expirado).</p>
+                    <p className="max-w-xs">
+                      Usuários com acesso válido a pelo menos um material premium (não expirado).
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -256,7 +261,10 @@ export const AnalyticsDashboard = () => {
                     <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Porcentagem de usuários que possuem acesso a materiais pagos em relação ao total de usuários.</p>
+                    <p className="max-w-xs">
+                      Porcentagem de usuários que possuem acesso a materiais pagos em relação ao
+                      total de usuários.
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -284,7 +292,9 @@ export const AnalyticsDashboard = () => {
                     <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="max-w-xs">Soma de todas as vendas processadas via Hotmart. Atualizado em tempo real.</p>
+                    <p className="max-w-xs">
+                      Soma de todas as vendas processadas via Hotmart. Atualizado em tempo real.
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -295,7 +305,7 @@ export const AnalyticsDashboard = () => {
             <div className="text-2xl font-bold">
               {new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
-                currency: 'BRL'
+                currency: 'BRL',
               }).format(summary?.totalRevenue || 0)}
             </div>
             <p className="text-xs text-muted-foreground">Vendas via Hotmart</p>
@@ -353,7 +363,9 @@ export const AnalyticsDashboard = () => {
                       <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">Materiais com mais usuários ativos. Acessos do admin não são contabilizados.</p>
+                      <p className="max-w-xs">
+                        Materiais com mais usuários ativos. Acessos do admin não são contabilizados.
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

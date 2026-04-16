@@ -46,17 +46,17 @@ let initialPrefetchDone = false;
  */
 export function useRoutePrefetch() {
   const location = useLocation();
-  
+
   // Track current route visit
   useEffect(() => {
     trackRouteVisit(location.pathname);
   }, [location.pathname]);
-  
+
   // Prefetch likely next routes based on current location
   useEffect(() => {
     const currentPath = location.pathname;
     const likelyNextRoutes = NAVIGATION_PATTERNS[currentPath] || [];
-    
+
     // Prefetch routes that user is likely to visit next
     likelyNextRoutes.forEach((path, index) => {
       const loader = ROUTE_LOADERS[path];
@@ -69,21 +69,21 @@ export function useRoutePrefetch() {
       }
     });
   }, [location.pathname]);
-  
+
   // Initial prefetch of high priority routes
   useEffect(() => {
     if (initialPrefetchDone) return;
     initialPrefetchDone = true;
-    
+
     const routes = HIGH_PRIORITY_ROUTES.map(path => ({
       path,
       priority: 'high' as const,
       loader: ROUTE_LOADERS[path],
     })).filter(r => r.loader);
-    
+
     setupSmartPrefetch(routes);
   }, []);
-  
+
   // Manual prefetch function for link hover
   const prefetchOnHover = useCallback((path: string) => {
     const loader = ROUTE_LOADERS[path];
@@ -95,7 +95,7 @@ export function useRoutePrefetch() {
       });
     }
   }, []);
-  
+
   return { prefetchOnHover };
 }
 
@@ -105,17 +105,17 @@ export function useRoutePrefetch() {
  */
 export function prefetchCommonRoutes() {
   if (typeof window === 'undefined') return;
-  
+
   const prefetch = () => {
     const routes = Object.entries(ROUTE_LOADERS).map(([path, loader]) => ({
       path,
-      priority: HIGH_PRIORITY_ROUTES.includes(path) ? 'high' as const : 'low' as const,
+      priority: HIGH_PRIORITY_ROUTES.includes(path) ? ('high' as const) : ('low' as const),
       loader,
     }));
-    
+
     setupSmartPrefetch(routes);
   };
-  
+
   // Wait for idle time
   if ('requestIdleCallback' in window) {
     requestIdleCallback(() => prefetch(), { timeout: 10000 });

@@ -57,20 +57,16 @@ const createWrapper = () => {
       mutations: { retry: false },
     },
   });
-  
+
   return function Wrapper({ children }: { children: React.ReactNode }) {
-    return React.createElement(
-      QueryClientProvider,
-      { client: queryClient },
-      children
-    );
+    return React.createElement(QueryClientProvider, { client: queryClient }, children);
   };
 };
 
 describe('createSupabaseCRUD', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset mock chain
     mockSelect.mockReturnValue({ eq: mockEq });
     mockEq.mockReturnValue({ eq: mockEq, order: mockOrder });
@@ -92,9 +88,7 @@ describe('createSupabaseCRUD', () => {
 
   it('should return data, loading state, and mutations', async () => {
     mockOrder.mockResolvedValue({
-      data: [
-        { id: '1', user_id: 'test-user-id', name: 'Item 1', created_at: '2024-01-01' },
-      ],
+      data: [{ id: '1', user_id: 'test-user-id', name: 'Item 1', created_at: '2024-01-01' }],
       error: null,
     });
 

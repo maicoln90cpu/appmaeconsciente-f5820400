@@ -1,18 +1,24 @@
-import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Play, Square, Save } from "lucide-react";
-import { BabySleepLog, SleepLocation, WakeupMood, MomMood } from "@/types/babySleep";
-import { toast } from "sonner";
-import { useAutoSave } from "@/hooks/useAutoSave";
-import { DraftIndicator } from "@/components/ui/draft-indicator";
+import { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Play, Square, Save } from 'lucide-react';
+import { BabySleepLog, SleepLocation, WakeupMood, MomMood } from '@/types/babySleep';
+import { toast } from 'sonner';
+import { useAutoSave } from '@/hooks/useAutoSave';
+import { DraftIndicator } from '@/components/ui/draft-indicator';
 
 interface RegistroSonoProps {
-  onSave: (log: Omit<BabySleepLog, "id" | "user_id" | "created_at" | "updated_at">) => Promise<any>;
+  onSave: (log: Omit<BabySleepLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => Promise<any>;
   babyName?: string;
   babyAgeMonths?: number;
 }
@@ -29,12 +35,12 @@ type SleepFormData = {
 export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoProps) => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [sleepStart, setSleepStart] = useState("");
-  const [sleepEnd, setSleepEnd] = useState("");
-  const [location, setLocation] = useState<SleepLocation>("berco");
-  const [wakeupMood, setWakeupMood] = useState<WakeupMood>("calmo");
-  const [momMood, setMomMood] = useState<MomMood>("descansada");
-  const [notes, setNotes] = useState("");
+  const [sleepStart, setSleepStart] = useState('');
+  const [sleepEnd, setSleepEnd] = useState('');
+  const [location, setLocation] = useState<SleepLocation>('berco');
+  const [wakeupMood, setWakeupMood] = useState<WakeupMood>('calmo');
+  const [momMood, setMomMood] = useState<MomMood>('descansada');
+  const [notes, setNotes] = useState('');
 
   // Auto-save for sleep records
   const {
@@ -50,9 +56,12 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
     type: 'sleep-log',
     enabled: true,
     debounceMs: 2000,
-    minDataCheck: (data) => !!(data.sleepStart),
-    onDraftLoaded: (data) => {
-      const { __userId, __savedAt, ...cleanData } = data as SleepFormData & { __userId?: string; __savedAt?: number };
+    minDataCheck: data => !!data.sleepStart,
+    onDraftLoaded: data => {
+      const { __userId, __savedAt, ...cleanData } = data as SleepFormData & {
+        __userId?: string;
+        __savedAt?: number;
+      };
       if (cleanData.sleepStart) setSleepStart(cleanData.sleepStart);
       if (cleanData.sleepEnd) setSleepEnd(cleanData.sleepEnd);
       if (cleanData.location) setLocation(cleanData.location);
@@ -70,17 +79,20 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
   }, [sleepStart, sleepEnd, location, wakeupMood, momMood, notes, triggerAutoSave]);
 
   // Handle draft load
-  const handleLoadDraft = useCallback(async (id: string) => {
-    await loadDraftById(id);
-    toast("Rascunho carregado", { description: "Os dados do rascunho foram restaurados." });
-  }, [loadDraftById]);
+  const handleLoadDraft = useCallback(
+    async (id: string) => {
+      await loadDraftById(id);
+      toast('Rascunho carregado', { description: 'Os dados do rascunho foram restaurados.' });
+    },
+    [loadDraftById]
+  );
 
   const startTimer = () => {
     const now = new Date();
     setStartTime(now);
     setIsTimerActive(true);
     setSleepStart(now.toISOString().slice(0, 16));
-    toast("Temporizador iniciado", { description: "O sono do bebê está sendo registrado." });
+    toast('Temporizador iniciado', { description: 'O sono do bebê está sendo registrado.' });
   };
 
   const stopTimer = () => {
@@ -88,13 +100,13 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
       const now = new Date();
       setSleepEnd(now.toISOString().slice(0, 16));
       setIsTimerActive(false);
-      toast("Temporizador pausado", { description: "Preencha os detalhes e salve o registro." });
+      toast('Temporizador pausado', { description: 'Preencha os detalhes e salve o registro.' });
     }
   };
 
   const handleSubmit = async () => {
     if (!sleepStart) {
-      toast.error("Erro", { description: "Preencha o horário de início do sono." });
+      toast.error('Erro', { description: 'Preencha o horário de início do sono.' });
       return;
     }
 
@@ -104,9 +116,9 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
 
     // Determinar tipo de sono baseado no horário
     const hour = start.getHours();
-    const sleepType = (hour >= 20 || hour < 6) ? 'noturno' : 'diurno';
+    const sleepType = hour >= 20 || hour < 6 ? 'noturno' : 'diurno';
 
-    const log: Omit<BabySleepLog, "id" | "user_id" | "created_at" | "updated_at"> = {
+    const log: Omit<BabySleepLog, 'id' | 'user_id' | 'created_at' | 'updated_at'> = {
       baby_name: babyName,
       baby_age_months: babyAgeMonths,
       sleep_start: start.toISOString(),
@@ -120,14 +132,14 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
     };
 
     await onSave(log);
-    
+
     // Delete draft after successful save
     await deleteDraft();
-    
+
     // Limpar formulário
-    setSleepStart("");
-    setSleepEnd("");
-    setNotes("");
+    setSleepStart('');
+    setSleepEnd('');
+    setNotes('');
     setStartTime(null);
     setIsTimerActive(false);
   };
@@ -175,7 +187,7 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
               id="sleep-start"
               type="datetime-local"
               value={sleepStart}
-              onChange={(e) => setSleepStart(e.target.value)}
+              onChange={e => setSleepStart(e.target.value)}
               disabled={isTimerActive}
             />
           </div>
@@ -186,14 +198,14 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
               id="sleep-end"
               type="datetime-local"
               value={sleepEnd}
-              onChange={(e) => setSleepEnd(e.target.value)}
+              onChange={e => setSleepEnd(e.target.value)}
             />
           </div>
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="location">Local do Sono</Label>
-          <Select value={location} onValueChange={(value) => setLocation(value as SleepLocation)}>
+          <Select value={location} onValueChange={value => setLocation(value as SleepLocation)}>
             <SelectTrigger id="location">
               <SelectValue />
             </SelectTrigger>
@@ -210,7 +222,7 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="wakeup-mood">Humor do Bebê ao Acordar</Label>
-            <Select value={wakeupMood} onValueChange={(value) => setWakeupMood(value as WakeupMood)}>
+            <Select value={wakeupMood} onValueChange={value => setWakeupMood(value as WakeupMood)}>
               <SelectTrigger id="wakeup-mood">
                 <SelectValue />
               </SelectTrigger>
@@ -225,7 +237,7 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
 
           <div className="space-y-2">
             <Label htmlFor="mom-mood">Como Você Está</Label>
-            <Select value={momMood} onValueChange={(value) => setMomMood(value as MomMood)}>
+            <Select value={momMood} onValueChange={value => setMomMood(value as MomMood)}>
               <SelectTrigger id="mom-mood">
                 <SelectValue />
               </SelectTrigger>
@@ -245,7 +257,7 @@ export const RegistroSono = ({ onSave, babyName, babyAgeMonths }: RegistroSonoPr
             id="notes"
             placeholder="Ex: Acordou chorando, dormiu após mamar..."
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={e => setNotes(e.target.value)}
             rows={3}
           />
         </div>

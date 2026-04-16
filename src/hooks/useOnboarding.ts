@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 export interface OnboardingStep {
   key: string;
@@ -14,39 +14,39 @@ export interface OnboardingStep {
 
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
-    key: "complete_profile",
-    title: "Completar perfil",
-    description: "Adicione suas informações pessoais",
-    icon: "👤",
-    path: "/configuracoes",
+    key: 'complete_profile',
+    title: 'Completar perfil',
+    description: 'Adicione suas informações pessoais',
+    icon: '👤',
+    path: '/configuracoes',
   },
   {
-    key: "add_enxoval_item",
-    title: "Adicionar item ao enxoval",
-    description: "Comece a organizar seu enxoval",
-    icon: "🛍️",
-    path: "/materiais/controle-enxoval",
+    key: 'add_enxoval_item',
+    title: 'Adicionar item ao enxoval',
+    description: 'Comece a organizar seu enxoval',
+    icon: '🛍️',
+    path: '/materiais/controle-enxoval',
   },
   {
-    key: "register_feeding",
-    title: "Registrar primeira mamada",
-    description: "Acompanhe a alimentação do bebê",
-    icon: "🍼",
-    path: "/materiais/rastreador-amamentacao",
+    key: 'register_feeding',
+    title: 'Registrar primeira mamada',
+    description: 'Acompanhe a alimentação do bebê',
+    icon: '🍼',
+    path: '/materiais/rastreador-amamentacao',
   },
   {
-    key: "register_sleep",
-    title: "Registrar primeiro sono",
-    description: "Monitore o sono do bebê",
-    icon: "😴",
-    path: "/materiais/diario-sono",
+    key: 'register_sleep',
+    title: 'Registrar primeiro sono',
+    description: 'Monitore o sono do bebê',
+    icon: '😴',
+    path: '/materiais/diario-sono',
   },
   {
-    key: "join_community",
-    title: "Entrar na comunidade",
-    description: "Conecte-se com outras mães",
-    icon: "👥",
-    path: "/comunidade",
+    key: 'join_community',
+    title: 'Entrar na comunidade',
+    description: 'Conecte-se com outras mães',
+    icon: '👥',
+    path: '/comunidade',
   },
 ];
 
@@ -64,15 +64,15 @@ export const useOnboarding = () => {
 
   // Fetch completed steps from database
   const { data: completedSteps = [], isLoading } = useQuery({
-    queryKey: ["onboarding-progress", user?.id],
+    queryKey: ['onboarding-progress', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
-      
+
       const { data, error } = await supabase
-        .from("onboarding_progress")
-        .select("id, user_id, step_key, completed_at, created_at")
-        .eq("user_id", user.id);
-      
+        .from('onboarding_progress')
+        .select('id, user_id, step_key, completed_at, created_at')
+        .eq('user_id', user.id);
+
       if (error) throw error;
       return (data as OnboardingProgress[]).map(item => item.step_key);
     },
@@ -82,27 +82,28 @@ export const useOnboarding = () => {
   // Mark step as complete
   const completeStepMutation = useMutation({
     mutationFn: async (stepKey: string) => {
-      if (!user?.id) throw new Error("User not authenticated");
-      
-      const { error } = await supabase
-        .from("onboarding_progress")
-        .upsert({
+      if (!user?.id) throw new Error('User not authenticated');
+
+      const { error } = await supabase.from('onboarding_progress').upsert(
+        {
           user_id: user.id,
           step_key: stepKey,
           completed_at: new Date().toISOString(),
-        }, { onConflict: "user_id,step_key" });
-      
+        },
+        { onConflict: 'user_id,step_key' }
+      );
+
       if (error) throw error;
       return stepKey;
     },
-    onSuccess: (stepKey) => {
-      queryClient.invalidateQueries({ queryKey: ["onboarding-progress"] });
-      
+    onSuccess: stepKey => {
+      queryClient.invalidateQueries({ queryKey: ['onboarding-progress'] });
+
       const step = ONBOARDING_STEPS.find(s => s.key === stepKey);
       if (step) {
-        toast("Passo completado! 🎉", { description: step.title });
+        toast('Passo completado! 🎉', { description: step.title });
       }
-      
+
       // Check if all steps are complete
       const newCompletedSteps = [...completedSteps, stepKey];
       if (newCompletedSteps.length === ONBOARDING_STEPS.length) {
@@ -114,15 +115,15 @@ export const useOnboarding = () => {
   // Complete entire onboarding with XP and Badge
   const completeOnboarding = async () => {
     if (!user?.id) return;
-    
+
     const { error } = await supabase
-      .from("profiles")
+      .from('profiles')
       .update({
         onboarding_completed: true,
         onboarding_completed_at: new Date().toISOString(),
       })
-      .eq("id", user.id);
-    
+      .eq('id', user.id);
+
     if (!error) {
       // Award XP for completing onboarding
       try {
@@ -138,45 +139,48 @@ export const useOnboarding = () => {
       // Unlock "Bem-vinda!" badge
       try {
         const { data: badge } = await supabase
-          .from("badges")
-          .select("id")
-          .eq("code", "bem_vinda")
+          .from('badges')
+          .select('id')
+          .eq('code', 'bem_vinda')
           .single();
 
         if (badge) {
-          await supabase
-            .from("user_badges")
-            .upsert({
+          await supabase.from('user_badges').upsert(
+            {
               user_id: user.id,
               badge_id: badge.id,
-            }, { onConflict: "user_id,badge_id" });
+            },
+            { onConflict: 'user_id,badge_id' }
+          );
         }
       } catch (badgeError) {
         console.error('Failed to unlock badge:', badgeError);
       }
 
-      toast("Parabéns! 🏆", { description: "Você completou o onboarding! +50 XP e Badge 'Bem-vinda!' desbloqueado!" });
-      
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
-      queryClient.invalidateQueries({ queryKey: ["user-level"] });
-      queryClient.invalidateQueries({ queryKey: ["user-badges"] });
+      toast('Parabéns! 🏆', {
+        description: "Você completou o onboarding! +50 XP e Badge 'Bem-vinda!' desbloqueado!",
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user-level'] });
+      queryClient.invalidateQueries({ queryKey: ['user-badges'] });
     }
   };
 
   // Skip onboarding
   const skipOnboarding = async () => {
     if (!user?.id) return;
-    
+
     const { error } = await supabase
-      .from("profiles")
+      .from('profiles')
       .update({
         onboarding_completed: true,
         onboarding_completed_at: new Date().toISOString(),
       })
-      .eq("id", user.id);
-    
+      .eq('id', user.id);
+
     if (!error) {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
     }
   };
 

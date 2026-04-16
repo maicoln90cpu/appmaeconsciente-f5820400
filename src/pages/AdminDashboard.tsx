@@ -1,9 +1,9 @@
-import { useEffect, lazy, Suspense } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useUserRole } from "@/hooks/useUserRole";
-import { useAdminStats } from "@/hooks/useAdminStats";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useEffect, lazy, Suspense } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useUserRole } from '@/hooks/useUserRole';
+import { useAdminStats } from '@/hooks/useAdminStats';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import {
   Users,
   Package,
@@ -16,41 +16,107 @@ import {
   Headphones,
   Settings,
   FileText,
-} from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AdminSubTabs } from "@/components/admin/AdminSubTabs";
+} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AdminSubTabs } from '@/components/admin/AdminSubTabs';
 
 // Lazy load all admin components
-const HotmartMappings = lazy(() => import("@/components/admin/HotmartMappings").then((m) => ({ default: m.HotmartMappings })));
-const HotmartTransactions = lazy(() => import("@/components/admin/HotmartTransactions").then((m) => ({ default: m.HotmartTransactions })));
-const ManualPurchaseResend = lazy(() => import("@/components/admin/ManualPurchaseResend").then((m) => ({ default: m.ManualPurchaseResend })));
-const PostModeration = lazy(() => import("@/components/admin/PostModeration").then((m) => ({ default: m.PostModeration })));
-const TicketManagement = lazy(() => import("@/components/admin/TicketManagement").then((m) => ({ default: m.TicketManagement })));
-const ProductManagement = lazy(() => import("@/components/admin/ProductManagement").then((m) => ({ default: m.ProductManagement })));
-const UserManagement = lazy(() => import("@/components/admin/UserManagement").then((m) => ({ default: m.UserManagement })));
-const PromotionManagement = lazy(() => import("@/components/admin/PromotionManagement").then((m) => ({ default: m.PromotionManagement })));
-const CouponManagement = lazy(() => import("@/components/admin/CouponManagement").then((m) => ({ default: m.CouponManagement })));
-const AnalyticsDashboard = lazy(() => import("@/components/admin/AnalyticsDashboard").then((m) => ({ default: m.AnalyticsDashboard })));
-const BundleManagement = lazy(() => import("@/components/admin/BundleManagement").then((m) => ({ default: m.BundleManagement })));
-const ToolSuggestionManagement = lazy(() => import("@/components/admin/ToolSuggestionManagement").then((m) => ({ default: m.ToolSuggestionManagement })));
-const SiteSettings = lazy(() => import("@/components/admin/SiteSettings").then((m) => ({ default: m.SiteSettings })));
-const SecurityAuditPanel = lazy(() => import("@/components/admin/SecurityAuditPanel").then((m) => ({ default: m.SecurityAuditPanel })));
-const AdminCharts = lazy(() => import("@/components/admin/AdminCharts").then((m) => ({ default: m.AdminCharts })));
-const AppHealthDashboard = lazy(() => import("@/components/admin/AppHealthDashboard").then((m) => ({ default: m.AppHealthDashboard })));
-const SystemHealthTab = lazy(() => import("@/components/admin/system/SystemHealthTab").then((m) => ({ default: m.SystemHealthTab })));
-const ObservabilityTab = lazy(() => import("@/components/admin/system/ObservabilityTab").then((m) => ({ default: m.ObservabilityTab })));
-const DatabaseTab = lazy(() => import("@/components/admin/system/DatabaseTab").then((m) => ({ default: m.DatabaseTab })));
-const GtmDiagnosticTab = lazy(() => import("@/components/admin/system/GtmDiagnosticTab").then((m) => ({ default: m.GtmDiagnosticTab })));
-const AIEngagementPanel = lazy(() => import("@/components/admin/AIEngagementPanel").then((m) => ({ default: m.AIEngagementPanel })));
-const VirtualUserManagement = lazy(() => import("@/components/admin/VirtualUserManagement").then((m) => ({ default: m.VirtualUserManagement })));
-const AutoModerationPanel = lazy(() => import("@/components/admin/AutoModerationPanel").then((m) => ({ default: m.AutoModerationPanel })));
-const CronSchedulePanel = lazy(() => import("@/components/admin/CronSchedulePanel").then((m) => ({ default: m.CronSchedulePanel })));
-const AdminNotificationCard = lazy(() => import("@/components/admin/AdminNotificationCard").then((m) => ({ default: m.AdminNotificationCard })));
-const BlogPostManagement = lazy(() => import("@/components/admin/BlogPostManagement").then((m) => ({ default: m.BlogPostManagement })));
-const BlogSettingsPanel = lazy(() => import("@/components/admin/BlogSettingsPanel").then((m) => ({ default: m.BlogSettingsPanel })));
-const BlogGenerationLogs = lazy(() => import("@/components/admin/BlogGenerationLogs").then((m) => ({ default: m.BlogGenerationLogs })));
-const BlogImagePrompts = lazy(() => import("@/components/admin/BlogImagePrompts").then((m) => ({ default: m.BlogImagePrompts })));
-const BlogCronPanel = lazy(() => import("@/components/admin/BlogCronPanel").then((m) => ({ default: m.BlogCronPanel })));
+const HotmartMappings = lazy(() =>
+  import('@/components/admin/HotmartMappings').then(m => ({ default: m.HotmartMappings }))
+);
+const HotmartTransactions = lazy(() =>
+  import('@/components/admin/HotmartTransactions').then(m => ({ default: m.HotmartTransactions }))
+);
+const ManualPurchaseResend = lazy(() =>
+  import('@/components/admin/ManualPurchaseResend').then(m => ({ default: m.ManualPurchaseResend }))
+);
+const PostModeration = lazy(() =>
+  import('@/components/admin/PostModeration').then(m => ({ default: m.PostModeration }))
+);
+const TicketManagement = lazy(() =>
+  import('@/components/admin/TicketManagement').then(m => ({ default: m.TicketManagement }))
+);
+const ProductManagement = lazy(() =>
+  import('@/components/admin/ProductManagement').then(m => ({ default: m.ProductManagement }))
+);
+const UserManagement = lazy(() =>
+  import('@/components/admin/UserManagement').then(m => ({ default: m.UserManagement }))
+);
+const PromotionManagement = lazy(() =>
+  import('@/components/admin/PromotionManagement').then(m => ({ default: m.PromotionManagement }))
+);
+const CouponManagement = lazy(() =>
+  import('@/components/admin/CouponManagement').then(m => ({ default: m.CouponManagement }))
+);
+const AnalyticsDashboard = lazy(() =>
+  import('@/components/admin/AnalyticsDashboard').then(m => ({ default: m.AnalyticsDashboard }))
+);
+const BundleManagement = lazy(() =>
+  import('@/components/admin/BundleManagement').then(m => ({ default: m.BundleManagement }))
+);
+const ToolSuggestionManagement = lazy(() =>
+  import('@/components/admin/ToolSuggestionManagement').then(m => ({
+    default: m.ToolSuggestionManagement,
+  }))
+);
+const SiteSettings = lazy(() =>
+  import('@/components/admin/SiteSettings').then(m => ({ default: m.SiteSettings }))
+);
+const SecurityAuditPanel = lazy(() =>
+  import('@/components/admin/SecurityAuditPanel').then(m => ({ default: m.SecurityAuditPanel }))
+);
+const AdminCharts = lazy(() =>
+  import('@/components/admin/AdminCharts').then(m => ({ default: m.AdminCharts }))
+);
+const AppHealthDashboard = lazy(() =>
+  import('@/components/admin/AppHealthDashboard').then(m => ({ default: m.AppHealthDashboard }))
+);
+const SystemHealthTab = lazy(() =>
+  import('@/components/admin/system/SystemHealthTab').then(m => ({ default: m.SystemHealthTab }))
+);
+const ObservabilityTab = lazy(() =>
+  import('@/components/admin/system/ObservabilityTab').then(m => ({ default: m.ObservabilityTab }))
+);
+const DatabaseTab = lazy(() =>
+  import('@/components/admin/system/DatabaseTab').then(m => ({ default: m.DatabaseTab }))
+);
+const GtmDiagnosticTab = lazy(() =>
+  import('@/components/admin/system/GtmDiagnosticTab').then(m => ({ default: m.GtmDiagnosticTab }))
+);
+const AIEngagementPanel = lazy(() =>
+  import('@/components/admin/AIEngagementPanel').then(m => ({ default: m.AIEngagementPanel }))
+);
+const VirtualUserManagement = lazy(() =>
+  import('@/components/admin/VirtualUserManagement').then(m => ({
+    default: m.VirtualUserManagement,
+  }))
+);
+const AutoModerationPanel = lazy(() =>
+  import('@/components/admin/AutoModerationPanel').then(m => ({ default: m.AutoModerationPanel }))
+);
+const CronSchedulePanel = lazy(() =>
+  import('@/components/admin/CronSchedulePanel').then(m => ({ default: m.CronSchedulePanel }))
+);
+const AdminNotificationCard = lazy(() =>
+  import('@/components/admin/AdminNotificationCard').then(m => ({
+    default: m.AdminNotificationCard,
+  }))
+);
+const BlogPostManagement = lazy(() =>
+  import('@/components/admin/BlogPostManagement').then(m => ({ default: m.BlogPostManagement }))
+);
+const BlogSettingsPanel = lazy(() =>
+  import('@/components/admin/BlogSettingsPanel').then(m => ({ default: m.BlogSettingsPanel }))
+);
+const BlogGenerationLogs = lazy(() =>
+  import('@/components/admin/BlogGenerationLogs').then(m => ({ default: m.BlogGenerationLogs }))
+);
+const BlogImagePrompts = lazy(() =>
+  import('@/components/admin/BlogImagePrompts').then(m => ({ default: m.BlogImagePrompts }))
+);
+const BlogCronPanel = lazy(() =>
+  import('@/components/admin/BlogCronPanel').then(m => ({ default: m.BlogCronPanel }))
+);
 
 const TabLoading = () => (
   <div className="flex items-center justify-center py-12">
@@ -64,11 +130,11 @@ export default function AdminDashboard() {
   const [searchParams] = useSearchParams();
   const { stats, loading } = useAdminStats(isAdmin);
 
-  const activeTab = searchParams.get("tab") || "dashboard";
+  const activeTab = searchParams.get('tab') || 'dashboard';
 
   useEffect(() => {
     if (!roleLoading && !isAdmin) {
-      navigate("/materiais");
+      navigate('/materiais');
     }
   }, [isAdmin, roleLoading, navigate]);
 
@@ -93,7 +159,7 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-bold">Painel do Administrador</h1>
             <p className="text-muted-foreground">Visão geral do sistema</p>
           </div>
-          <Button variant="outline" onClick={() => navigate("/")} size="sm">
+          <Button variant="outline" onClick={() => navigate('/')} size="sm">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar
           </Button>
@@ -131,7 +197,8 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="text-2xl font-bold">{stats?.itemsThisMonth || 0}</div>
               <p className="text-xs text-muted-foreground">
-                +{Math.round(((stats?.itemsThisMonth || 0) / (stats?.totalItems || 1)) * 100)}% do total
+                +{Math.round(((stats?.itemsThisMonth || 0) / (stats?.totalItems || 1)) * 100)}% do
+                total
               </p>
             </CardContent>
           </Card>
@@ -142,14 +209,20 @@ export default function AdminDashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{Math.round((stats?.totalItems || 0) / (stats?.totalUsers || 1))}</div>
+              <div className="text-2xl font-bold">
+                {Math.round((stats?.totalItems || 0) / (stats?.totalUsers || 1))}
+              </div>
               <p className="text-xs text-muted-foreground">Itens por usuário</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Main Tabs */}
-        <Tabs value={activeTab} onValueChange={(val) => navigate(`/admin?tab=${val}`)} className="space-y-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={val => navigate(`/admin?tab=${val}`)}
+          className="space-y-4"
+        >
           <TabsList className="grid w-full grid-cols-6 h-auto p-1">
             <TabsTrigger value="dashboard" className="flex items-center gap-2 py-3">
               <LayoutDashboard className="h-4 w-4" />
@@ -182,13 +255,18 @@ export default function AdminDashboard() {
               <AdminSubTabs
                 defaultValue="analytics"
                 tabs={[
-                  { value: "analytics", label: "Analytics", content: <AnalyticsDashboard /> },
+                  { value: 'analytics', label: 'Analytics', content: <AnalyticsDashboard /> },
                   {
-                    value: "charts",
-                    label: "Gráficos",
-                    content: <AdminCharts categoryData={stats?.categoryData || []} weeklyGrowth={stats?.weeklyGrowth || []} />,
+                    value: 'charts',
+                    label: 'Gráficos',
+                    content: (
+                      <AdminCharts
+                        categoryData={stats?.categoryData || []}
+                        weeklyGrowth={stats?.weeklyGrowth || []}
+                      />
+                    ),
                   },
-                  { value: "health", label: "Saúde do App", content: <AppHealthDashboard /> },
+                  { value: 'health', label: 'Saúde do App', content: <AppHealthDashboard /> },
                 ]}
               />
             </Suspense>
@@ -199,13 +277,13 @@ export default function AdminDashboard() {
               <AdminSubTabs
                 defaultValue="products"
                 tabs={[
-                  { value: "products", label: "Produtos", content: <ProductManagement /> },
-                  { value: "bundles", label: "Bundles", content: <BundleManagement /> },
-                  { value: "promotions", label: "Promoções", content: <PromotionManagement /> },
-                  { value: "coupons", label: "Cupons", content: <CouponManagement /> },
+                  { value: 'products', label: 'Produtos', content: <ProductManagement /> },
+                  { value: 'bundles', label: 'Bundles', content: <BundleManagement /> },
+                  { value: 'promotions', label: 'Promoções', content: <PromotionManagement /> },
+                  { value: 'coupons', label: 'Cupons', content: <CouponManagement /> },
                   {
-                    value: "hotmart",
-                    label: "Hotmart",
+                    value: 'hotmart',
+                    label: 'Hotmart',
                     content: (
                       <div className="space-y-4">
                         <ManualPurchaseResend />
@@ -224,11 +302,11 @@ export default function AdminDashboard() {
               <AdminSubTabs
                 defaultValue="posts"
                 tabs={[
-                  { value: "posts", label: "Posts", content: <BlogPostManagement /> },
-                  { value: "settings", label: "Configurações", content: <BlogSettingsPanel /> },
-                  { value: "images", label: "Estilos de Imagem", content: <BlogImagePrompts /> },
-                  { value: "schedule", label: "Agendamento", content: <BlogCronPanel /> },
-                  { value: "logs", label: "Logs de Geração", content: <BlogGenerationLogs /> },
+                  { value: 'posts', label: 'Posts', content: <BlogPostManagement /> },
+                  { value: 'settings', label: 'Configurações', content: <BlogSettingsPanel /> },
+                  { value: 'images', label: 'Estilos de Imagem', content: <BlogImagePrompts /> },
+                  { value: 'schedule', label: 'Agendamento', content: <BlogCronPanel /> },
+                  { value: 'logs', label: 'Logs de Geração', content: <BlogGenerationLogs /> },
                 ]}
               />
             </Suspense>
@@ -239,12 +317,24 @@ export default function AdminDashboard() {
               <AdminSubTabs
                 defaultValue="posts"
                 tabs={[
-                  { value: "posts", label: "Moderação de Posts", content: <PostModeration /> },
-                  { value: "virtual-users", label: "Usuários Virtuais", content: <VirtualUserManagement /> },
-                  { value: "ai-engagement", label: "Automação IA", content: <AIEngagementPanel /> },
-                  { value: "cron-schedule", label: "Agendamento", content: <CronSchedulePanel /> },
-                  { value: "auto-moderation", label: "Auto-Moderação", content: <AutoModerationPanel /> },
-                  { value: "suggestions", label: "Sugestões", content: <ToolSuggestionManagement /> },
+                  { value: 'posts', label: 'Moderação de Posts', content: <PostModeration /> },
+                  {
+                    value: 'virtual-users',
+                    label: 'Usuários Virtuais',
+                    content: <VirtualUserManagement />,
+                  },
+                  { value: 'ai-engagement', label: 'Automação IA', content: <AIEngagementPanel /> },
+                  { value: 'cron-schedule', label: 'Agendamento', content: <CronSchedulePanel /> },
+                  {
+                    value: 'auto-moderation',
+                    label: 'Auto-Moderação',
+                    content: <AutoModerationPanel />,
+                  },
+                  {
+                    value: 'suggestions',
+                    label: 'Sugestões',
+                    content: <ToolSuggestionManagement />,
+                  },
                 ]}
               />
             </Suspense>
@@ -255,8 +345,12 @@ export default function AdminDashboard() {
               <AdminSubTabs
                 defaultValue="tickets"
                 tabs={[
-                  { value: "tickets", label: "Tickets", content: <TicketManagement /> },
-                  { value: "notifications", label: "Notificações", content: <AdminNotificationCard /> },
+                  { value: 'tickets', label: 'Tickets', content: <TicketManagement /> },
+                  {
+                    value: 'notifications',
+                    label: 'Notificações',
+                    content: <AdminNotificationCard />,
+                  },
                 ]}
               />
             </Suspense>
@@ -267,13 +361,17 @@ export default function AdminDashboard() {
               <AdminSubTabs
                 defaultValue="health"
                 tabs={[
-                  { value: "health", label: "Saúde", content: <SystemHealthTab /> },
-                  { value: "observability", label: "Observabilidade", content: <ObservabilityTab /> },
-                  { value: "database", label: "Banco de Dados", content: <DatabaseTab /> },
-                  { value: "users", label: "Usuários", content: <UserManagement /> },
-                  { value: "security", label: "Segurança", content: <SecurityAuditPanel /> },
-                  { value: "settings", label: "Configurações", content: <SiteSettings /> },
-                  { value: "gtm", label: "GTM / Diag.", content: <GtmDiagnosticTab /> },
+                  { value: 'health', label: 'Saúde', content: <SystemHealthTab /> },
+                  {
+                    value: 'observability',
+                    label: 'Observabilidade',
+                    content: <ObservabilityTab />,
+                  },
+                  { value: 'database', label: 'Banco de Dados', content: <DatabaseTab /> },
+                  { value: 'users', label: 'Usuários', content: <UserManagement /> },
+                  { value: 'security', label: 'Segurança', content: <SecurityAuditPanel /> },
+                  { value: 'settings', label: 'Configurações', content: <SiteSettings /> },
+                  { value: 'gtm', label: 'GTM / Diag.', content: <GtmDiagnosticTab /> },
                 ]}
               />
             </Suspense>

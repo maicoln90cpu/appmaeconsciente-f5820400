@@ -1,33 +1,33 @@
 /**
  * @fileoverview Hook para gerenciamento de itens do enxoval
  * @module hooks/useEnxovalItems
- * 
+ *
  * Provê operações CRUD com React Query, atualização otimista e paginação
  * para a lista de itens do enxoval do usuário.
  */
 
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { EnxovalItem, Config } from "@/types/enxoval";
-import { toast } from "sonner";
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useMemo } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { EnxovalItem, Config } from '@/types/enxoval';
+import { toast } from 'sonner';
 import {
   calculatePriority,
   calculateSubtotalPlanned,
   calculateSubtotalPaid,
   calculateSavings,
   calculateSavingsPercent,
-} from "@/lib/calculations";
-import { useAuth } from "@/contexts/AuthContext";
-import { logger } from "@/lib/logger";
-import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
+} from '@/lib/calculations';
+import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/lib/logger';
+import { QueryKeys, QueryCacheConfig } from '@/lib/query-config';
 
 /** Quantidade de itens carregados por página */
 const ITEMS_PER_PAGE = 50;
 
 /**
  * Hook para gerenciar itens do enxoval com React Query
- * 
+ *
  * @param config - Configuração do usuário (limites RN, dias alerta)
  * @returns Objeto com items, estados e funções de manipulação
  */
@@ -38,67 +38,77 @@ export const useEnxovalItems = (config: Config | null) => {
   /**
    * Processa um item do banco de dados para o formato do frontend
    */
-  const processItem = useCallback((dbItem: any): EnxovalItem => {
-    const subtotalPlanned = calculateSubtotalPlanned(dbItem.qtd_planejada, dbItem.preco_planejado);
-    const subtotalPaid = calculateSubtotalPaid(
-      dbItem.qtd_comprada,
-      dbItem.preco_unit_pago,
-      dbItem.frete,
-      dbItem.desconto
-    );
-    const savings = calculateSavings(subtotalPlanned, subtotalPaid);
-    const savingsPercent = calculateSavingsPercent(subtotalPlanned, subtotalPaid);
+  const processItem = useCallback(
+    (dbItem: any): EnxovalItem => {
+      const subtotalPlanned = calculateSubtotalPlanned(
+        dbItem.qtd_planejada,
+        dbItem.preco_planejado
+      );
+      const subtotalPaid = calculateSubtotalPaid(
+        dbItem.qtd_comprada,
+        dbItem.preco_unit_pago,
+        dbItem.frete,
+        dbItem.desconto
+      );
+      const savings = calculateSavings(subtotalPlanned, subtotalPaid);
+      const savingsPercent = calculateSavingsPercent(subtotalPlanned, subtotalPaid);
 
-    // Verificar se excede limite RN (itens tamanho recém-nascido)
-    const limite = config?.limites_rn?.find((l) => l.item.toLowerCase() === dbItem.item.toLowerCase());
-    const excessoRN = dbItem.tamanho === "RN" && limite && dbItem.qtd_comprada > limite.limite;
+      // Verificar se excede limite RN (itens tamanho recém-nascido)
+      const limite = config?.limites_rn?.find(
+        l => l.item.toLowerCase() === dbItem.item.toLowerCase()
+      );
+      const excessoRN = dbItem.tamanho === 'RN' && limite && dbItem.qtd_comprada > limite.limite;
 
-    // Verificar se é item supérfluo que foi comprado (possível arrependimento)
-    const superfluoComprado = dbItem.necessidade === "Não" && dbItem.status === "Comprado";
+      // Verificar se é item supérfluo que foi comprado (possível arrependimento)
+      const superfluoComprado = dbItem.necessidade === 'Não' && dbItem.status === 'Comprado';
 
-    // Verificar proximidade do prazo de troca
-    let alertaTroca = false;
-    if (dbItem.data_limite_troca && config) {
-      const today = new Date();
-      const dataLimite = new Date(dbItem.data_limite_troca);
-      const diffDays = Math.ceil((dataLimite.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      alertaTroca = diffDays <= config.dias_alerta_troca && diffDays >= 0;
-    }
+      // Verificar proximidade do prazo de troca
+      let alertaTroca = false;
+      if (dbItem.data_limite_troca && config) {
+        const today = new Date();
+        const dataLimite = new Date(dbItem.data_limite_troca);
+        const diffDays = Math.ceil(
+          (dataLimite.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+        );
+        alertaTroca = diffDays <= config.dias_alerta_troca && diffDays >= 0;
+      }
 
-    return {
-      id: dbItem.id,
-      date: dbItem.data,
-      category: dbItem.categoria,
-      item: dbItem.item,
-      necessity: dbItem.necessidade,
-      priority: dbItem.prioridade,
-      size: dbItem.tamanho,
-      plannedQty: dbItem.qtd_planejada,
-      plannedPrice: dbItem.preco_planejado,
-      boughtQty: dbItem.qtd_comprada,
-      unitPricePaid: dbItem.preco_unit_pago,
-      frete: dbItem.frete,
-      desconto: dbItem.desconto,
-      precoReferencia: dbItem.preco_referencia,
-      subtotalPlanned,
-      subtotalPaid,
-      savings,
-      savingsPercent,
-      store: dbItem.loja,
-      link: dbItem.link,
-      status: dbItem.status,
-      origin: dbItem.origem,
-      dataLimiteTroca: dbItem.data_limite_troca,
-      notes: dbItem.obs,
-      excessoRN,
-      superfluoComprado,
-      alertaTroca,
-      etapaMaes: dbItem.etapa_maes,
-      classificacao: dbItem.classificacao,
-      emocao: dbItem.emocao,
-      tags: dbItem.tags || [],
-    };
-  }, [config]);
+      return {
+        id: dbItem.id,
+        date: dbItem.data,
+        category: dbItem.categoria,
+        item: dbItem.item,
+        necessity: dbItem.necessidade,
+        priority: dbItem.prioridade,
+        size: dbItem.tamanho,
+        plannedQty: dbItem.qtd_planejada,
+        plannedPrice: dbItem.preco_planejado,
+        boughtQty: dbItem.qtd_comprada,
+        unitPricePaid: dbItem.preco_unit_pago,
+        frete: dbItem.frete,
+        desconto: dbItem.desconto,
+        precoReferencia: dbItem.preco_referencia,
+        subtotalPlanned,
+        subtotalPaid,
+        savings,
+        savingsPercent,
+        store: dbItem.loja,
+        link: dbItem.link,
+        status: dbItem.status,
+        origin: dbItem.origem,
+        dataLimiteTroca: dbItem.data_limite_troca,
+        notes: dbItem.obs,
+        excessoRN,
+        superfluoComprado,
+        alertaTroca,
+        etapaMaes: dbItem.etapa_maes,
+        classificacao: dbItem.classificacao,
+        emocao: dbItem.emocao,
+        tags: dbItem.tags || [],
+      };
+    },
+    [config]
+  );
 
   // Query key centralizada
   const queryKey = user ? QueryKeys.enxovalItems(user.id, config?.id) : ['enxoval-items'];
@@ -110,7 +120,7 @@ export const useEnxovalItems = (config: Config | null) => {
     isFetchingNextPage: loadingMore,
     hasNextPage: hasMore,
     fetchNextPage,
-    refetch
+    refetch,
   } = useInfiniteQuery({
     queryKey,
     queryFn: async ({ pageParam = 0 }) => {
@@ -120,43 +130,42 @@ export const useEnxovalItems = (config: Config | null) => {
       const to = from + ITEMS_PER_PAGE - 1;
 
       const { data, error } = await supabase
-        .from("itens_enxoval")
-        .select("id, user_id, data, categoria, item, necessidade, prioridade, tamanho, qtd_planejada, preco_planejado, qtd_comprada, preco_unit_pago, frete, desconto, preco_referencia, status, loja, link, origem, data_limite_troca, obs, etapa_maes, classificacao, emocao, tags, created_at")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
+        .from('itens_enxoval')
+        .select(
+          'id, user_id, data, categoria, item, necessidade, prioridade, tamanho, qtd_planejada, preco_planejado, qtd_comprada, preco_unit_pago, frete, desconto, preco_referencia, status, loja, link, origem, data_limite_troca, obs, etapa_maes, classificacao, emocao, tags, created_at'
+        )
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
         .range(from, to);
 
       if (error) {
-        logger.error("Erro ao carregar itens", error, { context: 'useEnxovalItems' });
+        logger.error('Erro ao carregar itens', error, { context: 'useEnxovalItems' });
         throw error;
       }
 
       return {
         items: (data || []).map(item => processItem(item)),
-        nextPage: (data?.length || 0) === ITEMS_PER_PAGE ? pageParam + 1 : null
+        nextPage: (data?.length || 0) === ITEMS_PER_PAGE ? pageParam + 1 : null,
       };
     },
-    getNextPageParam: (lastPage) => lastPage.nextPage,
+    getNextPageParam: lastPage => lastPage.nextPage,
     enabled: !!user && !!config,
     initialPageParam: 0,
     ...QueryCacheConfig.list, // Cache de lista padronizado
   });
 
   // Flatten dos items paginados
-  const items = useMemo(() => 
-    data?.pages.flatMap(page => page.items) ?? [],
-    [data]
-  );
+  const items = useMemo(() => data?.pages.flatMap(page => page.items) ?? [], [data]);
 
   // Mutation para adicionar com optimistic update
   const addItemMutation = useMutation({
-    mutationFn: async (item: Omit<EnxovalItem, "id">) => {
+    mutationFn: async (item: Omit<EnxovalItem, 'id'>) => {
       if (!user) throw new Error('Não autenticado');
 
       const priority = calculatePriority(item.necessity);
 
       const { data: newItem, error } = await supabase
-        .from("itens_enxoval")
+        .from('itens_enxoval')
         .insert({
           user_id: user.id,
           data: item.date || null,
@@ -191,12 +200,12 @@ export const useEnxovalItems = (config: Config | null) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast.success("Item adicionado com sucesso!");
+      toast.success('Item adicionado com sucesso!');
     },
-    onError: (error) => {
-      logger.error("Erro ao adicionar item", error, { context: 'useEnxovalItems' });
-      toast.error("Não foi possível adicionar o item.");
-    }
+    onError: error => {
+      logger.error('Erro ao adicionar item', error, { context: 'useEnxovalItems' });
+      toast.error('Não foi possível adicionar o item.');
+    },
   });
 
   // Mutation para atualizar
@@ -205,7 +214,7 @@ export const useEnxovalItems = (config: Config | null) => {
       const priority = calculatePriority(item.necessity);
 
       const { error } = await supabase
-        .from("itens_enxoval")
+        .from('itens_enxoval')
         .update({
           data: item.date || null,
           categoria: item.category,
@@ -231,12 +240,12 @@ export const useEnxovalItems = (config: Config | null) => {
           emocao: item.emocao || null,
           tags: item.tags || [],
         })
-        .eq("id", item.id);
+        .eq('id', item.id);
 
       if (error) throw error;
       return item;
     },
-    onMutate: async (updatedItem) => {
+    onMutate: async updatedItem => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey });
 
@@ -251,25 +260,27 @@ export const useEnxovalItems = (config: Config | null) => {
           pages: old.pages.map((page: any) => ({
             ...page,
             items: page.items.map((item: EnxovalItem) =>
-              item.id === updatedItem.id ? processItem({
-                ...updatedItem,
-                prioridade: calculatePriority(updatedItem.necessity),
-                data: updatedItem.date,
-                categoria: updatedItem.category,
-                necessidade: updatedItem.necessity,
-                tamanho: updatedItem.size,
-                qtd_planejada: updatedItem.plannedQty,
-                preco_planejado: updatedItem.plannedPrice,
-                qtd_comprada: updatedItem.boughtQty,
-                preco_unit_pago: updatedItem.unitPricePaid,
-                loja: updatedItem.store,
-                obs: updatedItem.notes,
-                origem: updatedItem.origin,
-                data_limite_troca: updatedItem.dataLimiteTroca,
-                etapa_maes: updatedItem.etapaMaes,
-              }) : item
-            )
-          }))
+              item.id === updatedItem.id
+                ? processItem({
+                    ...updatedItem,
+                    prioridade: calculatePriority(updatedItem.necessity),
+                    data: updatedItem.date,
+                    categoria: updatedItem.category,
+                    necessidade: updatedItem.necessity,
+                    tamanho: updatedItem.size,
+                    qtd_planejada: updatedItem.plannedQty,
+                    preco_planejado: updatedItem.plannedPrice,
+                    qtd_comprada: updatedItem.boughtQty,
+                    preco_unit_pago: updatedItem.unitPricePaid,
+                    loja: updatedItem.store,
+                    obs: updatedItem.notes,
+                    origem: updatedItem.origin,
+                    data_limite_troca: updatedItem.dataLimiteTroca,
+                    etapa_maes: updatedItem.etapaMaes,
+                  })
+                : item
+            ),
+          })),
         };
       });
 
@@ -280,25 +291,25 @@ export const useEnxovalItems = (config: Config | null) => {
       if (context?.previousData) {
         queryClient.setQueryData(queryKey, context.previousData);
       }
-      logger.error("Erro ao atualizar item", error, { context: 'useEnxovalItems' });
-      toast.error("Não foi possível atualizar o item.");
+      logger.error('Erro ao atualizar item', error, { context: 'useEnxovalItems' });
+      toast.error('Não foi possível atualizar o item.');
     },
     onSuccess: () => {
-      toast.success("Item atualizado com sucesso!");
+      toast.success('Item atualizado com sucesso!');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 
   // Mutation para deletar com optimistic update
   const deleteItemMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("itens_enxoval").delete().eq("id", id);
+      const { error } = await supabase.from('itens_enxoval').delete().eq('id', id);
       if (error) throw error;
       return id;
     },
-    onMutate: async (deletedId) => {
+    onMutate: async deletedId => {
       await queryClient.cancelQueries({ queryKey });
 
       const previousData = queryClient.getQueryData(queryKey);
@@ -310,8 +321,8 @@ export const useEnxovalItems = (config: Config | null) => {
           ...old,
           pages: old.pages.map((page: any) => ({
             ...page,
-            items: page.items.filter((item: EnxovalItem) => item.id !== deletedId)
-          }))
+            items: page.items.filter((item: EnxovalItem) => item.id !== deletedId),
+          })),
         };
       });
 
@@ -321,15 +332,15 @@ export const useEnxovalItems = (config: Config | null) => {
       if (context?.previousData) {
         queryClient.setQueryData(queryKey, context.previousData);
       }
-      logger.error("Erro ao remover item", error, { context: 'useEnxovalItems' });
-      toast.error("Não foi possível remover o item.");
+      logger.error('Erro ao remover item', error, { context: 'useEnxovalItems' });
+      toast.error('Não foi possível remover o item.');
     },
     onSuccess: () => {
-      toast.success("Item removido com sucesso!");
+      toast.success('Item removido com sucesso!');
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey });
-    }
+    },
   });
 
   // Load more function
@@ -339,11 +350,11 @@ export const useEnxovalItems = (config: Config | null) => {
     }
   }, [hasMore, loadingMore, fetchNextPage]);
 
-  return { 
+  return {
     /** Lista de itens processados */
-    items, 
+    items,
     /** Carregamento inicial */
-    loading, 
+    loading,
     /** Carregando mais itens */
     loadingMore,
     /** Se há mais itens para carregar */
@@ -351,12 +362,12 @@ export const useEnxovalItems = (config: Config | null) => {
     /** Função para carregar próxima página */
     loadMore,
     /** Adicionar novo item */
-    addItem: addItemMutation.mutateAsync, 
+    addItem: addItemMutation.mutateAsync,
     /** Atualizar item existente */
-    updateItem: updateItemMutation.mutateAsync, 
+    updateItem: updateItemMutation.mutateAsync,
     /** Remover item */
-    deleteItem: deleteItemMutation.mutateAsync, 
+    deleteItem: deleteItemMutation.mutateAsync,
     /** Recarregar lista do início */
-    reloadItems: () => refetch()
+    reloadItems: () => refetch(),
   };
 };

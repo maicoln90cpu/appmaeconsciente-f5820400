@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Calculator, Ruler } from "lucide-react";
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Calculator, Ruler } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -8,12 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CLOTHING_SIZES, DIAPER_SIZES } from "@/lib/size-predictions";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { CLOTHING_SIZES, DIAPER_SIZES } from '@/lib/size-predictions';
 
 export const ClothingSizeCalculator = () => {
   const [open, setOpen] = useState(false);
@@ -24,29 +24,29 @@ export const ClothingSizeCalculator = () => {
   const calculateSize = () => {
     // Prioriza peso se disponível, senão usa idade
     if (weightKg) {
-      const clothingSize = CLOTHING_SIZES.find(
-        s => weightKg >= s.minWeight && weightKg < s.maxWeight
-      ) || CLOTHING_SIZES[CLOTHING_SIZES.length - 1];
-      
-      const diaperSize = DIAPER_SIZES.find(
-        s => weightKg >= s.minWeight && weightKg <= s.maxWeight
-      ) || DIAPER_SIZES[DIAPER_SIZES.length - 1];
-      
-      return { clothingSize, diaperSize, basedOn: "peso" };
+      const clothingSize =
+        CLOTHING_SIZES.find(s => weightKg >= s.minWeight && weightKg < s.maxWeight) ||
+        CLOTHING_SIZES[CLOTHING_SIZES.length - 1];
+
+      const diaperSize =
+        DIAPER_SIZES.find(s => weightKg >= s.minWeight && weightKg <= s.maxWeight) ||
+        DIAPER_SIZES[DIAPER_SIZES.length - 1];
+
+      return { clothingSize, diaperSize, basedOn: 'peso' };
     }
-    
+
     // Fallback para idade
-    const clothingSize = CLOTHING_SIZES.find(
-      s => monthsOld <= s.maxMonths
-    ) || CLOTHING_SIZES[CLOTHING_SIZES.length - 1];
-    
+    const clothingSize =
+      CLOTHING_SIZES.find(s => monthsOld <= s.maxMonths) ||
+      CLOTHING_SIZES[CLOTHING_SIZES.length - 1];
+
     // Para fraldas, estimar peso pela idade (média)
-    const estimatedWeight = 3.3 + (monthsOld * 0.5); // Aproximação simples
-    const diaperSize = DIAPER_SIZES.find(
-      s => estimatedWeight >= s.minWeight && estimatedWeight <= s.maxWeight
-    ) || DIAPER_SIZES[0];
-    
-    return { clothingSize, diaperSize, basedOn: "idade" };
+    const estimatedWeight = 3.3 + monthsOld * 0.5; // Aproximação simples
+    const diaperSize =
+      DIAPER_SIZES.find(s => estimatedWeight >= s.minWeight && estimatedWeight <= s.maxWeight) ||
+      DIAPER_SIZES[0];
+
+    return { clothingSize, diaperSize, basedOn: 'idade' };
   };
 
   const result = calculateSize();
@@ -69,7 +69,7 @@ export const ClothingSizeCalculator = () => {
             Descubra qual tamanho de roupa e fralda é ideal para seu bebê.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4 pt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -80,11 +80,11 @@ export const ClothingSizeCalculator = () => {
                 min={0}
                 max={24}
                 value={monthsOld}
-                onChange={(e) => setMonthsOld(Number(e.target.value))}
+                onChange={e => setMonthsOld(Number(e.target.value))}
                 placeholder="0"
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="weight">Peso (kg) - opcional</Label>
               <Input
@@ -93,8 +93,8 @@ export const ClothingSizeCalculator = () => {
                 step="0.1"
                 min={0}
                 max={20}
-                value={weightKg || ""}
-                onChange={(e) => setWeightKg(e.target.value ? Number(e.target.value) : undefined)}
+                value={weightKg || ''}
+                onChange={e => setWeightKg(e.target.value ? Number(e.target.value) : undefined)}
                 placeholder="3.5"
               />
             </div>
@@ -107,10 +107,10 @@ export const ClothingSizeCalculator = () => {
                 <Badge className="text-lg px-3 py-1">{result.clothingSize.size}</Badge>
               </div>
               <div className="text-sm text-muted-foreground">
-                {result.clothingSize.minWeight}kg - {result.clothingSize.maxWeight}kg | 
-                Até {result.clothingSize.maxHeight}cm
+                {result.clothingSize.minWeight}kg - {result.clothingSize.maxWeight}kg | Até{' '}
+                {result.clothingSize.maxHeight}cm
               </div>
-              
+
               <div className="border-t pt-4 flex items-center justify-between">
                 <span className="font-medium">Tamanho de Fralda:</span>
                 <Badge variant="secondary" className="text-lg px-3 py-1">
@@ -118,12 +118,12 @@ export const ClothingSizeCalculator = () => {
                 </Badge>
               </div>
               <div className="text-sm text-muted-foreground">
-                {result.diaperSize.minWeight}kg - {result.diaperSize.maxWeight}kg | 
-                ~{result.diaperSize.dailyUsage} fraldas/dia
+                {result.diaperSize.minWeight}kg - {result.diaperSize.maxWeight}kg | ~
+                {result.diaperSize.dailyUsage} fraldas/dia
               </div>
-              
+
               <p className="text-xs text-muted-foreground italic border-t pt-3">
-                Cálculo baseado {result.basedOn === "peso" ? "no peso" : "na idade"} informado(a).
+                Cálculo baseado {result.basedOn === 'peso' ? 'no peso' : 'na idade'} informado(a).
               </p>
             </CardContent>
           </Card>

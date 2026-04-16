@@ -1,4 +1,10 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface BabyProfile {
   id: string;
@@ -11,10 +17,10 @@ interface DashboardBebeHeaderProps {
   onBabyChange: (id: string) => void;
 }
 
-export const DashboardBebeHeader = ({ 
-  babyProfiles, 
-  selectedBabyId, 
-  onBabyChange 
+export const DashboardBebeHeader = ({
+  babyProfiles,
+  selectedBabyId,
+  onBabyChange,
 }: DashboardBebeHeaderProps) => {
   if (babyProfiles.length === 0) return null;
 
@@ -24,7 +30,7 @@ export const DashboardBebeHeader = ({
         <SelectValue placeholder="Selecione o bebê" />
       </SelectTrigger>
       <SelectContent>
-        {babyProfiles.map((baby) => (
+        {babyProfiles.map(baby => (
           <SelectItem key={baby.id} value={baby.id}>
             {baby.baby_name}
           </SelectItem>

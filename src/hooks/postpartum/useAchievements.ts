@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import type { Database } from "@/integrations/supabase/types";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import type { Database } from '@/integrations/supabase/types';
 
 type PostpartumAchievementRow = Database['public']['Tables']['postpartum_achievements']['Row'];
 type DailyWellnessScoreRow = Database['public']['Tables']['daily_wellness_score']['Row'];
@@ -61,7 +61,9 @@ export const usePostpartumAchievements = () => {
   const { data: achievements, isLoading: loadingAchievements } = useQuery({
     queryKey: ['postpartum-achievements'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -78,12 +80,16 @@ export const usePostpartumAchievements = () => {
   const { data: wellnessScores, isLoading: loadingScores } = useQuery({
     queryKey: ['daily-wellness-scores'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
         .from('daily_wellness_score')
-        .select('id, user_id, date, physical_score, emotional_score, energy_score, pain_score, total_score, is_good_day, notes, created_at')
+        .select(
+          'id, user_id, date, physical_score, emotional_score, energy_score, pain_score, total_score, is_good_day, notes, created_at'
+        )
         .eq('user_id', user.id)
         .order('date', { ascending: false })
         .limit(30);
@@ -94,14 +100,16 @@ export const usePostpartumAchievements = () => {
   });
 
   const unlockAchievement = useMutation({
-    mutationFn: async ({ 
-      achievement_code, 
-    }: { 
-      achievement_code: string; 
-      achievement_name?: string; 
+    mutationFn: async ({
+      achievement_code,
+    }: {
+      achievement_code: string;
+      achievement_name?: string;
       achievement_description?: string;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
       const { data, error } = await supabase
@@ -120,7 +128,7 @@ export const usePostpartumAchievements = () => {
       }
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       if (data) {
         queryClient.invalidateQueries({ queryKey: ['postpartum-achievements'] });
         const achievement = ACHIEVEMENT_DEFINITIONS.find(a => a.code === data.achievement_code);
@@ -139,27 +147,35 @@ export const usePostpartumAchievements = () => {
       energy_score?: number;
       pain_score?: number;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const total_score = (scores.physical_score ?? 0) + (scores.emotional_score ?? 0) + 
-                         (scores.energy_score ?? 0) + (100 - (scores.pain_score ?? 0));
+      const total_score =
+        (scores.physical_score ?? 0) +
+        (scores.emotional_score ?? 0) +
+        (scores.energy_score ?? 0) +
+        (100 - (scores.pain_score ?? 0));
       const is_good_day = total_score >= 280; // 70% de 400
 
       const { data, error } = await supabase
         .from('daily_wellness_score')
-        .upsert({
-          user_id: user.id,
-          date: scores.date,
-          physical_score: scores.physical_score,
-          emotional_score: scores.emotional_score,
-          energy_score: scores.energy_score,
-          pain_score: scores.pain_score,
-          total_score,
-          is_good_day,
-        }, {
-          onConflict: 'user_id,date'
-        })
+        .upsert(
+          {
+            user_id: user.id,
+            date: scores.date,
+            physical_score: scores.physical_score,
+            emotional_score: scores.emotional_score,
+            energy_score: scores.energy_score,
+            pain_score: scores.pain_score,
+            total_score,
+            is_good_day,
+          },
+          {
+            onConflict: 'user_id,date',
+          }
+        )
         .select()
         .single();
 
@@ -174,7 +190,7 @@ export const usePostpartumAchievements = () => {
   // Calcular streak de "dias bons"
   const getGoodDaysStreak = () => {
     if (!wellnessScores) return 0;
-    
+
     let streak = 0;
     for (const score of wellnessScores) {
       if (score.is_good_day) {

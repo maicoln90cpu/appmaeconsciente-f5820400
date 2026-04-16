@@ -1,12 +1,12 @@
-import { Link } from "react-router-dom";
-import { CheckCircle2, Circle, ChevronRight, Sparkles, X } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { CheckCircle2, Circle, ChevronRight, Sparkles, X } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { cn } from '@/lib/utils';
 
-import { useOnboarding } from "@/hooks/useOnboarding";
+import { useOnboarding } from '@/hooks/useOnboarding';
 
 interface OnboardingChecklistProps {
   onDismiss?: () => void;
@@ -38,20 +38,17 @@ export const OnboardingChecklist = ({ onDismiss, compact = false }: OnboardingCh
           </div>
           <Progress value={progress} className="h-1.5 mb-3" />
           <div className="flex flex-wrap gap-2">
-            {steps.filter(s => !s.completed).slice(0, 2).map((step) => (
-              <Button
-                key={step.key}
-                variant="outline"
-                size="sm"
-                asChild
-                className="h-8 text-xs"
-              >
-                <Link to={step.path || "#"}>
-                  <span className="mr-1">{step.icon}</span>
-                  {step.title}
-                </Link>
-              </Button>
-            ))}
+            {steps
+              .filter(s => !s.completed)
+              .slice(0, 2)
+              .map(step => (
+                <Button key={step.key} variant="outline" size="sm" asChild className="h-8 text-xs">
+                  <Link to={step.path || '#'}>
+                    <span className="mr-1">{step.icon}</span>
+                    {step.title}
+                  </Link>
+                </Button>
+              ))}
           </div>
         </CardContent>
       </Card>
@@ -94,16 +91,14 @@ export const OnboardingChecklist = ({ onDismiss, compact = false }: OnboardingCh
 
         {/* Steps */}
         <div className="space-y-2">
-          {steps.map((step) => (
+          {steps.map(step => (
             <Link
               key={step.key}
-              to={step.path || "#"}
+              to={step.path || '#'}
               className={cn(
-                "flex items-center gap-3 p-3 rounded-lg transition-all",
-                "hover:bg-muted/50",
-                step.completed
-                  ? "bg-primary/5 text-muted-foreground"
-                  : "bg-muted/30"
+                'flex items-center gap-3 p-3 rounded-lg transition-all',
+                'hover:bg-muted/50',
+                step.completed ? 'bg-primary/5 text-muted-foreground' : 'bg-muted/30'
               )}
             >
               {step.completed ? (
@@ -111,19 +106,14 @@ export const OnboardingChecklist = ({ onDismiss, compact = false }: OnboardingCh
               ) : (
                 <Circle className="h-5 w-5 text-muted-foreground shrink-0" />
               )}
-              
+
               <span className="text-xl shrink-0">{step.icon}</span>
-              
+
               <div className="flex-1 min-w-0">
-                <p className={cn(
-                  "font-medium text-sm",
-                  step.completed && "line-through"
-                )}>
+                <p className={cn('font-medium text-sm', step.completed && 'line-through')}>
                   {step.title}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {step.description}
-                </p>
+                <p className="text-xs text-muted-foreground truncate">{step.description}</p>
               </div>
 
               {!step.completed && (
