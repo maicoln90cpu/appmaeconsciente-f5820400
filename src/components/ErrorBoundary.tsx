@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 import { analytics } from '@/lib/analytics';
 import { captureError, addBreadcrumb } from '@/lib/sentry';
+import { logClientError } from '@/services/monitoringService';
 
 interface Props {
   children: ReactNode;
@@ -154,6 +155,17 @@ export class ErrorBoundary extends Component<Props, State> {
         errorName: error.name,
         errorType,
         retryCount: this.state.retryCount,
+      },
+    });
+
+    // Persistir erro no banco de dados
+    logClientError(error.message, {
+      componentName: 'ErrorBoundary',
+      stackTrace: error.stack,
+      metadata: {
+        errorType,
+        retryCount: this.state.retryCount,
+        componentStack: errorInfo.componentStack?.slice(0, 500),
       },
     });
 

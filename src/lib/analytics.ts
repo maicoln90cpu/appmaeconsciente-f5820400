@@ -1,4 +1,5 @@
 // Analytics tracking utility with Plausible integration
+import { logFeatureUsage } from '@/services/monitoringService';
 
 interface AnalyticsEvent {
   name: string;
@@ -42,7 +43,11 @@ class Analytics {
   track(event: AnalyticsEvent) {
     if (!this.enabled) return;
 
-    // Using console.info for analytics tracking (allowed by ESLint config)
+    // Persistir eventos-chave no banco
+    const keyEvents = ['product_access', 'post_created', 'item_purchased', 'enxoval_exported', 'ticket_created', 'budget_exceeded'];
+    if (keyEvents.includes(event.name)) {
+      logFeatureUsage(event.name, event.properties);
+    }
     console.info('[Analytics]', event.name, event.properties);
 
     // Enviar to Plausible if available
