@@ -95,29 +95,6 @@ export function RastreadorHidratacao() {
     }
   };
 
-  const addWater = async (amount: number) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('water_intake')
-        .insert({
-          user_id: user.id,
-          amount_ml: amount
-        });
-
-      if (error) throw error;
-
-      toast.success(`${amount}ml adicionados!`);
-      loadData();
-      setCustomAmount("");
-    } catch (error) {
-      console.error('Erro ao adicionar água:', error);
-      toast.error('Erro ao registrar consumo de água');
-    }
-  };
-
   const deleteIntake = async (id: string) => {
     try {
       const { error } = await supabase
