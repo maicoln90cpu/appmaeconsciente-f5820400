@@ -518,11 +518,100 @@ function MetricsHealthPanel() {
 // Need supabase import for MetricsHealthPanel
 
 // ═══════════════════════════════════════════════
+// 8 — System Health Banner (top-level alert)
+// ═══════════════════════════════════════════════
+function SystemHealthBanner() {
+  const { data } = useQuery({
+    queryKey: ['system-health-banner'],
+    queryFn: async () => {
+      const { data: status } = await supabase
+        .from('system_health_status')
+        .select('score, status, checked_at, issues, metrics')
+        .eq('module_name', 'system')
+        .maybeSingle();
+
+      // Also check for recent error spike (last hour)
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+      const { count: recentErrors } = await supabase
+        .from('client_error_logs')
+        .select('id', { count: 'exact', head: true })
+        .gte('created_at', oneHourAgo);
+
+      return {
+        score: status?.score ?? null,
+        status: status?.status ?? 'unknown',
+        checkedAt: status?.checked_at ?? null,
+        errorsLastHour: recentErrors ?? 0,
+        hasSpike: (recentErrors ?? 0) > 20,
+        issues: (status?.issues as Array<{ type: string; message: string }>) ?? [],
+      };
+    },
+    refetchInterval: 60000, // refresh every minute
+  });
+
+  if (!data || (data.status === 'healthy' && !data.hasSpike)) return null;
+
+  const isDegraded = data.status === 'degraded' || data.status === 'critical';
+  const isCritical = data.status === 'critical';
+
+  return (
+    <div
+      className={`flex items-start gap-3 p-4 rounded-lg border ${
+        isCritical
+          ? 'bg-destructive/15 border-destructive/40'
+          : isDegraded
+          ? 'bg-yellow-500/10 border-yellow-500/30'
+          : data.hasSpike
+          ? 'bg-destructive/10 border-destructive/30'
+          : ''
+      }`}
+    >
+      <AlertCircle
+        className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
+          isCritical ? 'text-destructive' : isDegraded ? 'text-yellow-500' : 'text-destructive'
+        }`}
+      />
+      <div className="space-y-1 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold">
+            {isCritical
+              ? '🔴 Sistema Crítico'
+              : isDegraded
+              ? '🟡 Sistema Degradado'
+              : '⚠️ Spike de Erros Detectado'}
+          </span>
+          {data.score !== null && (
+            <Badge
+              variant="outline"
+              className={
+                isCritical
+                  ? 'text-destructive border-destructive/40'
+                  : 'text-yellow-500 border-yellow-500/40'
+              }
+            >
+              Score: {data.score}/100
+            </Badge>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          {data.hasSpike && `${data.errorsLastHour} erros na última hora. `}
+          {data.issues.length > 0 && data.issues.map(i => i.message).join('. ')}
+          {data.checkedAt &&
+            ` — Último check: ${new Date(data.checkedAt).toLocaleString('pt-BR')}`}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════
 // MAIN CONTAINER
 // ═══════════════════════════════════════════════
 export const ObservabilityTab = () => {
   return (
     <div className="space-y-3">
+      <SystemHealthBanner />
+
       <PanelWrapper title="SLA / SLO Metrics" icon={Shield} defaultOpen={true}>
         <SLAPanel />
       </PanelWrapper>
