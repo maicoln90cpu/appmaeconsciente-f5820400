@@ -4,7 +4,7 @@
  */
 
 import { supabase } from "@/integrations/supabase/client";
-import logger from "@/lib/logger";
+import { logger } from "@/lib/logger";
 
 const log = logger.scoped("realtime");
 

@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 import { useBabyLogs } from "@/hooks/useBabyLogs";
-import logger from "@/lib/logger";
+import { logger } from "@/lib/logger";
 import type { 
   BabyFeedingLog, 
   BreastMilkStorage, 

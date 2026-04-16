@@ -11,7 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/useToast";
 import { useAuth } from "@/contexts/AuthContext";
 import { analytics } from "@/lib/analytics";
-import logger from "@/lib/logger";
+import { logger } from "@/lib/logger";
 import { createMultiTableSubscription } from "@/lib/realtime-utils";
 import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 
