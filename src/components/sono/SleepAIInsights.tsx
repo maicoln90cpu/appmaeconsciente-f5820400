@@ -358,6 +358,7 @@ export const SleepAIInsights = ({
   if (!aiInsightsEnabled) return null;
 
   if (sleepLogs.length === 0) {
+    return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
