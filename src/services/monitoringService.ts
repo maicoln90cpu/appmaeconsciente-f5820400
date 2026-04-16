@@ -10,6 +10,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
+import { getCurrentRequestId } from '@/lib/requestId';
 
 // ─── Controle de taxa (debounce/throttle por tipo) ────────────────────────────
 const THROTTLE_MS = 2000; // mínimo 2s entre writes do mesmo tipo
@@ -82,13 +83,14 @@ export const logClientError = (
 
   enqueue(async () => {
     const userId = getCurrentUserId();
+    const requestId = getCurrentRequestId();
     await supabase.from('client_error_logs').insert([{
       error_message: errorMessage.slice(0, 1000),
       component_name: options?.componentName ?? null,
       stack_trace: options?.stackTrace?.slice(0, 5000) ?? null,
       url: options?.url ?? (typeof window !== 'undefined' ? window.location.pathname : null),
       user_id: userId ?? undefined,
-      metadata: (options?.metadata ?? {}) as unknown as Json,
+      metadata: { ...(options?.metadata ?? {}), requestId: requestId || undefined } as unknown as Json,
     }]);
   });
 };
@@ -112,13 +114,14 @@ export const logPerformance = (
 
   enqueue(async () => {
     const userId = getCurrentUserId();
+    const requestId = getCurrentRequestId();
     await supabase.from('performance_logs').insert([{
       operation_name: operationName.slice(0, 200),
       operation_type: options?.operationType || 'query',
       duration_ms: Math.round(durationMs),
       is_slow: durationMs > 2000,
       user_id: userId ?? undefined,
-      metadata: (options?.metadata ?? {}) as unknown as Json,
+      metadata: { ...(options?.metadata ?? {}), requestId: requestId || undefined } as unknown as Json,
     }]);
   });
 };
