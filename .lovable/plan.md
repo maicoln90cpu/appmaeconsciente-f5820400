@@ -1,7 +1,7 @@
 
 # Plano: Consistência e Padrões de Código (3 Etapas)
 
-## Status: Etapa 1 ✅ | Etapa 2 ⏳ | Etapa 3 ⏳
+## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ⏳
 
 ---
 
