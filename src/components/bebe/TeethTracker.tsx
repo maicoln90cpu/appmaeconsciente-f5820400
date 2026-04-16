@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useSubmitGuard } from "@/hooks/useSubmitGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +31,7 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
   const registeredNumbers = new Set(logs.map(l => l.tooth_number));
   const availableTeeth = BABY_TEETH.filter(t => !registeredNumbers.has(t.number));
 
-  const handleSave = async () => {
+  const handleSaveRaw = useCallback(async () => {
     if (!selectedTooth) return;
     const tooth = BABY_TEETH.find(t => t.number === selectedTooth)!;
     await addTooth({
@@ -47,7 +48,9 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
     });
     setOpen(false);
     resetForm();
-  };
+  }, [selectedTooth, babyProfileId, noticedDate, symptoms, painLevel, reliefMethods, notes, addTooth]);
+
+  const [isSaving, handleSave] = useSubmitGuard(handleSaveRaw);
 
   const resetForm = () => {
     setSelectedTooth(null);
@@ -162,8 +165,8 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notas adicionais..." />
               </div>
 
-              <Button onClick={handleSave} disabled={!selectedTooth} className="w-full">
-                Registrar dente
+              <Button onClick={handleSave} disabled={!selectedTooth || isSaving} className="w-full">
+                {isSaving ? "Salvando..." : "Registrar dente"}
               </Button>
             </div>
           </DialogContent>

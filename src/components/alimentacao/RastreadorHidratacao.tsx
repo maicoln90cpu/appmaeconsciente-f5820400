@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSubmitGuard } from "@/hooks/useSubmitGuard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -27,6 +28,28 @@ export function RastreadorHidratacao() {
   const [goal, setGoal] = useState<number>(2000);
   const [customAmount, setCustomAmount] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isAdding, guardedAddWater] = useSubmitGuard(async (amount: number) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('water_intake')
+        .insert({
+          user_id: user.id,
+          amount_ml: amount
+        });
+
+      if (error) throw error;
+
+      toast.success(`${amount}ml adicionados!`);
+      loadData();
+      setCustomAmount("");
+    } catch (error) {
+      console.error('Erro ao adicionar água:', error);
+      toast.error('Erro ao registrar consumo de água');
+    }
+  });
 
   useEffect(() => {
     loadData();
@@ -69,29 +92,6 @@ export function RastreadorHidratacao() {
       toast.error('Erro ao carregar dados de hidratação');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const addWater = async (amount: number) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('water_intake')
-        .insert({
-          user_id: user.id,
-          amount_ml: amount
-        });
-
-      if (error) throw error;
-
-      toast.success(`${amount}ml adicionados!`);
-      loadData();
-      setCustomAmount("");
-    } catch (error) {
-      console.error('Erro ao adicionar água:', error);
-      toast.error('Erro ao registrar consumo de água');
     }
   };
 
@@ -225,7 +225,8 @@ export function RastreadorHidratacao() {
                   <Button
                     key={amount}
                     variant="outline"
-                    onClick={() => addWater(amount)}
+                    onClick={() => guardedAddWater(amount)}
+                    disabled={isAdding}
                     className="h-auto py-4"
                   >
                     <div className="text-center">
@@ -248,8 +249,8 @@ export function RastreadorHidratacao() {
                   min="1"
                 />
                 <Button
-                  onClick={() => customAmount && addWater(parseInt(customAmount))}
-                  disabled={!customAmount || parseInt(customAmount) <= 0}
+                  onClick={() => customAmount && guardedAddWater(parseInt(customAmount))}
+                  disabled={!customAmount || parseInt(customAmount) <= 0 || isAdding}
                 >
                   <Plus className="h-4 w-4" />
                 </Button>

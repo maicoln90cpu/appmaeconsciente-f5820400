@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useSubmitGuard } from "@/hooks/useSubmitGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +32,7 @@ export const StimulationBank = ({ babyProfileId }: Props) => {
   const [duration, setDuration] = useState(10);
   const [devAreas, setDevAreas] = useState<string[]>([]);
 
-  const handleSave = async () => {
+  const handleSaveRaw = useCallback(async () => {
     if (!title.trim()) return;
     await addActivity({
       title,
@@ -46,7 +47,9 @@ export const StimulationBank = ({ babyProfileId }: Props) => {
     });
     setOpen(false);
     setTitle(""); setDescription(""); setDevAreas([]);
-  };
+  }, [title, description, category, ageStart, ageEnd, duration, devAreas, babyProfileId, addActivity]);
+
+  const [isSaving, handleSave] = useSubmitGuard(handleSaveRaw);
 
   const filtered = activities.filter(a => {
     if (filterCategory !== "all" && a.category !== filterCategory) return false;
@@ -130,7 +133,9 @@ export const StimulationBank = ({ babyProfileId }: Props) => {
                     ))}
                   </div>
                 </div>
-                <Button onClick={handleSave} disabled={!title.trim()} className="w-full">Salvar atividade</Button>
+                <Button onClick={handleSave} disabled={!title.trim() || isSaving} className="w-full">
+                  {isSaving ? "Salvando..." : "Salvar atividade"}
+                </Button>
               </div>
             </DialogContent>
           </Dialog>

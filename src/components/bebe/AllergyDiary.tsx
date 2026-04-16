@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useSubmitGuard } from "@/hooks/useSubmitGuard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +33,7 @@ export const AllergyDiary = ({ babyProfileId }: Props) => {
   const [doctorConsulted, setDoctorConsulted] = useState(false);
   const [notes, setNotes] = useState("");
 
-  const handleSave = async () => {
+  const handleSaveRaw = useCallback(async () => {
     if (!foodName.trim()) return;
     await addLog({
       food_name: foodName.trim(),
@@ -47,7 +48,9 @@ export const AllergyDiary = ({ babyProfileId }: Props) => {
     });
     setOpen(false);
     resetForm();
-  };
+  }, [foodName, introDate, reactionType, symptoms, onsetHours, actionTaken, doctorConsulted, notes, addLog]);
+
+  const [isSaving, handleSave] = useSubmitGuard(handleSaveRaw);
 
   const resetForm = () => {
     setFoodName(""); setReactionType("none"); setSymptoms([]);
@@ -149,7 +152,9 @@ export const AllergyDiary = ({ babyProfileId }: Props) => {
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Detalhes adicionais..." />
               </div>
 
-              <Button onClick={handleSave} disabled={!foodName.trim()} className="w-full">Registrar</Button>
+              <Button onClick={handleSave} disabled={!foodName.trim() || isSaving} className="w-full">
+                {isSaving ? "Salvando..." : "Registrar"}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
