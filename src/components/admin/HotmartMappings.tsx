@@ -173,7 +173,12 @@ export const HotmartMappings = () => {
         </div>
 
         {mappings.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">Nenhum mapeamento configurado</p>
+          <div className="flex flex-col items-center py-12 text-center">
+            <div className="rounded-full bg-muted p-4 mb-4">
+              <Plus className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">Nenhum mapeamento configurado</p>
+          </div>
         ) : (
           <Table>
             <TableHeader>

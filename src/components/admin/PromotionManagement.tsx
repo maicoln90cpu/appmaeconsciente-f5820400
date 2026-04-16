@@ -235,7 +235,12 @@ export function PromotionManagement() {
           {isLoading ? (
             <p className="text-muted-foreground text-center py-8">Carregando...</p>
           ) : promotions?.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">Nenhuma promoção criada ainda</p>
+            <div className="flex flex-col items-center py-12 text-center">
+              <div className="rounded-full bg-muted p-4 mb-4">
+                <Gift className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground">Nenhuma promoção criada ainda</p>
+            </div>
           ) : (
             <div className="space-y-4">
               {promotions?.map(promo => (
