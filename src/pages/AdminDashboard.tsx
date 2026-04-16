@@ -265,11 +265,15 @@ export default function AdminDashboard() {
           <TabsContent value="sistema">
             <Suspense fallback={<TabLoading />}>
               <AdminSubTabs
-                defaultValue="users"
+                defaultValue="health"
                 tabs={[
+                  { value: "health", label: "Saúde", content: <SystemHealthTab /> },
+                  { value: "observability", label: "Observabilidade", content: <ObservabilityTab /> },
+                  { value: "database", label: "Banco de Dados", content: <DatabaseTab /> },
                   { value: "users", label: "Usuários", content: <UserManagement /> },
                   { value: "security", label: "Segurança", content: <SecurityAuditPanel /> },
                   { value: "settings", label: "Configurações", content: <SiteSettings /> },
+                  { value: "gtm", label: "GTM / Diag.", content: <GtmDiagnosticTab /> },
                 ]}
               />
             </Suspense>
