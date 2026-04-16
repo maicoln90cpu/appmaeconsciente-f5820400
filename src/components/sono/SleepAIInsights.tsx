@@ -59,7 +59,7 @@ export const SleepAIInsights = ({
   const { aiInsightsEnabled } = useFeatureFlags();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  if (!aiInsightsEnabled) return null;
+  
 
   // Análise dos últimos 7 dias
   const last7DaysLogs = useMemo(() => {
