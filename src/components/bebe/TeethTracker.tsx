@@ -165,8 +165,8 @@ export const TeethTracker = ({ babyProfileId }: Props) => {
                 <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Notas adicionais..." />
               </div>
 
-              <Button onClick={handleSave} disabled={!selectedTooth} className="w-full">
-                Registrar dente
+              <Button onClick={handleSave} disabled={!selectedTooth || isSaving} className="w-full">
+                {isSaving ? "Salvando..." : "Registrar dente"}
               </Button>
             </div>
           </DialogContent>
