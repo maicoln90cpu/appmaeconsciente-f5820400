@@ -52,6 +52,9 @@ class OfflineSyncManager {
   private statusListeners: Set<StatusListener> = new Set();
   private processing = false;
   private config: SyncConfig;
+  private onlineHandler: (() => void) | null = null;
+  private offlineHandler: (() => void) | null = null;
+  private intervalId: ReturnType<typeof setInterval> | null = null;
 
   constructor(config: Partial<SyncConfig> = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config };
@@ -71,7 +74,6 @@ class OfflineSyncManager {
       request.onsuccess = () => {
         this.db = request.result;
         resolve();
-        // Process any pending tasks
         this.processQueue();
       };
 
@@ -89,22 +91,43 @@ class OfflineSyncManager {
   }
 
   private setupListeners(): void {
-    // Listen for online/offline events
-    window.addEventListener("online", () => {
+    this.onlineHandler = () => {
       logger.info("🔄 Connection restored, syncing...");
       this.processQueue();
-    });
+    };
 
-    window.addEventListener("offline", () => {
+    this.offlineHandler = () => {
       logger.info("📴 Offline mode activated");
-    });
+    };
+
+    window.addEventListener("online", this.onlineHandler);
+    window.addEventListener("offline", this.offlineHandler);
 
     // Periodic sync check (every 30 seconds when online)
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       if (navigator.onLine && !this.processing) {
         this.processQueue();
       }
     }, 30000);
+  }
+
+  /**
+   * Remove todos os listeners e timers. Chamar antes de descartar a instância.
+   */
+  destroy(): void {
+    if (this.onlineHandler) {
+      window.removeEventListener("online", this.onlineHandler);
+      this.onlineHandler = null;
+    }
+    if (this.offlineHandler) {
+      window.removeEventListener("offline", this.offlineHandler);
+      this.offlineHandler = null;
+    }
+    if (this.intervalId !== null) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+    this.statusListeners.clear();
   }
 
   /**
@@ -157,7 +180,6 @@ class OfflineSyncManager {
 
     this.notifyStatusChange();
 
-    // Try immediate sync if online
     if (navigator.onLine && !this.processing) {
       this.processQueue();
     }
@@ -230,7 +252,7 @@ class OfflineSyncManager {
       const request = store.getAll();
 
       request.onsuccess = () => {
-        const tasks = request.result.sort((a, b) => a.timestamp - b.timestamp);
+        const tasks = request.result.sort((a: SyncTask, b: SyncTask) => a.timestamp - b.timestamp);
         resolve(tasks);
       };
       request.onerror = () => reject(request.error);
@@ -253,12 +275,10 @@ class OfflineSyncManager {
 
     for (const task of pendingTasks) {
       try {
-        // Update status to syncing
         task.status = "syncing";
         await this.saveTask(task);
         this.notifyStatusChange();
 
-        // Get handler
         const handler = this.handlers.get(task.type);
         if (!handler) {
           console.warn(`No handler registered for task type: ${task.type}`);
@@ -268,10 +288,7 @@ class OfflineSyncManager {
           continue;
         }
 
-        // Execute handler
         await handler(task);
-
-        // Success - remove task
         await this.deleteTask(task.id);
         
         analytics.track({
@@ -299,7 +316,6 @@ class OfflineSyncManager {
           });
         } else {
           task.status = "pending";
-          // Exponential backoff
           const delay = Math.min(
             this.config.baseDelayMs * Math.pow(2, task.retries),
             this.config.maxDelayMs
@@ -401,4 +417,16 @@ class OfflineSyncManager {
   }
 }
 
-export const offlineSync = new OfflineSyncManager();
+// Singleton com proteção contra duplicação em HMR
+function createOfflineSync(): OfflineSyncManager {
+  const key = "__offlineSyncManager";
+  const existing = (globalThis as any)[key] as OfflineSyncManager | undefined;
+  if (existing) {
+    existing.destroy();
+  }
+  const instance = new OfflineSyncManager();
+  (globalThis as any)[key] = instance;
+  return instance;
+}
+
+export const offlineSync = createOfflineSync();
