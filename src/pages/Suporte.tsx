@@ -1,8 +1,7 @@
 import { useState } from 'react';
 
-import { Loader2 } from 'lucide-react';
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { PageLoader } from '@/components/ui/page-loader';
 
 import { TicketDetail } from '@/components/suporte/TicketDetail';
 import { TicketForm } from '@/components/suporte/TicketForm';

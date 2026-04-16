@@ -4,6 +4,7 @@ import { Baby, BarChart3, History, Droplets, Settings, Info } from 'lucide-react
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LazyTabContent } from '@/components/ui/lazy-tab-content';
+import { PageLoader } from '@/components/ui/page-loader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 

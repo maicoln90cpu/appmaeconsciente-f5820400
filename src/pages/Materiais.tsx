@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { Loader2, Star, Lightbulb, Filter, FileText, ArrowRight } from 'lucide-react';
+import { Star, Lightbulb, Filter, FileText, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 

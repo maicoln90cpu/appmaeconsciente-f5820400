@@ -1,6 +1,7 @@
 import { differenceInMonths } from 'date-fns';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PageLoader } from '@/components/ui/page-loader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { ConfiguracoesSono } from '@/components/sono/ConfiguracoesSono';
