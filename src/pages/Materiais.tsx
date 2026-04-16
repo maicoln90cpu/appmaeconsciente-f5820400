@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { PageLoader } from '@/components/ui/page-loader';
 
 import { PremiumUpgradeModal } from '@/components/materiais/PremiumUpgradeModal';
 import { ToolIconGrid } from '@/components/materiais/ToolIconGrid';
@@ -208,11 +209,7 @@ const Materiais = () => {
     });
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
