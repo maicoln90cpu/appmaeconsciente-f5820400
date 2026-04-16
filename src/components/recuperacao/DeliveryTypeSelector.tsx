@@ -74,28 +74,28 @@ export const DeliveryTypeSelector = () => {
           icon: <Heart className="h-5 w-5" />,
           label: 'Parto Normal/Vaginal',
           description: 'Recuperação mais rápida, foco no períneo e assoalho pélvico',
-          color: 'bg-green-100 text-green-700',
+          color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
         };
       case 'cesarean':
         return {
           icon: <Scissors className="h-5 w-5" />,
           label: 'Cesárea',
           description: 'Cuidados com a cicatriz, repouso mais longo, retorno gradual às atividades',
-          color: 'bg-purple-100 text-purple-700',
+          color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
         };
       case 'forceps':
         return {
           icon: <Baby className="h-5 w-5" />,
           label: 'Fórceps',
           description: 'Atenção extra ao períneo, possível episiotomia, recuperação intermediária',
-          color: 'bg-blue-100 text-blue-700',
+          color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
         };
       case 'vacuum':
         return {
           icon: <Baby className="h-5 w-5" />,
           label: 'Vácuo Extrator',
           description: 'Similar ao parto normal, com atenção ao períneo',
-          color: 'bg-teal-100 text-teal-700',
+          color: 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300',
         };
     }
   };
