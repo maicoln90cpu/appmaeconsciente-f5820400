@@ -1,4 +1,3 @@
-
 # Plano: Consistência e Padrões de Código (3 Etapas)
 
 ## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ✅
@@ -22,6 +21,32 @@
 - [x] Definir idioma padrão (PT-BR) para comentários
 - [x] ~50 arquivos traduzidos (hooks, contexts, lib, main.tsx)
 - [x] Zero erros TypeScript após tradução
+
+---
+
+# Plano: Documentação e Manutenibilidade (2 Etapas)
+
+## Status: Etapa 1 ✅ | Etapa 2 ⬜
+
+---
+
+## Etapa 1 — Estrutura, Documentos Novos e Atualização ✅
+- [x] Criada pasta `docs/` e movidos 8 arquivos .md do root
+- [x] README.md reescrito como versão curta com links para docs/
+- [x] DATABASE_SCHEMA.md criado — 124 tabelas organizadas por módulo
+- [x] SECURITY.md criado — RLS, auth, rate limiting, CORS, LGPD, checklists
+- [x] CODE_STANDARDS.md criado — padrões TypeScript/React/Tailwind com Do/Don't
+- [x] EDGE_FUNCTIONS.md criado — catálogo das 31 funções com auth, rate limit, categoria
+- [x] CHANGELOG.md criado — histórico por versão desde v1.0
+- [x] PRD.md atualizado para v1.18 (Abril 2026)
+- [x] ROADMAP.md atualizado (próxima revisão Jul/2026)
+- [x] PENDENCIAS.md atualizado com status de monitoramento completo
+
+## Etapa 2 — Memo Backup + Knowledge + Memo Permanente
+- [ ] Criar docs/memocopy.md com cópia completa das regras da memo
+- [ ] Criar docs/KNOWLEDGE_SUMMARY.md (≤ 9500 chars) para inserir no knowledge
+- [ ] Gravar memo permanente de formato de resposta no topo do index
+- [ ] Atualizar mem://~user com preferências completas
 
 ---
 
