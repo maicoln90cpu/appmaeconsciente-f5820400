@@ -355,7 +355,8 @@ export const SleepAIInsights = ({
     });
   }, [last7DaysLogs]);
 
-  if (sleepLogs.length === 0) {
+  if (!aiInsightsEnabled) return null;
+
     return (
       <Card>
         <CardHeader>
