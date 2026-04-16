@@ -46,7 +46,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
 
       let query = supabase
         .from('baby_routines')
-        .select('*')
+        .select('id, user_id, baby_profile_id, title, routine_type, scheduled_time, duration_minutes, days_of_week, notes, is_active, created_at, updated_at')
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('scheduled_time', { ascending: true });
@@ -69,7 +69,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
 
       const { data, error } = await supabase
         .from('baby_routine_logs')
-        .select('*')
+        .select('id, user_id, routine_id, completed_at, actual_time, notes, created_at')
         .eq('user_id', userId)
         .gte('completed_at', `${today}T00:00:00`)
         .lte('completed_at', `${today}T23:59:59`);

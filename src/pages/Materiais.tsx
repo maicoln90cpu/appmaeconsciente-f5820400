@@ -69,7 +69,7 @@ const Materiais = () => {
       if (!user) { navigate("/auth"); return; }
 
       const [productsRes, accessRes, clubAccessRes, clubProductRes] = await Promise.all([
-        supabase.from("products").select("*").eq("is_active", true).order("display_order"),
+        supabase.from("products").select("id, title, slug, description, short_description, price, is_active, is_free, display_order, category, thumbnail_url, destination_url, hotmart_product_id, payment_url, access_duration_days, trial_enabled, trial_days").eq("is_active", true).order("display_order"),
         supabase.from("user_product_access").select("product_id, expires_at").eq("user_id", user.id),
         supabase.from("user_club_access").select("has_active_access").eq("user_id", user.id).maybeSingle(),
         supabase.from("products").select("price, payment_url").eq("slug", "clube-premium").single(),

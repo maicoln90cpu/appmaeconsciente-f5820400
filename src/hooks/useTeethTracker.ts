@@ -65,7 +65,7 @@ export function useTeethTracker(babyProfileId?: string) {
   const { data: logs = [], isLoading: loading } = useQuery({
     queryKey,
     queryFn: async () => {
-      let query = supabase.from("baby_teeth_logs").select("*")
+      let query = supabase.from("baby_teeth_logs").select("id, user_id, baby_profile_id, tooth_number, tooth_name, tooth_position, noticed_date, symptoms, pain_level, relief_methods, notes, photo_url, created_at, updated_at")
         .eq("user_id", user!.id)
         .order("noticed_date", { ascending: true });
 

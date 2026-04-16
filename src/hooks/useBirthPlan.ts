@@ -40,7 +40,7 @@ export function useBirthPlan() {
       const userId = await getAuthenticatedUser();
       const { data, error } = await supabase
         .from("birth_plans")
-        .select("*")
+        .select("id, user_id, delivery_type, hospital_name, companion_name, companion_backup, pediatrician_name, anesthesia, episiotomy_preference, skin_to_skin, delayed_cord_clamping, breastfeed_first_hour, photos_video, lighting_preference, music_playlist, placenta_preference, special_requests, emergency_notes, due_date, created_at, updated_at")
         .eq("user_id", userId)
         .maybeSingle();
       if (error) throw error;

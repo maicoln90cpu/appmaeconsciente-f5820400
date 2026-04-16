@@ -29,7 +29,7 @@ export const useJaundiceLogs = (babyProfileId?: string) => {
     queryFn: async () => {
       let query = supabase
         .from("jaundice_logs")
-        .select("*")
+        .select("id, user_id, baby_profile_id, log_date, skin_color, eye_color, sclera_yellow, feeding_well, wet_diapers, stool_color, sun_exposure_minutes, notes, bilirubin_level, photo_url, risk_level, created_at")
         .order("log_date", { ascending: false });
 
       if (babyProfileId) {
