@@ -61,7 +61,7 @@ export function Receitas() {
     try {
       const { data, error } = await supabase
         .from('recipes')
-        .select('*')
+        .select('id, title, description, category, ingredients, preparation, prep_time, servings, calories, proteins, carbs, fats, nutrients, image_url, tags, trimester_focus, tips, is_public, created_at')
         .eq('is_public', true)
         .order('title');
 

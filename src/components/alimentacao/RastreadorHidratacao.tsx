@@ -57,7 +57,7 @@ export function RastreadorHidratacao() {
       const today = format(new Date(), "yyyy-MM-dd");
       const { data: intakeData, error } = await supabase
         .from('water_intake')
-        .select('*')
+        .select('id, user_id, date, time, amount_ml, created_at')
         .eq('user_id', user.id)
         .eq('date', today)
         .order('created_at', { ascending: false });
