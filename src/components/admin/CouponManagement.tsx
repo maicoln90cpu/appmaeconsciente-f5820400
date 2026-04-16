@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { logAdminAction } from '@/services/monitoringService';
 import { Trash2, Copy, Ticket } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -103,6 +104,7 @@ export const CouponManagement = () => {
       return data;
     },
     onSuccess: () => {
+      logAdminAction('create_coupon', { entityType: 'coupons', newValues: { code: newCoupon.code } });
       toast('Cupom criado com sucesso!');
       setNewCoupon({
         code: '',
@@ -125,8 +127,9 @@ export const CouponManagement = () => {
       const { error } = await supabase.from('coupons').delete().eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       toast('Cupom deletado');
+      logAdminAction('delete_coupon', { entityType: 'coupons', entityId: id });
       queryClient.invalidateQueries({ queryKey: ['coupons'] });
     },
   });
