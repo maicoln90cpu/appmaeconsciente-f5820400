@@ -11,6 +11,7 @@
 
 import { trackError } from './performance';
 import { captureError, addBreadcrumb } from './sentry';
+import { logClientError } from '@/services/monitoringService';
 
 const isDevelopment = import.meta.env.DEV;
 
@@ -93,6 +94,13 @@ export const logger = {
 
     // Rastrear for local dashboard
     trackError(message);
+
+    // Persistir no banco de dados (produção apenas)
+    logClientError(message, {
+      componentName: options?.context,
+      stackTrace: error instanceof Error ? error.stack : undefined,
+      metadata: options?.data as Record<string, unknown>,
+    });
 
     // Enviar to Sentry in production
     captureError(error || new Error(message), {
