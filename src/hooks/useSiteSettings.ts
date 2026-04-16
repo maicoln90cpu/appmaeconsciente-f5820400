@@ -6,6 +6,12 @@ import { QueryKeys, QueryCacheConfig } from "@/lib/query-config";
 export interface SiteSettings {
   id: string;
   gtm_id: string | null;
+  support_whatsapp: string | null;
+  custom_domain: string | null;
+  support_email: string | null;
+  system_timezone: string | null;
+  ai_insights_enabled: boolean | null;
+  badges_enabled: boolean | null;
   created_at: string;
   updated_at: string;
 }
@@ -21,13 +27,12 @@ export const useSiteSettings = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("site_settings")
-        .select("id, gtm_id, created_at, updated_at")
+        .select("id, gtm_id, support_whatsapp, custom_domain, support_email, system_timezone, ai_insights_enabled, badges_enabled, created_at, updated_at")
         .limit(1)
         .maybeSingle();
 
       if (error) throw error;
       
-      // If no settings exist, create default
       if (!data) {
         const { data: newData, error: insertError } = await supabase
           .from("site_settings")
@@ -36,24 +41,24 @@ export const useSiteSettings = () => {
           .single();
         
         if (insertError) throw insertError;
-        return newData as SiteSettings;
+        return newData as unknown as SiteSettings;
       }
       
-      return data as SiteSettings;
+      return data as unknown as SiteSettings;
     },
     staleTime: QueryCacheConfig.reference.staleTime,
     gcTime: QueryCacheConfig.reference.gcTime,
   });
 
-  const updateSettings = useMutation({
-    mutationFn: async (gtmId: string) => {
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (updates: Partial<Omit<SiteSettings, "id" | "created_at" | "updated_at">>) => {
       if (!settings?.id) {
         throw new Error("Settings not loaded");
       }
 
       const { data, error } = await supabase
         .from("site_settings")
-        .update({ gtm_id: gtmId })
+        .update(updates)
         .eq("id", settings.id)
         .select()
         .maybeSingle();
@@ -65,7 +70,7 @@ export const useSiteSettings = () => {
       queryClient.invalidateQueries({ queryKey });
       toast({
         title: "Configurações atualizadas",
-        description: "O GTM ID foi atualizado com sucesso.",
+        description: "As configurações foram salvas com sucesso.",
       });
     },
     onError: (error) => {
@@ -80,7 +85,8 @@ export const useSiteSettings = () => {
   return {
     settings,
     isLoading,
-    updateSettings: updateSettings.mutate,
-    isUpdating: updateSettings.isPending,
+    updateSettings: (gtmId: string) => updateSettingsMutation.mutate({ gtm_id: gtmId }),
+    updateAllSettings: updateSettingsMutation.mutate,
+    isUpdating: updateSettingsMutation.isPending,
   };
 };
