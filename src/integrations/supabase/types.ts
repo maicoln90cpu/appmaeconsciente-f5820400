@@ -4186,27 +4186,45 @@ export type Database = {
       }
       site_settings: {
         Row: {
+          ai_insights_enabled: boolean | null
           automation_config: Json | null
+          badges_enabled: boolean | null
           created_at: string | null
+          custom_domain: string | null
           gtm_id: string | null
           id: string
           singleton_guard: number | null
+          support_email: string | null
+          support_whatsapp: string | null
+          system_timezone: string | null
           updated_at: string | null
         }
         Insert: {
+          ai_insights_enabled?: boolean | null
           automation_config?: Json | null
+          badges_enabled?: boolean | null
           created_at?: string | null
+          custom_domain?: string | null
           gtm_id?: string | null
           id?: string
           singleton_guard?: number | null
+          support_email?: string | null
+          support_whatsapp?: string | null
+          system_timezone?: string | null
           updated_at?: string | null
         }
         Update: {
+          ai_insights_enabled?: boolean | null
           automation_config?: Json | null
+          badges_enabled?: boolean | null
           created_at?: string | null
+          custom_domain?: string | null
           gtm_id?: string | null
           id?: string
           singleton_guard?: number | null
+          support_email?: string | null
+          support_whatsapp?: string | null
+          system_timezone?: string | null
           updated_at?: string | null
         }
         Relationships: []
