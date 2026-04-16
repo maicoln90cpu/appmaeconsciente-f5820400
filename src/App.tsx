@@ -18,6 +18,7 @@ import { UpdatePrompt } from "@/components/pwa/UpdatePrompt";
 import { FeatureErrorBoundary } from "@/components/FeatureErrorBoundary";
 
 import { AuthProvider } from "@/contexts/AuthContext";
+import { FeatureFlagsProvider } from "@/contexts/FeatureFlagsContext";
 
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
@@ -101,6 +102,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <FeatureFlagsProvider>
         <TooltipProvider>
           <SkipLink />
           <Toaster />
@@ -217,6 +219,7 @@ const App = () => {
         </AnalyticsWrapper>
         </BrowserRouter>
         </TooltipProvider>
+        </FeatureFlagsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

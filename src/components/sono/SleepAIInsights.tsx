@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +56,10 @@ export const SleepAIInsights = ({
   babyName = "seu bebê",
   babyAgeMonths 
 }: SleepAIInsightsProps) => {
+  const { aiInsightsEnabled } = useFeatureFlags();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  
 
   // Análise dos últimos 7 dias
   const last7DaysLogs = useMemo(() => {
@@ -350,6 +354,8 @@ export const SleepAIInsights = ({
       };
     });
   }, [last7DaysLogs]);
+
+  if (!aiInsightsEnabled) return null;
 
   if (sleepLogs.length === 0) {
     return (
