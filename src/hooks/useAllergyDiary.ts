@@ -52,7 +52,7 @@ export function useAllergyDiary(babyProfileId?: string) {
   const { data: logs = [], isLoading: loading } = useQuery({
     queryKey,
     queryFn: async () => {
-      let query = supabase.from("baby_allergy_logs").select("*")
+      let query = supabase.from("baby_allergy_logs").select("id, user_id, baby_profile_id, food_name, introduction_date, reaction_type, reaction_severity, symptoms, onset_time_hours, photo_url, action_taken, doctor_consulted, is_confirmed_allergy, notes, created_at")
         .eq("user_id", user!.id)
         .order("introduction_date", { ascending: false });
 

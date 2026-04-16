@@ -18,7 +18,7 @@ export const useAchievements = () => {
       // Buscar progresso
       const { data: progress } = await supabase
         .from("user_achievement_progress")
-        .select("*")
+        .select("user_id, has_sleep_master, has_feeding_queen, has_savings_master, has_organizer_expert, has_peaceful_nights, has_first_week, has_complete_bag, feeding_logs_count, sleep_logs_count, long_sleep_count, enxoval_items_count, total_savings, mala_categories, days_using_app")
         .eq("user_id", user.id)
         .maybeSingle();
 

@@ -22,7 +22,7 @@ export const usePostpartumMedications = () => {
 
       const { data, error } = await supabase
         .from('postpartum_medications')
-        .select('*')
+        .select('id, user_id, medication_name, dosage, frequency, time_of_day, times_per_day, start_date, end_date, notes, is_active, created_at, updated_at')
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
@@ -40,7 +40,7 @@ export const usePostpartumMedications = () => {
       const today = new Date().toISOString().split('T')[0];
       const { data, error } = await supabase
         .from('medication_logs')
-        .select('*')
+        .select('id, user_id, medication_id, taken_at, scheduled_time, notes, created_at')
         .eq('user_id', userId)
         .gte('taken_at', today)
         .order('taken_at', { ascending: false });

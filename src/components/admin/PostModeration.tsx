@@ -18,7 +18,7 @@ export const PostModeration = () => {
       // Passo 1: Buscar posts
       const { data: postsData, error } = await supabase
         .from("posts")
-        .select("*")
+        .select("id, user_id, content, categoria, display_name, image_urls, is_hidden, moderation_status, tags, created_at, updated_at")
         .order("created_at", { ascending: false });
 
       if (error) throw error;

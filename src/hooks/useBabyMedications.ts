@@ -33,7 +33,7 @@ export const useBabyMedications = (babyProfileId?: string) => {
 
       let query = supabase
         .from('baby_medications')
-        .select('*')
+        .select('id, user_id, baby_profile_id, medication_name, dosage, frequency, times_per_day, time_of_day, start_date, end_date, notes, is_active, created_at, updated_at')
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
@@ -56,7 +56,7 @@ export const useBabyMedications = (babyProfileId?: string) => {
 
       const { data, error } = await supabase
         .from('baby_medication_logs')
-        .select('*')
+        .select('id, user_id, medication_id, given_at, dosage_given, notes, created_at')
         .eq('user_id', userId)
         .gte('given_at', `${today}T00:00:00`)
         .lte('given_at', `${today}T23:59:59`);

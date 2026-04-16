@@ -65,7 +65,7 @@ export const ProductRoute = ({ productSlug }: ProductRouteProps) => {
 
       const { data: productData } = await supabase
         .from("products")
-        .select("*")
+        .select("id, title, slug, description, price, is_active, is_free, destination_url, payment_url, trial_enabled, trial_days")
         .eq("slug", productSlug)
         .single();
 

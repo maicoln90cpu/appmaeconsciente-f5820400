@@ -97,7 +97,7 @@ export function ExerciciosTrimestre() {
     try {
       const { data, error } = await supabase
         .from('exercises')
-        .select('*')
+        .select('id, title, description, category, exercise_type, trimester, duration_minutes, intensity, instructions, precautions, benefits, image_url, video_url, is_active, created_at')
         .eq('is_active', true)
         .contains('trimester', [trimester])
         .order('category');
@@ -119,7 +119,7 @@ export function ExerciciosTrimestre() {
       const today = format(new Date(), "yyyy-MM-dd");
       const { data, error } = await supabase
         .from('user_exercise_logs')
-        .select('*')
+        .select('id, user_id, exercise_id, date, duration_minutes, notes, created_at')
         .eq('user_id', user.id)
         .eq('date', today);
 

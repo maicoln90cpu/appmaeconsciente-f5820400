@@ -71,7 +71,7 @@ export function SecurityAuditPanel() {
       const startDate = subDays(new Date(), parseInt(dateRange));
       const { data, error } = await supabase
         .from('security_audit_logs')
-        .select('*')
+        .select('id, user_id, event_type, event_description, severity, ip_address, user_agent, metadata, created_at')
         .gte('created_at', startDate.toISOString())
         .order('created_at', { ascending: false })
         .limit(500);
@@ -88,7 +88,7 @@ export function SecurityAuditPanel() {
       const startDate = subDays(new Date(), parseInt(dateRange));
       const { data, error } = await supabase
         .from('user_access_logs')
-        .select('*')
+        .select('id, user_id, accessed_at, ip_address, user_agent, action_type, resource_path, product_id, session_id, metadata')
         .gte('accessed_at', startDate.toISOString())
         .order('accessed_at', { ascending: false })
         .limit(500);
@@ -105,7 +105,7 @@ export function SecurityAuditPanel() {
       const startDate = subDays(new Date(), parseInt(dateRange));
       const { data, error } = await supabase
         .from('data_deletion_logs')
-        .select('*')
+        .select('id, user_id, user_email, status, tables_deleted, requested_at, completed_at, error_message')
         .gte('requested_at', startDate.toISOString())
         .order('requested_at', { ascending: false });
       

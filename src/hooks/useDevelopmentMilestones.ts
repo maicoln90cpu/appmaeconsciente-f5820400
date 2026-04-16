@@ -44,7 +44,7 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('development_milestone_types')
-        .select('*')
+        .select('id, milestone_code, area, title, description, age_min_months, age_max_months, is_active, pediatrician_alert, stimulation_tips, video_demo_url, created_at')
         .eq('is_active', true)
         .order('age_min_months', { ascending: true });
 
@@ -67,7 +67,7 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
       // Carregar perfil do bebê
       const { data: profile } = await supabase
         .from('baby_vaccination_profiles')
-        .select('*')
+        .select('id, baby_name, birth_date, gender')
         .eq('id', babyProfileId)
         .single();
 
@@ -78,7 +78,7 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
       // Carregar registros existentes
       const { data: existingRecords, error } = await supabase
         .from('baby_milestone_records')
-        .select('*')
+        .select('id, user_id, baby_profile_id, milestone_type_id, status, achieved_date, mother_notes, photo_url, video_url, marked_as_achieved_at, created_at, updated_at')
         .eq('baby_profile_id', babyProfileId);
 
       if (error) throw error;

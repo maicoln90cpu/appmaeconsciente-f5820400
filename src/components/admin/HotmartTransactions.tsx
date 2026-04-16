@@ -48,7 +48,7 @@ export const HotmartTransactions = () => {
 
     // Realtime subscription
     const channel = supabase
-      .channel('hotmart-transactions-changes')
+      .channel('hotmart-transactions-admin')
       .on(
         'postgres_changes',
         {
@@ -72,7 +72,7 @@ export const HotmartTransactions = () => {
     
     const { data, error } = await supabase
       .from("hotmart_transactions")
-      .select("*")
+      .select("id, transaction_id, hotmart_product_id, buyer_email, buyer_name, status, amount, event_type, processed_at")
       .order("processed_at", { ascending: false })
       .limit(30);
 

@@ -32,7 +32,7 @@ const ClubePremium = () => {
       // Buscar produto do clube
       const { data: product } = await supabase
         .from("products")
-        .select("*")
+        .select("id, title, slug, description, short_description, price, is_active, is_free, thumbnail_url, destination_url, payment_url, trial_enabled, trial_days")
         .eq("slug", "clube-premium")
         .single();
 
@@ -41,7 +41,7 @@ const ClubePremium = () => {
       // Buscar TODOS os materiais ativos (exceto clube-premium)
       const { data: materials } = await supabase
         .from("products")
-        .select("*")
+        .select("id, title, slug, description, short_description, price, is_active, is_free, thumbnail_url, destination_url, payment_url")
         .eq("is_active", true)
         .neq("slug", "clube-premium")
         .order("display_order");

@@ -68,7 +68,7 @@ export function IANutricional() {
 
       const { data, error } = await supabase
         .from('nutrition_chat_conversations')
-        .select('*')
+        .select('id, user_id, title, created_at, updated_at')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false });
 
@@ -89,7 +89,7 @@ export function IANutricional() {
     try {
       const { data, error } = await supabase
         .from('nutrition_chat_messages')
-        .select('*')
+        .select('id, conversation_id, role, content, created_at')
         .eq('conversation_id', currentConversationId)
         .order('created_at', { ascending: true });
 

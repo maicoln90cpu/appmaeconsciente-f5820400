@@ -66,7 +66,7 @@ export const usePostpartumAchievements = () => {
 
       const { data, error } = await supabase
         .from('postpartum_achievements')
-        .select('*')
+        .select('id, user_id, achievement_code, unlocked_at')
         .eq('user_id', user.id)
         .order('unlocked_at', { ascending: false });
 
@@ -83,7 +83,7 @@ export const usePostpartumAchievements = () => {
 
       const { data, error } = await supabase
         .from('daily_wellness_score')
-        .select('*')
+        .select('id, user_id, date, physical_score, emotional_score, energy_score, pain_score, total_score, is_good_day, notes, created_at')
         .eq('user_id', user.id)
         .order('date', { ascending: false })
         .limit(30);
