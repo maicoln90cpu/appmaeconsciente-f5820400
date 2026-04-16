@@ -19,6 +19,7 @@ import {
 } from './user-management';
 
 import { supabase } from '@/integrations/supabase/client';
+import { logAdminAction } from '@/services/monitoringService';
 
 
 export const UserManagement = () => {
