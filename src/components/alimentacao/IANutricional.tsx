@@ -200,6 +200,7 @@ export function IANutricional() {
       await loadMessages();
       await loadConversations();
     } catch (error: any) {
+      if (isAbortError(error)) return; // Request cancelled, safe to ignore
       console.error('Erro ao enviar mensagem:', error);
       
       if (error.message?.includes('Não autenticado')) {
