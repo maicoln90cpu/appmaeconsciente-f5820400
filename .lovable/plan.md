@@ -26,7 +26,7 @@
 
 # Plano: Documentação e Manutenibilidade (2 Etapas)
 
-## Status: Etapa 1 ✅ | Etapa 2 ⬜
+## Status: Etapa 1 ✅ | Etapa 2 ✅
 
 ---
 
@@ -42,11 +42,11 @@
 - [x] ROADMAP.md atualizado (próxima revisão Jul/2026)
 - [x] PENDENCIAS.md atualizado com status de monitoramento completo
 
-## Etapa 2 — Memo Backup + Knowledge + Memo Permanente
-- [ ] Criar docs/memocopy.md com cópia completa das regras da memo
-- [ ] Criar docs/KNOWLEDGE_SUMMARY.md (≤ 9500 chars) para inserir no knowledge
-- [ ] Gravar memo permanente de formato de resposta no topo do index
-- [ ] Atualizar mem://~user com preferências completas
+## Etapa 2 — Memo Backup + Knowledge + Memo Permanente ✅
+- [x] Criar docs/memocopy.md com cópia completa das regras da memo (43 memórias backup)
+- [x] Criar docs/KNOWLEDGE_SUMMARY.md (≤ 9500 chars) para inserir no knowledge
+- [x] Gravar memo permanente de formato de resposta no topo do index
+- [x] Atualizar mem://~user com preferências completas
 
 ---
 
