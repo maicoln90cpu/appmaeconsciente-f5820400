@@ -13,6 +13,7 @@ import { MessageSquare, Trophy, Target } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Comunidade = () => {
+  const { badgesEnabled } = useFeatureFlags();
   const { posts, loading, createPost, deletePost, toggleLike } = usePosts();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
