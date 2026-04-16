@@ -88,7 +88,7 @@ export const logClientError = (
       stack_trace: options?.stackTrace?.slice(0, 5000) ?? null,
       url: options?.url ?? (typeof window !== 'undefined' ? window.location.pathname : null),
       user_id: userId ?? undefined,
-      metadata: (options?.metadata ?? {}) as Record<string, unknown>,
+      metadata: (options?.metadata ?? {}) as unknown as Json,
     }]);
   });
 };
@@ -118,7 +118,7 @@ export const logPerformance = (
       duration_ms: Math.round(durationMs),
       is_slow: durationMs > 2000,
       user_id: userId ?? undefined,
-      metadata: (options?.metadata ?? {}) as Record<string, unknown>,
+      metadata: (options?.metadata ?? {}) as unknown as Json,
     }]);
   });
 };
@@ -141,7 +141,7 @@ export const logFeatureUsage = (
     await supabase.from('feature_usage_logs').insert([{
       feature_name: featureName.slice(0, 200),
       user_id: userId ?? undefined,
-      metadata: (metadata ?? {}) as Record<string, unknown>,
+      metadata: (metadata ?? {}) as unknown as Json,
     }]);
   });
 };
