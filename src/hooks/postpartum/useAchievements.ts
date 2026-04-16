@@ -66,7 +66,7 @@ export const usePostpartumAchievements = () => {
 
       const { data, error } = await supabase
         .from('postpartum_achievements')
-        .select('id, user_id, achievement_code, unlocked_at, created_at')
+        .select('id, user_id, achievement_code, unlocked_at')
         .eq('user_id', user.id)
         .order('unlocked_at', { ascending: false });
 

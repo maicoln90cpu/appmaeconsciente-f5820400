@@ -22,7 +22,7 @@ export const usePostpartumMedications = () => {
 
       const { data, error } = await supabase
         .from('postpartum_medications')
-        .select('id, user_id, medication_name, dosage, frequency, time_of_day, start_date, end_date, notes, is_active, created_at, updated_at')
+        .select('id, user_id, medication_name, dosage, frequency, time_of_day, times_per_day, start_date, end_date, notes, is_active, created_at, updated_at')
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', { ascending: false });

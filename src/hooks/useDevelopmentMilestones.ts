@@ -44,7 +44,7 @@ export const useDevelopmentMilestones = (babyProfileId: string | null) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('development_milestone_types')
-        .select('id, area, title, description, age_min_months, age_max_months, is_active, display_order, created_at')
+        .select('id, milestone_code, area, title, description, age_min_months, age_max_months, is_active, pediatrician_alert, stimulation_tips, video_demo_url, created_at')
         .eq('is_active', true)
         .order('age_min_months', { ascending: true });
 
