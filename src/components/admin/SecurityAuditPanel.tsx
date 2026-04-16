@@ -88,7 +88,7 @@ export function SecurityAuditPanel() {
       const startDate = subDays(new Date(), parseInt(dateRange));
       const { data, error } = await supabase
         .from('user_access_logs')
-        .select('id, user_id, accessed_at, ip_address, user_agent, page_url, referrer')
+        .select('id, user_id, accessed_at, ip_address, user_agent, action_type, resource_path, product_id, session_id, metadata')
         .gte('accessed_at', startDate.toISOString())
         .order('accessed_at', { ascending: false })
         .limit(500);
