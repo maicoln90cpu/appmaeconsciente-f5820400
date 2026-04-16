@@ -109,7 +109,7 @@ export const OnboardingWizard = ({ open, onClose }: OnboardingWizardProps) => {
         <Button
           variant="ghost"
           size="icon"
-          className="absolute right-4 top-4 h-8 w-8"
+          className="absolute right-4 top-4"
           onClick={handleSkip}
         >
           <X className="h-4 w-4" />

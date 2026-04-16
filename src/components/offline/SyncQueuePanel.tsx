@@ -95,7 +95,7 @@ const TaskItem = memo(
             <Button
               size="icon"
               variant="ghost"
-              className="h-8 w-8"
+              className=""
               onClick={() => onRetry(task.id)}
             >
               <RefreshCw className="h-3.5 w-3.5" />
@@ -103,7 +103,7 @@ const TaskItem = memo(
             <Button
               size="icon"
               variant="ghost"
-              className="h-8 w-8 text-destructive hover:text-destructive"
+              className="text-destructive hover:text-destructive"
               onClick={() => onDiscard(task.id)}
             >
               <Trash2 className="h-3.5 w-3.5" />

@@ -423,7 +423,7 @@ const FirstTimeCard = ({ item, getEventIcon, onToggleFavorite, onDelete }: First
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8"
+            className=""
             onClick={() => handleShareMilestone(item, getEventIcon)}
             title="Compartilhar"
           >
@@ -432,7 +432,7 @@ const FirstTimeCard = ({ item, getEventIcon, onToggleFavorite, onDelete }: First
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8"
+            className=""
             onClick={() => onToggleFavorite(item.id, item.is_favorite)}
           >
             <Heart
@@ -444,7 +444,7 @@ const FirstTimeCard = ({ item, getEventIcon, onToggleFavorite, onDelete }: First
           <Button
             size="icon"
             variant="ghost"
-            className="h-8 w-8 text-destructive hover:text-destructive"
+            className="text-destructive hover:text-destructive"
             onClick={() => onDelete(item.id)}
           >
             <Trash2 className="h-4 w-4" />

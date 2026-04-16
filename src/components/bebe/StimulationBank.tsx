@@ -275,7 +275,7 @@ export const StimulationBank = ({ babyProfileId }: Props) => {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-7 w-7"
+                        className=""
                         onClick={() => toggleFavorite(activity.id)}
                       >
                         {activity.is_favorite ? (
@@ -288,7 +288,7 @@ export const StimulationBank = ({ babyProfileId }: Props) => {
                         <Button
                           size="icon"
                           variant="ghost"
-                          className="h-7 w-7"
+                          className=""
                           onClick={() => removeActivity(activity.id)}
                         >
                           <Trash2 className="h-3.5 w-3.5 text-destructive" />
