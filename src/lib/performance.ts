@@ -7,6 +7,7 @@
 
 import * as Sentry from '@sentry/react';
 import { logPerformance } from '@/services/monitoringService';
+import { generateRequestId, setCurrentRequestId } from '@/lib/requestId';
 
 interface PerformanceMetric {
   name: string;
@@ -437,19 +438,37 @@ export const instrumentFetch = (): void => {
     const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
     const method = init?.method || 'GET';
 
+    // Gerar e injetar x-request-id em chamadas Supabase
+    const isSupabaseCall = url.includes('supabase') || url.includes('/rest/') || url.includes('/functions/');
+    let requestId: string | null = null;
+
+    if (isSupabaseCall) {
+      requestId = generateRequestId();
+      setCurrentRequestId(requestId);
+
+      const existingHeaders = init?.headers || {};
+      const headers = new Headers(existingHeaders as HeadersInit);
+      headers.set('x-request-id', requestId);
+
+      init = { ...init, headers };
+    }
+
     try {
       const response = await originalFetch(input, init);
       const duration = Math.round(performance.now() - startTime);
 
-      // Only track Supabase API calls
-      if (url.includes('supabase') || url.includes('/rest/') || url.includes('/functions/')) {
-        trackApiCall(url, method, duration, response.status);
+      if (isSupabaseCall) {
+        trackApiCall(url, method, duration, response.status, requestId);
       }
+
+      // Limpar requestId após a chamada
+      if (isSupabaseCall) setCurrentRequestId(null);
 
       return response;
     } catch (error) {
       const duration = Math.round(performance.now() - startTime);
-      trackApiCall(url, method, duration, 0);
+      trackApiCall(url, method, duration, 0, requestId);
+      if (isSupabaseCall) setCurrentRequestId(null);
       throw error;
     }
   };
