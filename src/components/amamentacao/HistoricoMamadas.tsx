@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 
 import { format, subDays, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Trash2, Baby, Milk, Droplets } from 'lucide-react';
+import { Trash2, Baby, Milk, Droplets, History } from 'lucide-react';
+
+import { EmptyState } from '@/components/ui/empty-state';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -139,9 +141,11 @@ export const HistoricoMamadas = ({ feedingLogs, onDelete }: HistoricoMamadasProp
       {/* Mobile: Cards */}
       <div className="sm:hidden space-y-3">
         {filteredLogs.length === 0 ? (
-          <Card className="p-6">
-            <p className="text-center text-muted-foreground text-sm">Nenhum registro encontrado</p>
-          </Card>
+          <EmptyState
+            icon={History}
+            title="Nenhum registro encontrado"
+            description="Os registros de mamada aparecerão aqui conforme você adicionar"
+          />
         ) : (
           filteredLogs.map(log => (
             <Card key={log.id} className="p-3">

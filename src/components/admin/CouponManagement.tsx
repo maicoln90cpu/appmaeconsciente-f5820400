@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Trash2, Copy } from 'lucide-react';
+import { Trash2, Copy, Ticket } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Badge } from '@/components/ui/badge';
@@ -258,7 +258,12 @@ export const CouponManagement = () => {
           {isLoading ? (
             <p className="text-center text-muted-foreground py-8">Carregando...</p>
           ) : coupons?.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">Nenhum cupom criado</p>
+            <div className="flex flex-col items-center py-12 text-center">
+              <div className="rounded-full bg-muted p-4 mb-4">
+                <Ticket className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground">Nenhum cupom criado</p>
+            </div>
           ) : (
             <Table>
               <TableHeader>

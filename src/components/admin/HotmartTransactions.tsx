@@ -103,7 +103,12 @@ export const HotmartTransactions = () => {
       </CardHeader>
       <CardContent>
         {transactions.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">Nenhuma transação registrada</p>
+          <div className="flex flex-col items-center py-12 text-center">
+            <div className="rounded-full bg-muted p-4 mb-4">
+              <Clock className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">Nenhuma transação registrada</p>
+          </div>
         ) : (
           <TransactionsTable transactions={transactions} />
         )}

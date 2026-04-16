@@ -1,6 +1,6 @@
 import { formatDistance } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Bell } from 'lucide-react';
+import { Bell, BellOff } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,10 @@ export const NotificationBell = () => {
         </div>
         <ScrollArea className="h-[400px]">
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">Nenhuma notificação</div>
+            <div className="p-8 text-center">
+              <BellOff className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
+              <p className="text-sm text-muted-foreground">Nenhuma notificação</p>
+            </div>
           ) : (
             <div className="divide-y">
               {notifications.map(notification => (

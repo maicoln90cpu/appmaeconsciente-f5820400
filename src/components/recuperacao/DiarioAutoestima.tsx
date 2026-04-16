@@ -6,6 +6,7 @@ import { Heart, Camera, Smile, Meh, Frown, Lock, Users, Globe, Trash2 } from 'lu
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   Dialog,
   DialogContent,
@@ -254,15 +255,11 @@ export const DiarioAutoestima = () => {
             </Card>
           ))
         ) : (
-          <Card>
-            <CardContent className="py-12 text-center">
-              <Heart className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-              <p className="text-muted-foreground mb-2">Ainda não há registros no seu diário</p>
-              <p className="text-sm text-muted-foreground">
-                Comece a registrar sua jornada de autoestima e transformação 💕
-              </p>
-            </CardContent>
-          </Card>
+          <EmptyState
+            icon={Heart}
+            title="Ainda não há registros"
+            description="Comece a registrar sua jornada de autoestima e transformação 💕"
+          />
         )}
       </div>
     </div>
