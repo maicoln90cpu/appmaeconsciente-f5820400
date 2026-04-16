@@ -16,6 +16,7 @@ const MAX_RETRIES = 3;
 class BackgroundSyncManager {
   private queue: SyncTask[] = [];
   private processing = false;
+  private onlineHandler: (() => void) | null = null;
 
   constructor() {
     this.loadQueue();
@@ -43,10 +44,22 @@ class BackgroundSyncManager {
   }
 
   private setupOnlineListener() {
-    window.addEventListener("online", () => {
+    this.onlineHandler = () => {
       logger.info("Connection restored, processing sync queue...");
       this.processQueue();
-    });
+    };
+    window.addEventListener("online", this.onlineHandler);
+  }
+
+  /**
+   * Remove todos os listeners e para o processamento.
+   * Deve ser chamado antes de descartar a instância.
+   */
+  destroy() {
+    if (this.onlineHandler) {
+      window.removeEventListener("online", this.onlineHandler);
+      this.onlineHandler = null;
+    }
   }
 
   async addTask(type: string, data: any): Promise<string> {
@@ -113,8 +126,6 @@ class BackgroundSyncManager {
   }
 
   private async executeTask(task: SyncTask): Promise<void> {
-    // Task execution will be handled by specific handlers
-    // This is called by the task-specific modules
     const event = new CustomEvent("background-sync-execute", {
       detail: task,
     });
@@ -134,4 +145,16 @@ class BackgroundSyncManager {
   }
 }
 
-export const backgroundSync = new BackgroundSyncManager();
+// Singleton com proteção contra duplicação em HMR
+function createBackgroundSync(): BackgroundSyncManager {
+  const key = "__backgroundSyncManager";
+  const existing = (globalThis as any)[key] as BackgroundSyncManager | undefined;
+  if (existing) {
+    existing.destroy();
+  }
+  const instance = new BackgroundSyncManager();
+  (globalThis as any)[key] = instance;
+  return instance;
+}
+
+export const backgroundSync = createBackgroundSync();

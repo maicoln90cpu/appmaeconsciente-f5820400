@@ -47,7 +47,6 @@ export function checkRateLimit(
   const now = Date.now();
   const entry = rateLimitStore.get(key);
   
-  // Se está bloqueado, verificar se o bloqueio expirou
   if (entry?.lockedUntil) {
     if (now < entry.lockedUntil) {
       const unlockTime = new Date(entry.lockedUntil);
@@ -58,11 +57,9 @@ export function checkRateLimit(
         message: `Muitas tentativas. Tente novamente em ${Math.ceil((entry.lockedUntil - now) / 1000)} segundos.`
       };
     }
-    // Bloqueio expirou, resetar
     rateLimitStore.delete(key);
   }
   
-  // Se não existe entrada ou janela expirou, criar nova
   if (!entry || (now - entry.firstAttempt) > windowMs) {
     rateLimitStore.set(key, {
       count: 1,
@@ -74,10 +71,8 @@ export function checkRateLimit(
     };
   }
   
-  // Incrementar contador
   entry.count++;
   
-  // Verificar se excedeu o limite
   if (entry.count > maxAttempts) {
     entry.lockedUntil = now + lockoutMs;
     rateLimitStore.set(key, entry);
@@ -98,7 +93,7 @@ export function checkRateLimit(
 }
 
 /**
- * Reseta o rate limit para uma chave (após login bem sucedido, por exemplo)
+ * Reseta o rate limit para uma chave
  */
 export function resetRateLimit(key: string): void {
   rateLimitStore.delete(key);
@@ -164,7 +159,22 @@ export function cleanupRateLimitStore(): void {
   }
 }
 
-// Limpar entradas antigas a cada 5 minutos
+// Singleton do interval com proteção HMR
+let cleanupIntervalId: ReturnType<typeof setInterval> | null = null;
+
+export function startRateLimitCleanup(): void {
+  stopRateLimitCleanup();
+  cleanupIntervalId = setInterval(cleanupRateLimitStore, 5 * 60 * 1000);
+}
+
+export function stopRateLimitCleanup(): void {
+  if (cleanupIntervalId !== null) {
+    clearInterval(cleanupIntervalId);
+    cleanupIntervalId = null;
+  }
+}
+
+// Iniciar automaticamente no browser
 if (typeof window !== 'undefined') {
-  setInterval(cleanupRateLimitStore, 5 * 60 * 1000);
+  startRateLimitCleanup();
 }
