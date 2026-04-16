@@ -94,7 +94,7 @@ export const UpdatePrompt = () => {
             <Button
               size="icon"
               variant="ghost"
-              className="shrink-0 h-6 w-6"
+              className="shrink-0"
               onClick={handleDismiss}
               aria-label="Fechar"
             >

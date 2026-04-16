@@ -433,7 +433,7 @@ export const FoodIntroductionDiary = ({ babyProfileId }: FoodIntroductionDiaryPr
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
+                              className=""
                               onClick={() => deleteFoodLog(log.id)}
                             >
                               <Trash2 className="h-4 w-4" />
