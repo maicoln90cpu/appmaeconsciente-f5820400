@@ -53,7 +53,7 @@ export async function fetchFeatureUsage(days: number = 30) {
   const since = new Date(Date.now() - days * 86400000).toISOString();
   const { data, error } = await supabase
     .from("feature_usage_logs")
-    .select("id, feature_name, user_id, usage_count, created_at")
+    .select("id, feature_name, user_id, metadata, created_at")
     .gte("created_at", since)
     .order("created_at", { ascending: false })
     .limit(1000);
@@ -128,7 +128,7 @@ export function aggregatePerformance(logs: Awaited<ReturnType<typeof fetchPerfor
 export function aggregateFeatureUsage(logs: Awaited<ReturnType<typeof fetchFeatureUsage>>) {
   const map = new Map<string, number>();
   for (const l of logs) {
-    map.set(l.feature_name, (map.get(l.feature_name) ?? 0) + (l.usage_count ?? 1));
+    map.set(l.feature_name, (map.get(l.feature_name) ?? 0) + 1);
   }
   return Array.from(map.entries())
     .map(([name, count]) => ({ name, count }))
