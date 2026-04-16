@@ -304,7 +304,7 @@ export const useMaternityBag = () => {
     },
   });
 
-  // Helper functions
+  // Função auxiliars
   const addItem = (
     categoryId: string,
     name: string,

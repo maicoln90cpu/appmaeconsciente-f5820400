@@ -169,7 +169,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
     return todayLogs?.some(log => log.routine_id === routineId) || false;
   };
 
-  // Get today's routines (filter by day of week)
+  // Obter today's routines (filter by day of week)
   const todayDayOfWeek = new Date().getDay();
   const todaysRoutines = routines?.filter(r => r.days_of_week?.includes(todayDayOfWeek)) || [];
 

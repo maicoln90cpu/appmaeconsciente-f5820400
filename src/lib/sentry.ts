@@ -30,10 +30,10 @@ export const initSentry = () => {
     replaysSessionSampleRate: 0.02, // 2% of sessions
     replaysOnErrorSampleRate: 0.2, // 20% of error sessions
 
-    // Enable integrations
+    // Habilitar integrations
     integrations: [
       Sentry.browserTracingIntegration({
-        // Track navigation performance
+        // Rastrear navigation performance
         enableLongTask: true,
         enableInp: true,
       }),
@@ -75,7 +75,7 @@ export const initSentry = () => {
       /google-analytics\.com/i,
     ],
 
-    // Add extra context
+    // Adicionar extra context
     beforeSend(event, hint) {
       // Don't send events in development
       if (import.meta.env.DEV) {
@@ -83,13 +83,13 @@ export const initSentry = () => {
         return null;
       }
 
-      // Add user context if available
+      // Adicionar user context if available
       const userId = localStorage.getItem('sb-user-id');
       if (userId) {
         event.user = { ...event.user, id: userId };
       }
 
-      // Add app version
+      // Adicionar app version
       event.tags = {
         ...event.tags,
         app_version: import.meta.env.VITE_APP_VERSION || 'unknown',
@@ -119,7 +119,7 @@ export const initSentry = () => {
     },
   });
 
-  // Set initial tags
+  // Definir initial tags
   Sentry.setTag('platform', 'web');
   Sentry.setTag('pwa', 'serviceWorker' in navigator ? 'true' : 'false');
 };
@@ -157,7 +157,7 @@ export const captureError = (
   });
 };
 
-// Add breadcrumb for user actions
+// Adicionar breadcrumb for user actions
 export const addBreadcrumb = (
   message: string,
   category: string,
@@ -171,13 +171,13 @@ export const addBreadcrumb = (
   });
 };
 
-// Set user context (call after login)
+// Definir user context (call after login)
 export const setUserContext = (userId: string, email?: string) => {
   Sentry.setUser({ id: userId, email });
   localStorage.setItem('sb-user-id', userId);
 };
 
-// Clear user context (call after logout)
+// Limpar user context (call after logout)
 export const clearUserContext = () => {
   Sentry.setUser(null);
   localStorage.removeItem('sb-user-id');

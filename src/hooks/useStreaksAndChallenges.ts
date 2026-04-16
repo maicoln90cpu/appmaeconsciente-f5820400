@@ -57,7 +57,7 @@ export const useStreaksAndChallenges = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Fetch user streaks
+  // Buscar user streaks
   const { data: streaks = [], isLoading: loadingStreaks } = useQuery({
     queryKey: ['user-streaks', user?.id],
     queryFn: async ({ signal }) => {
@@ -77,7 +77,7 @@ export const useStreaksAndChallenges = () => {
     enabled: !!user,
   });
 
-  // Fetch available challenges
+  // Buscar available challenges
   const { data: challenges = [], isLoading: loadingChallenges } = useQuery({
     queryKey: ['challenges'],
     queryFn: async ({ signal }) => {
@@ -94,7 +94,7 @@ export const useStreaksAndChallenges = () => {
     },
   });
 
-  // Fetch user challenges
+  // Buscar user challenges
   const { data: userChallenges = [], isLoading: loadingUserChallenges } = useQuery({
     queryKey: ['user-challenges', user?.id],
     queryFn: async ({ signal }) => {
@@ -118,14 +118,14 @@ export const useStreaksAndChallenges = () => {
     enabled: !!user,
   });
 
-  // Update streak
+  // Atualizar streak
   const updateStreak = useMutation({
     mutationFn: async (streakType: string) => {
       if (!user) throw new Error('Not authenticated');
 
       const today = format(new Date(), 'yyyy-MM-dd');
 
-      // Get current streak
+      // Obter current streak
       const { data: existing } = await supabase
         .from('user_streaks')
         .select('id, current_streak, longest_streak, last_activity_date')
@@ -176,7 +176,7 @@ export const useStreaksAndChallenges = () => {
 
       if (error) throw error;
 
-      // Check for streak milestones
+      // Verificar for streak milestones
       if (newStreak === 7) {
         toast.success(
           `🔥 ${STREAK_TYPES[streakType as keyof typeof STREAK_TYPES]?.label || streakType}: 7 dias consecutivos!`
@@ -198,7 +198,7 @@ export const useStreaksAndChallenges = () => {
     },
   });
 
-  // Start a challenge
+  // Iniciar a challenge
   const startChallenge = useMutation({
     mutationFn: async (challengeId: string) => {
       if (!user) throw new Error('Not authenticated');
@@ -236,7 +236,7 @@ export const useStreaksAndChallenges = () => {
     },
   });
 
-  // Update challenge progress
+  // Atualizar challenge progress
   const updateChallengeProgress = useMutation({
     mutationFn: async ({
       challengeType,
@@ -280,25 +280,25 @@ export const useStreaksAndChallenges = () => {
     },
   });
 
-  // Get streak by type
+  // Obter streak by type
   const getStreak = (type: string) => {
     return streaks.find(s => s.streak_type === type);
   };
 
-  // Get total points from completed challenges
+  // Obter total points from completed challenges
   const totalPoints = userChallenges
     .filter(uc => uc.completed)
     .reduce((acc, uc) => acc + (uc.challenge?.reward_points || 0), 0);
 
-  // Get active challenges
+  // Obter active challenges
   const activeChallenges = userChallenges.filter(
     uc => !uc.completed && (!uc.expires_at || new Date(uc.expires_at) > new Date())
   );
 
-  // Get completed challenges
+  // Obter completed challenges
   const completedChallenges = userChallenges.filter(uc => uc.completed);
 
-  // Get available challenges (not started yet)
+  // Obter available challenges (not started yet)
   const availableChallenges = challenges.filter(
     c => !userChallenges.some(uc => uc.challenge_id === c.id)
   );

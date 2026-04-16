@@ -296,7 +296,7 @@ const registerDefaultHandlers = () => {
   });
 };
 
-// Initialize handlers once
+// Inicializar handlers once
 let handlersRegistered = false;
 
 export function useOfflineSync() {

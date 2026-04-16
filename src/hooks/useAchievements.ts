@@ -8,7 +8,7 @@ export const useAchievements = () => {
   const isCheckingRef = useRef(false);
 
   const checkAndUnlockAchievements = useCallback(async () => {
-    // Prevent concurrent checks
+    // Prevenir concorrência checks
     if (isCheckingRef.current) return;
 
     try {

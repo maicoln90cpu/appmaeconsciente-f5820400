@@ -22,7 +22,7 @@ class Analytics {
   }
 
   private checkPlausible() {
-    // Check if Plausible script is loaded
+    // Verificar if Plausible script is loaded
     if (typeof window !== 'undefined' && window.plausible) {
       this.plausibleEnabled = true;
       // Using console.info for analytics initialization message (allowed by ESLint config)
@@ -45,7 +45,7 @@ class Analytics {
     // Using console.info for analytics tracking (allowed by ESLint config)
     console.info('[Analytics]', event.name, event.properties);
 
-    // Send to Plausible if available
+    // Enviar to Plausible if available
     if (this.plausibleEnabled && window.plausible) {
       try {
         window.plausible(event.name, {

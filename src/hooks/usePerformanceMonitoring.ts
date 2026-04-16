@@ -13,16 +13,16 @@ export function usePerformanceMonitoring() {
   const navigationStartRef = useRef<number>(performance.now());
 
   useEffect(() => {
-    // Track page load time when route changes
+    // Rastrear page load time when route changes
     const loadTime = Math.round(performance.now() - navigationStartRef.current);
     trackPageLoad(location.pathname, loadTime);
 
-    // Reset for next navigation
+    // Redefinir for next navigation
     navigationStartRef.current = performance.now();
   }, [location.pathname]);
 
   useEffect(() => {
-    // Track First Input Delay when user interacts
+    // Rastrear First Input Delay when user interacts
     const handleFirstInput = (event: Event) => {
       const inputEvent = event as Event & { processingStart?: number; timeStamp?: number };
       if (inputEvent.processingStart && inputEvent.timeStamp) {

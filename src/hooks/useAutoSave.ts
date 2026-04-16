@@ -81,7 +81,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
     [type, user?.id, draftId]
   );
 
-  // Load available drafts on mount
+  // Carregar available drafts on mount
   useEffect(() => {
     if (!enabled) return;
 
@@ -101,12 +101,12 @@ export function useAutoSave<T extends Record<string, unknown>>({
     loadAvailableDrafts();
   }, [type, user?.id, enabled]);
 
-  // Save draft function
+  // Salvar draft function
   const saveDraft = useCallback(
     async (data: T): Promise<void> => {
       if (!enabled) return;
 
-      // Check minimum data requirement
+      // Verificar minimum data requirement
       if (minDataCheck && !minDataCheck(data)) {
         return;
       }
@@ -128,7 +128,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
         setLastSavedAt(new Date());
         setHasSavedRecently(true);
 
-        // Clear saved indicator after 3 seconds
+        // Limpar saved indicator after 3 seconds
         if (savedIndicatorRef.current) {
           clearTimeout(savedIndicatorRef.current);
         }
@@ -167,7 +167,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
     [saveDraft, debounceMs, enabled]
   );
 
-  // Load draft function
+  // Carregar draft function
   const loadDraft = useCallback(async (): Promise<T | null> => {
     if (!draftId) return null;
 
@@ -184,7 +184,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
     return null;
   }, [draftId, onDraftLoaded]);
 
-  // Load draft by ID
+  // Carregar draft by ID
   const loadDraftById = useCallback(
     async (id: string): Promise<T | null> => {
       try {
@@ -203,7 +203,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
     [onDraftLoaded]
   );
 
-  // Delete current draft
+  // Deletar current draft
   const deleteDraft = useCallback(async (): Promise<void> => {
     if (!draftId) return;
 
@@ -223,13 +223,13 @@ export function useAutoSave<T extends Record<string, unknown>>({
     }
   }, [draftId, type, user?.id]);
 
-  // Delete draft by ID
+  // Deletar draft by ID
   const deleteDraftById = useCallback(
     async (id: string): Promise<void> => {
       try {
         await indexedDBManager.deleteDraft(id);
 
-        // Clear current draft if it matches
+        // Limpar current draft if it matches
         if (id === draftId) {
           setDraftId(null);
           setLastSavedAt(null);
@@ -251,7 +251,7 @@ export function useAutoSave<T extends Record<string, unknown>>({
     [draftId, type, user?.id]
   );
 
-  // Clear saved indicator
+  // Limpar saved indicator
   const clearSavedIndicator = useCallback(() => {
     setHasSavedRecently(false);
   }, []);

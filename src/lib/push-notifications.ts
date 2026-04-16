@@ -72,7 +72,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
   try {
     const registration = await navigator.serviceWorker.ready;
 
-    // Check for existing subscription
+    // Verificar for existing subscription
     let subscription = await (registration as any).pushManager.getSubscription();
 
     if (!subscription) {
@@ -85,7 +85,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
       logger.info('Push subscription created');
     }
 
-    // Save subscription to database
+    // Salvar subscription to database
     await savePushSubscription(subscription);
 
     return subscription;

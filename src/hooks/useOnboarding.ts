@@ -63,7 +63,7 @@ export const useOnboarding = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch completed steps from database
+  // Buscar completed steps from database
   const { data: completedSteps = [], isLoading } = useQuery({
     queryKey: ['onboarding-progress', user?.id],
     queryFn: async () => {
@@ -105,7 +105,7 @@ export const useOnboarding = () => {
         toast('Passo completado! 🎉', { description: step.title });
       }
 
-      // Check if all steps are complete
+      // Verificar if all steps are complete
       const newCompletedSteps = [...completedSteps, stepKey];
       if (newCompletedSteps.length === ONBOARDING_STEPS.length) {
         completeOnboarding();
@@ -168,7 +168,7 @@ export const useOnboarding = () => {
     }
   };
 
-  // Skip onboarding
+  // Pular onboarding
   const skipOnboarding = async () => {
     if (!user?.id) return;
 
@@ -185,11 +185,11 @@ export const useOnboarding = () => {
     }
   };
 
-  // Calculate progress
+  // Calcular progress
   const progress = (completedSteps.length / ONBOARDING_STEPS.length) * 100;
   const isComplete = completedSteps.length === ONBOARDING_STEPS.length;
 
-  // Get steps with completion status
+  // Obter steps with completion status
   const stepsWithStatus = ONBOARDING_STEPS.map(step => ({
     ...step,
     completed: completedSteps.includes(step.key),

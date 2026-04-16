@@ -250,7 +250,7 @@ export const useEnxovalItems = (config: Config | null) => {
       return item;
     },
     onMutate: async updatedItem => {
-      // Cancel any outgoing refetches
+      // Cancelar any outgoing refetches
       await queryClient.cancelQueries({ queryKey });
 
       // Snapshot the previous value
@@ -347,7 +347,7 @@ export const useEnxovalItems = (config: Config | null) => {
     },
   });
 
-  // Load more function
+  // Carregar more function
   const loadMore = useCallback(() => {
     if (hasMore && !loadingMore) {
       fetchNextPage();

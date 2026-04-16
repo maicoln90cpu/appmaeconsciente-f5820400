@@ -60,7 +60,7 @@ export const useMomWellness = () => {
 
   const todayLog = logs.find(l => l.log_date === new Date().toISOString().split('T')[0]);
 
-  // Calculate weekly averages
+  // Calcular weekly averages
   const last7 = logs.slice(0, 7);
   const weeklyAvg =
     last7.length > 0

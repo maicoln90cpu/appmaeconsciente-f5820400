@@ -72,7 +72,7 @@ export const useBabyColic = (babyProfileId?: string) => {
     return base.data.filter(log => log.baby_profile_id === babyProfileId);
   }, [base.data, babyProfileId]);
 
-  // Calculate statistics
+  // Calcular statistics
   const stats = useMemo(() => {
     if (!colicLogs || colicLogs.length === 0) return null;
 

@@ -43,7 +43,7 @@ class OfflineCacheManager {
       request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
 
-        // Create stores for different data types
+        // Criar stores for different data types
         const stores = [
           'baby_feeding_logs',
           'baby_sleep_logs',
@@ -136,7 +136,7 @@ class OfflineCacheManager {
             return;
           }
 
-          // Check if cache is still valid
+          // Verificar if cache is still valid
           const age = Date.now() - result.timestamp;
           if (age > maxAge) {
             resolve(null);

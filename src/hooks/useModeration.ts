@@ -37,7 +37,7 @@ export const useModeration = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Fetch blocked users
+  // Buscar blocked users
   const { data: blockedUsers = [], isLoading: loadingBlocked } = useQuery({
     queryKey: ['blocked-users', user?.id],
     queryFn: async () => {
@@ -54,7 +54,7 @@ export const useModeration = () => {
     enabled: !!user,
   });
 
-  // Fetch my reports
+  // Buscar my reports
   const { data: myReports = [], isLoading: loadingReports } = useQuery({
     queryKey: ['my-reports', user?.id],
     queryFn: async () => {
@@ -156,12 +156,12 @@ export const useModeration = () => {
     },
   });
 
-  // Check if user is blocked
+  // Verificar if user is blocked
   const isUserBlocked = (userId: string) => {
     return blockedUsers.some(b => b.blocked_id === userId);
   };
 
-  // Get blocked user IDs for filtering
+  // Obter blocked user IDs for filtering
   const blockedUserIds = blockedUsers.map(b => b.blocked_id);
 
   return {

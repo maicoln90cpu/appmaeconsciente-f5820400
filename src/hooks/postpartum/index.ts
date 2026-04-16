@@ -1,4 +1,4 @@
-// Barrel export for postpartum hooks
+// Exportações dos hooks de pós-parto
 export { usePostpartumSymptoms } from './useSymptoms';
 export { usePostpartumMedications } from './useMedications';
 export { usePostpartumAppointments } from './useAppointments';
@@ -7,7 +7,7 @@ export { useEmotionalLogs } from './useEmotionalLogs';
 export { useRecoveryChecklist } from './useRecoveryChecklist';
 export { useBodyImageLog } from './useBodyImageLog';
 
-// Type exports
+// Exportação de tipos
 export type { PostpartumSymptom } from './useSymptoms';
 export type { PostpartumMedication } from './useMedications';
 export type { PostpartumAppointment } from './useAppointments';

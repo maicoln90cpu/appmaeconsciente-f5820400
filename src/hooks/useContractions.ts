@@ -40,7 +40,7 @@ export const useContractions = () => {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef<Date | null>(null);
 
-  // Fetch contractions
+  // Buscar contractions
   const { data: contractions = [], isLoading } = useQuery({
     queryKey: ['contractions', user?.id],
     queryFn: async () => {
@@ -59,7 +59,7 @@ export const useContractions = () => {
     enabled: !!user,
   });
 
-  // Start timer
+  // Iniciar timer
   const startTimer = useCallback(() => {
     if (isTimerRunning) return;
 
@@ -79,7 +79,7 @@ export const useContractions = () => {
     }, 1000);
   }, [isTimerRunning, currentSessionId]);
 
-  // Stop timer
+  // Parar timer
   const stopTimer = useCallback(
     async (intensity?: number, notes?: string) => {
       if (!isTimerRunning || !startTimeRef.current || !user) return;
@@ -123,7 +123,7 @@ export const useContractions = () => {
     setCurrentSessionId(null);
   }, []);
 
-  // Delete contraction
+  // Deletar contraction
   const deleteContraction = useMutation({
     mutationFn: async (id: string) => {
       if (!user) throw new Error('Not authenticated');
@@ -151,7 +151,7 @@ export const useContractions = () => {
     };
   }, []);
 
-  // Calculate stats for session
+  // Calcular stats for session
   const getSessionStats = useCallback(
     (sessionId: string) => {
       const sessionContractions = contractions.filter(c => c.session_id === sessionId);
@@ -184,7 +184,7 @@ export const useContractions = () => {
     [contractions]
   );
 
-  // Check if should go to hospital (5-1-1 rule)
+  // Verificar if should go to hospital (5-1-1 rule)
   const checkHospitalAlert = useCallback(() => {
     if (!currentSessionId) return null;
 
@@ -194,7 +194,7 @@ export const useContractions = () => {
     const recent = sessionContractions.slice(0, 5);
     const avgDuration = recent.reduce((sum, c) => sum + (c.duration_seconds || 0), 0) / 5;
 
-    // Calculate average interval
+    // Calcular average interval
     let totalInterval = 0;
     for (let i = 1; i < recent.length; i++) {
       const prevStart = new Date(recent[i - 1].start_time);

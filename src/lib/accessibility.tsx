@@ -12,7 +12,7 @@ export function useAnnounce() {
   const regionRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Create live region if it doesn't exist
+    // Criar live region if it doesn't exist
     let region = document.getElementById('aria-live-region') as HTMLDivElement;
 
     if (!region) {

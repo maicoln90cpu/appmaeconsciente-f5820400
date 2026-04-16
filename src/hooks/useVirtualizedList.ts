@@ -72,10 +72,10 @@ export function useVirtualizedList({
   const [scrollTop, setScrollTop] = useState(0);
   const [containerHeight, setContainerHeight] = useState(providedHeight ?? 400);
 
-  // Calculate total height
+  // Calcular total height
   const totalHeight = itemCount * itemHeight;
 
-  // Calculate visible range
+  // Calcular visible range
   const visibleRange = useMemo(() => {
     const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
     const visibleCount = Math.ceil(containerHeight / itemHeight);
@@ -106,7 +106,7 @@ export function useVirtualizedList({
     return items;
   }, [visibleRange, itemHeight]);
 
-  // Handle scroll
+  // Tratar scroll
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -233,7 +233,7 @@ export function useVariableVirtualizedList(
     [itemPositions]
   );
 
-  // Calculate visible range
+  // Calcular visible range
   const visibleRange = useMemo(() => {
     const start = Math.max(0, findStartIndex(scrollTop) - overscan);
 
@@ -275,7 +275,7 @@ export function useVariableVirtualizedList(
     return result;
   }, [visibleRange, itemPositions, items.length]);
 
-  // Handle scroll
+  // Tratar scroll
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;

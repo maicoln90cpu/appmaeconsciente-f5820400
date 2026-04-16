@@ -40,7 +40,7 @@ const NAVIGATION_PATTERNS: Record<string, string[]> = {
 // High priority routes (prefetched immediately after login)
 const HIGH_PRIORITY_ROUTES = ['/dashboard', '/dashboard-bebe'];
 
-// Track if initial prefetch has been done
+// Rastrear if initial prefetch has been done
 let initialPrefetchDone = false;
 
 /**
@@ -49,7 +49,7 @@ let initialPrefetchDone = false;
 export function useRoutePrefetch() {
   const location = useLocation();
 
-  // Track current route visit
+  // Rastrear current route visit
   useEffect(() => {
     trackRouteVisit(location.pathname);
   }, [location.pathname]);
@@ -118,7 +118,7 @@ export function prefetchCommonRoutes() {
     setupSmartPrefetch(routes);
   };
 
-  // Wait for idle time
+  // Aguardar for idle time
   if ('requestIdleCallback' in window) {
     requestIdleCallback(() => prefetch(), { timeout: 10000 });
   } else {

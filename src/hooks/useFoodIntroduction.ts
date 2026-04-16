@@ -85,7 +85,7 @@ export const useFoodIntroduction = (babyProfileId?: string) => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Fetch food logs
+  // Buscar food logs
   const { data: foodLogs = [], isLoading } = useQuery({
     queryKey: ['food-introduction', user?.id, babyProfileId],
     queryFn: async () => {
@@ -108,7 +108,7 @@ export const useFoodIntroduction = (babyProfileId?: string) => {
     enabled: !!user,
   });
 
-  // Add food log
+  // Adicionar food log
   const addFoodLog = useMutation({
     mutationFn: async (input: FoodIntroductionInput) => {
       if (!user) throw new Error('Not authenticated');
@@ -147,7 +147,7 @@ export const useFoodIntroduction = (babyProfileId?: string) => {
     },
   });
 
-  // Update food log
+  // Atualizar food log
   const updateFoodLog = useMutation({
     mutationFn: async ({ id, ...input }: Partial<FoodIntroductionInput> & { id: string }) => {
       if (!user) throw new Error('Not authenticated');
@@ -169,7 +169,7 @@ export const useFoodIntroduction = (babyProfileId?: string) => {
     },
   });
 
-  // Delete food log
+  // Deletar food log
   const deleteFoodLog = useMutation({
     mutationFn: async (id: string) => {
       if (!user) throw new Error('Not authenticated');
@@ -188,7 +188,7 @@ export const useFoodIntroduction = (babyProfileId?: string) => {
     },
   });
 
-  // Stats
+  // Estatísticas
   const stats = {
     totalFoods: foodLogs.length,
     acceptedFoods: foodLogs.filter(f => f.accepted).length,
@@ -204,7 +204,7 @@ export const useFoodIntroduction = (babyProfileId?: string) => {
   // Foods with reactions (for alerts)
   const foodsWithReactions = foodLogs.filter(f => f.reaction_type && f.reaction_type !== 'nenhuma');
 
-  // Check if food was already introduced
+  // Verificar if food was already introduced
   const wasFoodIntroduced = (foodName: string) => {
     return foodLogs.some(f => f.food_name.toLowerCase() === foodName.toLowerCase());
   };
