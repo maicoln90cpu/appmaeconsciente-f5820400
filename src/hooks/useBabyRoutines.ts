@@ -41,7 +41,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
 
   const { data: routines, isLoading } = useQuery({
     queryKey: ['baby-routines', babyProfileId],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const userId = await getAuthenticatedUser();
 
       let query = supabase
@@ -49,7 +49,8 @@ export const useBabyRoutines = (babyProfileId?: string) => {
         .select('id, user_id, baby_profile_id, title, routine_type, scheduled_time, duration_minutes, days_of_week, notes, is_active, created_at, updated_at')
         .eq('user_id', userId)
         .eq('is_active', true)
-        .order('scheduled_time', { ascending: true });
+        .order('scheduled_time', { ascending: true })
+        .abortSignal(signal);
 
       if (babyProfileId) {
         query = query.eq('baby_profile_id', babyProfileId);
@@ -63,7 +64,7 @@ export const useBabyRoutines = (babyProfileId?: string) => {
 
   const { data: todayLogs } = useQuery({
     queryKey: ['baby-routine-logs-today', babyProfileId],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const userId = await getAuthenticatedUser();
       const today = new Date().toISOString().split('T')[0];
 
@@ -72,7 +73,8 @@ export const useBabyRoutines = (babyProfileId?: string) => {
         .select('id, user_id, routine_id, completed_at, actual_time, notes, created_at')
         .eq('user_id', userId)
         .gte('completed_at', `${today}T00:00:00`)
-        .lte('completed_at', `${today}T23:59:59`);
+        .lte('completed_at', `${today}T23:59:59`)
+        .abortSignal(signal);
 
       if (error) throw error;
       return data;
