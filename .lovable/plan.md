@@ -27,7 +27,7 @@
 
 # Plano: Responsividade e UI/UX (5 Etapas)
 
-## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ⬜ | Etapa 4 ⬜ | Etapa 5 ⬜
+## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ✅ | Etapa 4 ✅ | Etapa 5 ✅
 
 ---
 
@@ -43,14 +43,24 @@
 - [x] Efeitos decorativos removidos: ripple, page transitions, bounce, pulse, ping
 - [x] `BadgeUnlockAnimation` atualizado com `motion-safe:` e `motion-reduce:hidden` para confetti
 
-## Etapa 3 — Loading States Padronizados ⬜
-- [ ] Verificar/criar `PageLoader` reutilizável
-- [ ] Aplicar em ~10 páginas com `isLoading` sem feedback visual
+## Etapa 3 — Loading States Padronizados ✅
+- [x] `PageLoader` aplicado em 7 páginas principais
+- [x] Retry automático após 10s de loading
 
-## Etapa 4 — Empty States Unificados ⬜
-- [ ] Substituir `<p>Nenhum...</p>` pelo componente `EmptyState`
-- [ ] Aplicar em ~15-20 listas/tabelas sem mensagem orientativa
+## Etapa 4 — Empty States Unificados ✅
+- [x] `EmptyState` aplicado em 12 componentes
+- [x] Ícones consistentes e ações diretas (ex: Limpar Filtros)
 
-## Etapa 5 — Dark Mode: Cores Hardcoded ⬜
-- [ ] Auditar cores literais (bg-pink-50, text-green-600, etc.)
-- [ ] Adicionar variantes `dark:` nos componentes mais visíveis
+## Etapa 5 — Dark Mode: Cores Hardcoded ✅
+- [x] NotFound: migrado de bg-gray-100/text-gray-600/text-blue-500 para tokens semânticos
+- [x] PasswordStrength: dark: variants em text-yellow-600 e text-green-600
+- [x] DeliveryTypeSelector: 4 tipos de parto com dark: variants (green/purple/blue/teal)
+- [x] AchievementBadge: dark: variants em yellow/green badges
+- [x] OnboardingMonitor: Alert pink com dark: variants
+- [x] DashboardSono: getStatusColor e alerta com dark: variants
+- [x] DiarioAutoestima: border-pink com dark: variant
+- [x] CesareanRecoveryChecklist: border-purple e Badge com dark: variants
+- [x] DueDateCalculator: trimester colors com dark: variants
+- [x] DashboardBebeAlerts: icon com dark: variant
+- [x] SleepAIInsights: insight cards com dark: variants
+- [x] AppHealthDashboard: warning icon com dark: variant
