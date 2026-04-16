@@ -80,14 +80,15 @@ export const logClientError = (
   if (shouldThrottle(key)) return;
 
   enqueue(async () => {
-    await supabase.from('client_error_logs').insert({
+    const userId = getCurrentUserId();
+    await supabase.from('client_error_logs').insert([{
       error_message: errorMessage.slice(0, 1000),
-      component_name: options?.componentName || null,
-      stack_trace: options?.stackTrace?.slice(0, 5000) || null,
-      url: options?.url || (typeof window !== 'undefined' ? window.location.pathname : null),
-      user_id: getCurrentUserId(),
-      metadata: (options?.metadata as Record<string, unknown>) || {},
-    });
+      component_name: options?.componentName ?? null,
+      stack_trace: options?.stackTrace?.slice(0, 5000) ?? null,
+      url: options?.url ?? (typeof window !== 'undefined' ? window.location.pathname : null),
+      user_id: userId ?? undefined,
+      metadata: (options?.metadata ?? {}) as Record<string, unknown>,
+    }]);
   });
 };
 
@@ -109,14 +110,15 @@ export const logPerformance = (
   if (shouldThrottle(key)) return;
 
   enqueue(async () => {
-    await supabase.from('performance_logs').insert({
+    const userId = getCurrentUserId();
+    await supabase.from('performance_logs').insert([{
       operation_name: operationName.slice(0, 200),
       operation_type: options?.operationType || 'query',
       duration_ms: Math.round(durationMs),
       is_slow: durationMs > 2000,
-      user_id: getCurrentUserId(),
-      metadata: (options?.metadata as Record<string, unknown>) || {},
-    });
+      user_id: userId ?? undefined,
+      metadata: (options?.metadata ?? {}) as Record<string, unknown>,
+    }]);
   });
 };
 
@@ -134,10 +136,11 @@ export const logFeatureUsage = (
   if (shouldThrottle(key)) return;
 
   enqueue(async () => {
-    await supabase.from('feature_usage_logs').insert({
+    const userId = getCurrentUserId();
+    await supabase.from('feature_usage_logs').insert([{
       feature_name: featureName.slice(0, 200),
-      user_id: getCurrentUserId(),
-      metadata: (metadata as Record<string, unknown>) || {},
-    });
+      user_id: userId ?? undefined,
+      metadata: (metadata ?? {}) as Record<string, unknown>,
+    }]);
   });
 };
