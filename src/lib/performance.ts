@@ -6,6 +6,7 @@
  */
 
 import * as Sentry from '@sentry/react';
+import { logPerformance } from '@/services/monitoringService';
 
 interface PerformanceMetric {
   name: string;
@@ -70,8 +71,13 @@ export const trackWebVital = (name: string, value: number): void => {
     metricsStore.webVitals.shift();
   }
 
-  // Log poor metrics
+  // Persistir Web Vitals pobres no banco
   if (metric.rating === 'poor') {
+    logPerformance(`WebVital:${name}`, value, {
+      operationType: 'web_vital',
+      metadata: { rating: metric.rating, name },
+    });
+
     if (import.meta.env.DEV) {
       console.warn(`[Performance] Poor Web Vital: ${name} = ${value}ms`);
     }
@@ -110,6 +116,14 @@ export const trackApiCall = (
   // Keep only last 200 API calls
   if (metricsStore.apiCalls.length > 200) {
     metricsStore.apiCalls.shift();
+  }
+
+  // Persistir chamadas lentas no banco (> 2000ms)
+  if (duration > 2000) {
+    logPerformance(`${method} ${endpoint}`, duration, {
+      operationType: 'api_call',
+      metadata: { status, method, endpoint },
+    });
   }
 
   // Rastrear slow API calls

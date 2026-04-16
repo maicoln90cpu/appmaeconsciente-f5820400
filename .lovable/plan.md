@@ -64,3 +64,39 @@
 - [x] DashboardBebeAlerts: icon com dark: variant
 - [x] SleepAIInsights: insight cards com dark: variants
 - [x] AppHealthDashboard: warning icon com dark: variant
+
+---
+
+# Plano: Monitoramento e Observabilidade (5 Etapas)
+
+## Status: Etapa 1 ✅ | Etapa 2 ⬜ | Etapa 3 ⬜ | Etapa 4 ⬜ | Etapa 5 ⬜
+
+---
+
+## Etapa 1 — Ativar Escrita nos Logs ✅
+- [x] Criado `src/services/monitoringService.ts` com 3 funções: `logClientError`, `logPerformance`, `logFeatureUsage`
+- [x] Fila assíncrona fire-and-forget (não bloqueia UI)
+- [x] Throttle de 2s por tipo para evitar flood de writes
+- [x] Só persiste em produção (`import.meta.env.DEV` guard)
+- [x] Integrado em `logger.error()` → `logClientError()`
+- [x] Integrado em `trackApiCall()` (> 2000ms) → `logPerformance()`
+- [x] Integrado em `trackWebVital()` (rating 'poor') → `logPerformance()`
+- [x] Integrado em `analytics.track()` (eventos-chave) → `logFeatureUsage()`
+- [x] Integrado em `ErrorBoundary.componentDidCatch()` → `logClientError()`
+
+## Etapa 2 — Request ID / Tracing
+- [ ] Gerar requestId (UUID curto) no instrumentFetch()
+- [ ] Injetar header x-request-id em chamadas Supabase
+- [ ] Salvar requestId nos logs de performance e erro
+
+## Etapa 3 — Audit Log para Ações Admin
+- [ ] Criar logAdminAction() no monitoringService.ts
+- [ ] Integrar nos hooks admin (delete, role change, grant trial)
+
+## Etapa 4 — Health Check Periódico via pg_cron
+- [ ] Agendar system-health-check a cada 30 minutos
+- [ ] Detecção de degradação (score < 70% por 3 checks)
+
+## Etapa 5 — Alertas de Spike de Erros
+- [ ] Verificação de spike na edge function de cleanup
+- [ ] Badge visual no ObservabilityTab
