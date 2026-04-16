@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 
-import { Trophy, Loader2 } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PageLoader } from '@/components/ui/page-loader';
 import { Progress } from '@/components/ui/progress';
 
 
@@ -156,11 +157,7 @@ const MinhasConquistas = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
