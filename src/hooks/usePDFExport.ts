@@ -65,7 +65,7 @@ export const usePDFExport = (): PDFExportReturn => {
       const pageWidth = doc.internal.pageSize.getWidth();
       let y = yPos;
 
-      // Check if we need a new page
+      // Verificar if we need a new page
       if (y > 250) {
         doc.addPage();
         y = 20;

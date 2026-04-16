@@ -261,7 +261,7 @@ export const useVaccination = () => {
     setSelectedProfileId(profileId);
   };
 
-  // Wrapper functions to maintain API compatibility
+  // Funções wrapper para manter compatibilidade da API
   const saveProfile = async (profile: Partial<BabyVaccinationProfile>) => {
     try {
       const data = await saveProfileMutation.mutateAsync(profile);

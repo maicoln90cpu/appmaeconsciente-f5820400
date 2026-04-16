@@ -65,7 +65,7 @@ export const useBabyAppointments = (babyProfileId?: string) => {
     [appointments, today]
   );
 
-  // Toggle completed status
+  // Alternar completed status
   const toggleCompleted = (data: { id: string; completed: boolean }) => {
     base.update({ id: data.id, completed: data.completed });
   };

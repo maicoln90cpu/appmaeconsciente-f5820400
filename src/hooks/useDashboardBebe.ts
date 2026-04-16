@@ -153,7 +153,7 @@ export const useDashboardBebe = () => {
     return { totalFeedingTime, totalSleepTime, averageSleepDuration };
   }, [feedingLogs24h, sleepLogs24h]);
 
-  // Reload function
+  // Função de recarregamento
   const reload = useCallback(async () => {
     await refetch();
   }, [refetch]);

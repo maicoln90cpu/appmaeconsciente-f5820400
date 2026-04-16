@@ -1,7 +1,7 @@
 
 # Plano: Consistência e Padrões de Código (3 Etapas)
 
-## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ⏳
+## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ✅
 
 ---
 
@@ -18,6 +18,7 @@
 - [x] Rodar prettier --write para normalizar formatação global (100% dos arquivos já estavam conformes)
 - [x] Regra ESLint de naming convention de Props: adiada (requer plugin extra com config complexa; benefício marginal vs risco)
 
-## Etapa 3 — Padronizar Comentários e Documentação ⏳
-- [ ] Definir idioma padrão (PT-BR) para comentários
-- [ ] Revisar hooks, contexts e lib/ mais críticos
+## Etapa 3 — Padronizar Comentários e Documentação ✅
+- [x] Definir idioma padrão (PT-BR) para comentários
+- [x] ~50 arquivos traduzidos (hooks, contexts, lib, main.tsx)
+- [x] Zero erros TypeScript após tradução

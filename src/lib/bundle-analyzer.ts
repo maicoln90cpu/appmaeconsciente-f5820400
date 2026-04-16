@@ -28,7 +28,7 @@ const loadedChunks: Map<string, ChunkInfo> = new Map();
 export function trackChunkLoad(chunkName: string, startTime: number): void {
   const loadTime = performance.now() - startTime;
 
-  // Check if chunk was served from cache
+  // Verificar if chunk was served from cache
   const entries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
   const chunkEntry = entries.find(e => e.name.includes(chunkName));
 
@@ -282,7 +282,7 @@ interface PrefetchConfig {
   loader: () => Promise<unknown>;
 }
 
-// Track prefetched routes
+// Rastrear prefetched routes
 const prefetchedRoutes = new Set<string>();
 
 /**
@@ -356,7 +356,7 @@ export function setupSmartPrefetch(routes: PrefetchConfig[]): void {
 
   highPriority.forEach(prefetchRoute);
 
-  // Delay low priority prefetching
+  // Atrasar low priority prefetching
   setTimeout(() => {
     lowPriority.forEach(prefetchRoute);
   }, 3000);

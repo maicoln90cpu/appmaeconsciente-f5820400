@@ -76,7 +76,7 @@ export const useJaundiceLogs = (babyProfileId?: string) => {
     onError: () => toast.error('Erro ao remover registro'),
   });
 
-  // Check if latest log has danger signs
+  // Verificar if latest log has danger signs
   const latestLog = logs[0];
   const hasDangerSigns =
     latestLog &&

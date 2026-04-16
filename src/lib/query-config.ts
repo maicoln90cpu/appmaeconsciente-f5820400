@@ -83,31 +83,31 @@ export const QueryCacheConfig = {
  * Chaves de query padronizadas para evitar duplicação
  */
 export const QueryKeys = {
-  // User
+  // Usuário
   profile: (userId: string) => ['profile', userId] as const,
   userRoles: (userId: string) => ['user-roles', userId] as const,
   userAccess: (userId: string) => ['user-access', userId] as const,
 
-  // Baby
+  // Bebê
   babyProfiles: (userId: string) => ['baby-profiles', userId] as const,
   babyProfile: (profileId: string) => ['baby-profile', profileId] as const,
 
-  // Feeding
+  // Alimentação
   feedingLogs: (userId: string, filters?: Record<string, unknown>) =>
     ['feeding-logs', userId, filters] as const,
   feedingSettings: (userId: string) => ['feeding-settings', userId] as const,
 
-  // Sleep
+  // Sono
   sleepLogs: (userId: string, filters?: Record<string, unknown>) =>
     ['sleep-logs', userId, filters] as const,
   sleepSettings: (userId: string) => ['sleep-settings', userId] as const,
   sleepMilestones: () => ['sleep-milestones'] as const,
 
-  // Development
+  // Desenvolvimento
   milestoneTypes: () => ['milestone-types'] as const,
   milestoneRecords: (babyProfileId: string) => ['milestone-records', babyProfileId] as const,
 
-  // Vaccination
+  // Vacinação
   vaccinationCalendar: (calendarType: string) => ['vaccination-calendar', calendarType] as const,
   vaccinations: (babyProfileId: string) => ['vaccinations', babyProfileId] as const,
 
@@ -115,16 +115,16 @@ export const QueryKeys = {
   enxovalItems: (userId: string, configId?: string) => ['enxoval-items', userId, configId] as const,
   enxovalConfig: (userId: string) => ['enxoval-config', userId] as const,
 
-  // Community
+  // Comunidade
   posts: (filters?: Record<string, unknown>) => ['posts', filters] as const,
   post: (postId: string) => ['post', postId] as const,
   comments: (postId: string) => ['comments', postId] as const,
 
-  // Products & Access
+  // Produtos & Acesso
   products: () => ['products'] as const,
   product: (productId: string) => ['product', productId] as const,
 
-  // Gamification
+  // Gamificação
   badges: () => ['badges'] as const,
   userBadges: (userId: string) => ['user-badges', userId] as const,
   userLevel: (userId: string) => ['user-level', userId] as const,
@@ -133,21 +133,21 @@ export const QueryKeys = {
   dailyActivity: (userId: string) => ['daily-activity', userId] as const,
   userStreaks: (userId: string) => ['user-streaks', userId] as const,
 
-  // Notifications
+  // Notificações
   notifications: (userId: string) => ['user-notifications', userId] as const,
 
-  // Site settings
+  // Configurações do site
   siteSettings: () => ['site-settings'] as const,
 
-  // Admin
+  // Administração
   adminUsers: (filters?: Record<string, unknown>) => ['admin-users', filters] as const,
   adminStats: () => ['admin-stats'] as const,
 
-  // Tickets
+  // Tickets de suporte
   tickets: (userId: string) => ['tickets', userId] as const,
   ticket: (ticketId: string) => ['ticket', ticketId] as const,
 
-  // Baby specific
+  // Bebê (específico)
   babyAppointments: (babyProfileId?: string) => ['baby-appointments', babyProfileId] as const,
   babyMedications: (babyProfileId?: string) => ['baby-medications', babyProfileId] as const,
   babyColic: (babyProfileId?: string) => ['baby-colic', babyProfileId] as const,
@@ -156,7 +156,7 @@ export const QueryKeys = {
   growthMeasurements: (babyProfileId?: string) => ['growth-measurements', babyProfileId] as const,
   foodIntroduction: (babyProfileId?: string) => ['food-introduction', babyProfileId] as const,
 
-  // Postpartum
+  // Pós-parto
   postpartumSymptoms: (userId: string) => ['postpartum-symptoms', userId] as const,
   postpartumMedications: (userId: string) => ['postpartum-medications', userId] as const,
   postpartumAppointments: (userId: string) => ['postpartum-appointments', userId] as const,
@@ -165,20 +165,20 @@ export const QueryKeys = {
   postpartumEmotionalLogs: (userId: string) => ['postpartum-emotional-logs', userId] as const,
   postpartumBodyImageLogs: (userId: string) => ['postpartum-body-image-logs', userId] as const,
 
-  // Contractions
+  // Contrações
   contractions: (userId: string) => ['contractions', userId] as const,
 
-  // Ultrasounds
+  // Ultrassonografias
   ultrasounds: (userId: string) => ['ultrasounds', userId] as const,
 
-  // Maternity Bag
+  // Mala da Maternidade
   maternityBagCategories: (userId: string) => ['maternity-bag-categories', userId] as const,
   maternityBagItems: (userId: string) => ['maternity-bag-items', userId] as const,
 
-  // Favorites
+  // Favoritos
   favorites: (userId: string, itemType: string) => ['favorites', userId, itemType] as const,
 
-  // Follows
+  // Seguidores
   follows: (userId: string) => ['follows', userId] as const,
 } as const;
 

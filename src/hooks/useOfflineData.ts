@@ -75,14 +75,14 @@ export function useOfflineData<T extends { id: string }>({
     setError(null);
 
     try {
-      // Try to fetch from network first
+      // Tentar fetch from network first
       if (navigator.onLine) {
         let query = supabase
           .from(tableName as any)
           .select('*')
           .eq('user_id', userId);
 
-        // Apply additional filters
+        // Aplicar additional filters
         filters.forEach(filter => {
           if (filter.operator === 'neq') {
             query = query.neq(filter.column, filter.value);
@@ -93,7 +93,7 @@ export function useOfflineData<T extends { id: string }>({
           }
         });
 
-        // Apply ordering
+        // Aplicar ordering
         if (orderBy) {
           query = query.order(orderBy.column, { ascending: orderBy.ascending ?? false });
         }
@@ -175,7 +175,7 @@ export function useOfflineData<T extends { id: string }>({
           // Replace optimistic item with real item
           setData(prev => prev.map(d => (d.id === tempId ? (newItem as unknown as T) : d)));
 
-          // Update cache
+          // Atualizar cache
           await offlineCache.cacheData(tableName, userId, data);
 
           return newItem as unknown as T;
@@ -220,7 +220,7 @@ export function useOfflineData<T extends { id: string }>({
 
           if (error) throw error;
 
-          // Update cache
+          // Atualizar cache
           await offlineCache.cacheData(tableName, userId, data);
         } catch (err: any) {
           // Revert on error
@@ -261,7 +261,7 @@ export function useOfflineData<T extends { id: string }>({
 
           if (error) throw error;
 
-          // Update cache
+          // Atualizar cache
           await offlineCache.cacheData(
             tableName,
             userId,
@@ -289,7 +289,7 @@ export function useOfflineData<T extends { id: string }>({
     [userId, tableName, data, toast]
   );
 
-  // Fetch data on mount and when dependencies change
+  // Buscar data on mount and when dependencies change
   useEffect(() => {
     fetchData();
   }, [fetchData]);

@@ -84,7 +84,7 @@ export const usePregnancyInfo = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Fetch pregnancy info
+  // Buscar pregnancy info
   const { data: pregnancyInfo, isLoading } = useQuery({
     queryKey: ['pregnancy-info', user?.id],
     queryFn: async () => {
@@ -109,7 +109,7 @@ export const usePregnancyInfo = () => {
     mutationFn: async (input: PregnancyInfoInput) => {
       if (!user) throw new Error('Not authenticated');
 
-      // Calculate gestational age if LMP provided
+      // Calcular gestational age if LMP provided
       let gestationalWeeks: number | undefined;
       let gestationalDays: number | undefined;
 
@@ -142,13 +142,13 @@ export const usePregnancyInfo = () => {
     },
   });
 
-  // Calculate current gestational age
+  // Calcular current gestational age
   const getCurrentGestationalAge = () => {
     if (!pregnancyInfo?.last_menstrual_period) return null;
     return calculateGestationalAge(new Date(pregnancyInfo.last_menstrual_period));
   };
 
-  // Get effective due date
+  // Obter effective due date
   const getEffectiveDueDate = () => {
     if (pregnancyInfo?.due_date_source === 'ultrasound' && pregnancyInfo.ultrasound_due_date) {
       return pregnancyInfo.ultrasound_due_date;
@@ -156,28 +156,28 @@ export const usePregnancyInfo = () => {
     return pregnancyInfo?.due_date || null;
   };
 
-  // Get days until due date
+  // Obter days until due date
   const getDaysUntilDue = () => {
     const dueDate = getEffectiveDueDate();
     if (!dueDate) return null;
     return differenceInDays(new Date(dueDate), new Date());
   };
 
-  // Get current trimester
+  // Obter current trimester
   const getCurrentTrimester = () => {
     const age = getCurrentGestationalAge();
     if (!age) return null;
     return getTrimester(age.weeks);
   };
 
-  // Get completed milestones
+  // Obter completed milestones
   const getCompletedMilestones = () => {
     const age = getCurrentGestationalAge();
     if (!age) return [];
     return PREGNANCY_MILESTONES.filter(m => m.week <= age.weeks);
   };
 
-  // Get next milestone
+  // Obter next milestone
   const getNextMilestone = () => {
     const age = getCurrentGestationalAge();
     if (!age) return null;

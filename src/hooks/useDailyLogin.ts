@@ -36,7 +36,7 @@ export const useDailyLogin = () => {
   const { user } = useAuth();
   const { addXP } = useGamification();
 
-  // Fetch daily login data
+  // Buscar daily login data
   const { data: loginData, isLoading } = useQuery({
     queryKey: ['daily-login', user?.id],
     queryFn: async (): Promise<DailyLoginData | null> => {
@@ -82,7 +82,7 @@ export const useDailyLogin = () => {
 
       const today = format(new Date(), 'yyyy-MM-dd');
 
-      // Get current streak data
+      // Obter current streak data
       const { data: existing } = await supabase
         .from('user_streaks')
         .select('id, current_streak, longest_streak, last_activity_date')
@@ -135,7 +135,7 @@ export const useDailyLogin = () => {
         // Give XP for daily login
         addXP({ amount: 5, actionType: 'daily_login' });
 
-        // Check for streak bonuses
+        // Verificar for streak bonuses
         const bonusXP = STREAK_XP_BONUSES[data.streak];
         if (bonusXP) {
           addXP({ amount: bonusXP, actionType: `streak_${data.streak}` });

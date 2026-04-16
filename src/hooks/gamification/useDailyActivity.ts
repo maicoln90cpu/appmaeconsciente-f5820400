@@ -30,7 +30,7 @@ export interface ActivityCalendarDay {
   level: number;
 }
 
-// Helper para determinar nível de atividade (0-4) para cores do calendário
+// Auxiliar para determinar nível de atividade (0-4) para cores do calendário
 function getActivityLevel(xp: number): number {
   if (xp === 0) return 0;
   if (xp < 20) return 1;

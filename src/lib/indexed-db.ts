@@ -120,7 +120,7 @@ class IndexedDBManager {
           return;
         }
 
-        // Check expiration
+        // Verificar expiration
         if (entry.expiresAt && entry.expiresAt < Date.now()) {
           this.deleteCache(key).catch(console.error);
           resolve(null);

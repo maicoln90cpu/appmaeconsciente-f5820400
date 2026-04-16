@@ -121,13 +121,13 @@ export const useGrowthMeasurements = (babyProfileId?: string) => {
     return base.data.filter(m => m.baby_profile_id === babyProfileId);
   }, [base.data, babyProfileId]);
 
-  // Get latest measurement
+  // Obter latest measurement
   const latestMeasurement = useMemo(
     () => measurements[measurements.length - 1] || null,
     [measurements]
   );
 
-  // Calculate percentile
+  // Calcular percentile
   const calculatePercentile = (
     value: number,
     ageMonths: number,

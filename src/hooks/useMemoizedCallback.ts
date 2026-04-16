@@ -19,12 +19,12 @@ import { useCallback, useRef, useMemo, DependencyList, useEffect } from 'react';
 export function useStableCallback<T extends (...args: unknown[]) => unknown>(callback: T): T {
   const callbackRef = useRef<T>(callback);
 
-  // Update the ref on each render
+  // Atualizar the ref on each render
   useEffect(() => {
     callbackRef.current = callback;
   });
 
-  // Return a stable callback that calls the latest ref
+  // Retornar a stable callback that calls the latest ref
   return useCallback(((...args: unknown[]) => callbackRef.current(...args)) as T, []);
 }
 
@@ -48,7 +48,7 @@ export function useDebouncedCallback<T extends (...args: unknown[]) => unknown>(
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);
 
-  // Update callback ref
+  // Atualizar callback ref
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);

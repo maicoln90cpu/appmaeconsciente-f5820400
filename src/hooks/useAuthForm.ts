@@ -42,7 +42,7 @@ export function useAuthForm() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [resetCooldown, setResetCooldown] = useState<number | null>(null);
 
-  // Load saved email
+  // Carregar email salvo
   useEffect(() => {
     const savedEmail = localStorage.getItem(REMEMBER_ME_KEY);
     if (savedEmail) {
@@ -51,7 +51,7 @@ export function useAuthForm() {
     }
   }, []);
 
-  // Check reset cooldown
+  // Verificar cooldown de reset
   useEffect(() => {
     if (mode === 'forgot_password') {
       const status = getRateLimitStatus(`reset:${email}`, RESET_PASSWORD_RATE_LIMIT);
@@ -62,7 +62,7 @@ export function useAuthForm() {
     }
   }, [mode, email]);
 
-  // Countdown timer
+  // Temporizador de contagem regressiva
   useEffect(() => {
     if (resetCooldown && resetCooldown > 0) {
       const timer = setTimeout(() => {

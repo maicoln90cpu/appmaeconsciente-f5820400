@@ -56,7 +56,7 @@ export const logger = {
     if (isDevelopment) {
       console.info(formatMessage('info', message, options), options?.data ?? '');
     }
-    // Add breadcrumb for important info logs
+    // Adicionar breadcrumb for important info logs
     if (options?.context) {
       addBreadcrumb(message, options.context, options?.data as Record<string, unknown>);
     }
@@ -70,7 +70,7 @@ export const logger = {
     if (isDevelopment) {
       console.warn(formatMessage('warn', message, options), options?.data ?? '');
     }
-    // Add breadcrumb for warnings
+    // Adicionar breadcrumb for warnings
     addBreadcrumb(message, options?.context || 'warning', options?.data as Record<string, unknown>);
   },
 
@@ -91,10 +91,10 @@ export const logger = {
       console.error(`[ERROR] ${message}`);
     }
 
-    // Track for local dashboard
+    // Rastrear for local dashboard
     trackError(message);
 
-    // Send to Sentry in production
+    // Enviar to Sentry in production
     captureError(error || new Error(message), {
       component: options?.context,
       extra: options?.data as Record<string, unknown>,
@@ -109,7 +109,7 @@ export const logger = {
     if (isDevelopment) {
       console.log(`[TRACK] ${action}`, data ?? '');
     }
-    // Add breadcrumb for user actions
+    // Adicionar breadcrumb for user actions
     addBreadcrumb(action, 'user-action', data);
   },
 

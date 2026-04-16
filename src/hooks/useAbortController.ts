@@ -20,7 +20,7 @@ export function useAbortController() {
   }, []);
 
   const getSignal = (): AbortSignal => {
-    // Abort previous in-flight request
+    // Abortar previous in-flight request
     controllerRef.current?.abort();
     const controller = new AbortController();
     controllerRef.current = controller;

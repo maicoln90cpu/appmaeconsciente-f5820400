@@ -48,7 +48,7 @@ export function lazyWithRetry<T extends ComponentType<any>>(
       try {
         const module = await importFn();
 
-        // Track successful chunk load
+        // Rastrear successful chunk load
         const chunkName = importFn.toString().match(/import\("(.+)"\)/)?.[1] || 'unknown';
         trackChunkLoad(chunkName, startTime);
 

@@ -18,13 +18,13 @@ export const useFollows = (userId?: string) => {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // Get followers
+      // Obter followers
       const { data: followersData } = await supabase
         .from('user_follows')
         .select('follower_id')
         .eq('following_id', userId);
 
-      // Get following
+      // Obter following
       const { data: followingData } = await supabase
         .from('user_follows')
         .select('following_id')
@@ -33,7 +33,7 @@ export const useFollows = (userId?: string) => {
       setFollowers(followersData?.map(f => f.follower_id) || []);
       setFollowing(followingData?.map(f => f.following_id) || []);
 
-      // Check if current user follows this user
+      // Verificar if current user follows this user
       if (user) {
         const { data } = await supabase
           .from('user_follows')

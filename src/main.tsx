@@ -15,24 +15,24 @@ import {
 } from '@/lib/performance';
 import { initSentry } from '@/lib/sentry';
 
-// Preconnect to critical origins ASAP
+// Pré-conectar a origens críticas o mais cedo possível
 preconnectCriticalOrigins();
 
-// Initialize Sentry before rendering
+// Inicializar Sentry antes da renderização
 initSentry();
 
-// Initialize performance monitoring
+// Inicializar monitoramento de performance
 initPerformanceObserver();
 instrumentFetch();
 
-// Track long tasks that block main thread
+// Rastrear tarefas longas que bloqueiam a thread principal
 observeLongTasks(task => {
   if (task.duration > 50) {
     trackWebVital('LongTask', task.duration);
   }
 });
 
-// Cleanup old service workers and caches on startup
+// Limpar service workers e caches antigos na inicialização
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker
     .getRegistrations()
@@ -94,14 +94,14 @@ window.addEventListener('unhandledrejection', event => {
   }
 });
 
-// Prefetch common routes during idle time
+// Pré-carregar rotas comuns durante tempo ocioso
 if (typeof window !== 'undefined') {
   window.addEventListener('load', () => {
     requestIdleCallback(() => prefetchCommonRoutes(), { timeout: 3000 });
   });
 }
 
-// Render application
+// Renderizar aplicação
 const rootElement = document.getElementById('root');
 if (rootElement) {
   const root = createRoot(rootElement);

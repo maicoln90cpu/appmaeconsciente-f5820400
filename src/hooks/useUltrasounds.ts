@@ -38,7 +38,7 @@ export const useUltrasounds = () => {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Fetch all ultrasounds
+  // Buscar all ultrasounds
   const { data: ultrasounds = [], isLoading } = useQuery({
     queryKey: ['ultrasounds', user?.id],
     queryFn: async () => {
@@ -79,7 +79,7 @@ export const useUltrasounds = () => {
     return urlData.publicUrl;
   };
 
-  // Add ultrasound
+  // Adicionar ultrasound
   const addUltrasound = useMutation({
     mutationFn: async (input: UltrasoundInput) => {
       if (!user) throw new Error('Not authenticated');
@@ -106,7 +106,7 @@ export const useUltrasounds = () => {
     },
   });
 
-  // Update ultrasound
+  // Atualizar ultrasound
   const updateUltrasound = useMutation({
     mutationFn: async ({ id, ...input }: Partial<UltrasoundInput> & { id: string }) => {
       if (!user) throw new Error('Not authenticated');
@@ -128,12 +128,12 @@ export const useUltrasounds = () => {
     },
   });
 
-  // Delete ultrasound
+  // Deletar ultrasound
   const deleteUltrasound = useMutation({
     mutationFn: async (id: string) => {
       if (!user) throw new Error('Not authenticated');
 
-      // Get the image URL to delete from storage
+      // Obter the image URL to delete from storage
       const ultrasound = ultrasounds.find(u => u.id === id);
 
       const { error } = await supabase
@@ -144,7 +144,7 @@ export const useUltrasounds = () => {
 
       if (error) throw error;
 
-      // Try to delete from storage (don't fail if this doesn't work)
+      // Tentar delete from storage (don't fail if this doesn't work)
       if (ultrasound?.image_url) {
         try {
           const path = ultrasound.image_url.split('/ultrasounds/')[1];
@@ -162,7 +162,7 @@ export const useUltrasounds = () => {
     },
   });
 
-  // Toggle favorite
+  // Alternar favorite
   const toggleFavorite = useMutation({
     mutationFn: async (id: string) => {
       if (!user) throw new Error('Not authenticated');

@@ -26,14 +26,14 @@ export interface KickSession {
 export function useKickCounter() {
   const queryClient = useQueryClient();
 
-  // Timer local state
+  // Estado local do timer
   const [isActive, setIsActive] = useState(false);
   const [kickCount, setKickCount] = useState(0);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Timer effect
+  // Efeito do timer
   useEffect(() => {
     if (isActive) {
       intervalRef.current = setInterval(() => {

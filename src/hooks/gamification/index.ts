@@ -15,5 +15,5 @@ export type { LeaderboardEntry } from './useLeaderboard';
 export { useDailyActivity } from './useDailyActivity';
 export type { DailyActivity, ActivityCalendarDay } from './useDailyActivity';
 
-// Re-export do hook composto para compatibilidade
+// Re-exportação do hook composto para compatibilidade
 export { useGamification } from '../useGamification';

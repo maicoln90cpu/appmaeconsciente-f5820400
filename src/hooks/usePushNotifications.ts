@@ -28,7 +28,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check subscription status on mount
+  // Verificar subscription status on mount
   useEffect(() => {
     const checkSubscription = async () => {
       if (!isSupported || !user) {
@@ -50,7 +50,7 @@ export const usePushNotifications = (): UsePushNotificationsReturn => {
     checkSubscription();
   }, [isSupported, user]);
 
-  // Update permission when it changes
+  // Atualizar permission when it changes
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {

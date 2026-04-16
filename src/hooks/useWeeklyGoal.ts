@@ -29,7 +29,7 @@ export const useWeeklyGoal = () => {
   const { user } = useAuth();
   const { addXP, dailyActivity } = useGamification();
 
-  // Calculate weekly goal data
+  // Calcular weekly goal data
   const { data: weeklyData, isLoading } = useQuery({
     queryKey: ['weekly-goal', user?.id],
     queryFn: async (): Promise<WeeklyGoalData> => {
@@ -48,7 +48,7 @@ export const useWeeklyGoal = () => {
       const weekStart = startOfWeek(today, { weekStartsOn: 0 });
       const weekEnd = endOfWeek(today, { weekStartsOn: 0 });
 
-      // Fetch activity for this week
+      // Buscar activity for this week
       const { data: activities, error } = await supabase
         .from('daily_activity')
         .select('activity_date, total_xp_earned')
@@ -63,7 +63,7 @@ export const useWeeklyGoal = () => {
       const totalXPThisWeek =
         activities?.reduce((acc, a) => acc + (a.total_xp_earned || 0), 0) || 0;
 
-      // Check if reward was claimed this week
+      // Verificar if reward was claimed this week
       const { data: claimData } = await supabase
         .from('user_streaks')
         .select('id, user_id, streak_type, current_streak, longest_streak, last_activity_date')
@@ -118,12 +118,12 @@ export const useWeeklyGoal = () => {
     },
   });
 
-  // Get progress percentage
+  // Obter progress percentage
   const progressPercentage = weeklyData
     ? Math.min((weeklyData.activeDays / weeklyData.targetDays) * 100, 100)
     : 0;
 
-  // Get days of the week with status
+  // Obter days of the week with status
   const weekDays = (() => {
     const today = new Date();
     const weekStart = startOfWeek(today, { weekStartsOn: 0 });

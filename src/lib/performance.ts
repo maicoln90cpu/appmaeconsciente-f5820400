@@ -54,7 +54,7 @@ const getRating = (name: string, value: number): 'good' | 'needs-improvement' | 
   return 'poor';
 };
 
-// Track Core Web Vitals
+// Rastrear Core Web Vitals
 export const trackWebVital = (name: string, value: number): void => {
   const metric: PerformanceMetric = {
     name,
@@ -76,7 +76,7 @@ export const trackWebVital = (name: string, value: number): void => {
       console.warn(`[Performance] Poor Web Vital: ${name} = ${value}ms`);
     }
 
-    // Send to Sentry as measurement
+    // Enviar to Sentry as measurement
     Sentry.addBreadcrumb({
       category: 'web-vital',
       message: `${name}: ${value}`,
@@ -90,7 +90,7 @@ export const trackWebVital = (name: string, value: number): void => {
   }
 };
 
-// Track API calls
+// Rastrear API calls
 export const trackApiCall = (
   endpoint: string,
   method: string,
@@ -112,7 +112,7 @@ export const trackApiCall = (
     metricsStore.apiCalls.shift();
   }
 
-  // Track slow API calls
+  // Rastrear slow API calls
   if (duration > 3000) {
     if (import.meta.env.DEV) {
       console.warn(`[Performance] Slow API call: ${method} ${endpoint} took ${duration}ms`);
@@ -127,7 +127,7 @@ export const trackApiCall = (
   }
 };
 
-// Track errors for dashboard
+// Rastrear errors for dashboard
 export const trackError = (message: string): void => {
   const existing = metricsStore.errors.find(e => e.message === message);
 
@@ -149,7 +149,7 @@ export const trackError = (message: string): void => {
   }
 };
 
-// Track page loads
+// Rastrear page loads
 export const trackPageLoad = (path: string, duration: number): void => {
   metricsStore.pageLoads.push({
     path,
@@ -163,13 +163,13 @@ export const trackPageLoad = (path: string, duration: number): void => {
   }
 };
 
-// Get metrics summary for dashboard
+// Obter metrics summary for dashboard
 export const getMetricsSummary = () => {
   const now = Date.now();
   const last24h = now - 24 * 60 * 60 * 1000;
   const lastHour = now - 60 * 60 * 1000;
 
-  // Calculate Web Vitals averages
+  // Calcular Web Vitals averages
   const recentWebVitals = metricsStore.webVitals.filter(m => m.timestamp > last24h);
   const webVitalsByName: Record<string, { values: number[]; ratings: string[] }> = {};
 
@@ -189,7 +189,7 @@ export const getMetricsSummary = () => {
     total: data.ratings.length,
   }));
 
-  // Calculate API metrics
+  // Calcular API metrics
   const recentApiCalls = metricsStore.apiCalls.filter(m => m.timestamp > lastHour);
   const avgApiTime =
     recentApiCalls.length > 0
@@ -243,7 +243,7 @@ export const getMetricsSummary = () => {
   };
 };
 
-// Track long tasks that block the main thread
+// Rastrear long tasks that block the main thread
 export const trackLongTask = (duration: number, attribution?: string): void => {
   if (duration > 50) {
     // Tasks > 50ms are considered "long"
@@ -260,7 +260,7 @@ export const trackLongTask = (duration: number, attribution?: string): void => {
   }
 };
 
-// Track Interaction to Next Paint (INP)
+// Rastrear Interaction to Next Paint (INP)
 let maxINP = 0;
 export const trackInteraction = (duration: number, interactionType?: string): void => {
   if (duration > maxINP) {
@@ -279,7 +279,7 @@ export const trackInteraction = (duration: number, interactionType?: string): vo
 // HMR guard — prevent duplicate observers
 let _perfObserverInitialized = false;
 
-// Initialize performance observer for Web Vitals
+// Inicializar performance observer for Web Vitals
 export const initPerformanceObserver = (): void => {
   if (_perfObserverInitialized) return;
   if (typeof window === 'undefined' || !('PerformanceObserver' in window)) {
@@ -477,7 +477,7 @@ export const addResourceHint = (
 export const preconnectCriticalOrigins = (): void => {
   const origins = ['https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
 
-  // Add Supabase URL if available
+  // Adicionar Supabase URL if available
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
   if (supabaseUrl) {
     origins.push(supabaseUrl);

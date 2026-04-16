@@ -50,7 +50,7 @@ export const useBodyImageLog = () => {
 
       let photo_url = null;
 
-      // Upload foto se fornecida
+      // Enviar foto se fornecida
       if (log.photo) {
         const fileExt = log.photo.name.split('.').pop();
         const fileName = `${userId}/${Date.now()}.${fileExt}`;

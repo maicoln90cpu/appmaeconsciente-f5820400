@@ -99,7 +99,7 @@ export const usePosts = () => {
         supabase.from('post_comments').select('post_id').in('post_id', postIds),
       ]);
 
-      // Update profile cache
+      // Atualizar profile cache
       const newProfileCache = new Map(profileCache);
       profilesResult.data?.forEach(p => {
         newProfileCache.set(p.id, { email: p.email, foto_perfil_url: p.foto_perfil_url });
@@ -148,7 +148,7 @@ export const usePosts = () => {
   // Flatten posts
   const posts = useMemo(() => data?.pages.flatMap(page => page.posts) ?? [], [data]);
 
-  // Load more
+  // Carregar more
   const loadMore = useCallback(() => {
     if (!loadingMore && hasMore) {
       fetchNextPage();
@@ -203,7 +203,7 @@ export const usePosts = () => {
     [queryClient, postsQueryKey]
   );
 
-  // Add post locally (optimistic)
+  // Adicionar post locally (optimistic)
   const addPostLocally = useCallback(
     (newPost: any) => {
       const profile = profileCache.get(newPost.user_id);
@@ -231,7 +231,7 @@ export const usePosts = () => {
     [profileCache, queryClient, postsQueryKey]
   );
 
-  // Remove post locally
+  // Remover post locally
   const removePostLocally = useCallback(
     (postId: string) => {
       queryClient.setQueryData(postsQueryKey, (old: any) => {
@@ -248,7 +248,7 @@ export const usePosts = () => {
     [queryClient, postsQueryKey]
   );
 
-  // Create post mutation
+  // Criar post mutation
   const createPostMutation = useMutation({
     mutationFn: async ({
       content,
@@ -306,7 +306,7 @@ export const usePosts = () => {
     },
   });
 
-  // Delete post mutation
+  // Deletar post mutation
   const deletePostMutation = useMutation({
     mutationFn: async (postId: string) => {
       const { error } = await supabase.from('posts').delete().eq('id', postId);
@@ -326,7 +326,7 @@ export const usePosts = () => {
     },
   });
 
-  // Toggle like mutation
+  // Alternar like mutation
   const toggleLikeMutation = useMutation({
     mutationFn: async (postId: string) => {
       if (!user) throw new Error('Não autenticado');

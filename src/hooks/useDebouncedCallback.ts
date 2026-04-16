@@ -17,7 +17,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => void>(
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);
 
-  // Always use latest callback without re-creating debounced fn
+  // Usar sempre o callback mais recente sem recriar a função debounced
   callbackRef.current = callback;
 
   useEffect(() => {

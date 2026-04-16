@@ -103,7 +103,7 @@ class OfflineSyncManager {
     window.addEventListener('online', this.onlineHandler);
     window.addEventListener('offline', this.offlineHandler);
 
-    // Periodic sync check (every 30 seconds when online)
+    // Verificação periódica de sync (a cada 30 segundos quando online)
     this.intervalId = setInterval(() => {
       if (navigator.onLine && !this.processing) {
         this.processQueue();

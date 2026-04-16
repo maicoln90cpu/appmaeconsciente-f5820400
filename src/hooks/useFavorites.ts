@@ -73,7 +73,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
       const isFav = favorites.has(itemId);
 
       if (isFav) {
-        // Remove favorite
+        // Remover favorite
         const { error } = await supabase
           .from('user_favorites')
           .delete()
@@ -90,7 +90,7 @@ export function useFavorites(itemType: FavoriteType): UseFavoritesReturn {
         });
         toast.success('Removido dos favoritos');
       } else {
-        // Add favorite
+        // Adicionar favorite
         const { error } = await supabase.from('user_favorites').insert({
           user_id: user.id,
           item_type: type,

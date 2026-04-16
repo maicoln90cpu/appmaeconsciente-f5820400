@@ -21,7 +21,7 @@ export function usePagination<T>(
   const totalItems = data?.length ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
 
-  // Reset to page 1 if data changes and current page is out of bounds
+  // Redefinir to page 1 if data changes and current page is out of bounds
   const safePage = Math.min(currentPage, totalPages);
 
   const paginatedData = useMemo(() => {

@@ -79,7 +79,7 @@ class BackgroundSyncManager {
       properties: { type, taskId: task.id },
     });
 
-    // Try to process immediately if online
+    // Tentar process immediately if online
     if (navigator.onLine && !this.processing) {
       this.processQueue();
     }
@@ -97,7 +97,7 @@ class BackgroundSyncManager {
 
       try {
         await this.executeTask(task);
-        this.queue.shift(); // Remove successful task
+        this.queue.shift(); // Remover successful task
         analytics.track({
           name: 'background_sync_success',
           properties: { type: task.type, taskId: task.id },
@@ -108,7 +108,7 @@ class BackgroundSyncManager {
 
         if (task.retries >= MAX_RETRIES) {
           console.error('Max retries reached for task:', task);
-          this.queue.shift(); // Remove failed task
+          this.queue.shift(); // Remover failed task
           analytics.track({
             name: 'background_sync_failed',
             properties: { type: task.type, taskId: task.id, error: String(error) },
@@ -117,7 +117,7 @@ class BackgroundSyncManager {
           // Move to end of queue for retry
           this.queue.push(this.queue.shift()!);
         }
-        break; // Stop processing on error
+        break; // Parar processing on error
       }
     }
 
@@ -131,7 +131,7 @@ class BackgroundSyncManager {
     });
     window.dispatchEvent(event);
 
-    // Wait a bit for the handler to process
+    // Aguardar a bit for the handler to process
     await new Promise(resolve => setTimeout(resolve, 100));
   }
 

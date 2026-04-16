@@ -112,7 +112,7 @@ export const useBabyFeeding = () => {
     async (logData: Omit<BabyFeedingLog, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
       const result = await addLog(logData as Record<string, unknown>);
 
-      // Update last breast side if breastfeeding
+      // Atualizar last breast side if breastfeeding
       if (
         logData.feeding_type === 'breastfeeding' &&
         logData.breast_side &&
