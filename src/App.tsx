@@ -219,6 +219,7 @@ const App = () => {
         </AnalyticsWrapper>
         </BrowserRouter>
         </TooltipProvider>
+        </FeatureFlagsProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
