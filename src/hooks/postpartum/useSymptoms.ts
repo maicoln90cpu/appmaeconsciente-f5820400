@@ -43,7 +43,7 @@ export const usePostpartumSymptoms = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
-      checkAlerts(data, toast);
+      checkAlerts(data);
       toast("Sucesso", { description: "Sintomas registrados com sucesso" });
     },
     onError: (error) => {
@@ -66,7 +66,7 @@ export const usePostpartumSymptoms = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['postpartum-symptoms'] });
-      checkAlerts(data, toast);
+      checkAlerts(data);
       toast("Sucesso", { description: "Sintomas atualizados" });
     },
   });
@@ -81,7 +81,7 @@ export const usePostpartumSymptoms = () => {
 };
 
 // Sistema de alertas inteligentes
-function checkAlerts(symptom: PostpartumSymptom, toast: ReturnType<typeof useToast>['toast']) {
+function checkAlerts(symptom: PostpartumSymptom) {
   // Sangramento intenso
   if (symptom.bleeding_intensity === 'very_heavy') {
     toast.error("⚠️ ALERTA", { description: "Sangramento muito intenso. Procure atendimento médico imediatamente!" });

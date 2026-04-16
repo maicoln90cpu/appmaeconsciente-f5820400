@@ -43,7 +43,7 @@ export const useEmotionalLogs = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      checkEdinburghScore(data, toast);
+      checkEdinburghScore(data);
       toast("Sucesso", { description: "Registro emocional salvo" });
     },
     onError: () => {
@@ -65,7 +65,7 @@ export const useEmotionalLogs = () => {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['emotional-logs'] });
-      checkEdinburghScore(data, toast);
+      checkEdinburghScore(data);
       toast("Sucesso", { description: "Registro atualizado" });
     },
   });
@@ -79,7 +79,7 @@ export const useEmotionalLogs = () => {
 };
 
 // Sistema de alerta para Edinburgh Depression Scale
-function checkEdinburghScore(log: EmotionalLog, toast: ReturnType<typeof useToast>['toast']) {
+function checkEdinburghScore(log: EmotionalLog) {
   if (!log.edinburgh_score) return;
 
   if (log.edinburgh_score >= 13) {
