@@ -80,7 +80,7 @@ vi.mock("@/integrations/supabase/client", () => ({
 // Mock toast
 const mockToast = vi.fn();
 vi.mock("@/hooks/useToast", () => ({
-  useToast: () => ({ toast: mockToast }),
+  toast: Object.assign(mockToast, { error: mockToast, success: mockToast }),
 }));
 
 // Mock logger
