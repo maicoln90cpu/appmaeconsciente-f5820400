@@ -69,7 +69,7 @@
 
 # Plano: Monitoramento e Observabilidade (5 Etapas)
 
-## Status: Etapa 1 ✅ | Etapa 2 ⬜ | Etapa 3 ⬜ | Etapa 4 ⬜ | Etapa 5 ⬜
+## Status: Etapa 1 ✅ | Etapa 2 ✅ | Etapa 3 ⬜ | Etapa 4 ⬜ | Etapa 5 ⬜
 
 ---
 
@@ -84,10 +84,14 @@
 - [x] Integrado em `analytics.track()` (eventos-chave) → `logFeatureUsage()`
 - [x] Integrado em `ErrorBoundary.componentDidCatch()` → `logClientError()`
 
-## Etapa 2 — Request ID / Tracing
-- [ ] Gerar requestId (UUID curto) no instrumentFetch()
-- [ ] Injetar header x-request-id em chamadas Supabase
-- [ ] Salvar requestId nos logs de performance e erro
+## Etapa 2 — Request ID / Tracing ✅
+- [x] Criado `src/lib/requestId.ts` com generateRequestId(), get/setCurrentRequestId()
+- [x] `instrumentFetch()` gera e injeta header `x-request-id` em toda chamada Supabase
+- [x] `trackApiCall()` aceita requestId opcional e propaga para logs de performance
+- [x] `monitoringService` inclui requestId no campo metadata de client_error_logs e performance_logs
+- [x] Edge Functions: `withErrorHandling()` loga requestId no início de cada request
+- [x] Edge Functions: `createErrorResponse()` inclui requestId no body de erro
+- [x] Edge Functions: `logEvent()` aceita req opcional e inclui requestId estruturado
 
 ## Etapa 3 — Audit Log para Ações Admin
 - [ ] Criar logAdminAction() no monitoringService.ts
