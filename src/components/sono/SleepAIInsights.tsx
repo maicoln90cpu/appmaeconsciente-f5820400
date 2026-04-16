@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useFeatureFlags } from "@/contexts/FeatureFlagsContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
